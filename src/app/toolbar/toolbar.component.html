@@ -1,0 +1,13 @@
+<mat-toolbar>
+  <button mat-icon-button [matMenuTriggerFor]="appMenu">
+    <mat-icon>more_vert</mat-icon>
+  </button>
+  <span>Entity Search</span>
+  <mat-menu #appMenu="matMenu">
+    <a routerLink="/" routerLinkActive="active" mat-menu-item>Home</a>
+    <a routerLink="/entity/1" routerLinkActive="active" mat-menu-item>Ent 1</a>
+    <a routerLink="/entity/2" routerLinkActive="active" mat-menu-item>Ent 2</a>
+    <a routerLink="/page/not/found" routerLinkActive="active" mat-menu-item>Page Not Found</a>
+    <a [routerLink]="[{ outlets: { popup: ['compose'] } }]" mat-menu-item>Send</a>
+  </mat-menu>
+</mat-toolbar>
