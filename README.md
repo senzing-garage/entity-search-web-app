@@ -1,10 +1,25 @@
-# ReadyToRunWebApp
+# Entity Search Web App
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.1.4.
+## Overview
+This is a more complex example of SDK component usage. It differs from the example web apps in the following features:
+* Routing (bookmarkable urls)
+* Resolvers
+* Activity Spinner
+* Angular Material
+* Direct interaction with SDK Services, not just components
+* Error feedback
+* Legacy browser support (Internet Explorer)
+* Reverse proxy support
+* ExpressJS web server(for production deployment)
+
+It's not mean to be followed along by a developer. Rather it serves as both an example of what a more full-featured implementation looks like, as well as a ready to build and deploy docker container.
 
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+
+## Production Server
+Run `ng build --production` which will generate a compiled version of the app in the _dist/_ directory. Compiled assets can be served by ExpressJS by running  `node webserver`.
 
 ## Code scaffolding
 
