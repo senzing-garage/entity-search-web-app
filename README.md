@@ -19,7 +19,10 @@ It's not mean to be followed along by a developer. Rather it serves as both an e
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
 ## Production Server
-Run `ng build --production` which will generate a compiled version of the app in the _dist/_ directory. Compiled assets can be served by ExpressJS by running  `node webserver`.
+Run `ng build --prod` which will generate a compiled version of the app in the _dist/_ directory. Compiled assets can be served by ExpressJS by running  `node webserver`.
+
+# Docker Support
+
 
 ## Code scaffolding
 

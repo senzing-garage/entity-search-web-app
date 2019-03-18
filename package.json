@@ -1,12 +1,13 @@
 {
   "name": "ready-to-run-web-app",
-  "version": "0.0.0",
+  "version": "0.0.2",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "start:docker": "node inject-env && ng serve --host 0.0.0.0 -c docker --proxy-config proxy.conf.json",
+    "start:docker": "node inject-env && node webserver",
     "start:server": "java -jar \"..\\senzing-api-server\\target\\senzing-api-server-1.5.1.jar\" -iniFile \"%LOCALAPPDATA%\\Senzing\\Workbench\\project_1\\g2.ini\" -httpPort 8080 -allowedOrigins http://localhost:4200",
     "build": "ng build",
+    "build:docker": "ng build -c docker",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
