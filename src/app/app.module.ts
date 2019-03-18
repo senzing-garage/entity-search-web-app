@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material.module';
-import { SenzingSdkModule } from '@senzing/sdk-components-ng';
+import { SenzingSdkModule, SzRestConfiguration } from '@senzing/sdk-components-ng';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -16,6 +16,25 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 import { EntitySearchService } from './services/entity-search.service';
 import { BlankComponent } from './blank/blank.component';
 
+/**
+* Pull in api configuration(SzRestConfigurationParameters)
+* from: environments/environment
+*
+* @example
+* ng build -c production
+* ng serve -c docker
+*/
+import { apiConfig } from './../environments/environment';
+
+/**
+ * create exportable config factory
+ * for AOT compilation.
+ *
+ * @export
+ */
+export function SzRestConfigurationFactory() {
+  return new SzRestConfiguration( (apiConfig ? apiConfig : undefined) );
+}
 @NgModule({
   declarations: [
     AppComponent,
@@ -32,7 +51,7 @@ import { BlankComponent } from './blank/blank.component';
     FormsModule,
     MaterialModule,
     AppRoutingModule,
-    SenzingSdkModule.forRoot()
+    SenzingSdkModule.forRoot( SzRestConfigurationFactory )
   ],
   providers: [ EntitySearchService ],
   bootstrap: [ AppComponent ]
