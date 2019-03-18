@@ -1,4 +1,9 @@
 <app-toolbar></app-toolbar>
+<sz-search
+        (resultsChange)="onSearchResults($event)"
+        (resultsCleared)="onSearchResultsCleared($event)"
+        (parameterChange)="onSearchParameterChange($event)"></sz-search>
+
 <div [@routeAnimation]="getAnimationData(routerOutlet)">
   <router-outlet #routerOutlet="outlet"></router-outlet>
 </div>

@@ -3,11 +3,12 @@
     <mat-icon>more_vert</mat-icon>
   </button>
   <span>Entity Search</span>
+  <sz-powered-by format="small"></sz-powered-by>
   <mat-menu #appMenu="matMenu">
     <a routerLink="/" routerLinkActive="active" mat-menu-item>Home</a>
-    <a routerLink="/entity/1" routerLinkActive="active" mat-menu-item>Ent 1</a>
-    <a routerLink="/entity/2" routerLinkActive="active" mat-menu-item>Ent 2</a>
+    <!-- <a routerLink="/entity/1" routerLinkActive="active" mat-menu-item>Ent 1</a>
+    <a routerLink="/entity/9002324729487" routerLinkActive="active" mat-menu-item>Bad Ent Id</a>
     <a routerLink="/page/not/found" routerLinkActive="active" mat-menu-item>Page Not Found</a>
-    <a [routerLink]="[{ outlets: { popup: ['compose'] } }]" mat-menu-item>Send</a>
+    <a [routerLink]="[{ outlets: { popup: ['compose'] } }]" mat-menu-item>Send</a> -->
   </mat-menu>
 </mat-toolbar>
