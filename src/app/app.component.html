@@ -1,9 +1,14 @@
 <app-toolbar></app-toolbar>
-<sz-search
-        (resultsChange)="onSearchResults($event)"
-        (resultsCleared)="onSearchResultsCleared($event)"
-        (parameterChange)="onSearchParameterChange($event)"></sz-search>
-
+<div class="tool-tray" [class.expanded]="searchExpanded">
+    <sz-search
+    (resultsChange)="onSearchResults($event)"
+    (resultsCleared)="onSearchResultsCleared($event)"
+    (parameterChange)="onSearchParameterChange($event)"
+    (searchStart)="onSearchStart($event)"></sz-search>
+    <mat-icon (click)="toggleRibbonState($event)" *ngIf="searchExpanded" class="toggle-icon">expand_more</mat-icon>
+    <mat-icon (click)="toggleRibbonState($event)"*ngIf="!searchExpanded" class="toggle-icon">expand_less</mat-icon>
+</div>
+<app-spinner></app-spinner>
 <div [@routeAnimation]="getAnimationData(routerOutlet)">
   <router-outlet #routerOutlet="outlet"></router-outlet>
 </div>

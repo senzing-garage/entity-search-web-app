@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "ready-to-run-web-app": {
+    "entity-search-web-app": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -36,7 +36,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/ready-to-run-web-app",
+            "outputPath": "dist/entity-search-web-app",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -76,25 +76,52 @@
                   "maximumError": "5mb"
                 }
               ]
+            },
+            "docker": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.docker.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": true,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
             }
           }
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "ready-to-run-web-app:build",
+            "browserTarget": "entity-search-web-app:build",
             "proxyConfig": "proxy.conf.json"
           },
           "configurations": {
             "production": {
-              "browserTarget": "ready-to-run-web-app:build:production"
+              "browserTarget": "entity-search-web-app:build:production"
+            },
+            "docker": {
+              "browserTarget": "sdk-components-example-angular-app:build:docker"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "ready-to-run-web-app:build"
+            "browserTarget": "entity-search-web-app:build"
           }
         },
         "test": {
@@ -129,7 +156,7 @@
         }
       }
     },
-    "ready-to-run-web-app-e2e": {
+    "entity-search-web-app-e2e": {
       "root": "e2e/",
       "projectType": "application",
       "prefix": "",
@@ -138,11 +165,11 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "ready-to-run-web-app:serve"
+            "devServerTarget": "entity-search-web-app:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "ready-to-run-web-app:serve:production"
+              "devServerTarget": "entity-search-web-app:serve:production"
             }
           }
         },
@@ -158,5 +185,5 @@
       }
     }
   },
-  "defaultProject": "ready-to-run-web-app"
+  "defaultProject": "entity-search-web-app"
 }

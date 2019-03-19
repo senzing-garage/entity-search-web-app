@@ -1,0 +1,10 @@
+{
+    "/api/*": {
+      "target": "${d.SENZING_API_SERVER_URL}",
+      "secure": false,
+      "logLevel": "debug",
+      "pathRewrite": {
+        "^/api": ""
+      }
+    }
+  }

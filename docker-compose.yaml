@@ -1,0 +1,31 @@
+version: '3'
+services:
+
+  api:
+    image: senzing/senzing-api-server
+    container_name: senzing-api-server
+    environment:
+      SENZING_OPTIONS: ""
+    networks:
+      - backend
+    expose:
+      - 8080
+    volumes:
+      - C:/opt/senzing:/opt/senzing
+    restart: always
+
+  webui:
+    image: senzingiris/entity-search-web-app
+    container_name: senzing-web-server
+    environment:
+      SENZING_API_SERVER_URL: "http://api:8080"
+      SENZING_WEB_SERVER_PORT: 8080
+      SENZING_WEB_SERVER_API_PATH: '/api'
+    networks:
+      - backend
+    ports:
+      - 8081:8080
+    restart: always
+
+networks:
+  backend:
