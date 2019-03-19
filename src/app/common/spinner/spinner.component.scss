@@ -1,0 +1,59 @@
+
+:host {
+  position: fixed;
+  display: block;
+  left: 0;
+  top: 42px;
+  width: 100vw;
+  margin: 0px;
+  padding: 0px;
+
+  .mat-background {
+    background-color: rgba($color: #000000, $alpha: 0.20);
+    position: absolute;
+    top: 0px;
+    width: 100vw;
+    height: calc(100vh - 42px);
+    margin: 0px;
+    padding: 0px;
+  }
+
+  .spinner {
+      margin: 50vh auto;
+      text-align: center;
+      font-size: 10px;
+      width: 60px;
+      height: 60px;
+
+      div {
+          background-color: #333;
+          height: 100%;
+          width: 9px;
+          display: inline-block;
+          margin: 0 3px 0 0;
+
+          -webkit-animation: sk-stretchdelay 1.2s infinite ease-in-out;
+          animation: sk-stretchdelay 1.2s infinite ease-in-out;
+      }
+
+      .rect2 {
+      -webkit-animation-delay: -1.1s;
+      animation-delay: -1.1s;
+      }
+
+      .rect3 {
+      -webkit-animation-delay: -1.0s;
+      animation-delay: -1.0s;
+      }
+
+      .rect4 {
+      -webkit-animation-delay: -0.9s;
+      animation-delay: -0.9s;
+      }
+
+      .rect5 {
+      -webkit-animation-delay: -0.8s;
+      animation-delay: -0.8s;
+      }
+  }
+}

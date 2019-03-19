@@ -5,8 +5,18 @@
   <span>Entity Search</span>
   <sz-powered-by format="small"></sz-powered-by>
   <mat-menu #appMenu="matMenu">
-    <a routerLink="/" routerLinkActive="active" mat-menu-item>Home</a>
-    <!-- <a routerLink="/entity/1" routerLinkActive="active" mat-menu-item>Ent 1</a>
+    <a (click)="goHome()" routerLink="/" routerLinkActive="active" mat-menu-item><mat-icon>home</mat-icon>Home</a>
+    <a (click)="toggleSearch($event)" mat-menu-item>
+      <mat-icon *ngIf="ribbonExpanded">visibility_off</mat-icon>
+      <mat-icon *ngIf="!ribbonExpanded">visibility</mat-icon>
+      Show/Hide Search
+    </a>
+    <a (click)="openEntity($event)" mat-menu-item>
+      <mat-icon>open_in_new</mat-icon>
+      Open Entity detail
+    </a>
+    <!-- <a (click)="toggleSpinner($event)" mat-menu-item>Toggle Spinner</a>
+    <a routerLink="/entity/1" routerLinkActive="active" mat-menu-item>Ent 1</a>
     <a routerLink="/entity/9002324729487" routerLinkActive="active" mat-menu-item>Bad Ent Id</a>
     <a routerLink="/page/not/found" routerLinkActive="active" mat-menu-item>Page Not Found</a>
     <a [routerLink]="[{ outlets: { popup: ['compose'] } }]" mat-menu-item>Send</a> -->

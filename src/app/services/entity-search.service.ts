@@ -15,14 +15,41 @@ import {
   SzEntityData
 } from '@senzing/sdk-components-ng';
 
+import { SpinnerService } from './spinner.service';
+
 @Injectable({
   providedIn: 'root'
 })
 export class EntitySearchService {
   /** the current search results */
-  public currentSearchResults: SzAttributeSearchResult[];
+  private _currentSearchResults: SzAttributeSearchResult[];
+  private _results = new Subject<SzAttributeSearchResult[]>();
+
+  public set currentSearchResults(value) {
+    this._currentSearchResults = value;
+    this._results.next(value);
+  }
+  public get currentSearchResults(): SzAttributeSearchResult[] {
+    // TODO: pull from last subject
+    return this._currentSearchResults;
+  }
+  public get results(): Observable<SzAttributeSearchResult[]> {
+    return this._results.asObservable();
+  }
+
   /** the entity to show in the detail view */
-  public currentlySelectedEntityId: number = undefined;
+  public _currentlySelectedEntityId: number = undefined;
+  private _entityId = new Subject<number>();
+  public get entityIdChange() {
+    return this._entityId.asObservable();
+  }
+  public get currentlySelectedEntityId(): number | undefined {
+    return this._currentlySelectedEntityId;
+  }
+  public set currentlySelectedEntityId(value: number | undefined) {
+    this._currentlySelectedEntityId = value;
+    this._entityId.next(value);
+  }
   /** the search parameters from the last search performed */
   public currentSearchParameters: SzEntitySearchParams;
 
@@ -35,15 +62,17 @@ export class EntitySearchService {
 })
 export class SearchResultsResolverService implements Resolve<SzAttributeSearchResult[]> {
   private entitySearchResults: Subject<SzAttributeSearchResult[]>;
-  constructor(private entitySearchService: EntitySearchService, private sdkSearchService: SzSearchService, private router: Router) {}
+  constructor(private sdkSearchService: SzSearchService, private router: Router, private spinner: SpinnerService) {}
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<SzAttributeSearchResult[]> | Observable<never> {
     const sparams = this.sdkSearchService.getSearchParams();
     console.info('SearchResultsResolverService: params: ', sparams);
+    this.spinner.show();
 
     return this.sdkSearchService.searchByAttributes( sparams ).pipe(
       take(1),
       mergeMap(results => {
+        this.spinner.hide();
         if (results && results.length > 0) {
           return of(results);
         } else { // no results
@@ -72,15 +101,18 @@ export class SearchParamsResolverService implements Resolve<SzEntitySearchParams
   providedIn: 'root'
 })
 export class EntityDetailResolverService implements Resolve<SzEntityData> {
-  constructor(private sdkSearchService: SzSearchService, private router: Router) {}
+  constructor(private sdkSearchService: SzSearchService, private router: Router, private spinner: SpinnerService) {}
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<SzEntityData> | Observable<never> {
+    this.spinner.show();
+
     const entityId = parseInt( route.paramMap.get('entityId'), 10);
     if (entityId && entityId > 0) {
       return this.sdkSearchService.getEntityById(entityId).pipe(
         take(1),
         mergeMap(entityData => {
           console.info('EntityDetailResolverService: ', entityData);
+          this.spinner.hide();
           if (entityData) {
             return of(entityData);
           } else { // no results
@@ -90,6 +122,7 @@ export class EntityDetailResolverService implements Resolve<SzEntityData> {
         })
       );
     } else {
+      this.spinner.hide();
       this.router.navigate(['error/404']);
       return EMPTY;
     }

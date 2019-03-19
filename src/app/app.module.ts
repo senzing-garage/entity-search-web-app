@@ -1,3 +1,4 @@
+/** core angular, material, and senzing modules */
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -5,16 +6,21 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material.module';
 import { SenzingSdkModule, SzRestConfiguration } from '@senzing/sdk-components-ng';
 
+/** third party components and modules */
+// import { NgxSpinnerModule } from 'ngx-spinner';
+
+/** local components and modules */
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { NoResultsComponent } from './search-results/no-results/no-results.component';
-
 import { DetailComponent } from './detail/detail.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { EntitySearchService } from './services/entity-search.service';
 import { BlankComponent } from './blank/blank.component';
+import { SpinnerModule } from './common/spinner/spinner.module';
+import { UiService } from './services/ui.service';
 
 /**
 * Pull in api configuration(SzRestConfigurationParameters)
@@ -35,6 +41,7 @@ import { apiConfig } from './../environments/environment';
 export function SzRestConfigurationFactory() {
   return new SzRestConfiguration( (apiConfig ? apiConfig : undefined) );
 }
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -51,9 +58,10 @@ export function SzRestConfigurationFactory() {
     FormsModule,
     MaterialModule,
     AppRoutingModule,
-    SenzingSdkModule.forRoot( SzRestConfigurationFactory )
+    SenzingSdkModule.forRoot( SzRestConfigurationFactory ),
+    SpinnerModule
   ],
-  providers: [ EntitySearchService ],
+  providers: [ EntitySearchService, UiService ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }

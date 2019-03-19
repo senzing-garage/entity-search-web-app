@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterOutlet, Router } from '@angular/router';
+import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { slideInAnimation } from './animations';
 import {
   SzEntitySearchParams,
@@ -7,6 +8,8 @@ import {
 } from '@senzing/sdk-components-ng';
 
 import { EntitySearchService } from './services/entity-search.service';
+import { SpinnerService } from './services/spinner.service';
+import { UiService } from './services/ui.service';
 
  @Component({
   selector: 'app-root',
@@ -21,8 +24,10 @@ export class AppComponent implements OnInit {
   public currentlySelectedEntityId: number = undefined;
   /** the search parameters from the last search performed */
   public currentSearchParameters: SzEntitySearchParams;
-  /** whether or not to show the search results panel */
-  public showSearchResults = false;
+  /** whether or not to show the search form expanded */
+  public get searchExpanded() {
+    return this.ui.searchExpanded;
+  }
 
   public getAnimationData(outlet: RouterOutlet) {
     return outlet && outlet.activatedRouteData && outlet.activatedRouteData['animation'];
@@ -39,9 +44,27 @@ export class AppComponent implements OnInit {
     return false;
   }
 
-  constructor(private entitySearchService: EntitySearchService, private router: Router) { }
+  constructor(
+    private entitySearchService: EntitySearchService,
+    private router: Router,
+    private spinner: SpinnerService,
+    private ui: UiService
+  ) { }
 
   ngOnInit() {
+    /*
+    this.spinner.spinnerObservable.subscribe( (params) => {
+      console.log('AppComponent.onSpinnerStateChange: ', params);
+    });*/
+    /*
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe( (event) => {
+      console.info('router event: ', event, this.route);
+      this.spinner.hide();
+      //console.log(this.route.root);
+    });*/
+
   }
 
   /**
@@ -49,8 +72,12 @@ export class AppComponent implements OnInit {
    * the SzSearchComponent.
    */
   onSearchResults(evt: SzAttributeSearchResult[]) {
+    console.info('onSearchResultsChange: ', evt);
     // show results
-    this.router.navigate(['search/results']);
+    this.router.navigate(['search/results'], {
+      queryParams: {refresh: new Date().getTime()}
+    });
+    this.entitySearchService.currentSearchResults = evt;
   }
 
   /**
@@ -59,7 +86,6 @@ export class AppComponent implements OnInit {
    */
   public onSearchResultsCleared(searchParams: SzEntitySearchParams) {
     // hide search results
-    this.showSearchResults = false;
     this.entitySearchService.currentSearchResults = undefined;
     this.entitySearchService.currentlySelectedEntityId = undefined;
     this.router.navigate(['/search']);
@@ -72,5 +98,15 @@ export class AppComponent implements OnInit {
   public onSearchParameterChange(searchParams: SzEntitySearchParams) {
     console.log('onSearchParameterChange: ', searchParams);
     this.entitySearchService.currentSearchParameters = searchParams;
+  }
+
+  public onSearchStart(evt) {
+    console.log('onSearchStart: ', evt);
+    this.spinner.show();
+  }
+
+
+  public toggleRibbonState(evt) {
+    this.ui.searchExpanded = !this.ui.searchExpanded;
   }
 }
