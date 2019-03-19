@@ -13,14 +13,16 @@ import { SenzingSdkModule, SzRestConfiguration } from '@senzing/sdk-components-n
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SearchResultsComponent } from './search-results/search-results.component';
-import { NoResultsComponent } from './search-results/no-results/no-results.component';
 import { DetailComponent } from './detail/detail.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
-import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { EntitySearchService } from './services/entity-search.service';
 import { BlankComponent } from './blank/blank.component';
 import { SpinnerModule } from './common/spinner/spinner.module';
 import { UiService } from './services/ui.service';
+// errors
+import { PageNotFoundComponent } from './errors/page-not-found/page-not-found.component';
+import { NoResultsComponent } from './errors/no-results/no-results.component';
+
 
 /**
 * Pull in api configuration(SzRestConfigurationParameters)

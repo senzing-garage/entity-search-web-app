@@ -5,7 +5,7 @@ import {
   ActivatedRouteSnapshot
 } from '@angular/router';
 import { Observable, of, EMPTY, Subject } from 'rxjs';
-import { mergeMap, take } from 'rxjs/operators';
+import { mergeMap, take, catchError } from 'rxjs/operators';
 
 import {
   SzEntitySearchParams,
@@ -70,15 +70,21 @@ export class SearchResultsResolverService implements Resolve<SzAttributeSearchRe
     this.spinner.show();
 
     return this.sdkSearchService.searchByAttributes( sparams ).pipe(
-      take(1),
       mergeMap(results => {
         this.spinner.hide();
         if (results && results.length > 0) {
           return of(results);
         } else { // no results
-          this.router.navigate(['/search']);
+          this.router.navigate(['/errors/no-results']);
           return EMPTY;
         }
+      }),
+      catchError( error => {
+        this.spinner.hide();
+        const message = `Retrieval error: ${error}`;
+        console.error(message);
+        // this.router.navigate(['errors/404']);
+        return EMPTY;
       })
     );
   }
@@ -108,11 +114,9 @@ export class EntityDetailResolverService implements Resolve<SzEntityData> {
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<SzEntityData> | Observable<never> {
     this.spinner.show();
-
     const entityId = parseInt( route.paramMap.get('entityId'), 10);
     if (entityId && entityId > 0) {
       return this.sdkSearchService.getEntityById(entityId).pipe(
-        take(1),
         mergeMap(entityData => {
           console.info('EntityDetailResolverService: ', entityData);
           this.spinner.hide();
@@ -120,15 +124,22 @@ export class EntityDetailResolverService implements Resolve<SzEntityData> {
             return of(entityData);
           } else { // no results
             this.search.currentlySelectedEntityId = undefined;
-            this.router.navigate(['error/404']);
+            this.router.navigate(['errors/404']);
             return EMPTY;
           }
+        }),
+        catchError( error => {
+          this.spinner.hide();
+          const message = `Retrieval error: ${error}`;
+          console.error(message);
+          this.router.navigate(['errors/404']);
+          return EMPTY;
         })
       );
     } else {
       this.spinner.hide();
       this.search.currentlySelectedEntityId = undefined;
-      this.router.navigate(['error/404']);
+      this.router.navigate(['errors/404']);
       return EMPTY;
     }
   }
