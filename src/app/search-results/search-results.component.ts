@@ -29,32 +29,24 @@ export class SearchResultsComponent implements OnInit {
     .subscribe((data: { results: SzAttributeSearchResult[], parameters: SzEntitySearchParams }) => {
       this.currentSearchParameters = data.parameters;
       this.currentSearchResults = data.results;
-
-
-      console.info('SearchResultsComponent.onSearchResultsChange: ', this.currentSearchResults, this.currentSearchParameters );
-      // --------- this result is the right one
-      // pass it in to the component..
-
+      // clear out any globally stored value;
+      this.search.currentlySelectedEntityId = undefined;
     });
 
     // listen for global search data
     this.search.results.subscribe((results: SzAttributeSearchResult[]) => {
-      console.log('SearchResultsComponent.onGlobalSearchResultsChange: ', results);
       this.currentSearchResults = results;
     });
 
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe( (event) => {
-      console.info('router event: ', event, this.route);
       this.spinner.hide();
-      // console.log(this.route.root);
     });
 
   }
 
   onSearchResultClick(param) {
-    console.log('search result click: ', param);
     this.router.navigate(['entity/' + param.entityId]);
   }
 

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { EntitySearchService } from '../services/entity-search.service';
 
 @Component({
   selector: 'app-detail',
@@ -7,18 +8,18 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./detail.component.scss']
 })
 export class DetailComponent implements OnInit {
-  public currentlySelectedEntityId: any;
-
-  constructor(private route: ActivatedRoute) {
-    this.route.params.subscribe( (params) => this.currentlySelectedEntityId = parseInt(params.entityId, 10) );
+  /** local setter that sets selected entity at service level */
+  public set entityId(value: any) {
+    this.search.currentlySelectedEntityId = value;
+  }
+  /** get the currently selected entity from service level */
+  public get entityId(): any {
+    return this.search.currentlySelectedEntityId;
   }
 
-  ngOnInit() {
+  constructor(private route: ActivatedRoute, private search: EntitySearchService) {
+    this.route.params.subscribe( (params) => this.entityId = parseInt(params.entityId, 10) );
   }
 
-  onRouteParamChange(params) {
-    this.currentlySelectedEntityId = parseInt(params.entityId, 10);
-    console.log('DetailComponent.onRouteParamChange: ', this.currentlySelectedEntityId, this);
-  }
-
+  ngOnInit() {}
 }

@@ -38,7 +38,7 @@ export class EntitySearchService {
   }
 
   /** the entity to show in the detail view */
-  public _currentlySelectedEntityId: number = undefined;
+  private _currentlySelectedEntityId: number = undefined;
   private _entityId = new Subject<number>();
   public get entityIdChange() {
     return this._entityId.asObservable();
@@ -92,7 +92,6 @@ export class SearchParamsResolverService implements Resolve<SzEntitySearchParams
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): SzEntitySearchParams | Observable<never> {
     const sparams = this.sdkSearchService.getSearchParams();
-    console.info('SearchParamsResolverService: params: ', sparams);
     return this.sdkSearchService.getSearchParams();
   }
 }
@@ -101,7 +100,11 @@ export class SearchParamsResolverService implements Resolve<SzEntitySearchParams
   providedIn: 'root'
 })
 export class EntityDetailResolverService implements Resolve<SzEntityData> {
-  constructor(private sdkSearchService: SzSearchService, private router: Router, private spinner: SpinnerService) {}
+  constructor(
+    private sdkSearchService: SzSearchService,
+    private router: Router,
+    private search: EntitySearchService,
+    private spinner: SpinnerService) {}
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<SzEntityData> | Observable<never> {
     this.spinner.show();
@@ -116,6 +119,7 @@ export class EntityDetailResolverService implements Resolve<SzEntityData> {
           if (entityData) {
             return of(entityData);
           } else { // no results
+            this.search.currentlySelectedEntityId = undefined;
             this.router.navigate(['error/404']);
             return EMPTY;
           }
@@ -123,6 +127,7 @@ export class EntityDetailResolverService implements Resolve<SzEntityData> {
       );
     } else {
       this.spinner.hide();
+      this.search.currentlySelectedEntityId = undefined;
       this.router.navigate(['error/404']);
       return EMPTY;
     }

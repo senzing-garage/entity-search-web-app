@@ -11,7 +11,7 @@
       <mat-icon *ngIf="!ribbonExpanded">visibility</mat-icon>
       Show/Hide Search
     </a>
-    <a (click)="openEntity($event)" mat-menu-item>
+    <a *ngIf="showEntityOptions" [href]="'/entity/'+ this.currentlySelectedEntityId" target="_blank" mat-menu-item>
       <mat-icon>open_in_new</mat-icon>
       Open Entity detail
     </a>
