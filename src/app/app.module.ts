@@ -16,13 +16,17 @@ import { SearchResultsComponent } from './search-results/search-results.componen
 import { DetailComponent } from './detail/detail.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { EntitySearchService } from './services/entity-search.service';
+import { TipsComponent } from './common/tips/tips.component';
 import { BlankComponent } from './blank/blank.component';
 import { SpinnerModule } from './common/spinner/spinner.module';
 import { UiService } from './services/ui.service';
 // errors
 import { PageNotFoundComponent } from './errors/page-not-found/page-not-found.component';
 import { NoResultsComponent } from './errors/no-results/no-results.component';
-
+import { GatewayTimeoutErrorComponent } from './errors/timeout/timeout.component';
+import { ServerErrorComponent } from './errors/server/server.component';
+import { ErrorPageComponent } from './common/error/error.component';
+import { UnknownErrorComponent } from './errors/uknown/uknown.component';
 
 /**
 * Pull in api configuration(SzRestConfigurationParameters)
@@ -50,9 +54,14 @@ export function SzRestConfigurationFactory() {
     SearchResultsComponent,
     DetailComponent,
     ToolbarComponent,
+    ErrorPageComponent,
     PageNotFoundComponent,
     NoResultsComponent,
-    BlankComponent
+    GatewayTimeoutErrorComponent,
+    ServerErrorComponent,
+    UnknownErrorComponent,
+    BlankComponent,
+    TipsComponent
   ],
   imports: [
     BrowserModule,

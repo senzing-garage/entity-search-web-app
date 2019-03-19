@@ -1,0 +1,80 @@
+:host {
+  display: block;
+  margin: 6em 0 0 20em;
+  /* position: relative; */
+}
+
+h1 {
+  font-size: 12em;
+  opacity: .8;
+  margin: 0;
+  color: #1d1d1d;
+  text-shadow: -1px -1px 1px #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
+h3 {
+  opacity: .3;
+}
+
+.background-shade-clipper {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: inline-block;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: -1;
+}
+
+.background-shade-container {
+  overflow: hidden;
+  position: absolute;
+  height: 100%;
+  left: -50%;
+  width: 150%;
+}
+
+.background-shade {
+  display: flex;
+  flex-flow: row;
+  transform: rotate(20deg);
+  height: 1000%;
+  left: 200px;
+  top: -50%;
+  position: relative;
+
+  .slat {
+    min-width: 5px;
+    height: 100%;
+    /*transition: flex-grow 2s cubic-bezier(0.51, -0.34, 0.09, 0.86);*/
+    transition: flex-grow 5s cubic-bezier(0.04, 0.61, 1, 0.64);
+  }
+  .shade-1 {
+    background-color: #ff4242;
+    background-color: rgba(255, 0, 0, 0.74);
+    flex-grow: 1;
+    border-left: 3px solid #333;
+    border-right: 20px solid #333;
+  }
+  .shade-2 {
+    background-color: #838383de;
+    background-color: rgba(131, 131, 131, 0.8705882352941177);
+    flex-grow: 1;
+  }
+  .shade-3 {
+    background-color: lightseagreen;
+    background-color: rgb(185, 211, 209);
+    flex-grow: 2;
+    border-left: 40px solid #33333357;
+  }
+  .shade-4 {
+    background-color: tomato;
+    flex-grow: 8;
+  }
+  .shade-5 {
+    background-color: #d4eecf;
+    background-color: rgb(212, 238, 207);
+    flex-grow: 1;
+  }
+}

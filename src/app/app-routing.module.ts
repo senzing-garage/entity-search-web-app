@@ -6,6 +6,9 @@ import { PageNotFoundComponent } from './errors/page-not-found/page-not-found.co
 import { NoResultsComponent } from './errors/no-results/no-results.component';
 import { BlankComponent } from './blank/blank.component';
 import { SearchResultsResolverService, SearchParamsResolverService, EntityDetailResolverService } from './services/entity-search.service';
+import { ServerErrorComponent } from './errors/server/server.component';
+import { GatewayTimeoutErrorComponent } from './errors/timeout/timeout.component';
+import { UnknownErrorComponent } from './errors/uknown/uknown.component';
 
 const routes: Routes = [
   { path: 'search', component: BlankComponent },
@@ -13,6 +16,9 @@ const routes: Routes = [
   { path: 'entity/:entityId', component: DetailComponent, resolve: { entityData: EntityDetailResolverService }, data: { animation: 'search-detail' } },
   { path: 'errors/no-results', component: NoResultsComponent, data: { animation: 'search-detail' } },
   { path: 'errors/404', component: PageNotFoundComponent, data: { animation: 'search-detail' } },
+  { path: 'errors/500', component: ServerErrorComponent, data: { animation: 'search-detail' } },
+  { path: 'errors/504', component: GatewayTimeoutErrorComponent, data: { animation: 'search-detail' } },
+  { path: 'errors/unknown', component: UnknownErrorComponent, data: { animation: 'search-detail' } },
   { path: '',   redirectTo: 'search', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent }
 ];

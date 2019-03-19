@@ -2,6 +2,16 @@
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
-.not-found {
+.error-404 {
   background-color: #f3ecca;
+}
+.error-500 {
+  background-color: #f3d6bf;
+}
+.error-504 {
+  background-color: #de004830;
+  background-color: rgba(222, 0, 72, 0.1);
+}
+.error-uknown {
+  background-color: #e9caf3;
 }

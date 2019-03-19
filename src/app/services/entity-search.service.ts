@@ -16,6 +16,24 @@ import {
 } from '@senzing/sdk-components-ng';
 
 import { SpinnerService } from './spinner.service';
+import { HttpErrorResponse } from '@angular/common/http';
+
+const getErrorRouteFromCode = (errorCode: number): string => {
+  if (errorCode === 504) {
+    // redirect to 504
+    console.log('redirect to 504');
+    return 'errors/504';
+  } else if (errorCode >= 500 && errorCode < 600) {
+    // show oops
+    console.log('redirect to 500');
+    return 'errors/500';
+  } else if (errorCode === 404) {
+    // show oops
+    console.log('redirect to 404');
+    return 'errors/404';
+  }
+  return 'errors/unknown';
+};
 
 @Injectable({
   providedIn: 'root'
@@ -79,9 +97,9 @@ export class SearchResultsResolverService implements Resolve<SzAttributeSearchRe
           return EMPTY;
         }
       }),
-      catchError( error => {
+      catchError( (error: HttpErrorResponse) => {
         this.spinner.hide();
-        const message = `Retrieval error: ${error}`;
+        const message = `Retrieval error: ${error.message}`;
         console.error(message);
         // this.router.navigate(['errors/404']);
         return EMPTY;
@@ -128,11 +146,15 @@ export class EntityDetailResolverService implements Resolve<SzEntityData> {
             return EMPTY;
           }
         }),
-        catchError( error => {
+        catchError( (error: HttpErrorResponse) => {
           this.spinner.hide();
-          const message = `Retrieval error: ${error}`;
+          const message = `Retrieval error: ${error.message}`;
           console.error(message);
-          this.router.navigate(['errors/404']);
+          if (error && error.status) {
+            this.router.navigate( [getErrorRouteFromCode(error.status)] );
+          } else {
+            this.router.navigate(['errors/unknown']);
+          }
           return EMPTY;
         })
       );
