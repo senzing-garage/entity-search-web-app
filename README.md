@@ -13,7 +13,7 @@ This is a more complex example of SDK component usage. It differs from the examp
 * ExpressJS web server(for production deployment)
 * Open detail view in new tab
 
-It's not mean to be followed along by a developer. Rather it serves as both an example of what a more full-featured implementation looks like, as well as a ready to build and deploy docker container.
+It's not meant to be followed along by a developer. Rather it serves as both an example of what a more full-featured implementation looks like, as well as a ready to build and deploy docker container.
 
 ## Development server
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
