@@ -5,12 +5,13 @@ import {
   MatCheckboxModule,
   MatToolbarModule,
   MatMenuModule,
-  MatIconModule
+  MatIconModule,
+  MatGridListModule
 } from '@angular/material';
 
 @NgModule({
   declarations: [],
-  imports: [ MatButtonModule, MatCheckboxModule, MatToolbarModule, MatMenuModule, MatIconModule],
-  exports: [ MatButtonModule, MatCheckboxModule, MatToolbarModule, MatMenuModule, MatIconModule],
+  imports: [ MatButtonModule, MatCheckboxModule, MatToolbarModule, MatMenuModule, MatIconModule, MatGridListModule],
+  exports: [ MatButtonModule, MatCheckboxModule, MatToolbarModule, MatMenuModule, MatIconModule, MatGridListModule],
 })
 export class MaterialModule { }

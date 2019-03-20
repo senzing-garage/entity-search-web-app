@@ -1,0 +1,14 @@
+<h1>{{ code }}</h1>
+<h3>{{ title }}</h3>
+<p *ngIf="text">{{ text }}</p>
+<div class="background-shade-clipper">
+    <div class="background-shade-container">
+        <div class="background-shade">
+            <div class="slat shade-1" [ngStyle]="getShadeStyle(0)"></div>
+            <div class="slat shade-2" [ngStyle]="getShadeStyle(1)"></div>
+            <div class="slat shade-3" [ngStyle]="getShadeStyle(2)"></div>
+            <div class="slat shade-4" [ngStyle]="getShadeStyle(3)"></div>
+            <div class="slat shade-5" [ngStyle]="getShadeStyle(4)"></div>
+          </div>
+    </div>
+</div>

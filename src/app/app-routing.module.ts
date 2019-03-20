@@ -1,17 +1,25 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { SearchResultsResolverService, SearchParamsResolverService, EntityDetailResolverService } from './services/entity-search.service';
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { DetailComponent } from './detail/detail.component';
-import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
-import { NoResultsComponent } from './search-results/no-results/no-results.component';
-import { BlankComponent } from './blank/blank.component';
-import { SearchResultsResolverService, SearchParamsResolverService, EntityDetailResolverService } from './services/entity-search.service';
+import { PageNotFoundComponent } from './errors/page-not-found/page-not-found.component';
+import { NoResultsComponent } from './errors/no-results/no-results.component';
+import { BlankComponent } from './common/blank/blank.component';
+import { TipsComponent } from './common/tips/tips.component';
+import { ServerErrorComponent } from './errors/server/server.component';
+import { GatewayTimeoutErrorComponent } from './errors/timeout/timeout.component';
+import { UnknownErrorComponent } from './errors/uknown/uknown.component';
 
 const routes: Routes = [
   { path: 'search', component: BlankComponent },
   { path: 'search/results', component: SearchResultsComponent, resolve: { params: SearchParamsResolverService, results: SearchResultsResolverService }, data: { animation: 'search-results' } },
   { path: 'entity/:entityId', component: DetailComponent, resolve: { entityData: EntityDetailResolverService }, data: { animation: 'search-detail' } },
-  { path: 'error/404', component: PageNotFoundComponent, data: { animation: 'search-detail' } },
+  { path: 'errors/no-results', component: NoResultsComponent, data: { animation: 'search-detail' } },
+  { path: 'errors/404', component: PageNotFoundComponent, data: { animation: 'search-detail' } },
+  { path: 'errors/500', component: ServerErrorComponent, data: { animation: 'search-detail' } },
+  { path: 'errors/504', component: GatewayTimeoutErrorComponent, data: { animation: 'search-detail' } },
+  { path: 'errors/unknown', component: UnknownErrorComponent, data: { animation: 'search-detail' } },
   { path: '',   redirectTo: 'search', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent }
 ];
