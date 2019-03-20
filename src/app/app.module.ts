@@ -6,27 +6,28 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material.module';
 import { SenzingSdkModule, SzRestConfiguration } from '@senzing/sdk-components-ng';
 
-/** third party components and modules */
-// import { NgxSpinnerModule } from 'ngx-spinner';
+// third party components and modules
 
-/** local components and modules */
+// local components and modules
 import { AppRoutingModule } from './app-routing.module';
+import { SpinnerModule } from './common/spinner/spinner.module';
+import { EntitySearchService } from './services/entity-search.service';
+// components
 import { AppComponent } from './app.component';
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { DetailComponent } from './detail/detail.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
-import { EntitySearchService } from './services/entity-search.service';
-import { TipsComponent } from './common/tips/tips.component';
-import { BlankComponent } from './blank/blank.component';
-import { SpinnerModule } from './common/spinner/spinner.module';
 import { UiService } from './services/ui.service';
+import { TipsComponent } from './common/tips/tips.component';
+import { BlankComponent } from './common/blank/blank.component';
+import { NoResultsComponent } from './errors/no-results/no-results.component';
+
 // errors
 import { PageNotFoundComponent } from './errors/page-not-found/page-not-found.component';
-import { NoResultsComponent } from './errors/no-results/no-results.component';
 import { GatewayTimeoutErrorComponent } from './errors/timeout/timeout.component';
 import { ServerErrorComponent } from './errors/server/server.component';
-import { ErrorPageComponent } from './common/error/error.component';
 import { UnknownErrorComponent } from './errors/uknown/uknown.component';
+import { ErrorPageComponent } from './common/error/error.component';
 
 /**
 * Pull in api configuration(SzRestConfigurationParameters)
