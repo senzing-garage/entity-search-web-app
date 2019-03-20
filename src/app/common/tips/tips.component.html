@@ -1,14 +1,42 @@
-<mat-grid-list cols="2" rowHeight="100px">
-    <mat-grid-tile colspan="1"
-        rowspan="2">
-      Big Side
-    </mat-grid-tile>
-    <mat-grid-tile colspan="1"
-        rowspan="1">
-      tip
-    </mat-grid-tile>
-    <mat-grid-tile colspan="1"
-        rowspan="1">
-      text
-    </mat-grid-tile>
-  </mat-grid-list>
+<div class="fbox">
+  <mat-icon class="cell row-span">help_outline</mat-icon>
+
+  <div class="column text-body">
+    <h2 #singleSubjectSearch class="tip-title cell">Single Subject Searches</h2>
+
+    <span class="tip-text cell">
+
+      <p>You can search for entities at any time by expanding the search tray by clicking the collapse/expand caret found in the <span class="emphasized">upper-right corner</span>.</p>
+      <!--<img class="centered" [src]="SEARCH"/>-->
+      <p>Search is designed to find all the records for a single entity. It is not a query for a group of people who live in the same city or have the same last name, etc. In fact, you must enter the complete name (given and surname) to find a match on name only. Likewise, you must provide a complete address including street address and either city or postal code to find a match on address.</p>
+      <p>While you can just search by name, address or phone number, etc, imagine someone calling in asking what information you have on them. To be sure you find them and only them, you would need to be provided with more than only their name. You might have several people with the same name but all at different addresses or with different birthdays or passport numbers.</p>
+      <p>Once you execute the search you will be presented with a list of the matching records by the match level.</p>
+      <p>You will only get records in the <span class="emphasized">Matches</span> category if you searched for a complete identity as described above. But we always show you <span class="emphasized">Possible Matches</span> and <span class="emphasized">Possibly Related</span> records, as well as name only matches so you have all the records to review when making a decision about which records belong to the identity you searched for.</p>
+      <p>
+        Clicking on a search result will take you to the expanded <span class="emphasized">Detail View</span> for the selected entity.
+        Any entity detail currently open will enable the <span class="emphasized">open in new tab</span> menu option( <mat-icon>open_in_new</mat-icon> ).
+        <!--<img class="centered" [src]="MENU_OPEN_IN_NEW"/>-->
+      </p>
+      <p></p>
+      <!--<img class="centered" [src]="SEARCH_RESULT_ENTITY"/>-->
+      <!--<p>From the search screen you can utilize the <span class="emphasized">Print</span> and <span class="emphasized">Export</span>. Using print provides the ability to send the details to a printer including PDF printing (or similar) if it is enabled on your system. <br /><br /></p>-->
+      <!--<img class="centered" [src]="SEARCH_PRINT"/>-->
+
+    </span>
+
+  </div>
+  <div class="column tip-hints">
+
+    <span class="cell">
+      <p>Ideally a search for a single entity would contain the following:</p>
+      <ol>
+        <li>A complete name</li>
+        <li>A complete address and/or phone and/or email</li>
+        <li>A birth date and/or passport, driving license number or national ID</li>
+      </ol>
+    </span>
+
+  </div>
+</div>
+
+

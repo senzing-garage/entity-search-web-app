@@ -15,3 +15,10 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .error-uknown {
   background-color: #e9caf3;
 }
+
+// sdk theme overrides
+body {
+  --sz-search-button-clear-background-color: transparent;
+  --sz-search-label-font-size: .8em;
+  --sz-search-label-color: #b3b3b3;
+}
