@@ -176,11 +176,12 @@ export class EntityDetailResolverService implements Resolve<SzEntityData> {
   providedIn: 'root'
 })
 export class CurrentEntityUnResolverService implements Resolve<number | undefined> {
-  constructor(private search: EntitySearchService, private sdkSearchService: SzSearchService, private router: Router) {}
+  constructor(private search: EntitySearchService, private spinner: SpinnerService, private sdkSearchService: SzSearchService, private router: Router) {}
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<undefined> | Observable<number> | Observable<never> {
     // undefine any currently defined entity id
     this.search.currentlySelectedEntityId = undefined;
+    this.spinner.hide();
     return of(this.search.currentlySelectedEntityId);
   }
 }
