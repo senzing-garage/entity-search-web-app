@@ -5,8 +5,8 @@
     (resultsCleared)="onSearchResultsCleared($event)"
     (parameterChange)="onSearchParameterChange($event)"
     (searchStart)="onSearchStart($event)"></sz-search>
-    <mat-icon (click)="toggleRibbonState($event)" *ngIf="searchExpanded" class="toggle-icon">expand_more</mat-icon>
-    <mat-icon (click)="toggleRibbonState($event)"*ngIf="!searchExpanded" class="toggle-icon">expand_less</mat-icon>
+    <mat-icon (click)="toggleRibbonState($event)" *ngIf="!searchExpanded" class="toggle-icon">expand_more</mat-icon>
+    <mat-icon (click)="toggleRibbonState($event)"*ngIf="searchExpanded" class="toggle-icon">expand_less</mat-icon>
 </div>
 <app-spinner></app-spinner>
 <div [@routeAnimation]="getAnimationData(routerOutlet)">

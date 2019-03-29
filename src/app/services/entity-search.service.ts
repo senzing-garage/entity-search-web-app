@@ -102,6 +102,11 @@ export class SearchResultsResolverService implements Resolve<SzAttributeSearchRe
         const message = `Retrieval error: ${error.message}`;
         console.error(message);
         // this.router.navigate(['errors/404']);
+        if (error && error.status) {
+          this.router.navigate( [getErrorRouteFromCode(error.status)] );
+        } else {
+          this.router.navigate(['errors/unknown']);
+        }
         return EMPTY;
       })
     );
@@ -164,5 +169,19 @@ export class EntityDetailResolverService implements Resolve<SzEntityData> {
       this.router.navigate(['errors/404']);
       return EMPTY;
     }
+  }
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class CurrentEntityUnResolverService implements Resolve<number | undefined> {
+  constructor(private search: EntitySearchService, private spinner: SpinnerService, private sdkSearchService: SzSearchService, private router: Router) {}
+
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<undefined> | Observable<number> | Observable<never> {
+    // undefine any currently defined entity id
+    this.search.currentlySelectedEntityId = undefined;
+    this.spinner.hide();
+    return of(this.search.currentlySelectedEntityId);
   }
 }

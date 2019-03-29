@@ -1,0 +1,95 @@
+
+:host {
+  color: #333;
+  background-color: #eee;
+  display: block;
+  padding: 0 0 0 2em;
+
+  .fbox {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .column {
+    flex: 8;
+    display: flex;
+    flex-direction: column;
+  }
+  .cell {
+    flex: 1;
+    &.rowspan {
+      flex: 2;
+    }
+  }
+
+  .emphasized {
+    font-weight: 600;
+  }
+
+  .mat-icon {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    font-size: 9em;
+    line-height: 100%;
+  }
+
+  .text-body {
+    margin: 1.5em;
+
+    mat-icon {
+      font-size: 1em;
+      font-weight: 600;
+      display: inline;
+    }
+  }
+
+  .tip-title {
+    font-size: 1.5em;
+    font-weight: 600;
+    flex: 1;
+    margin: 0;
+  }
+  .tip-text {
+    flex: 20;
+    font-size: .9em;
+  }
+  .tip-list {
+    flex: 1;
+  }
+  .tip-hints {
+    background-color: #fff;
+    padding: 0px 10px 0 1.5em;
+    flex: 1;
+    min-width: 300px;
+    margin: 0 0 0 4em;
+
+    p {
+      font-weight: 600;
+    }
+
+    ol {
+      margin-top: 1em;
+      font-weight: 400;
+      list-style: none;
+      counter-reset: my-awesome-counter;
+      padding-left: 1.2em;
+    }
+    ol li {
+      counter-increment: my-awesome-counter;
+      margin-bottom: 1em;
+      border-bottom: 1px solid #eeeeee;
+      padding-bottom: 1em;
+    }
+    ol li::before {
+      content: counter(my-awesome-counter) ". ";
+      color: #686868;
+      font-weight: bold;
+      margin-right: 8px;
+    }
+  }
+
+
+}

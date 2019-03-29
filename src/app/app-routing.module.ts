@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { SearchResultsResolverService, SearchParamsResolverService, EntityDetailResolverService } from './services/entity-search.service';
+import { SearchResultsResolverService, SearchParamsResolverService, EntityDetailResolverService, CurrentEntityUnResolverService } from './services/entity-search.service';
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { DetailComponent } from './detail/detail.component';
 import { PageNotFoundComponent } from './errors/page-not-found/page-not-found.component';
@@ -12,7 +12,7 @@ import { GatewayTimeoutErrorComponent } from './errors/timeout/timeout.component
 import { UnknownErrorComponent } from './errors/uknown/uknown.component';
 
 const routes: Routes = [
-  { path: 'search', component: BlankComponent },
+  { path: 'search', component: TipsComponent, resolve:  {entityId: CurrentEntityUnResolverService}, data: { animation: 'search-results' }},
   { path: 'search/results', component: SearchResultsComponent, resolve: { params: SearchParamsResolverService, results: SearchResultsResolverService }, data: { animation: 'search-results' } },
   { path: 'entity/:entityId', component: DetailComponent, resolve: { entityData: EntityDetailResolverService }, data: { animation: 'search-detail' } },
   { path: 'errors/no-results', component: NoResultsComponent, data: { animation: 'search-detail' } },
