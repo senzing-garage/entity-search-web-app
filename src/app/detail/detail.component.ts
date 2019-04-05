@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EntitySearchService } from '../services/entity-search.service';
 
 @Component({
@@ -17,9 +17,21 @@ export class DetailComponent implements OnInit {
     return this.search.currentlySelectedEntityId;
   }
 
-  constructor(private route: ActivatedRoute, private search: EntitySearchService) {
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private search: EntitySearchService) {
     this.route.params.subscribe( (params) => this.entityId = parseInt(params.entityId, 10) );
   }
 
   ngOnInit() {}
+  /** handler for when the entityId of the sdkcomponent is changed.
+   * eg: when a user clicks a related entity name.
+  */
+  public onEntityIdChanged(entityId: number): void {
+    if (this.entityId && this.entityId !== entityId) {
+      // update route if needed
+      this.router.navigate(['entity/' + entityId]);
+    }
+  }
 }
