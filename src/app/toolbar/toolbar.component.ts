@@ -40,7 +40,7 @@ export class ToolbarComponent implements OnInit {
     this.uiService.searchExpanded = value;
   }
 
-  toggleSearch() {
+  toggleSearch(evt?) {
     this.uiService.searchExpanded = !this.uiService.searchExpanded;
   }
   toggleSpinner() {
