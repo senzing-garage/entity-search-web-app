@@ -1,5 +1,6 @@
 version: '3'
 services:
+
   api:
     image: senzing/senzing-api-server
     container_name: senzing-api-server
