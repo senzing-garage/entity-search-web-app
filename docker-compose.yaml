@@ -1,17 +1,15 @@
 version: '3'
 services:
-
   api:
     image: senzing/senzing-api-server
     container_name: senzing-api-server
-    environment:
-      SENZING_OPTIONS: ""
+    command: "-iniFile /opt/senzing/g2/python/G2Module.ini"
     networks:
       - backend
     expose:
       - 8080
     volumes:
-      - C:/opt/senzing:/opt/senzing
+      - /opt/senzing:/opt/senzing
     restart: always
 
   webui:
