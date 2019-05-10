@@ -17,6 +17,14 @@
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+    "paths": {
+      "@senzing/sdk-components-ng": [
+        "dist/@senzing/sdk-components-ng"
+      ],
+      "@senzing/sdk-components-ng/*": [
+        "dist/@senzing/sdk-components-ng/*"
+      ]
+    }
   }
 }
