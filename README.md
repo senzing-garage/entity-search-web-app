@@ -26,7 +26,7 @@ Run `ng build --prod` which will generate a compiled version of the app in the _
   `cd ../senzing-api-server`
   `docker build --tag senzing/senzing-api-server .`
 2. Build the web app.
-   `docker build --tag senzingiris/entity-search-web-app .`
+   `docker build --tag senzing/entity-search-web-app .`
 3. Run the app. `docker-compose up`
 
 The default api server port that the compose formation is set to communicate is *8080*. If you changed it to something else in step 1 you will have to change the environment variables in the [docker-compose.yaml](docker-compose.yaml).
