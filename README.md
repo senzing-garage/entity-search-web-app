@@ -1,4 +1,5 @@
 # Entity Search Web App
+<img src="src/assets/landing-page.png" alt="Screen Shot"/>
 
 ## Overview
 This is a more complex example of SDK component usage. It differs from the example web apps in the following features:
@@ -19,13 +20,13 @@ It's not meant to be followed along by a developer. Rather it serves as both an 
 2. Configure the app. You can do this by setting environment variables, or by setting them through a [docker-compose.yaml](docker-compose.yaml), or by passing them in at run-time. The Following are the important ones.
 ```
 export SENZING_API_SERVER_URL="http://localhost:8080"
-export SENZING_WEB_SERVER_PORT: 8081
-export SENZING_WEB_SERVER_API_PATH: '/api'
+export SENZING_WEB_SERVER_PORT=8081
+export SENZING_WEB_SERVER_API_PATH="/api"
 ```
 3. Run the app. If using the compose formation just do `docker-compose up` and you should be ready to go. If running standalone it will be 
-`sudo docker run -it  \
-   --env SENZING_API_SERVER_URL=http://localhost:8080 \
-   --env SENZING_WEB_SERVER_PORT=8081 \
+`sudo docker run -it 
+   --env SENZING_API_SERVER_URL=http://localhost:8080 
+   --env SENZING_WEB_SERVER_PORT=8081 
    senzing/entity-search-web-app`
 
 ### Air Gapped Environments
