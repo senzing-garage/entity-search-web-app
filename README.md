@@ -19,15 +19,20 @@ It's not meant to be followed along by a developer. Rather it serves as both an 
 1. You can pull the latest release of this app from [Docker Hub](https://hub.docker.com/r/senzing/entity-search-web-app). Simply do a `docker pull senzing/entity-search-web-app` to download it to the machine you want to run the app on. While you're at it, you might want to also grab latest of the api server with `docker pull senzing/senzing-api-server`.
 2. Configure the app. You can do this by setting environment variables, or by setting them through a [docker-compose.yaml](docker-compose.yaml), or by passing them in at run-time. The Following are the important ones.
 ```
-export SENZING_API_SERVER_URL="http://localhost:8080"
+export SENZING_API_SERVER_URL="http://sz-api-server:8080"
 export SENZING_WEB_SERVER_PORT=8081
 export SENZING_WEB_SERVER_API_PATH="/api"
 ```
-3. Run the app. If using the compose formation just do `docker-compose up` and you should be ready to go. If running standalone it will be 
-`sudo docker run -it 
-   --env SENZING_API_SERVER_URL=http://localhost:8080 
-   --env SENZING_WEB_SERVER_PORT=8081 
-   senzing/entity-search-web-app`
+3. Create Network
+in order to have the docker containers talk to one another it is suggested that you create a network for your docker containers to communicate with each other. If using docker-compose.yaml to run the formation you can skip steps 3-5 as this is handled in the docker-compose.yaml
+`docker network create -d bridge sz-api-network`
+4. Attach senzing-api-server
+`sudo docker run -it --publish 8080:8080 --rm --name=sz-api-server --network=sz-api-network --tty --volume /opt/senzing:/opt/senzing senzing/senzing-api-server -concurrency 10 -httpPort 8080 -bindAddr all -iniFile /opt/senzing/g2/python/G2Module.ini`
+5. Run entity search web app
+`sudo docker run -it --publish 8081:8081 --name=sz-search-web-server --network=sz-api-network --env SENZING_API_SERVER_URL=http://sz-api-server:8080 --env SENZING_WEB_SERVER_PORT=8081 senzing/entity-search-web-app`
+6. Run in a formation
+If using the compose formation just do `docker-compose up` and you should be ready to go. 
+7. Open a browser to http://machine-host-name:8081 or do a `curl http://machine-host-name:8081` to verify that the containers are running and accessible.
 
 ### Air Gapped Environments
 Obviously if your deployment environment is highly restricted you're probably going to run in to issues downloading the latest images from that context. Please refer to https://github.com/Senzing/knowledge-base/blob/master/HOWTO/install-docker-image-in-air-gapped-enviroment.md for how to procedure regarding this use-case. 
