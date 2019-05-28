@@ -10,6 +10,7 @@
     "build:docker": "ng build -c docker",
     "build:sdk": "ng-packagr -p sdk-components-ng/projects/sdk-components-ng/subrepo.ng-package.json",
     "install:sdk": "npm install && npm run build:sdk && npm i ./dist/@senzing/sdk-components-ng",
+    "watch": "rm -fR dist/@senzing/sdk-components-ng && concurrently --kill-others \"wait-on file:dist/@senzing/sdk-components-ng/public_api.d.ts && ng serve\" \"ng build @senzing/sdk-components-ng --watch\"",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
@@ -27,7 +28,7 @@
     "@angular/platform-browser-dynamic": "~7.1.0",
     "@angular/router": "~7.1.0",
     "@senzing/rest-api-client-ng": "^1.0.1",
-    "@senzing/sdk-components-ng": "^1.0.4",
+    "@senzing/sdk-components-ng": "file:dist/@senzing/sdk-components-ng",
     "@types/d3": "^5.7.1",
     "classlist.js": "^1.1.20150312",
     "core-js": "^2.5.4",
@@ -39,6 +40,7 @@
     "serve-static": "^1.13.2",
     "template-literal": "^1.0.3",
     "tslib": "^1.9.0",
+    "wait-on": "^3.2.0",
     "web-animations-js": "^2.3.1",
     "zone.js": "~0.8.26"
   },

@@ -47,7 +47,8 @@
             ],
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
-              "./node_modules/@senzing/sdk-components-ng/styles/themes/senzing.css",
+              "./sdk-components-ng/projects/sdk-components-ng/src/lib/scss/styles.scss",
+              "./sdk-components-ng/projects/sdk-components-ng/src/lib/scss/themes/senzing.css",
               "src/styles.scss"
             ],
             "scripts": []
