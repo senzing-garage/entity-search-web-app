@@ -1,7 +1,0 @@
-[submodule "sdk-components-ng"]
-	path = sdk-components-ng
-	url = git@github.com:senzingiris/sdk-components-ng.git
-[submodule "rest-api-client-ng"]
-	path = rest-api-client-ng
-	url = git@github.com:Senzing/rest-api-client-ng.git
-	branch = master

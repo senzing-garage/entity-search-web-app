@@ -4,7 +4,7 @@ services:
   api:
     image: senzing/senzing-api-server
     container_name: senzing-api-server
-    command: "-iniFile /opt/senzing/g2/python/G2Module.ini"
+    command: "-iniFile /opt/senzing/g2/python/G2Module.ini -httpPort 8080 -bindAddr all"
     networks:
       - backend
     expose:
@@ -14,7 +14,7 @@ services:
     restart: always
 
   webui:
-    image: senzingiris/entity-search-web-app
+    image: senzing/entity-search-web-app
     container_name: senzing-web-server
     environment:
       SENZING_API_SERVER_URL: "http://api:8080"
