@@ -187,31 +187,31 @@
     },
     "@senzing/sdk-components-ng": {
       "root": "",
-      "sourceRoot": "sdk-components-ng/projects/sdk-components-ng/src",
+      "sourceRoot": "sdk-components-ng/src",
       "projectType": "library",
       "prefix": "sz",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-ng-packagr:build",
           "options": {
-            "tsConfig": "sdk-components-ng/projects/sdk-components-ng/tsconfig.lib.json",
-            "project":  "sdk-components-ng/projects/sdk-components-ng/subrepo.ng-package.json"
+            "tsConfig": "sdk-components-ng/src/tsconfig.lib.json",
+            "project":  "sdk-components-ng/src/subrepo.ng-package.json"
           }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "sdk-components-ng/projects/sdk-components-ng/src/test.ts",
-            "tsConfig": "sdk-components-ng/projects/sdk-components-ng/tsconfig.spec.json",
-            "karmaConfig": "sdk-components-ng/projects/sdk-components-ng/karma.conf.js"
+            "main": "sdk-components-ng/src/test.ts",
+            "tsConfig": "sdk-components-ng/src/tsconfig.spec.json",
+            "karmaConfig": "sdk-components-ng/src/karma.conf.js"
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "sdk-components-ng/projects/sdk-components-ng/tsconfig.lib.json",
-              "sdk-components-ng/projects/sdk-components-ng/tsconfig.spec.json"
+              "sdk-components-ng/src/tsconfig.lib.json",
+              "sdk-components-ng/src/tsconfig.spec.json"
             ],
             "exclude": [
               "**/node_modules/**"
