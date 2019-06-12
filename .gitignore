@@ -43,5 +43,6 @@ testem.log
 Thumbs.db
 
 # Sub repos
-.gitmodules
-sdk-components-ng
+/.gitmodules
+/sdk-components-ng
+/rest-api-client-ng
