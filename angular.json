@@ -47,6 +47,7 @@
             ],
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "./node_modules/@senzing/sdk-components-ng/styles/styles.css",
               "./node_modules/@senzing/sdk-components-ng/styles/themes/senzing.css",
               "src/styles.scss"
             ],
@@ -100,6 +101,14 @@
                   "maximumError": "5mb"
                 }
               ]
+            },
+            "e2e": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.test.ts"
+                }
+              ]
             }
           }
         },
@@ -114,7 +123,10 @@
               "browserTarget": "entity-search-web-app:build:production"
             },
             "docker": {
-              "browserTarget": "sdk-components-example-angular-app:build:docker"
+              "browserTarget": "entity-search-web-app:build:docker"
+            },
+            "e2e": {
+              "browserTarget": "entity-search-web-app:build:e2e"
             }
           }
         },
@@ -170,6 +182,9 @@
           "configurations": {
             "production": {
               "devServerTarget": "entity-search-web-app:serve:production"
+            },
+            "e2e": {
+              "devServerTarget": "entity-search-web-app:serve:e2e"
             }
           }
         },
@@ -186,31 +201,23 @@
     },
     "@senzing/sdk-components-ng": {
       "root": "",
-      "sourceRoot": "sdk-components-ng/projects/sdk-components-ng/src",
+      "sourceRoot": "sdk-components-ng/src",
       "projectType": "library",
       "prefix": "sz",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-ng-packagr:build",
           "options": {
-            "tsConfig": "sdk-components-ng/projects/sdk-components-ng/tsconfig.lib.json",
-            "project":  "sdk-components-ng/projects/sdk-components-ng/subrepo.ng-package.json"
-          }
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "main": "sdk-components-ng/projects/sdk-components-ng/src/test.ts",
-            "tsConfig": "sdk-components-ng/projects/sdk-components-ng/tsconfig.spec.json",
-            "karmaConfig": "sdk-components-ng/projects/sdk-components-ng/karma.conf.js"
+            "tsConfig": "sdk-components-ng/src/tsconfig.lib.json",
+            "project":  "sdk-components-ng/src/subrepo.ng-package.json"
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "sdk-components-ng/projects/sdk-components-ng/tsconfig.lib.json",
-              "sdk-components-ng/projects/sdk-components-ng/tsconfig.spec.json"
+              "sdk-components-ng/src/tsconfig.lib.json",
+              "sdk-components-ng/src/tsconfig.spec.json"
             ],
             "exclude": [
               "**/node_modules/**"

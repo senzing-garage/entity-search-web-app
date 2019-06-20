@@ -11,7 +11,7 @@ import { ServerErrorComponent } from './errors/server/server.component';
 import { GatewayTimeoutErrorComponent } from './errors/timeout/timeout.component';
 import { UnknownErrorComponent } from './errors/uknown/uknown.component';
 
-const routes: Routes = [
+export const routes: Routes = [
   { path: 'search', component: TipsComponent, resolve:  {entityId: CurrentEntityUnResolverService}, data: { animation: 'search-results' }},
   { path: 'search/results', component: SearchResultsComponent, resolve: { params: SearchParamsResolverService, results: SearchResultsResolverService }, data: { animation: 'search-results' } },
   { path: 'entity/:entityId', component: DetailComponent, resolve: { entityData: EntityDetailResolverService }, data: { animation: 'search-detail' } },

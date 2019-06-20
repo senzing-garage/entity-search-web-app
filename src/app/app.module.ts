@@ -5,6 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material.module';
 import { SenzingSdkModule, SzRestConfiguration } from '@senzing/sdk-components-ng';
+import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
+import { InMemoryDataService } from '../../e2e/data/services/in-memory-data.service';
 
 // third party components and modules
 
@@ -37,7 +39,7 @@ import { ErrorPageComponent } from './common/error/error.component';
 * ng build -c production
 * ng serve -c docker
 */
-import { apiConfig } from './../environments/environment';
+import { apiConfig, environment } from './../environments/environment';
 
 /**
  * create exportable config factory
@@ -71,7 +73,8 @@ export function SzRestConfigurationFactory() {
     MaterialModule,
     AppRoutingModule,
     SenzingSdkModule.forRoot( SzRestConfigurationFactory ),
-    SpinnerModule
+    SpinnerModule,
+    environment.test ? HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService, { delay: 100 }) : []
   ],
   providers: [ EntitySearchService, UiService ],
   bootstrap: [ AppComponent ]

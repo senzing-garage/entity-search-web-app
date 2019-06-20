@@ -7,8 +7,8 @@ describe('workspace-project App', () => {
     page = new AppPage();
   });
 
-  it('should display welcome message', () => {
+  it('should have app-root element', () => {
     page.navigateTo();
-    expect(page.getTitleText()).toEqual('Welcome to ready-to-run-web-app!');
+    expect(page.getAppRoot());
   });
 });
