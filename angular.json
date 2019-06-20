@@ -212,14 +212,6 @@
             "project":  "sdk-components-ng/src/subrepo.ng-package.json"
           }
         },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "main": "sdk-components-ng/src/test.ts",
-            "tsConfig": "sdk-components-ng/src/tsconfig.spec.json",
-            "karmaConfig": "sdk-components-ng/src/karma.conf.js"
-          }
-        },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
