@@ -16,7 +16,7 @@ RUN npm run build:docker
 
 # cleanup files we no longer need
 RUN rm -fR /app/src
-RUN rm -fR /app/e2e
+# RUN rm -fR /app/e2e
 # RUN rm -f /app/proxy.conf.tmpl.json
 RUN rm -f /app/README.md
 
