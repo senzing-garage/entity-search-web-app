@@ -1,6 +1,8 @@
 
 # Entity Search Web App
 
+[![License](https://img.shields.io/github/license/senzing/entity-search-web-app.svg)](https://github.com/Senzing/entity-search-web-app/blob/master/LICENSE)
+
 ![Screen Shot](src/assets/landing-page.png)
 
 ## Overview
