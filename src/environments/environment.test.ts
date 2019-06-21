@@ -2,7 +2,7 @@ import { SzRestConfigurationParameters } from '@senzing/sdk-components-ng';
 
 export const environment = {
   production: true,
-  test: false
+  test: true
 };
 
 // api configuration parameters

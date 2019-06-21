@@ -1,0 +1,27 @@
+language: node_js
+node_js:
+  - "10.14.1"
+dist: trusty
+sudo: required
+branches:
+  only:
+  - master
+addons:
+  apt:
+    sources:
+      - google-chrome
+    packages:
+      - google-chrome-stable
+
+cache:
+  directories:
+     - ./node_modules
+
+install:
+  - travis_wait npm install
+  - travis_wait npm install -g @angular/cli
+
+script:
+- npm run test:headless
+- npm run build
+- npm run e2e:headless
