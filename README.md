@@ -1,4 +1,3 @@
-
 # Entity Search Web App
 
 [![Build Status](https://travis-ci.com/Senzing/entity-search-web-app.svg?branch=master)](https://travis-ci.com/Senzing/entity-search-web-app) [![License](https://img.shields.io/github/license/senzing/entity-search-web-app.svg)](https://github.com/Senzing/entity-search-web-app/blob/master/LICENSE)
@@ -28,7 +27,7 @@ It's not meant to be followed along by a developer. Rather it serves as both an 
    1. SENZING_API_SERVER_URL="<http://sz-api-server:8080>"
    2. SENZING_WEB_SERVER_PORT=8081
    3. SENZING_WEB_SERVER_API_PATH="/api"
-  
+
 3. Create Network
 in order to have the docker containers talk to one another it is suggested that you create a network for your docker containers to communicate with each other. If using docker-compose.yaml to run the formation you can skip steps 3-5 as this is handled in the docker-compose.yaml
 `docker network create -d bridge sz-api-network`
