@@ -23,7 +23,7 @@ It's not meant to be followed along by a developer. Rather it serves as both an 
 
 ### Contents
 
-1. [Docker Support](#docker-support)
+1. [Using Docker](#using-docker)
     1. [Air Gapped Environments](#air-gapped-environments)
     1. [Building from Source](#building-from-source)
 1. [Development](#development)
@@ -34,7 +34,50 @@ It's not meant to be followed along by a developer. Rather it serves as both an 
 1. [Renning end-to-end tests](#running-end-to-end-tests)
 1. [Further help](#further-help)
 
-## Docker Support
+## Preparation
+
+### Prerequisite software
+
+The following software programs need to be installed:
+
+1. [docker](https://github.com/Senzing/knowledge-base/blob/master/HOWTO/install-docker.md)
+1. [docker-compose](https://github.com/Senzing/knowledge-base/blob/master/HOWTO/install-docker-compose.md)
+
+### Clone repository
+
+1. Set these environment variable values:
+
+    ```console
+    export GIT_ACCOUNT=senzing
+    export GIT_REPOSITORY=entity-search-web-app
+    ```
+
+1. Follow steps in [clone-repository](https://github.com/Senzing/knowledge-base/blob/master/HOWTO/clone-repository.md) to install the Git repository.
+
+1. After the repository has been cloned, be sure the following are set:
+
+    ```console
+    export GIT_ACCOUNT_DIR=~/${GIT_ACCOUNT}.git
+    export GIT_REPOSITORY_DIR="${GIT_ACCOUNT_DIR}/${GIT_REPOSITORY}"
+    ```
+
+### Create SENZING_DIR
+
+If you do not already have an `/opt/senzing` directory on your local system, visit
+[HOWTO - Create SENZING_DIR](https://github.com/Senzing/knowledge-base/blob/master/HOWTO/create-senzing-dir.md).
+
+## Using docker-compose
+
+1. Run in a docker-compose formation.
+   Example:
+
+    ```console
+    cd ${GIT_REPOSITORY_DIR}
+
+    docker-compose up
+    ```
+
+## Using docker
 
 1. Pull the latest release of this app from [Docker Hub](https://hub.docker.com/r/senzing/entity-search-web-app).
    Example:
@@ -47,7 +90,7 @@ It's not meant to be followed along by a developer. Rather it serves as both an 
    Example:
 
     ```console
-    docker pull senzing/senzing-api-server`.
+    docker pull senzing/senzing-api-server
     ```
 
 1. Configure the app.
@@ -104,13 +147,6 @@ It's not meant to be followed along by a developer. Rather it serves as both an 
       --rm \
       --tty \
       senzing/entity-search-web-app
-    ```
-
-1. Run in a docker-compose formation.
-   Example:
-
-    ```console
-    docker-compose up
     ```
 
 1. To verify that containers are running and accessible:
