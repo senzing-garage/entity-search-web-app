@@ -23,7 +23,12 @@ It's not meant to be followed along by a developer. Rather it serves as both an 
 
 ### Contents
 
-1. [Using Docker](#using-docker)
+1. [Preparation](#preparation)
+    1. [Prerequisite software](#prerequisite-software)
+    1. [Clone repository](#clone-repository)
+    1. [Create SENZING_DIR](#create-senzing_dir)
+1. [Using docker-compose](#using-docker-compose)
+1. [Using docker](#using-docker)
     1. [Air Gapped Environments](#air-gapped-environments)
     1. [Building from Source](#building-from-source)
 1. [Development](#development)
@@ -76,6 +81,17 @@ If you do not already have an `/opt/senzing` directory on your local system, vis
 
     docker-compose up
     ```
+
+1. To verify that containers are running and accessible:
+
+    1. Open a web browser on [http://localhost:8081](http://localhost:8081) (or substitute hostname or IP for `localhost`).
+
+    1. Alternatively, `curl` can be used.
+       Example:
+
+       ```console
+       curl http://machine-host-name:8081
+       ```
 
 ## Using docker
 
