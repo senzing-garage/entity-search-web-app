@@ -1,7 +1,8 @@
 
 # Entity Search Web App
 
-[![Build Status](https://travis-ci.com/Senzing/entity-search-web-app.svg?branch=master)](https://travis-ci.com/Senzing/entity-search-web-app) [![License](https://img.shields.io/github/license/senzing/entity-search-web-app.svg)](https://github.com/Senzing/entity-search-web-app/blob/master/LICENSE)
+[![Build Status](https://travis-ci.com/Senzing/entity-search-web-app.svg?branch=master)](https://travis-ci.com/Senzing/entity-search-web-app)
+[![License](https://img.shields.io/github/license/senzing/entity-search-web-app.svg)](https://github.com/Senzing/entity-search-web-app/blob/master/LICENSE)
 
 ![Screen Shot](src/assets/landing-page.png)
 
@@ -99,14 +100,14 @@ If you do not already have an `/opt/senzing` directory on your local system, vis
    Example:
 
     ```console
-    docker pull senzing/entity-search-web-app
+    sudo docker pull senzing/entity-search-web-app
     ```
 
 1. Pull the latest of the api server from [DockerHub](https://hub.docker.com/r/senzing/senzing-api-server).
    Example:
 
     ```console
-    docker pull senzing/senzing-api-server
+    sudo docker pull senzing/senzing-api-server
     ```
 
 1. Configure the app.
@@ -128,7 +129,7 @@ If you do not already have an `/opt/senzing` directory on your local system, vis
    Example:
 
     ```console
-    docker network create -d bridge sz-api-network
+    sudo docker network create -d bridge sz-api-network
     ```
 
 1. Attach senzing-api-server.
@@ -190,14 +191,14 @@ The short version is find a machine with network access, then:
 1. Package them as a tar file. Example:
 
     ```console
-    docker save senzing/entity-search-web-app --output senzing-entity-search-web-app-latest.tar
+    sudo docker save senzing/entity-search-web-app --output senzing-entity-search-web-app-latest.tar
     ```
 
 1. Copy that to the deployment machine.
 1. Load via
 
     ```console
-    docker load --input senzing-entity-search-web-app-latest.tar
+    sudo docker load --input senzing-entity-search-web-app-latest.tar
     ```
 
 ### Building from Source
@@ -207,14 +208,14 @@ The short version is find a machine with network access, then:
 
     ```console
     cd ../senzing-api-server
-    docker build --tag senzing/senzing-api-server .
+    sudo docker build --tag senzing/senzing-api-server .
     ```
 
 2. Build the web app.
    Example:
 
     ```console
-    docker build --tag senzing/entity-search-web-app .
+    sudo docker build --tag senzing/entity-search-web-app .
     ```
 
 3. Run the app.
