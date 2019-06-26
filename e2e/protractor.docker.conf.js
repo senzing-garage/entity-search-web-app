@@ -10,16 +10,12 @@ exports.config = {
   ],
   capabilities: {
     'browserName': 'chrome',
-    // new
-    'chromeOptions': {
-      'args': [
-        '--no-sandbox',
-        '--window-size=1024,768'
-      ]
+    chromeOptions: {
+      args: [ "--headless", "--disable-gpu", "--window-size=1920,1080", "--no-sandbox", "--remote-debugging-address=0.0.0.0", "--remote-debugging-port=9222" ]
     }
   },
   directConnect: true,
-  baseUrl: 'http://localhost:4300/',
+  baseUrl: 'http://localhost:8080/',
   framework: 'jasmine',
   jasmineNodeOpts: {
     showColors: true,

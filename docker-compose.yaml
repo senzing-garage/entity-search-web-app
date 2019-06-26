@@ -1,30 +1,83 @@
 version: '3'
 services:
 
-  api:
+  senzing-api-server:
     image: senzing/senzing-api-server
     container_name: senzing-api-server
     command: "-iniFile /opt/senzing/g2/python/G2Module.ini -httpPort 8080 -bindAddr all"
     networks:
-      - backend
+      - sz-api-network
     expose:
       - 8080
     volumes:
       - /opt/senzing:/opt/senzing
-    restart: always
+    restart: 'on-failure'
 
-  webui:
+  senzing-webapp:
     image: senzing/entity-search-web-app
-    container_name: senzing-web-server
+    container_name: senzing-webapp
+    command: "start:docker"
+    depends_on:
+      - senzing-api-server
+    build:
+      context: .
+      dockerfile: Dockerfile
     environment:
-      SENZING_API_SERVER_URL: "http://api:8080"
+      SENZING_API_SERVER_URL: "http://senzing-api-server:8080"
       SENZING_WEB_SERVER_PORT: 8080
       SENZING_WEB_SERVER_API_PATH: '/api'
     networks:
-      - backend
+      - sz-api-network
+    volumes:
+      - '.:/app'
+      - '/app/node_modules'
     ports:
       - 8081:8080
-    restart: always
+    restart: 'always'
+
+  senzing-webapp-e2e:
+      image: senzing/entity-search-web-app
+      container_name: senzing-webapp-e2e-server
+      command: "e2e:docker"
+      depends_on:
+        - senzing-api-server
+      build:
+        context: .
+        dockerfile: Dockerfile
+      environment:
+        SENZING_API_SERVER_URL: "http://senzing-api-server:8080"
+        SENZING_WEB_SERVER_PORT: 8080
+        SENZING_WEB_SERVER_API_PATH: '/api'
+      networks:
+        - sz-api-network
+      volumes:
+        - '.:/app'
+        - '/app/node_modules'
+      ports:
+        - '4201:4200'
+      restart: 'no'
+
+  senzing-webapp-test:
+        image: senzing/entity-search-web-app
+        container_name: senzing-webapp-test-server
+        command: "test:docker"
+        depends_on:
+          - senzing-api-server
+        build:
+          context: .
+          dockerfile: Dockerfile
+        environment:
+          SENZING_API_SERVER_URL: "http://senzing-api-server:8080"
+          SENZING_WEB_SERVER_PORT: 8080
+          SENZING_WEB_SERVER_API_PATH: '/api'
+        networks:
+          - sz-api-network
+        volumes:
+          - '.:/app'
+          - '/app/node_modules'
+        ports:
+          - '4201:4200'
+        restart: 'no'
 
 networks:
-  backend:
+  sz-api-network:

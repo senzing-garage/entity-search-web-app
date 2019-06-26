@@ -25,7 +25,7 @@ It's not meant to be followed along by a developer. Rather it serves as both an 
 
 1. You can pull the latest release of this app from [Docker Hub](https://hub.docker.com/r/senzing/entity-search-web-app). Simply do a `docker pull senzing/entity-search-web-app` to download it to the machine you want to run the app on. While you're at it, you might want to also grab latest of the api server with `docker pull senzing/senzing-api-server`.
 2. Configure the app. You can do this by setting environment variables, or by setting them through a [docker-compose.yaml](docker-compose.yaml), or by passing them in at run-time. The Following are the important ones.
-   1. SENZING_API_SERVER_URL="<http://sz-api-server:8080>"
+   1. SENZING_API_SERVER_URL="<http://senzing-api-server:8080>"
    2. SENZING_WEB_SERVER_PORT=8081
    3. SENZING_WEB_SERVER_API_PATH="/api"
   
@@ -33,11 +33,11 @@ It's not meant to be followed along by a developer. Rather it serves as both an 
 in order to have the docker containers talk to one another it is suggested that you create a network for your docker containers to communicate with each other. If using docker-compose.yaml to run the formation you can skip steps 3-5 as this is handled in the docker-compose.yaml
 `docker network create -d bridge sz-api-network`
 4. Attach senzing-api-server w/
-`sudo docker run -it --publish 8080:8080 --rm --name=sz-api-server --network=sz-api-network --tty --volume /opt/senzing:/opt/senzing senzing/senzing-api-server -concurrency 10 -httpPort 8080 -bindAddr all -iniFile /opt/senzing/g2/python/G2Module.ini`.
+`sudo docker run -it --publish 8080:8080 --rm --name=senzing-api-server --network=sz-api-network --tty --volume /opt/senzing:/opt/senzing senzing/senzing-api-server -concurrency 10 -httpPort 8080 -bindAddr all -iniFile /opt/senzing/g2/python/G2Module.ini`.
 5. Run entity search web app:
-`sudo docker run -it --publish 8081:8081 --name=sz-search-web-server --network=sz-api-network --env SENZING_API_SERVER_URL=http://sz-api-server:8080 --env SENZING_WEB_SERVER_PORT=8081 senzing/entity-search-web-app`
+`sudo docker run -it --publish 8081:8081 --name=senzing-webapp --network=sz-api-network --env SENZING_API_SERVER_URL=http://senzing-api-server:8080 --env SENZING_WEB_SERVER_PORT=8081 senzing/entity-search-web-app`
 6. Run in a formation:
-If using the compose formation just do `docker-compose up` and you should be ready to go.
+If using the compose formation just do `docker-compose up senzing-webapp` and you should be ready to go.
 7. Open a browser to <http://machine-host-name:8081> or do a `curl http://machine-host-name:8081` to verify that the containers are running and accessible.
 
 ### Air Gapped Environments
@@ -53,7 +53,7 @@ The short version is find a machine with network access, pull the docker images 
   `docker build --tag senzing/senzing-api-server .`
 2. Build the web app.
    `docker build --tag senzing/entity-search-web-app .`
-3. Run the app. `docker-compose up`
+3. Run the app. `docker-compose up senzing-webapp`
 
 The default api server port that the compose formation is set to communicate is *8080*. If you changed it to something else in step 1 you will have to change the environment variables in the [docker-compose.yaml](docker-compose.yaml).
 
@@ -84,11 +84,14 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 ## Running unit tests
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+There are several ways to run unit tests. For developers run `npm run test` to execute the unit tests via [Karma](https://karma-runner.github.io) using the default [karma config file](src/karma.conf.js). These tests can also be run in a headless mode by running `npm run test:headless`.
+
+For running unit tests from inside a docker container make sure you have the latest docker container, the script or [docker-compose.yaml](docker-compose.yaml) should pass the appropriate test script command to the container by `docker-compose up --abort-on-container-exit senzing-webapp-test`.
 
 ## Running end-to-end tests
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+For running e2e tests from inside a docker container make sure you have the latest docker container, the script or docker-compose.yml should pass the appropriate e2e script command to the container by `docker-compose up --abort-on-container-exit senzing-webapp-e2e`. Alternately you can pass the commands directly to the container by adding a `e2e:docker` to the end of your docker run command. ie:
+`sudo docker run -it --publish 8081:8081 --name=senzing-webapp-e2e --network=sz-api-network --env SENZING_API_SERVER_URL=http://sz-api-server:8080 --env SENZING_WEB_SERVER_PORT=8081 senzing/entity-search-web-app e2e:docker`
 
 ## Further help
 

@@ -26,10 +26,20 @@ module.exports = function (config) {
     logLevel: config.LOG_INFO,
     autoWatch: true,
     // updated
-    browsers: ['Chrome'],
+    browsers: ['ChromeHeadless'],
     // new
-    customLaunchers: {},
-    singleRun: false,
+    customLaunchers: {
+      'ChromeHeadless': {
+        base: 'Chrome',
+        flags: [
+          '--no-sandbox',
+          '--headless',
+          '--disable-gpu',
+          '--remote-debugging-port=9222'
+        ]
+      }
+    },
+    singleRun: true,
     restartOnFileChange: true
   });
 };

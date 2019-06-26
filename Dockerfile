@@ -1,24 +1,26 @@
-ARG BASE_CONTAINER=node:lts-stretch
-FROM ${BASE_CONTAINER}
+# base image
+FROM node:12.2.0
 
-ENV REFRESHED_AT=2019-03-18
+# install chrome for protractor tests
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+RUN apt-get -qq update && apt-get -qq install -yq google-chrome-stable
 
-COPY . /app
+# set working directory
 WORKDIR /app
 
-RUN npm init -y
-# RUN npm install @angular/cli@1.7.1
-RUN npm install
-RUN npm audit fix
+# add `/app/node_modules/.bin` to $PATH
+ENV PATH /app/node_modules/.bin:$PATH
 
-# production docker app build
-RUN npm run build:docker
+# install and cache app dependencies
+COPY package.json /app/package.json
+RUN npm config set loglevel warn
+RUN npm install --silent
+RUN npm install --silent -g @angular/cli@7.3.9
 
-# cleanup files we no longer need
-RUN rm -fR /app/src
-# RUN rm -fR /app/e2e
-# RUN rm -f /app/proxy.conf.tmpl.json
-RUN rm -f /app/README.md
+# add app
+COPY . /app
 
-CMD ["npm", "run", "start:docker"]
-EXPOSE 8080
+# start app
+ENTRYPOINT [ "npm", "run" ]
+CMD ["start:docker"]
