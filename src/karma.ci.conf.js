@@ -34,8 +34,8 @@ module.exports = function (config) {
     autoWatch: false,
     logLevel: config.LOG_DISABLE,
     reporters: config.angularCli && config.angularCli.codeCoverage
-              ? ['brief', 'coverage-istanbul','kjhtml', 'junit']
-              : ['brief', 'kjhtml'],
+              ? ['brief', 'coverage-istanbul', 'junit']
+              : ['brief'],
     junitReporter: {
       outputDir: 'coverage/unit-test',
       outputFile: 'test-results.xml',
