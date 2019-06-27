@@ -5,12 +5,17 @@ module.exports = function (config) {
   config.set({
     basePath: '',
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
+    browserNoActivityTimeout: 120000,
+    browserDisconnectTimeout: 60000,
+    browserDisconnectTolerance: 3,
     plugins: [
       require('karma-jasmine'),
+      require('karma-brief-reporter'),
       require('karma-chrome-launcher'),
       require('karma-jasmine-html-reporter'),
       require('karma-coverage-istanbul-reporter'),
-      require('@angular-devkit/build-angular/plugins/karma')
+      require('@angular-devkit/build-angular/plugins/karma'),
+      require('karma-junit-reporter')
     ],
     client: {
       clearContext: false
@@ -20,21 +25,31 @@ module.exports = function (config) {
       reports: ['html', 'lcovonly', 'text-summary'],
       fixWebpackSourcePaths: true
     },
-    reporters: ['progress', 'kjhtml'],
+    angularCli: {
+      environment: 'dev'
+    },
+    reporters: ['progress', 'kjhtml', 'junit'],
     port: 9876,
     colors: true,
-    logLevel: config.LOG_INFO,
-    autoWatch: true,
-    // updated
+    autoWatch: false,
+    logLevel: config.LOG_DISABLE,
+    reporters: config.angularCli && config.angularCli.codeCoverage
+              ? ['brief', 'coverage-istanbul','kjhtml', 'junit']
+              : ['brief', 'kjhtml'],
+    junitReporter: {
+      outputDir: 'coverage/unit-test',
+      outputFile: 'test-results.xml',
+      useBrowserName: false
+    },
     browsers: ['ChromeHeadless'],
-    // new
     customLaunchers: {
       'ChromeHeadless': {
         base: 'Chrome',
         flags: [
-          '--no-sandbox',
           '--headless',
           '--disable-gpu',
+          '--no-sandbox',
+          '--disable-web-security',
           '--remote-debugging-port=9222'
         ]
       }
