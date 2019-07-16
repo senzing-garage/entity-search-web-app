@@ -5,6 +5,9 @@ module.exports = function (config) {
   config.set({
     basePath: '',
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
+    browserNoActivityTimeout: 120000,
+    browserDisconnectTimeout: 60000,
+    browserDisconnectTolerance: 3,
     plugins: [
       require('karma-jasmine'),
       require('karma-brief-reporter'),
@@ -22,16 +25,36 @@ module.exports = function (config) {
       reports: ['html', 'lcovonly', 'text-summary'],
       fixWebpackSourcePaths: true
     },
-    reporters: ['brief'],
+    angularCli: {
+      environment: 'dev'
+    },
+    reporters: ['progress', 'kjhtml', 'junit'],
     port: 9876,
     colors: true,
-    logLevel: config.LOG_INFO,
-    autoWatch: true,
-    // updated
-    browsers: ['Chrome'],
-    // new
-    customLaunchers: {},
-    singleRun: false,
+    autoWatch: false,
+    logLevel: config.LOG_DISABLE,
+    reporters: config.angularCli && config.angularCli.codeCoverage
+              ? ['brief', 'coverage-istanbul', 'junit']
+              : ['brief'],
+    junitReporter: {
+      outputDir: 'coverage/unit-test',
+      outputFile: 'test-results.xml',
+      useBrowserName: false
+    },
+    browsers: ['ChromeHeadless'],
+    customLaunchers: {
+      'ChromeHeadless': {
+        base: 'Chrome',
+        flags: [
+          '--headless',
+          '--disable-gpu',
+          '--no-sandbox',
+          '--disable-web-security',
+          '--remote-debugging-port=9222'
+        ]
+      }
+    },
+    singleRun: true,
     restartOnFileChange: true
   });
 };
