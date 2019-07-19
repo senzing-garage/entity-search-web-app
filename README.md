@@ -79,7 +79,7 @@ If you do not already have an `/opt/senzing` directory on your local system, vis
     ```console
     cd ${GIT_REPOSITORY_DIR}
 
-    docker-compose up senzing-webapp
+    sudo docker-compose up senzing-webapp
     ```
 
 1. To verify that containers are running and accessible:
@@ -221,7 +221,7 @@ The short version is find a machine with network access, then:
    Example:
 
     ```console
-    docker-compose up senzing-webapp
+    sudo docker-compose up senzing-webapp
     ```
 
 The default api server port that the compose formation is set to communicate is *8080*. If you changed it to something else in step 1 you will have to change the environment variables in the [docker-compose.yaml](docker-compose.yaml).
@@ -252,7 +252,7 @@ You may also need to install [NodeJS](https://nodejs.org), and [AngularCLI](http
 
 ### Production Server
 
-1. Ggenerate a compiled version of the app in the `_dist/_` directory.
+1. Generate a compiled version of the app in the `_dist/_` directory.
    Example:
 
     ```console
@@ -298,7 +298,7 @@ There are several ways to run unit tests.
 1. For running unit tests from inside a docker container make sure you have the latest docker container, the script or [docker-compose.yaml](docker-compose.yaml) should pass the appropriate test script command to the container by
 
     ```console
-    docker-compose up --abort-on-container-exit senzing-webapp-test
+    sudo docker-compose up --abort-on-container-exit senzing-webapp-test
     ```
 
 ## Running end-to-end tests
@@ -306,7 +306,7 @@ There are several ways to run unit tests.
 1. For running e2e tests from inside a docker container make sure you have the latest docker container, the script or docker-compose.yml should pass the appropriate e2e script command to the container. Example:
 
     ```console
-    docker-compose up --abort-on-container-exit senzing-webapp-e2e
+    sudo docker-compose up --abort-on-container-exit senzing-webapp-e2e
     ```
 
 1. Alternately you can pass the commands directly to the container by adding an
