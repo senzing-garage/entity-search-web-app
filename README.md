@@ -36,7 +36,7 @@ It's not meant to be followed along by a developer. Rather it serves as both an 
     1. [Production server](#production-server)
 1. [Code scaffolding](#code-scaffolding)
 1. [Running unit tests](#running-unit-tests)
-1. [Renning end-to-end tests](#running-end-to-end-tests)
+1. [Running end-to-end tests](#running-end-to-end-tests)
 1. [Further help](#further-help)
 
 ## Preparation
@@ -165,12 +165,6 @@ If you do not already have an `/opt/senzing` directory on your local system, vis
       senzing/entity-search-web-app
     ```
 
-1. Run in a formation.  If using the compose formation just do
-
-    ```console
-    docker-compose up senzing-webapp
-    ```
-
 1. To verify that containers are running and accessible:
 
     1. Open a web browser on [http://localhost:8081](http://localhost:8081) (or substitute hostname or IP for `localhost`).
@@ -247,11 +241,18 @@ You may also need to install [NodeJS](https://nodejs.org), and [AngularCLI](http
 
 ### Development server
 
-1. Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+1. Run
+
+    ```console
+    ng serve
+    ```
+
+   for a dev server. Navigate to `http://localhost:4200/`.
+   The app will automatically reload if you change any of the source files.
 
 ### Production Server
 
-1. Ggenerate a compiled version of the app in the _dist/_ directory.
+1. Ggenerate a compiled version of the app in the `_dist/_` directory.
    Example:
 
     ```console
@@ -325,4 +326,10 @@ There are several ways to run unit tests.
 
 ## Further help
 
-1. To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+1. To get more help on the Angular CLI use
+
+    ```console
+    ng help
+    ```
+
+   or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
