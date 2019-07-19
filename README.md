@@ -115,7 +115,7 @@ If you do not already have an `/opt/senzing` directory on your local system, vis
    The following are the important ones:
 
     ```console
-    SENZING_API_SERVER_URL="<http://senzing-api-server:8080>"
+    SENZING_API_SERVER_URL="http://senzing-api-server:8080"
     SENZING_WEB_SERVER_PORT=8081
     SENZING_WEB_SERVER_API_PATH="/api"
     ```
@@ -157,9 +157,9 @@ If you do not already have an `/opt/senzing` directory on your local system, vis
       --env SENZING_API_SERVER_URL=http://senzing-api-server:8080 \
       --env SENZING_WEB_SERVER_PORT=8081 \
       --interactive \
-      --publish 8081:8081 \
       --name=senzing-webapp \
       --network=sz-api-network \
+      --publish 8081:8081 \
       --rm \
       --tty \
       senzing/entity-search-web-app
@@ -228,84 +228,95 @@ The default api server port that the compose formation is set to communicate is 
 
 ## Development
 
-To modify or make changes to the app the developer will have to clone or fork the Repository and build from source.
+1. To modify or make changes to the app the developer will have to clone or fork the Repository and build from source.
 
-```console
-git clone git@github.com:Senzing/entity-search-web-app.git
-cd entity-search-web-app
-npm install
-npm start
-```
+    ```console
+    git clone git@github.com:Senzing/entity-search-web-app.git
+    cd entity-search-web-app
+    npm install
+    npm start
+    ```
 
 You may also need to install [NodeJS](https://nodejs.org), and [AngularCLI](https://cli.angular.io/) if you haven't already done so.
 
 ### Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+1. Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
 ### Production Server
 
-Run
+1. Ggenerate a compiled version of the app in the _dist/_ directory.
+   Example:
 
-```console
-ng build --prod
-```
-which will generate a compiled version of the app in the _dist/_ directory.
-Compiled assets can be served by ExpressJS by running
+    ```console
+    ng build --prod
+    ```
 
-```console
-node webserver
-```
+1. Compiled assets can be served by ExpressJS by running:
+
+    ```console
+    node webserver
+    ```
 
 ## Code scaffolding
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+1. To generate a new component, Run
+
+    ```console
+    ng generate component component-name
+    ```
+
+1. Alternatively, you can use
+
+    ```console
+    ng generate directive|pipe|service|class|guard|interface|enum|module
+    ```
 
 ## Running unit tests
 
-There are several ways to run unit tests. For developers run
+There are several ways to run unit tests.
 
-```console
-npm run test
-```
+1. For developers,  to execute the unit tests via [Karma](https://karma-runner.github.io) using the default [karma config file](src/karma.conf.js), run
 
- to execute the unit tests via [Karma](https://karma-runner.github.io) using the default [karma config file](src/karma.conf.js).
+    ```console
+    npm run test
+    ```
 
-These tests can also be run in a headless mode by running
+1. These tests can also be run in a headless mode by running
 
-```console
-npm run test:headless
-```
+    ```console
+    npm run test:headless
+    ```
 
-For running unit tests from inside a docker container make sure you have the latest docker container, the script or [docker-compose.yaml](docker-compose.yaml) should pass the appropriate test script command to the container by
+1. For running unit tests from inside a docker container make sure you have the latest docker container, the script or [docker-compose.yaml](docker-compose.yaml) should pass the appropriate test script command to the container by
 
-```console
-docker-compose up --abort-on-container-exit senzing-webapp-test
-```
+    ```console
+    docker-compose up --abort-on-container-exit senzing-webapp-test
+    ```
 
 ## Running end-to-end tests
 
-For running e2e tests from inside a docker container make sure you have the latest docker container, the script or docker-compose.yml should pass the appropriate e2e script command to the container. Example:
+1. For running e2e tests from inside a docker container make sure you have the latest docker container, the script or docker-compose.yml should pass the appropriate e2e script command to the container. Example:
 
-```console
-docker-compose up --abort-on-container-exit senzing-webapp-e2e
-```
+    ```console
+    docker-compose up --abort-on-container-exit senzing-webapp-e2e
+    ```
 
-Alternately you can pass the commands directly to the container by adding an
+1. Alternately you can pass the commands directly to the container by adding an
 `e2e:docker` to the end of your docker run command. Example:
 
-```console
-sudo docker run \
-  --env SENZING_API_SERVER_URL=http://senzing-api-server:8080 \
-  --env SENZING_WEB_SERVER_PORT=8081 \
-  --interactive \
-  --name=senzing-webapp-e2e \
-  --network=sz-api-network \
-  --publish 8081:8081 \
-  --tty \
-  senzing/entity-search-web-app e2e:docker
-```
+    ```console
+    sudo docker run \
+      --env SENZING_API_SERVER_URL=http://senzing-api-server:8080 \
+      --env SENZING_WEB_SERVER_PORT=8081 \
+      --interactive \
+      --name=senzing-webapp-e2e \
+      --network=sz-api-network \
+      --publish 8081:8081 \
+      --tty \
+      senzing/entity-search-web-app e2e:docker
+    ```
 
 ## Further help
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+1. To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
