@@ -109,7 +109,7 @@ If you do not already have an `/opt/senzing` directory on your local system, vis
     sudo docker pull senzing/senzing-api-server
     ```
 
-1. Configure the app.
+1. :pencil2: Configure the app.
    You can do this by setting environment variables, or by setting them through a [docker-compose.yaml](docker-compose.yaml),
    or by passing them in at run-time.
    The following are the important ones:
@@ -163,6 +163,12 @@ If you do not already have an `/opt/senzing` directory on your local system, vis
       --rm \
       --tty \
       senzing/entity-search-web-app
+    ```
+
+1. Run in a formation.  If using the compose formation just do
+
+    ```console
+    docker-compose up senzing-webapp
     ```
 
 1. To verify that containers are running and accessible:
