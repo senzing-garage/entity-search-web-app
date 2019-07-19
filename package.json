@@ -1,6 +1,6 @@
 {
   "name": "@senzing/entity-search-web-app",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -32,7 +32,7 @@
     "@angular/platform-browser-dynamic": "~7.1.0",
     "@angular/router": "~7.1.0",
     "@senzing/rest-api-client-ng": "^1.0.2",
-    "@senzing/sdk-components-ng": "^1.0.5",
+    "@senzing/sdk-components-ng": "^1.0.6",
     "@types/d3": "^5.7.1",
     "classlist.js": "^1.1.20150312",
     "core-js": "^2.5.4",
