@@ -79,7 +79,7 @@ If you do not already have an `/opt/senzing` directory on your local system, vis
     ```console
     cd ${GIT_REPOSITORY_DIR}
 
-    docker-compose up
+    docker-compose up senzing-webapp
     ```
 
 1. To verify that containers are running and accessible:
@@ -115,7 +115,7 @@ If you do not already have an `/opt/senzing` directory on your local system, vis
    The following are the important ones:
 
     ```console
-    SENZING_API_SERVER_URL="<http://sz-api-server:8080>"
+    SENZING_API_SERVER_URL="<http://senzing-api-server:8080>"
     SENZING_WEB_SERVER_PORT=8081
     SENZING_WEB_SERVER_API_PATH="/api"
     ```
@@ -137,7 +137,7 @@ If you do not already have an `/opt/senzing` directory on your local system, vis
     ```console
     sudo docker run \
       --interactive \
-      --name=sz-api-server \
+      --name=senzing-api-server \
       --network=sz-api-network \
       --publish 8080:8080 \
       --rm \
@@ -154,11 +154,11 @@ If you do not already have an `/opt/senzing` directory on your local system, vis
 
     ```console
     sudo docker run \
-      --env SENZING_API_SERVER_URL=http://sz-api-server:8080 \
+      --env SENZING_API_SERVER_URL=http://senzing-api-server:8080 \
       --env SENZING_WEB_SERVER_PORT=8081 \
       --interactive \
       --publish 8081:8081 \
-      --name=sz-search-web-server \
+      --name=senzing-webapp \
       --network=sz-api-network \
       --rm \
       --tty \
@@ -221,7 +221,7 @@ The short version is find a machine with network access, then:
    Example:
 
     ```console
-    docker-compose up
+    docker-compose up senzing-webapp
     ```
 
 The default api server port that the compose formation is set to communicate is *8080*. If you changed it to something else in step 1 you will have to change the environment variables in the [docker-compose.yaml](docker-compose.yaml).
@@ -245,7 +245,17 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app w
 
 ### Production Server
 
-Run `ng build --prod` which will generate a compiled version of the app in the _dist/_ directory. Compiled assets can be served by ExpressJS by running  `node webserver`.
+Run
+
+```console
+ng build --prod
+```
+which will generate a compiled version of the app in the _dist/_ directory.
+Compiled assets can be served by ExpressJS by running
+
+```console
+node webserver
+```
 
 ## Code scaffolding
 
@@ -253,11 +263,48 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 ## Running unit tests
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+There are several ways to run unit tests. For developers run
+
+```console
+npm run test
+```
+
+ to execute the unit tests via [Karma](https://karma-runner.github.io) using the default [karma config file](src/karma.conf.js).
+
+These tests can also be run in a headless mode by running
+
+```console
+npm run test:headless
+```
+
+For running unit tests from inside a docker container make sure you have the latest docker container, the script or [docker-compose.yaml](docker-compose.yaml) should pass the appropriate test script command to the container by
+
+```console
+docker-compose up --abort-on-container-exit senzing-webapp-test
+```
 
 ## Running end-to-end tests
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+For running e2e tests from inside a docker container make sure you have the latest docker container, the script or docker-compose.yml should pass the appropriate e2e script command to the container. Example:
+
+```console
+docker-compose up --abort-on-container-exit senzing-webapp-e2e
+```
+
+Alternately you can pass the commands directly to the container by adding an
+`e2e:docker` to the end of your docker run command. Example:
+
+```console
+sudo docker run \
+  --env SENZING_API_SERVER_URL=http://senzing-api-server:8080 \
+  --env SENZING_WEB_SERVER_PORT=8081 \
+  --interactive \
+  --name=senzing-webapp-e2e \
+  --network=sz-api-network \
+  --publish 8081:8081 \
+  --tty \
+  senzing/entity-search-web-app e2e:docker
+```
 
 ## Further help
 
