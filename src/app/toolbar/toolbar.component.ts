@@ -40,11 +40,19 @@ export class ToolbarComponent implements OnInit {
     this.uiService.searchExpanded = value;
   }
 
+  public get entityRouteLink() {
+    return '/entity/' + this.currentlySelectedEntityId;
+  }
+
   toggleSearch(evt?) {
     this.uiService.searchExpanded = !this.uiService.searchExpanded;
   }
   toggleSpinner() {
     this.spinner.active = !this.spinner.active;
+  }
+
+  downloadEntityPdf() {
+    this.uiService.createPdfForActiveEntity( this.search.currentlySelectedEntityId );
   }
 
   goHome() {

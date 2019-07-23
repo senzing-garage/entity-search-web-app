@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { SpinnerService } from './spinner.service';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UiService {
   private _searchExpanded = true;
+  public createPdfClicked = new Subject<number>();
 
   public get searchExpanded(): boolean {
     return this._searchExpanded;
@@ -23,6 +25,12 @@ export class UiService {
       this.spinner.show();
     } else {
       this.spinner.hide();
+    }
+  }
+
+  public createPdfForActiveEntity(entityId: number) {
+    if (entityId && entityId >= 0) {
+      this.createPdfClicked.next(entityId);
     }
   }
 

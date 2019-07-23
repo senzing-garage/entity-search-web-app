@@ -11,9 +11,13 @@
       <mat-icon *ngIf="!ribbonExpanded">visibility</mat-icon>
       Show/Hide Search
     </a>
-    <a *ngIf="showEntityOptions" [href]="'/entity/'+ this.currentlySelectedEntityId" target="_blank" mat-menu-item>
+    <a *ngIf="showEntityOptions" [href]="entityRouteLink" target="_blank" mat-menu-item>
       <mat-icon>open_in_new</mat-icon>
       Open Entity in New Tab
+    </a>
+    <a *ngIf="showEntityOptions" (click)="downloadEntityPdf()" mat-menu-item>
+      <mat-icon>picture_as_pdf</mat-icon>
+      Download Entity as PDF
     </a>
     <!-- <a (click)="toggleSpinner($event)" mat-menu-item>Toggle Spinner</a>
     <a routerLink="/entity/1" routerLinkActive="active" mat-menu-item>Ent 1</a>

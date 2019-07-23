@@ -1,3 +1,5 @@
+@import "~@angular/cdk/overlay-prebuilt.css";
+
 /* You can add global styles to this file, and also import other style files */
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
@@ -21,4 +23,35 @@ body {
   --sz-search-button-clear-background-color: transparent;
   --sz-search-label-font-size: .8em;
   --sz-search-label-color: #b3b3b3;
+}
+
+.graph-context-menu {
+  display: block;
+  background-color: rgb(104, 104, 104);
+  padding: 0 1px 1px 1px;
+  margin: 0;
+  width: 140px;
+  font-size: 12px;
+
+  li {
+    display: block;
+    background-color: #eaeaea;
+    text-align: left;
+    transition-duration: 0.2s;
+    color: rgb(58, 58, 58);
+    margin: 1px 0 1px 0;
+    padding: 4px 2px 2px 4px;
+  }
+  li:first-child {
+    border-top: 1px solid rgb(104, 104, 104);
+    margin-top: 0;
+  }
+  li:last-child {
+    margin-bottom: 0;
+  }
+  li:hover {
+    cursor: pointer;
+    background-color:rgb(58, 58, 58);
+    color:#c0c0c0;
+  }
 }
