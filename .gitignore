@@ -46,3 +46,5 @@ Thumbs.db
 /.gitmodules
 /sdk-components-ng
 /rest-api-client-ng
+
+proxy.conf.json
