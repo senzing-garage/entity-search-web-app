@@ -15,9 +15,12 @@ USER root
 
 # Install chrome for protractor tests.
 
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
-RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
-RUN apt-get -qq update && apt-get -qq install -yq google-chrome-stable
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+ && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
+ && apt-get -qq update \
+ && apt-get -qq install -yq \
+    google-chrome-stable \
+ && rm -rf /var/lib/apt/lists/*
 
 # Set working directory.
 
@@ -30,19 +33,21 @@ ENV PATH /app/node_modules/.bin:$PATH
 # Install and cache app dependencies.
 
 COPY package.json /app/package.json
-RUN npm config set loglevel warn
-RUN npm install --silent
-RUN npm install --silent -g @angular/cli@7.3.9
+RUN npm config set loglevel warn \
+ && npm install --silent \
+ && npm install --silent -g @angular/cli@7.3.9
 
-# Add app.
+# Copy files from repository.
 
 COPY . /app
+COPY ./rootfs /
 
 # Make non-root container.
 
 USER 1001
 
-# Start app.
+# Runtime execution.
 
+WORKDIR /app
 ENTRYPOINT [ "npm", "run" ]
 CMD ["start:docker"]
