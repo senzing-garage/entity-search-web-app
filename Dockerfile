@@ -21,6 +21,9 @@ RUN npm install --silent -g @angular/cli@7.3.9
 # add app
 COPY . /app
 
+# build app
+RUN npm run build:docker
+
 # start app
 ENTRYPOINT [ "npm", "run" ]
 CMD ["start:docker"]
