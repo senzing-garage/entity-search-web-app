@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, TemplateRef, ViewContainerRef } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, TemplateRef, ViewContainerRef, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EntitySearchService } from '../services/entity-search.service';
 import { tap, filter, take } from 'rxjs/operators';
@@ -16,6 +16,11 @@ import { UiService } from '../services/ui.service';
 export class DetailComponent implements OnInit {
   @ViewChild('entityDetailComponent') entityDetailComponent: SzEntityDetailComponent;
   @ViewChild('graphContextMenu') graphContextMenu: TemplateRef<any>;
+  public _showGraphMatchKeys = true;
+  @Input() public set showGraphMatchKeys( value: boolean ) {
+    this._showGraphMatchKeys = value;
+  }
+
   sub: Subscription;
   overlayRef: OverlayRef | null;
 
@@ -55,6 +60,16 @@ export class DetailComponent implements OnInit {
       // update route if needed
       this.router.navigate(['entity/' + entityId]);
     }
+  }
+
+  public toggleGraphMatchKeys(event): void {
+    let _checked = false;
+    if (event.target) {
+      _checked = event.target.checked;
+    } else if (event.srcElement) {
+      _checked = event.srcElement.checked;
+    }
+    this.showGraphMatchKeys = _checked;
   }
 
   /**

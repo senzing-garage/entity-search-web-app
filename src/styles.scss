@@ -28,10 +28,14 @@ body {
 .graph-context-menu {
   display: block;
   background-color: rgb(104, 104, 104);
-  padding: 0 1px 1px 1px;
+  padding: 0;
   margin: 0;
   width: 140px;
   font-size: 12px;
+  border-left: 1px solid #686868;
+  border-right: 1px solid #686868;
+  border-top: 0;
+  border-bottom: 0;
 
   li {
     display: block;
@@ -41,6 +45,8 @@ body {
     color: rgb(58, 58, 58);
     margin: 1px 0 1px 0;
     padding: 4px 2px 2px 4px;
+    border-top: 1px solid #686868;
+    border-bottom: 1px solid #686868;
   }
   li:first-child {
     border-top: 1px solid rgb(104, 104, 104);

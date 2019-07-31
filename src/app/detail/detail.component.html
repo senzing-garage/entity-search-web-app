@@ -10,8 +10,7 @@
   <sz-entity-detail #entityDetailComponent
   [entityId]="entityId"
   (entityIdChanged)="onEntityIdChanged($event)"
-  (graphEntityClick)="onGraphEntityClick($event)"
-  (graphEntityDblClick)="onGraphEntityDblClick($event)"
+  [showGraphMatchKeys]="_showGraphMatchKeys"
   (graphContextMenuClick)="onGraphContextClick($event)"
   ></sz-entity-detail>
 </div>
