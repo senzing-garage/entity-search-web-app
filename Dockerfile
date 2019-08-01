@@ -1,29 +1,57 @@
-# base image
-FROM node:12.2.0
+ARG BASE_IMAGE=node:12.2.0
+FROM ${BASE_IMAGE}
 
-# install chrome for protractor tests
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
-RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
-RUN apt-get -qq update && apt-get -qq install -yq google-chrome-stable
+ENV REFRESHED_AT=2019-07-23
 
-# set working directory
+LABEL Name="senzing/entity-search-web-app" \
+      Maintainer="support@senzing.com" \
+      Version="1.1.0"
+
+HEALTHCHECK CMD ["/app/healthcheck.sh"]
+
+# Run as "root" for system installation.
+
+USER root
+
+# Install chrome for protractor tests.
+
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+ && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
+ && apt-get -qq update \
+ && apt-get -qq install -yq \
+    google-chrome-stable \
+ && rm -rf /var/lib/apt/lists/*
+
+# Set working directory.
+
 WORKDIR /app
 
-# add `/app/node_modules/.bin` to $PATH
+# Add `/app/node_modules/.bin` to $PATH
+
 ENV PATH /app/node_modules/.bin:$PATH
 
-# install and cache app dependencies
+# Install and cache app dependencies.
+
 COPY package.json /app/package.json
-RUN npm config set loglevel warn
-RUN npm install --silent
-RUN npm install --silent -g @angular/cli@7.3.9
+RUN npm config set loglevel warn \
+ && npm install --silent \
+ && npm install --silent -g @angular/cli@7.3.9
 
-# add app
+# Copy files from repository.
+
 COPY . /app
+COPY ./rootfs /
 
-# build app
+# Build app.
+
 RUN npm run build:docker
 
-# start app
+# Make non-root container.
+
+USER 1001
+
+# Runtime execution.
+
+WORKDIR /app
 ENTRYPOINT [ "npm", "run" ]
 CMD ["start:docker"]
