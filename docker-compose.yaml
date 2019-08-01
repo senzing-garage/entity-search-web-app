@@ -29,7 +29,6 @@ services:
     networks:
       - sz-api-network
     volumes:
-      - '.:/app'
       - '/app/node_modules'
     ports:
       - 8081:8080
