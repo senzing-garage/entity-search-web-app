@@ -7,6 +7,7 @@ import { MaterialModule } from './material.module';
 import { SenzingSdkModule, SzRestConfiguration } from '@senzing/sdk-components-ng';
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { InMemoryDataService } from '../../e2e/data/services/in-memory-data.service';
+import { OverlayModule } from '@angular/cdk/overlay';
 
 // third party components and modules
 
@@ -70,6 +71,7 @@ export function SzRestConfigurationFactory() {
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
+    OverlayModule,
     MaterialModule,
     AppRoutingModule,
     SenzingSdkModule.forRoot( SzRestConfigurationFactory ),

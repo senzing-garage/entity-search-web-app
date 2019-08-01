@@ -1,5 +1,17 @@
 <!-- start entity detail -->
 <div>
-    <sz-entity-detail [entityId]="entityId" (entityIdChanged)="onEntityIdChanged($event)"></sz-entity-detail>
+  <!-- start graph context menu template -->
+  <ng-template #graphContextMenu let-entityEvt>
+      <ul class="graph-context-menu">
+          <li (click)="openGraphItemInNewMenu(entityEvt.entityId)">Open in new tab</li>
+      </ul>
+  </ng-template>
+  <!-- end graph context menu template -->
+  <sz-entity-detail #entityDetailComponent
+  [entityId]="entityId"
+  (entityIdChanged)="onEntityIdChanged($event)"
+  [showGraphMatchKeys]="_showGraphMatchKeys"
+  (graphContextMenuClick)="onGraphContextClick($event)"
+  ></sz-entity-detail>
 </div>
 <!-- end entity detail -->
