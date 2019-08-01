@@ -48,7 +48,7 @@ RUN npm run build:docker
 
 # Make non-root container.
 
-# USER 1001
+USER 1001
 
 # Runtime execution.
 
