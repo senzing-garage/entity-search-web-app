@@ -37,17 +37,18 @@ RUN npm config set loglevel warn \
  && npm install --silent \
  && npm install --silent -g @angular/cli@7.3.9
 
-# Copy files from repository.
-
-COPY . /app
+# Copy rootfs files from repository.
 COPY ./rootfs /
 
-# Build app.
-
-RUN npm run build:docker
-
 # Make non-root container.
+USER 1001
 
+# Copy app files from repository
+COPY . /app
+
+# Build app. build as root and switch back
+USER root
+RUN npm run build:docker
 USER 1001
 
 # Runtime execution.
