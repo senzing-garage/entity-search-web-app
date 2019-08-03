@@ -37,14 +37,10 @@ RUN npm config set loglevel warn \
  && npm install --silent \
  && npm install --silent -g @angular/cli@7.3.9
 
-# Copy rootfs files from repository.
-COPY ./rootfs /
-
-# Make non-root container.
-USER 1001
-
-# Copy app files from repository
+# Copy files from repository.
+COPY ./rootfs / 
 COPY . /app
+COPY --chown=1001:1001 ./proxy.conf.json /app
 
 # Build app. build as root and switch back
 USER root
