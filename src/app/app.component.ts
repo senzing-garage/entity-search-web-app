@@ -1,6 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostBinding } from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
+import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
+import { Subject } from 'rxjs';
+import { takeUntil, filter } from 'rxjs/operators';
+
 import { slideInAnimation } from './animations';
 import {
   SzEntitySearchParams,
@@ -17,7 +20,7 @@ import { UiService } from './services/ui.service';
   styleUrls: ['./app.component.scss'],
   animations: [ slideInAnimation ]
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   /** the current search results */
   public currentSearchResults: SzAttributeSearchResult[];
   /** the entity to show in the detail view */
@@ -28,6 +31,16 @@ export class AppComponent implements OnInit {
   public get searchExpanded() {
     return this.ui.searchExpanded;
   }
+  /** subscription to notify subscribers to unbind */
+  public unsubscribe$ = new Subject<void>();
+  private layoutMediaQueries = [
+    '(min-width: 1021px) and (max-width: 1120px)',
+    '(min-width: 700px) and (max-width: 1120px)',
+    '(min-width: 501px) and (max-width: 699px)',
+    '(max-width: 500px)',
+  ];
+  @HostBinding('class') layoutClasses = [];
+
 
   public getAnimationData(outlet: RouterOutlet) {
     return outlet && outlet.activatedRouteData && outlet.activatedRouteData['animation'];
@@ -47,6 +60,7 @@ export class AppComponent implements OnInit {
   constructor(
     private entitySearchService: EntitySearchService,
     private router: Router,
+    public breakpointObserver: BreakpointObserver,
     private spinner: SpinnerService,
     private ui: UiService
   ) { }
@@ -65,6 +79,43 @@ export class AppComponent implements OnInit {
       //console.log(this.route.root);
     });*/
 
+    const layoutChanges = this.breakpointObserver.observe(this.layoutMediaQueries);
+    layoutChanges.pipe(
+      takeUntil(this.unsubscribe$)
+    ).subscribe( this.onBreakPointStateChange.bind(this) );
+
+  }
+  /**
+   * unsubscribe when component is destroyed
+   */
+  ngOnDestroy() {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
+
+  private onBreakPointStateChange(state: BreakpointState) {
+    /**
+    {cssClass: 'layout-wide', minWidth: 1021 },
+    {cssClass: 'layout-medium', minWidth: 700, maxWidth: 1120 },
+    {cssClass: 'layout-narrow', maxWidth: 699 }
+    {cssClass: 'layout-super-narrow', maxWidth: 699 }
+    */
+    this.layoutClasses = [];
+
+    if ( state.breakpoints[ this.layoutMediaQueries[0] ] && this.layoutClasses.indexOf('layout-wide') < 0) {
+      this.layoutClasses.push('layout-wide');
+    }
+    if ( state.breakpoints[ this.layoutMediaQueries[1] ] && this.layoutClasses.indexOf('layout-medium') < 0) {
+      this.layoutClasses.push('layout-medium');
+    }
+    if ( state.breakpoints[ this.layoutMediaQueries[2] ] && this.layoutClasses.indexOf('layout-narrow') < 0) {
+      this.layoutClasses.push('layout-narrow');
+    }
+    if ( state.breakpoints[ this.layoutMediaQueries[3] ] && this.layoutClasses.indexOf('layout-super-narrow') < 0) {
+      this.layoutClasses.push('layout-super-narrow');
+    }
+
+    console.log('hit breakpoint: ', this.layoutClasses, state);
   }
 
   /**

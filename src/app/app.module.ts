@@ -8,6 +8,7 @@ import { SenzingSdkModule, SzRestConfiguration } from '@senzing/sdk-components-n
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { InMemoryDataService } from '../../e2e/data/services/in-memory-data.service';
 import { OverlayModule } from '@angular/cdk/overlay';
+import { LayoutModule } from '@angular/cdk/layout';
 
 // third party components and modules
 
@@ -74,6 +75,7 @@ export function SzRestConfigurationFactory() {
     OverlayModule,
     MaterialModule,
     AppRoutingModule,
+    LayoutModule,
     SenzingSdkModule.forRoot( SzRestConfigurationFactory ),
     SpinnerModule,
     environment.test ? HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService, { delay: 100 }) : []

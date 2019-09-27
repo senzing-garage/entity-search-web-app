@@ -1,17 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SpinnerService } from '../services/spinner.service';
 import { UiService } from '../services/ui.service';
 import { EntitySearchService } from '../services/entity-search.service';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-toolbar',
   templateUrl: './toolbar.component.html',
   styleUrls: ['./toolbar.component.scss']
 })
-export class ToolbarComponent implements OnInit {
+export class ToolbarComponent implements OnInit, OnDestroy {
   // currently displayed entity detail id (if any)
   public currentlySelectedEntityId: number = undefined;
+
+  /** subscription to notify subscribers to unbind */
+  public unsubscribe$ = new Subject<void>();
 
   constructor(
     private spinner: SpinnerService,
@@ -24,9 +28,16 @@ export class ToolbarComponent implements OnInit {
       (entityId) => {
         this.currentlySelectedEntityId = entityId;
         console.log('ToolbarComponent.onEntityIdChange: ', entityId);
-      }
-      );
+    });
   }
+  /**
+   * unsubscribe when component is destroyed
+   */
+  ngOnDestroy() {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
+
   /** whether or not to show menu options specific to detail view */
   public get showEntityOptions() {
     return (this.search.currentlySelectedEntityId && this.search.currentlySelectedEntityId >= 0) ? true : false;

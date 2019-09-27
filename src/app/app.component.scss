@@ -6,6 +6,7 @@ sz-powered-by {
   position: absolute;
 }
 
+
 .tool-tray {
   display: inline-block;
   width: 100%;
@@ -40,6 +41,18 @@ sz-powered-by {
     font-size: 26px;
     line-height: 16px;
     color: #fff;
+  }
+}
+// specific heights for the
+// drawer depending on breakpoints
+:host.layout-narrow {
+  .tool-tray.expanded {
+    height: 430px;
+  }
+}
+:host.layout-super-narrow {
+  .tool-tray.expanded {
+    height: 520px;
   }
 }
 
