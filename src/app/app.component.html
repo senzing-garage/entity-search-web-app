@@ -1,12 +1,22 @@
-<app-toolbar></app-toolbar>
-<div class="tool-tray" [class.expanded]="searchExpanded">
-    <sz-search
+<app-toolbar
+  (showSection)="onToolBarSectionChange($event)"
+  [prefsIsShowing]="showPrefs"></app-toolbar>
+<div class="tool-tray" [class.expanded]="searchExpanded" [class.prefs-showing]="showPrefs">
+    <sz-preferences *ngIf="showPrefs"
+      showControls="true"
+      (prefsChange)="onPrefsChangeEvt($event)"></sz-preferences>
+    <sz-search *ngIf="!showPrefs"
     (resultsChange)="onSearchResults($event)"
     (resultsCleared)="onSearchResultsCleared($event)"
     (parameterChange)="onSearchParameterChange($event)"
     (searchStart)="onSearchStart($event)"></sz-search>
-    <mat-icon (click)="toggleRibbonState($event)" *ngIf="!searchExpanded" class="toggle-icon">expand_more</mat-icon>
-    <mat-icon (click)="toggleRibbonState($event)"*ngIf="searchExpanded" class="toggle-icon">expand_less</mat-icon>
+    <mat-icon (click)="toggleRibbonState($event)" *ngIf="!searchExpanded && !showPrefs" class="toggle-icon">expand_more</mat-icon>
+    <mat-icon (click)="toggleRibbonState($event)"*ngIf="searchExpanded && !showPrefs" class="toggle-icon">expand_less</mat-icon>
+    <div (click)="exitPrefs($event)" *ngIf="showPrefs" class="exit-icon">
+        <mat-icon>arrow_back_ios</mat-icon>
+        <span>Back</span>
+    </div>
+
 </div>
 <app-spinner></app-spinner>
 <div [@routeAnimation]="getAnimationData(routerOutlet)">

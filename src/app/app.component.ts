@@ -31,6 +31,9 @@ export class AppComponent implements OnInit, OnDestroy {
   public get searchExpanded() {
     return this.ui.searchExpanded;
   }
+  /** whether or not to display prefs in the interface ribbon */
+  public showPrefs = false;
+
   /** subscription to notify subscribers to unbind */
   public unsubscribe$ = new Subject<void>();
   private layoutMediaQueries = [
@@ -93,6 +96,28 @@ export class AppComponent implements OnInit, OnDestroy {
     this.unsubscribe$.complete();
   }
 
+  /** when the toolbar wants to trigger a ribbon section change */
+  public onToolBarSectionChange(section: any) {
+    switch( section ) {
+      case 'preferences':
+        this.showPrefs = true;
+        break;
+      default:
+        this.showPrefs = false;
+    }
+  }
+
+  /** handler for when preferences have changed */
+  public onPrefsChanged(evt: any) {
+    console.log('onPrefsChangeEvt: ', evt);
+  }
+
+  /** hide preferences section */
+  public exitPrefs() {
+    this.showPrefs = false;
+  }
+
+  /** when a breakpoint change happens, add oor remove css classes */
   private onBreakPointStateChange(state: BreakpointState) {
     /**
     {cssClass: 'layout-wide', minWidth: 1021 },
@@ -156,7 +181,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.spinner.show();
   }
 
-
+  /** toggle the ui state of the ribbon */
   public toggleRibbonState(evt) {
     this.ui.searchExpanded = !this.ui.searchExpanded;
   }

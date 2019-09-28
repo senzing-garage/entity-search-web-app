@@ -19,6 +19,15 @@
       <mat-icon>picture_as_pdf</mat-icon>
       Download Entity as PDF
     </a>
+    <a *ngIf="!prefsIsShowing" (click)="showPreferences()" mat-menu-item>
+      <mat-icon>settings_applications</mat-icon>
+      Preferences
+    </a>
+    <a *ngIf="prefsIsShowing" (click)="showSearch()" mat-menu-item>
+        <mat-icon>arrow_back</mat-icon>
+        Back to Search
+    </a>
+
     <!-- <a (click)="toggleSpinner($event)" mat-menu-item>Toggle Spinner</a>
     <a routerLink="/entity/1" routerLinkActive="active" mat-menu-item>Ent 1</a>
     <a routerLink="/entity/9002324729487" routerLinkActive="active" mat-menu-item>Bad Ent Id</a>

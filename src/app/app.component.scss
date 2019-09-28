@@ -22,6 +22,10 @@ sz-powered-by {
     sz-search {
       opacity: 1;
     }
+
+    &.prefs-showing {
+      height: 680px;
+    }
   }
 
   sz-search {
@@ -29,6 +33,10 @@ sz-powered-by {
     margin: 60px 0 0 0;
     opacity: 0;
     transition: opacity .4s linear;
+  }
+  sz-preferences {
+    width: 100%;
+    margin: 60px 0 0 0;
   }
 
   .toggle-icon {
@@ -42,6 +50,30 @@ sz-powered-by {
     line-height: 16px;
     color: #fff;
   }
+
+  .exit-icon {
+    cursor: pointer;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    padding-right: 20px;
+    color: #fff;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    mat-icon {
+      font-size: 24px;
+      margin-top: 10px;
+    }
+    span {
+      font-size: 13px;
+      height: 5px;
+      overflow: visible;
+      text-transform: uppercase;
+    }
+  }
+
 }
 // specific heights for the
 // drawer depending on breakpoints
@@ -49,12 +81,25 @@ sz-powered-by {
   .tool-tray.expanded {
     height: 430px;
   }
+  .tool-tray.expanded.prefs-showing {
+    height: unset;
+  }
 }
-:host.layout-super-narrow {
+:host.layout-super-narrow, {
   .tool-tray.expanded {
     height: 520px;
   }
+  .tool-tray.expanded.prefs-showing {
+    height: unset;
+  }
 }
+:host.layout-medium, {
+
+  .tool-tray.expanded.prefs-showing {
+    height: unset;
+  }
+}
+
 
 // spinner animations
 @-webkit-keyframes sk-stretchdelay {
