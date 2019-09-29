@@ -1,5 +1,10 @@
 import { TestBed, inject } from '@angular/core/testing';
-import { SenzingSdkModule, SzRestConfiguration, SzConfigurationComponent } from '@senzing/sdk-components-ng';
+import {
+  SenzingSdkModule,
+  SzRestConfiguration,
+  SzConfigurationComponent,
+  SzConfigurationService
+} from '@senzing/sdk-components-ng';
 import { apiConfig } from '../environments/environment';
 export function SzRestConfigurationFactory() {
   return new SzRestConfiguration( (apiConfig ? apiConfig : undefined) );
@@ -15,14 +20,16 @@ describe(`SenzingSdkModule`, () => {
               {
                 provide: SzRestConfiguration,
                 useFactory: SzRestConfigurationFactory
-              }
+              },
+              SzConfigurationService
             ]
         });
     });
-
+    /*
     it(`should be pointing at api server on /api`, inject([SzRestConfiguration], (cfgSrv: SzRestConfiguration) => {
-      const srv = new SzConfigurationComponent(cfgSrv);
+      const srv = new SzConfigurationComponent();
       expect( cfgSrv.basePath ).toBe('/api');
     }));
+    */
 
 });
