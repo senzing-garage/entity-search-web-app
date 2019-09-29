@@ -34,6 +34,18 @@ export class AppComponent implements OnInit, OnDestroy {
   }
   /** whether or not to display prefs in the interface ribbon */
   public showPrefs = false;
+  /** prefs storage mode (do not directly modify)
+   * local | session | memory
+  */
+  public get prefsStorageMode() {
+    if ( this.prefsManager.storePrefsInLocalStorage ) {
+      return 'local';
+    } else if ( this.prefsManager.storePrefsInSessionStorage ) {
+      return 'session';
+    } else {
+      return 'memory';
+    }
+  }
 
   /** subscription to notify subscribers to unbind */
   public unsubscribe$ = new Subject<void>();
@@ -45,10 +57,29 @@ export class AppComponent implements OnInit, OnDestroy {
   ];
   @HostBinding('class') layoutClasses = [];
 
-
   public getAnimationData(outlet: RouterOutlet) {
     return outlet && outlet.activatedRouteData && outlet.activatedRouteData['animation'];
   }
+
+  /** set the prefsManager storage mode via radio button change */
+  public onPrefsStorageModeUIChange (value) {
+    // console.warn('onPrefsStorageModeUIChange: ', value);
+    switch ( value ) {
+      case 'local':
+        this.prefsManager.storePrefsInLocalStorage = true;
+        this.prefsManager.storePrefsInSessionStorage = false;
+        break;
+      case 'session':
+        this.prefsManager.storePrefsInLocalStorage = false;
+        this.prefsManager.storePrefsInSessionStorage = true;
+        break;
+      default:
+        this.prefsManager.storePrefsInLocalStorage = false;
+        this.prefsManager.storePrefsInSessionStorage = false;
+        break;
+    }
+  }
+
 
   /**
    * Getter for whether or not the SzEntityDetail panel
@@ -71,19 +102,6 @@ export class AppComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    /*
-    this.spinner.spinnerObservable.subscribe( (params) => {
-      console.log('AppComponent.onSpinnerStateChange: ', params);
-    });*/
-    /*
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
-    ).subscribe( (event) => {
-      console.info('router event: ', event, this.route);
-      this.spinner.hide();
-      //console.log(this.route.root);
-    });*/
-
     const layoutChanges = this.breakpointObserver.observe(this.layoutMediaQueries);
     layoutChanges.pipe(
       takeUntil(this.unsubscribe$)
@@ -112,6 +130,15 @@ export class AppComponent implements OnInit, OnDestroy {
   public exitPrefs() {
     this.showPrefs = false;
   }
+  /** clear prefs from local/session storage */
+  public clearPrefs(deleteFromStorage?: boolean) {
+    if ( deleteFromStorage === true) {
+      // also clear from storage
+      this.prefsManager.clearPrefsFromStorage(true, true);
+    } else {
+      this.prefsManager.resetPrefsToDefaults();
+    }
+  }
 
   /** when a breakpoint change happens, add oor remove css classes */
   private onBreakPointStateChange(state: BreakpointState) {
@@ -136,7 +163,7 @@ export class AppComponent implements OnInit, OnDestroy {
       this.layoutClasses.push('layout-super-narrow');
     }
 
-    console.log('hit breakpoint: ', this.layoutClasses, state);
+    // console.log('hit breakpoint: ', this.layoutClasses, state);
   }
 
   /**

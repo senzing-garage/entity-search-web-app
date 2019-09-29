@@ -2,20 +2,49 @@
   (showSection)="onToolBarSectionChange($event)"
   [prefsIsShowing]="showPrefs"></app-toolbar>
 <div class="tool-tray" [class.expanded]="searchExpanded" [class.prefs-showing]="showPrefs">
-    <sz-preferences *ngIf="showPrefs"
-      showControls="true"></sz-preferences>
-    <sz-search *ngIf="!showPrefs"
-    (resultsChange)="onSearchResults($event)"
-    (resultsCleared)="onSearchResultsCleared($event)"
-    (parameterChange)="onSearchParameterChange($event)"
-    (searchStart)="onSearchStart($event)"></sz-search>
+    <div id="toolbar-col1" class="column">
+      <sz-preferences *ngIf="showPrefs"
+        showControls="true"></sz-preferences>
+      <sz-search *ngIf="!showPrefs"
+      (resultsChange)="onSearchResults($event)"
+      (resultsCleared)="onSearchResultsCleared($event)"
+      (parameterChange)="onSearchParameterChange($event)"
+      (searchStart)="onSearchStart($event)"></sz-search>
+    </div>
+    <div id="toolbar-col2" class="column" *ngIf="showPrefs">
+      <h2 class="title">Storage Mode</h2>
+      <div class="global-state-settings">
+        <div class="row"><input id="gSettings-saveToLocalStorage" type="radio" name="prefsStorageMode" value="local"
+          [ngModel]="prefsStorageMode" (change)="onPrefsStorageModeUIChange('local')"><label for="gSettings-saveToLocalStorage">Local Storage<small>(persists across sessions)</small></label></div>
+        <div class="row"><input id="gSettings-saveToSessionStorage" type="radio" name="prefsStorageMode" value="session"
+          [ngModel]="prefsStorageMode" (change)="onPrefsStorageModeUIChange('session')"><label for="gSettings-saveToSessionStorage">Session Storage
+            <small>(persists for life of browser <br/>window &amp; tab restores)</small>
+          </label>
+        </div>
+        <div class="row"><input id="gSettings-saveToVolatileStorage" type="radio" name="prefsStorageMode" value="memory"
+          [ngModel]="prefsStorageMode" (change)="onPrefsStorageModeUIChange('memory')"><label for="gSettings-saveToVolatileStorage">In memory
+            <small>(persists for life of page)</small>
+          </label>
+        </div>
+        <div class="row actions">
+          <button id="gSettings-resetPrefs" mat-raised-button color="primary"
+           name="clearPrefs" (click)="clearPrefs()"
+           matTooltip="resets options to defaults."
+           aria-label="resets options to defaults.">Reset</button>
+          <button id="gSettings-resetPrefs" mat-raised-button color="warn"
+           name="deletePrefs" (click)="clearPrefs(true)"
+           matTooltip="delete any values stored in browser storage."
+           aria-label="delete any values stored in browser storage."
+           >Delete</button>
+        </div>
+      </div>
+      <div (click)="exitPrefs($event)" *ngIf="showPrefs" class="exit-icon">
+          <mat-icon>arrow_back_ios</mat-icon>
+          <span>Back</span>
+      </div>
+    </div>
     <mat-icon (click)="toggleRibbonState($event)" *ngIf="!searchExpanded && !showPrefs" class="toggle-icon">expand_more</mat-icon>
     <mat-icon (click)="toggleRibbonState($event)"*ngIf="searchExpanded && !showPrefs" class="toggle-icon">expand_less</mat-icon>
-    <div (click)="exitPrefs($event)" *ngIf="showPrefs" class="exit-icon">
-        <mat-icon>arrow_back_ios</mat-icon>
-        <span>Back</span>
-    </div>
-
 </div>
 <app-spinner></app-spinner>
 <div [@routeAnimation]="getAnimationData(routerOutlet)">
