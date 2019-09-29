@@ -3,8 +3,7 @@
   [prefsIsShowing]="showPrefs"></app-toolbar>
 <div class="tool-tray" [class.expanded]="searchExpanded" [class.prefs-showing]="showPrefs">
     <sz-preferences *ngIf="showPrefs"
-      showControls="true"
-      (prefsChange)="onPrefsChangeEvt($event)"></sz-preferences>
+      showControls="true"></sz-preferences>
     <sz-search *ngIf="!showPrefs"
     (resultsChange)="onSearchResults($event)"
     (resultsCleared)="onSearchResultsCleared($event)"

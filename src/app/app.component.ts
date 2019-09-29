@@ -13,6 +13,7 @@ import {
 import { EntitySearchService } from './services/entity-search.service';
 import { SpinnerService } from './services/spinner.service';
 import { UiService } from './services/ui.service';
+import { PrefsManagerService } from './services/prefs-manager.service';
 
  @Component({
   selector: 'app-root',
@@ -65,8 +66,9 @@ export class AppComponent implements OnInit, OnDestroy {
     private router: Router,
     public breakpointObserver: BreakpointObserver,
     private spinner: SpinnerService,
-    private ui: UiService
-  ) { }
+    private ui: UiService,
+    private prefsManager: PrefsManagerService
+  ) {}
 
   ngOnInit() {
     /*
@@ -86,7 +88,6 @@ export class AppComponent implements OnInit, OnDestroy {
     layoutChanges.pipe(
       takeUntil(this.unsubscribe$)
     ).subscribe( this.onBreakPointStateChange.bind(this) );
-
   }
   /**
    * unsubscribe when component is destroyed
@@ -98,18 +99,13 @@ export class AppComponent implements OnInit, OnDestroy {
 
   /** when the toolbar wants to trigger a ribbon section change */
   public onToolBarSectionChange(section: any) {
-    switch( section ) {
+    switch ( section ) {
       case 'preferences':
         this.showPrefs = true;
         break;
       default:
         this.showPrefs = false;
     }
-  }
-
-  /** handler for when preferences have changed */
-  public onPrefsChanged(evt: any) {
-    console.log('onPrefsChangeEvt: ', evt);
   }
 
   /** hide preferences section */
