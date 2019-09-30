@@ -4,6 +4,7 @@ import {
   MatButtonModule,
   MatCheckboxModule,
   MatToolbarModule,
+  MatTooltipModule,
   MatMenuModule,
   MatIconModule,
   MatGridListModule
@@ -11,7 +12,7 @@ import {
 
 @NgModule({
   declarations: [],
-  imports: [ MatButtonModule, MatCheckboxModule, MatToolbarModule, MatMenuModule, MatIconModule, MatGridListModule],
-  exports: [ MatButtonModule, MatCheckboxModule, MatToolbarModule, MatMenuModule, MatIconModule, MatGridListModule],
+  imports: [ MatButtonModule, MatCheckboxModule, MatToolbarModule, MatTooltipModule, MatMenuModule, MatIconModule, MatGridListModule],
+  exports: [ MatButtonModule, MatCheckboxModule, MatToolbarModule, MatTooltipModule, MatMenuModule, MatIconModule, MatGridListModule],
 })
 export class MaterialModule { }

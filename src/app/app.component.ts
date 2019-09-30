@@ -1,6 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostBinding } from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
+import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
+import { Subject } from 'rxjs';
+import { takeUntil, filter } from 'rxjs/operators';
+
 import { slideInAnimation } from './animations';
 import {
   SzEntitySearchParams,
@@ -10,6 +13,7 @@ import {
 import { EntitySearchService } from './services/entity-search.service';
 import { SpinnerService } from './services/spinner.service';
 import { UiService } from './services/ui.service';
+import { PrefsManagerService } from './services/prefs-manager.service';
 
  @Component({
   selector: 'app-root',
@@ -17,7 +21,7 @@ import { UiService } from './services/ui.service';
   styleUrls: ['./app.component.scss'],
   animations: [ slideInAnimation ]
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   /** the current search results */
   public currentSearchResults: SzAttributeSearchResult[];
   /** the entity to show in the detail view */
@@ -28,10 +32,54 @@ export class AppComponent implements OnInit {
   public get searchExpanded() {
     return this.ui.searchExpanded;
   }
+  /** whether or not to display prefs in the interface ribbon */
+  public showPrefs = false;
+  /** prefs storage mode (do not directly modify)
+   * local | session | memory
+  */
+  public get prefsStorageMode() {
+    if ( this.prefsManager.storePrefsInLocalStorage ) {
+      return 'local';
+    } else if ( this.prefsManager.storePrefsInSessionStorage ) {
+      return 'session';
+    } else {
+      return 'memory';
+    }
+  }
+
+  /** subscription to notify subscribers to unbind */
+  public unsubscribe$ = new Subject<void>();
+  private layoutMediaQueries = [
+    '(min-width: 1021px) and (max-width: 1120px)',
+    '(min-width: 700px) and (max-width: 1120px)',
+    '(min-width: 501px) and (max-width: 699px)',
+    '(max-width: 500px)',
+  ];
+  @HostBinding('class') layoutClasses = [];
 
   public getAnimationData(outlet: RouterOutlet) {
     return outlet && outlet.activatedRouteData && outlet.activatedRouteData['animation'];
   }
+
+  /** set the prefsManager storage mode via radio button change */
+  public onPrefsStorageModeUIChange (value) {
+    // console.warn('onPrefsStorageModeUIChange: ', value);
+    switch ( value ) {
+      case 'local':
+        this.prefsManager.storePrefsInLocalStorage = true;
+        this.prefsManager.storePrefsInSessionStorage = false;
+        break;
+      case 'session':
+        this.prefsManager.storePrefsInLocalStorage = false;
+        this.prefsManager.storePrefsInSessionStorage = true;
+        break;
+      default:
+        this.prefsManager.storePrefsInLocalStorage = false;
+        this.prefsManager.storePrefsInSessionStorage = false;
+        break;
+    }
+  }
+
 
   /**
    * Getter for whether or not the SzEntityDetail panel
@@ -47,24 +95,75 @@ export class AppComponent implements OnInit {
   constructor(
     private entitySearchService: EntitySearchService,
     private router: Router,
+    public breakpointObserver: BreakpointObserver,
     private spinner: SpinnerService,
-    private ui: UiService
-  ) { }
+    private ui: UiService,
+    private prefsManager: PrefsManagerService
+  ) {}
 
   ngOnInit() {
-    /*
-    this.spinner.spinnerObservable.subscribe( (params) => {
-      console.log('AppComponent.onSpinnerStateChange: ', params);
-    });*/
-    /*
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
-    ).subscribe( (event) => {
-      console.info('router event: ', event, this.route);
-      this.spinner.hide();
-      //console.log(this.route.root);
-    });*/
+    const layoutChanges = this.breakpointObserver.observe(this.layoutMediaQueries);
+    layoutChanges.pipe(
+      takeUntil(this.unsubscribe$)
+    ).subscribe( this.onBreakPointStateChange.bind(this) );
+  }
+  /**
+   * unsubscribe when component is destroyed
+   */
+  ngOnDestroy() {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
 
+  /** when the toolbar wants to trigger a ribbon section change */
+  public onToolBarSectionChange(section: any) {
+    switch ( section ) {
+      case 'preferences':
+        this.showPrefs = true;
+        break;
+      default:
+        this.showPrefs = false;
+    }
+  }
+
+  /** hide preferences section */
+  public exitPrefs() {
+    this.showPrefs = false;
+  }
+  /** clear prefs from local/session storage */
+  public clearPrefs(deleteFromStorage?: boolean) {
+    if ( deleteFromStorage === true) {
+      // also clear from storage
+      this.prefsManager.clearPrefsFromStorage(true, true);
+    } else {
+      this.prefsManager.resetPrefsToDefaults();
+    }
+  }
+
+  /** when a breakpoint change happens, add oor remove css classes */
+  private onBreakPointStateChange(state: BreakpointState) {
+    /**
+    {cssClass: 'layout-wide', minWidth: 1021 },
+    {cssClass: 'layout-medium', minWidth: 700, maxWidth: 1120 },
+    {cssClass: 'layout-narrow', maxWidth: 699 }
+    {cssClass: 'layout-super-narrow', maxWidth: 699 }
+    */
+    this.layoutClasses = [];
+
+    if ( state.breakpoints[ this.layoutMediaQueries[0] ] && this.layoutClasses.indexOf('layout-wide') < 0) {
+      this.layoutClasses.push('layout-wide');
+    }
+    if ( state.breakpoints[ this.layoutMediaQueries[1] ] && this.layoutClasses.indexOf('layout-medium') < 0) {
+      this.layoutClasses.push('layout-medium');
+    }
+    if ( state.breakpoints[ this.layoutMediaQueries[2] ] && this.layoutClasses.indexOf('layout-narrow') < 0) {
+      this.layoutClasses.push('layout-narrow');
+    }
+    if ( state.breakpoints[ this.layoutMediaQueries[3] ] && this.layoutClasses.indexOf('layout-super-narrow') < 0) {
+      this.layoutClasses.push('layout-super-narrow');
+    }
+
+    // console.log('hit breakpoint: ', this.layoutClasses, state);
   }
 
   /**
@@ -105,7 +204,7 @@ export class AppComponent implements OnInit {
     this.spinner.show();
   }
 
-
+  /** toggle the ui state of the ribbon */
   public toggleRibbonState(evt) {
     this.ui.searchExpanded = !this.ui.searchExpanded;
   }

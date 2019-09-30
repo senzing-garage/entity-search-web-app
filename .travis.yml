@@ -24,4 +24,3 @@ install:
 script:
 - npm run test:headless
 - npm run build
-- npm run e2e:headless

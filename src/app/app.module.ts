@@ -8,8 +8,10 @@ import { SenzingSdkModule, SzRestConfiguration } from '@senzing/sdk-components-n
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { InMemoryDataService } from '../../e2e/data/services/in-memory-data.service';
 import { OverlayModule } from '@angular/cdk/overlay';
+import { LayoutModule } from '@angular/cdk/layout';
 
 // third party components and modules
+import { StorageServiceModule } from 'ngx-webstorage-service';
 
 // local components and modules
 import { AppRoutingModule } from './app-routing.module';
@@ -21,6 +23,7 @@ import { SearchResultsComponent } from './search-results/search-results.componen
 import { DetailComponent } from './detail/detail.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { UiService } from './services/ui.service';
+import { PrefsManagerService } from './services/prefs-manager.service';
 import { TipsComponent } from './common/tips/tips.component';
 import { BlankComponent } from './common/blank/blank.component';
 import { NoResultsComponent } from './errors/no-results/no-results.component';
@@ -74,11 +77,13 @@ export function SzRestConfigurationFactory() {
     OverlayModule,
     MaterialModule,
     AppRoutingModule,
+    LayoutModule,
+    StorageServiceModule,
     SenzingSdkModule.forRoot( SzRestConfigurationFactory ),
     SpinnerModule,
     environment.test ? HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService, { delay: 100 }) : []
   ],
-  providers: [ EntitySearchService, UiService ],
+  providers: [ EntitySearchService, UiService, PrefsManagerService ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }

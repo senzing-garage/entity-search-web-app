@@ -1,17 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, Input } from '@angular/core';
 import { SpinnerService } from '../services/spinner.service';
 import { UiService } from '../services/ui.service';
 import { EntitySearchService } from '../services/entity-search.service';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-toolbar',
   templateUrl: './toolbar.component.html',
   styleUrls: ['./toolbar.component.scss']
 })
-export class ToolbarComponent implements OnInit {
+export class ToolbarComponent implements OnInit, OnDestroy {
   // currently displayed entity detail id (if any)
   public currentlySelectedEntityId: number = undefined;
+
+  /** subscription to notify subscribers to unbind */
+  public unsubscribe$ = new Subject<void>();
+
+  @Output() showSection: EventEmitter<string> = new EventEmitter<string>();
+
+  @Input() public prefsIsShowing =  false;
 
   constructor(
     private spinner: SpinnerService,
@@ -24,13 +32,29 @@ export class ToolbarComponent implements OnInit {
       (entityId) => {
         this.currentlySelectedEntityId = entityId;
         console.log('ToolbarComponent.onEntityIdChange: ', entityId);
-      }
-      );
+    });
   }
+  /**
+   * unsubscribe when component is destroyed
+   */
+  ngOnDestroy() {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
+
   /** whether or not to show menu options specific to detail view */
   public get showEntityOptions() {
     return (this.search.currentlySelectedEntityId && this.search.currentlySelectedEntityId >= 0) ? true : false;
   }
+  public showPreferences() {
+    this.showSection.emit('preferences');
+    this.uiService.searchExpanded = true;
+  }
+  public showSearch() {
+    this.showSection.emit('search');
+    this.uiService.searchExpanded = true;
+  }
+
   /** true if the search tray is expanded. false if not. */
   public get ribbonExpanded() {
     return this.uiService.searchExpanded;
@@ -46,6 +70,7 @@ export class ToolbarComponent implements OnInit {
 
   toggleSearch(evt?) {
     this.uiService.searchExpanded = !this.uiService.searchExpanded;
+    this.showSection.emit('search');
   }
   toggleSpinner() {
     this.spinner.active = !this.spinner.active;

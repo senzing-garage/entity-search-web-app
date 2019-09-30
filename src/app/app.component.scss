@@ -6,8 +6,13 @@ sz-powered-by {
   position: absolute;
 }
 
+
 .tool-tray {
-  display: inline-block;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  /*display: inline-block;*/
   width: 100%;
   height: 83px;
   overflow: hidden;
@@ -16,10 +21,67 @@ sz-powered-by {
   top: -17px;
   transition: height 0.6s cubic-bezier(0.46, 0.03, 0.52, 0.96);
 
+  #toolbar-col1 {
+    width: auto;
+    display: inline-flex;
+  }
+  #toolbar-col2 {
+    display: inline-flex;
+    flex-direction: column;
+    align-self: end;
+    margin: 60px 0 0 0;
+    padding: 20px 20px 0 0;
+    color: #fff;
+
+    small {
+      display: block;
+      margin-left: 20px;
+      color: #b4b4b4;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      margin: .75em 0 0 0;
+      &.mat-primary {
+        background-color: #b09a84;
+        color: #232323;
+      }
+      &.mat-warn {
+        background-color: #a2544e;
+        color: #232323;
+      }
+    }
+
+    .actions {
+      border-top: 1px solid #636363;
+      margin-top: 3em;
+      padding-top: 1em;
+    }
+  }
+  .column {
+    h2.title {
+      font-size: 1.4em;
+      border-bottom: 1px solid #636363;
+      display: block;
+      white-space: nowrap;
+      margin: 0 0 1em;
+      font-weight: 400;
+    }
+    .row {
+      display: block;
+      margin: 0 0 10px 0;
+    }
+  }
+
   &.expanded {
     height: 275px;
     sz-search {
       opacity: 1;
+    }
+
+    &.prefs-showing {
+      height: 680px;
     }
   }
 
@@ -28,6 +90,10 @@ sz-powered-by {
     margin: 60px 0 0 0;
     opacity: 0;
     transition: opacity .4s linear;
+  }
+  sz-preferences {
+    width: 100%;
+    margin: 60px 0 0 0;
   }
 
   .toggle-icon {
@@ -41,7 +107,56 @@ sz-powered-by {
     line-height: 16px;
     color: #fff;
   }
+
+  .exit-icon {
+    cursor: pointer;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    padding-right: 20px;
+    color: #fff;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    mat-icon {
+      font-size: 24px;
+      margin-top: 10px;
+    }
+    span {
+      font-size: 13px;
+      height: 5px;
+      overflow: visible;
+      text-transform: uppercase;
+    }
+  }
+
 }
+// specific heights for the
+// drawer depending on breakpoints
+:host.layout-narrow {
+  .tool-tray.expanded {
+    height: 430px;
+  }
+  .tool-tray.expanded.prefs-showing {
+    height: unset;
+  }
+}
+:host.layout-super-narrow, {
+  .tool-tray.expanded {
+    height: 520px;
+  }
+  .tool-tray.expanded.prefs-showing {
+    height: unset;
+  }
+}
+:host.layout-medium, {
+
+  .tool-tray.expanded.prefs-showing {
+    height: unset;
+  }
+}
+
 
 // spinner animations
 @-webkit-keyframes sk-stretchdelay {
