@@ -33,6 +33,10 @@ services:
     ports:
       - 8081:8080
     restart: 'always'
+    secrets:
+      - SSL_CERT
+      - SSL_KEY
+      - AUTH_JSON
 
   senzing-webapp-e2e:
       image: senzing/entity-search-web-app
@@ -80,3 +84,11 @@ services:
 
 networks:
   sz-api-network:
+
+secrets:
+  SSL_CERT:
+    file: 'certs/server.cert'
+  SSL_KEY:
+    file: 'certs/server.key'
+  AUTH_JSON:
+    file: 'users/users.json'

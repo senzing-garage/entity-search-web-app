@@ -22,8 +22,9 @@ var cfg = {
   SENZING_WEB_SERVER_PORT: (env.SENZING_WEB_SERVER_PORT ? env.SENZING_WEB_SERVER_PORT : 4200),
   SENZING_WEB_SERVER_API_PATH: (env.SENZING_WEB_SERVER_API_PATH ? env.SENZING_WEB_SERVER_API_PATH : "/api"),
   SENZING_API_SERVER_URL: (env.SENZING_API_SERVER_URL ? env.SENZING_API_SERVER_URL : "http://localhost:8080"),
-  SENZING_WEB_SERVER_SSL_CERT_DIR: (env.SENZING_WEB_SERVER_SSL_CERT_DIR ? env.SENZING_WEB_SERVER_SSL_CERT_DIR : "cert"),
-  SENZING_WEB_SERVER_SSL_SUPPORT: (env.SENZING_WEB_SERVER_SSL_CERT_DIR && SENZING_WEB_SERVER_SSL_SUPPORT ? env.SENZING_WEB_SERVER_SSL_SUPPORT : true),
+  SENZING_WEB_SERVER_SSL_CERT_PATH: (env.SENZING_WEB_SERVER_SSL_CERT_PATH ? env.SENZING_WEB_SERVER_SSL_CERT_PATH : "cert/server.cert"),
+  SENZING_WEB_SERVER_SSL_KEY_PATH: (env.SENZING_WEB_SERVER_SSL_KEY_PATH ? env.SENZING_WEB_SERVER_SSL_KEY_PATH : "cert/server.key"),
+  SENZING_WEB_SERVER_SSL_SUPPORT: (env.SENZING_WEB_SERVER_SSL_CERT_PATH && env.SENZING_WEB_SERVER_SSL_KEY_PATH ? true : true),
   SENZING_WEB_SERVER_BASIC_AUTH: true,
   SENZING_WEB_SERVER_BASIC_AUTH_JSON: (env.SENZING_WEB_SERVER_BASIC_AUTH_JSON ? env.SENZING_WEB_SERVER_BASIC_AUTH_JSON : "users/users.json")
 }
@@ -65,17 +66,14 @@ app.use('*',function(req, res) {
 var ExpressSrvInstance;
 if( cfg.SENZING_WEB_SERVER_SSL_SUPPORT ){
   // https
-  const _ssl_key_location  = (cfg.SENZING_WEB_SERVER_SSL_CERT_DIR ? cfg.SENZING_WEB_SERVER_SSL_CERT_DIR + '/' : '') + 'server.key';
-  const _ssl_cert_location = (cfg.SENZING_WEB_SERVER_SSL_CERT_DIR ? cfg.SENZING_WEB_SERVER_SSL_CERT_DIR + '/' : '') + 'server.cert';
-
   const ssl_opts = {
-    key: fs.readFileSync(_ssl_key_location),
-    cert: fs.readFileSync(_ssl_cert_location)
+    key: fs.readFileSync(cfg.SENZING_WEB_SERVER_SSL_KEY_PATH),
+    cert: fs.readFileSync(cfg.SENZING_WEB_SERVER_SSL_CERT_PATH)
   }
   ExpressSrvInstance = https.createServer(ssl_opts, app).listen(cfg.SENZING_WEB_SERVER_PORT)
   console.log('SSL Express Server started on port '+ cfg.SENZING_WEB_SERVER_PORT);
-  console.log('\tKEY: ', _ssl_key_location);
-  console.log('\tCERT: ', _ssl_cert_location);
+  console.log('\tKEY: ', cfg.SENZING_WEB_SERVER_SSL_KEY_PATH);
+  console.log('\tCERT: ', cfg.SENZING_WEB_SERVER_SSL_CERT_PATH);
 } else {
   // http
   ExpressSrvInstance = app.listen(cfg.SENZING_WEB_SERVER_PORT);
