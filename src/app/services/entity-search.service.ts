@@ -139,7 +139,7 @@ export class EntityDetailResolverService implements Resolve<SzEntityData> {
     this.spinner.show();
     const entityId = parseInt( route.paramMap.get('entityId'), 10);
     if (entityId && entityId > 0) {
-      return this.sdkSearchService.getEntityById(entityId).pipe(
+      return this.sdkSearchService.getEntityById(entityId, true).pipe(
         mergeMap(entityData => {
           console.info('EntityDetailResolverService: ', entityData);
           this.spinner.hide();
