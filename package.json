@@ -39,6 +39,7 @@
     "core-js": "^2.5.4",
     "cors": "^2.8.5",
     "express": "^4.16.4",
+    "express-basic-auth": "^1.2.0",
     "hammerjs": "^2.0.8",
     "http-proxy-middleware": "^0.19.1",
     "karma-brief-reporter": "^0.2.0",

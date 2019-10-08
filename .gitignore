@@ -42,6 +42,12 @@ testem.log
 .DS_Store
 Thumbs.db
 
+# SSL
+/cert
+
+# Auth
+/users/users.json
+
 # Sub repos
 /.gitmodules
 /sdk-components-ng
