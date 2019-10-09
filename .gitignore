@@ -48,6 +48,10 @@ Thumbs.db
 # Auth
 /users/users.json
 
+# Docker Swarm mock files
+/run
+/run/secrets
+
 # Sub repos
 /.gitmodules
 /sdk-components-ng
