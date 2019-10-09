@@ -34,17 +34,20 @@ services:
       - 8081:8080
     restart: 'always'
     secrets:
-      - SSL_CERT
-      - SSL_KEY
-      - AUTH_JSON
+      - source: SZ_WEBAPP_SSL_CERT
+        target: server.cert
+      - source: SZ_WEBAPP_SSL_KEY
+        target: server.key
+      - source: SZ_WEBAPP_AUTH_JSON
+        target: users.json
 
 networks:
   sz-api-network:
 
 secrets:
-  SSL_CERT:
+  SZ_WEBAPP_SSL_CERT:
     file: '../CERTS/server.cert'
-  SSL_KEY:
+  SZ_WEBAPP_SSL_KEY:
     file: '../CERTS/server.key'
-  AUTH_JSON:
+  SZ_WEBAPP_AUTH_JSON:
     file: '../USERS/users.json'
