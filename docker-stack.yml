@@ -1,24 +1,10 @@
 version: '3.3'
 services:
 
-  senzing-api-server:
-    image: senzing/senzing-api-server
-    container_name: senzing-api-server
-    command: "-iniFile /opt/senzing/g2/python/G2Module.ini -httpPort 8080 -bindAddr all"
-    networks:
-      - sz-api-network
-    expose:
-      - 8080
-    volumes:
-      - /opt/senzing:/opt/senzing
-    restart: 'on-failure'
-
   senzing-webapp:
-    image: senzing/entity-search-web-app
+    image: senzing/ssl-entity-search-web-app
     container_name: senzing-webapp
     command: "start:docker"
-    depends_on:
-      - senzing-api-server
     build:
       context: .
       dockerfile: Dockerfile
@@ -36,10 +22,16 @@ services:
     secrets:
       - source: SZ_WEBAPP_SSL_CERT
         target: server.cert
+        uid: 1001
+        gid: 1001
       - source: SZ_WEBAPP_SSL_KEY
         target: server.key
+        uid: 1001
+        gid: 1001
       - source: SZ_WEBAPP_AUTH_JSON
         target: users.json
+        uid: 1001
+        gid: 1001
 
 networks:
   sz-api-network:
