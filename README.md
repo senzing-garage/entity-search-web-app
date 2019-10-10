@@ -21,6 +21,11 @@ This is a more complex example of SDK component usage. It differs from the examp
 
 It's not meant to be followed along by a developer. Rather it serves as both an example of what a more full-featured implementation looks like, as well as a ready to build and deploy docker container.
 
+### Related artifacts
+
+1. [DockerHub](https://hub.docker.com/r/senzing/entity-search-web-app)
+1. [Helm Chart](https://github.com/Senzing/charts/tree/master/charts/senzing-entity-search-web-app)
+
 ### Contents
 
 1. [Preparation](#preparation)
