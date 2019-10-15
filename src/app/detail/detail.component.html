@@ -6,6 +6,9 @@
           <li (click)="openGraphItemInNewMenu(entityEvt.entityId)">Open in new tab</li>
       </ul>
   </ng-template>
+  <div>
+    <button (click)="onGraphPopout($event)">graph pop out</button>
+  </div>
   <!-- end graph context menu template -->
   <sz-entity-detail #entityDetailComponent
   [entityId]="entityId"

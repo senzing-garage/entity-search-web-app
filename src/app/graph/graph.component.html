@@ -1,0 +1,30 @@
+<!-- start entity detail -->
+<div>
+  <h2>Graph Route</h2>
+  <!-- start graph context menu template -->
+  <ng-template #graphContextMenu let-entityEvt>
+      <ul class="graph-context-menu">
+          <li (click)="openGraphItemInNewMenu(entityEvt.entityId)">Open in new tab</li>
+      </ul>
+  </ng-template>
+
+  <div #graphContainer class="sz-entity-detail-section-collapsible-card">
+      <sz-relationship-network #graph class="sz-relationship-network-graph"
+        svgViewBox="150 50 400 300"
+        svgPreserveAspectRatio="xMinYMid meet"
+        [entityIds]="entityIds"
+        [maxDegrees]="maxDegrees"
+        [buildOut]="buildOut"
+        [linkGravity]="5"
+        [showLinkLabels]="_showMatchKeys"
+        (contextMenuClick)="onRightClick($event)"
+        (entityClick)="onEntityClick($event)"
+        (noResults)="onNoResults($event)"
+        [maxEntities]="maxEntities"></sz-relationship-network>
+        <sz-entity-detail-graph-control class="sz-entity-detail-graph-control"
+        [showLinkLabels]="_showMatchKeys"
+        (optionChanged)="onOptionChange($event)"
+        ></sz-entity-detail-graph-control>
+    </div>
+</div>
+<!-- end entity detail -->

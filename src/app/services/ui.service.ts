@@ -8,12 +8,20 @@ import { BehaviorSubject, Subject } from 'rxjs';
 export class UiService {
   private _searchExpanded = true;
   public createPdfClicked = new Subject<number>();
+  private _graphOpen = false;
 
   public get searchExpanded(): boolean {
     return this._searchExpanded;
   }
   public set searchExpanded(value) {
     this._searchExpanded = value;
+  }
+
+  public get graphOpen(): boolean {
+    return this._graphOpen;
+  }
+  public set graphOpen(value: boolean) {
+    this._graphOpen = value;
   }
 
   public get spinnerActive(): boolean {
