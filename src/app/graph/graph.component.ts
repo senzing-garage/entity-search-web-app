@@ -1,25 +1,59 @@
-import { Component, OnInit, ViewChild, Input, TemplateRef, ViewContainerRef, Output, ElementRef, EventEmitter, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, TemplateRef, ViewContainerRef, Output, ElementRef, EventEmitter, OnDestroy, ChangeDetectorRef, Inject, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EntitySearchService } from '../services/entity-search.service';
 import { tap, filter, take, takeUntil } from 'rxjs/operators';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
 import { Subscription, fromEvent, Subject } from 'rxjs';
-import { SzEntityDetailComponent, SzPdfUtilService, SzResolvedEntity, SzRelatedEntity, SzRelationshipNetworkComponent, SzPrefsService } from '@senzing/sdk-components-ng';
+import {
+  SzEntitySearchParams,
+  SzAttributeSearchResult,
+  SzEntityDetailComponent,
+  SzPdfUtilService,
+  SzResolvedEntity,
+  SzRelatedEntity,
+  SzRelationshipNetworkComponent,
+  SzPrefsService,
+  SzSdkPrefsModel,
+  SzStandaloneGraphComponent,
+  SzSearchService
+} from '@senzing/sdk-components-ng';
 import { UiService } from '../services/ui.service';
+import { LOCAL_STORAGE, StorageService } from 'ngx-webstorage-service';
 
 @Component({
   selector: 'app-graph',
   templateUrl: './graph.component.html',
   styleUrls: ['./graph.component.scss']
 })
-export class GraphComponent implements OnInit, OnDestroy {
+export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
   /** subscription to notify subscribers to unbind */
   public unsubscribe$ = new Subject<void>();
+  public currentSearchResults: SzAttributeSearchResult[];
+  public currentlySelectedEntityId: number;
+  public searchResultEntityIds: number[];
+  public currentSearchParameters: SzEntitySearchParams;
+  public showSearchResults = false;
+  public showSpinner = false;
+  // prefs related vars
+  /** localstorage key to store pref data in */
+  public STORAGE_KEY = 'senzing-web-app';
+  /** original json value when app was loaded */
+  private _localStorageOriginalValue: SzSdkPrefsModel = this.storage.get(this.STORAGE_KEY);
+  /** local cached json model of prefs */
+  private _prefsJSON: SzSdkPrefsModel;
 
   public _showGraphMatchKeys = true;
   @Input() public set showGraphMatchKeys( value: boolean ) {
     this._showGraphMatchKeys = value;
+  }
+  public showEntityDetail: boolean = false;
+  public showFilters: boolean = true;
+  public get showSearchResultDetail(): boolean {
+    if (this.currentlySelectedEntityId && this.currentlySelectedEntityId > 0) {
+      return true;
+    }
+    return false;
   }
 
   sub: Subscription;
@@ -41,7 +75,8 @@ export class GraphComponent implements OnInit, OnDestroy {
   @Input() public data: {
     resolvedEntity: SzResolvedEntity,
     relatedEntities: SzRelatedEntity[]
-  }
+  };
+
   public _showMatchKeys = false;
   /** sets the visibility of edge labels on the node links */
   @Input() public set showMatchKeys(value: boolean) {
@@ -59,7 +94,12 @@ export class GraphComponent implements OnInit, OnDestroy {
   @ViewChild('graphContainer') graphContainerEle: ElementRef;
   // @ViewChild(SzEntityDetailGraphControlComponent) graphControlComponent: SzEntityDetailGraphControlComponent;
   @ViewChild(SzRelationshipNetworkComponent) graph: SzRelationshipNetworkComponent;
+  // @ViewChild('searchBox') searchBox: SzSearchComponent;
   @ViewChild('graphContextMenu') graphContextMenu: TemplateRef<any>;
+    /** entity detail component */
+  @ViewChild(SzEntityDetailComponent) entityDetailComponent: SzEntityDetailComponent;
+  /** graph component */
+  @ViewChild(SzStandaloneGraphComponent) graphComponent: SzStandaloneGraphComponent;
 
   /**
    * emitted when the player right clicks a entity node.
@@ -78,13 +118,12 @@ export class GraphComponent implements OnInit, OnDestroy {
    */
   @Output() entityDblClick: EventEmitter<any> = new EventEmitter<any>();
 
+  private _graphIds: number[];
   public get graphIds(): number[] {
-    let _ret = [];
-    if(this.data && this.data.resolvedEntity) {
-      _ret.push(this.data.resolvedEntity.entityId);
-    }
-    // console.log('graphIds setter: ', _ret);
-    return _ret;
+    return this._graphIds;
+  }
+  public set graphIds(value: number[]) {
+    this._graphIds = value;
   }
 
   /**
@@ -127,7 +166,7 @@ export class GraphComponent implements OnInit, OnDestroy {
       // change x/y to include element relative offset
       evtSynth.x = (Math.floor(pos.x) + Math.floor(event.x));
       evtSynth.y = (Math.floor(pos.y) + Math.floor(event.y));
-      //console.warn('onRightClick: ', pos, event);
+      // console.warn('onRightClick: ', pos, event);
       this.contextMenuClick.emit( evtSynth );
     }
   }
@@ -149,18 +188,92 @@ export class GraphComponent implements OnInit, OnDestroy {
     public uiService: UiService,
     public viewContainerRef: ViewContainerRef,
     public prefs: SzPrefsService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    public searchService: SzSearchService,
+    @Inject(LOCAL_STORAGE) private storage: StorageService
     ) {
-    this.route.params.subscribe( (params) => this.entityId = parseInt(params.entityId, 10) );
+      this.route.params.subscribe( (params) => this.entityId = parseInt(params.entityId, 10) );
+  }
 
+  ngAfterViewInit() {
+    /**
+    const searchParams = this.searchBox.getSearchParams();
+    if (searchParams){
+      if ( Object.keys(searchParams).length > 0) {
+        // do auto search
+        this.searchBox.submitSearch();
+      }
+    }*/
+    // current results
+
+    // future results
+    this.search.results.subscribe((results: SzAttributeSearchResult[]) => {
+      console.log('GraphComponent.search.results = ', results);
+    });
+
+    this.prefs.prefsChanged.pipe(
+      takeUntil(this.unsubscribe$)
+    ).subscribe( (srprefs) => {
+      this._prefsJSON = srprefs;
+      // this.savePrefsToLocalStorage();
+      // console.warn('consumer prefs change: ', srprefs);
+    });
+  }
+
+  onSearchException(err: Error) {
+    throw (err.message);
+  }
+
+  onRequestStarted(evt: any) {
+    console.log('onRequestStarted: ', evt);
+    this.uiService.spinnerActive = false;
+  }
+  onRequestComplete(evt: any) {
+    console.log('onRequestComplete: ', evt);
+  }
+  onRenderComplete(evt: any) {
+    console.log('onRenderComplete: ', evt);
+    this.uiService.spinnerActive = false;
+  }
+  onTabClick(tabName: string) {
+    console.log('onTabClick: ' + tabName);
+    switch (tabName) {
+      case 'detail':
+        this.showFilters = false;
+        this.showEntityDetail = true;
+        break;
+      case 'filters':
+        this.showFilters = true;
+        this.showEntityDetail = false;
+
+    }
+    this.graphComponent.showFiltersControl = false;
   }
 
   ngOnInit() {
     this.uiService.createPdfClicked.subscribe((entityId: number) => {
       this.createPDF();
     });
+    //this.uiService.graphOpen = true;
 
-    this.uiService.graphOpen = true;
+    // set up search hooks
+    this.route.data
+    .subscribe((data: { results: SzAttributeSearchResult[], parameters: SzEntitySearchParams }) => {
+      this.currentSearchParameters = data.parameters;
+      this.currentSearchResults = data.results;
+      // clear out any globally stored value;
+      // this.search.currentlySelectedEntityId = undefined;
+      console.log('Initial Search results changed! ', this.currentSearchResults);
+    });
+
+    // listen for global search data
+    this.search.results.subscribe((results: SzAttributeSearchResult[]) => {
+      this.currentSearchResults = results;
+      this.graphIds = results.map((result: SzAttributeSearchResult) => result.entityId);
+      this.showSearchResults = (this.graphIds && this.graphIds.length > 0);
+      this.uiService.spinnerActive = false;
+      console.log('Search results changed! ', this.graphIds);
+    });
 
     // graph prefs
     // NOTE: I had a "debounceTime" in the pipe throttle
@@ -227,7 +340,7 @@ export class GraphComponent implements OnInit, OnDestroy {
   public onNoResults(data: any) {
     // when set to autocollapse on no results
     // collapse tray
-    if(this.prefs.entityDetail.hideGraphWhenZeroRelations){
+    if(this.prefs.entityDetail.hideGraphWhenZeroRelations) {
       // this.isOpen = false;
     }
   }
@@ -256,7 +369,7 @@ export class GraphComponent implements OnInit, OnDestroy {
    * gets a filename based on entity name for generating a pdf document.
   */
   private get pdfFileName(): string {
-    let filename = 'entity';
+    const filename = 'entity';
     /*
     if ( this.entityDetailComponent.entity && this.entityDetailComponent.entity.resolvedEntity ) {
       if ( this.entityDetailComponent.entity.resolvedEntity.bestName ) {
@@ -275,6 +388,17 @@ export class GraphComponent implements OnInit, OnDestroy {
   private createPDF(): void {
     const filename = this.pdfFileName;
     // this.pdfUtil.createPdfFromHtmlElement(this.entityDetailComponent.nativeElement, filename);
+  }
+
+  public onGraphEntityClick(event: any): void {
+    console.log('clicked on graph entity #' + event.entityId);
+    this.currentlySelectedEntityId = event.entityId;
+    this.showEntityDetail = true;
+    this.showFilters = false;
+  }
+
+  public toggleSpinner() {
+    this.uiService.spinnerActive = !this.uiService.spinnerActive;
   }
 
   /**

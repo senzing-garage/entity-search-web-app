@@ -1,6 +1,4 @@
 <!-- start entity detail -->
-<div>
-  <h2>Graph Route</h2>
   <!-- start graph context menu template -->
   <ng-template #graphContextMenu let-entityEvt>
       <ul class="graph-context-menu">
@@ -8,33 +6,42 @@
       </ul>
   </ng-template>
 
-  <div #graphContainer class="sz-entity-detail-section-collapsible-card">
-      <sz-standalone-graph data-html2canvas-ignore
-      *ngIf="entityId"
-      [graphIds]="entityIds"
-      [showPopOutIcon]="false"
-      [showMatchKeyControl]="false"
-      [showFiltersControl]="true"
-      [showMatchKeys]="true"
-    ></sz-standalone-graph>
-    <!--
-      <sz-relationship-network #graph class="sz-relationship-network-graph"
-        svgViewBox="150 50 400 300"
-        svgPreserveAspectRatio="xMinYMid meet"
-        [entityIds]="entityIds"
-        [maxDegrees]="maxDegrees"
-        [buildOut]="buildOut"
-        [linkGravity]="5"
-        [showLinkLabels]="_showMatchKeys"
-        (contextMenuClick)="onRightClick($event)"
-        (entityClick)="onEntityClick($event)"
-        (noResults)="onNoResults($event)"
-        [maxEntities]="maxEntities"></sz-relationship-network>
-        <sz-entity-detail-graph-control class="sz-entity-detail-graph-control"
-        [showLinkLabels]="_showMatchKeys"
-        (optionChanged)="onOptionChange($event)"
-        ></sz-entity-detail-graph-control>
-      -->
+
+  <div class="tab-container">
+    <button (click)="onTabClick('detail')" class="tab" [class.active]="showEntityDetail">details</button>
+    <button (click)="onTabClick('filters')" class="tab" [class.active]="showFilters">filters</button>
+    <!--<button (click)="toggleSpinner()">toggle spinner</button>-->
+  </div>
+  <div class="content-container">
+    <!-- start graph control -->
+    <div #graphContainer>
+        <sz-standalone-graph data-html2canvas-ignore
+          #graphComponent
+          *ngIf="showSearchResults"
+          filterWidth="320"
+          [graphIds]="graphIds"
+          [showPopOutIcon]="false"
+          [showMatchKeyControl]="false"
+          [showFiltersControl]="showFilters"
+          [filterControlPosition]="'top-right'"
+          (entityClick)="onGraphEntityClick($event)"
+          [showMatchKeys]="true"
+          (requestStarted)="onRequestStarted($event)"
+          (renderComplete)="onRenderComplete($event)"
+          (requestComplete)="onRequestComplete($event)"
+      ></sz-standalone-graph>
     </div>
-</div>
+    <!--  end graph control  -->
+
+    <!-- start entity detail -->
+    <div *ngIf="showEntityDetail" class="embedded-detail-viewer">
+      <sz-entity-detail
+        #entityDetailComponent
+        [showGraphSection]="false"
+        [forceLayout]="'layout-narrow'"
+        [entityId]="currentlySelectedEntityId"></sz-entity-detail>
+    </div>
+    <!-- end entity detail -->
+  </div>
+  <h2>Loading: "{{ showSpinner }}"</h2>
 <!-- end entity detail -->

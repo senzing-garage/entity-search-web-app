@@ -157,6 +157,10 @@ sz-powered-by {
   }
 }
 
+app-spinner {
+  z-index: 10;
+}
+
 
 // spinner animations
 @-webkit-keyframes sk-stretchdelay {

@@ -49,7 +49,7 @@ export class ToolbarComponent implements OnInit, OnDestroy {
 
   /** whether or not to show menu options specific to detail view */
   public get showGraphOptions() {
-    if (this.search.currentlySelectedEntityId && this.search.currentlySelectedEntityId >= 0 && this.uiService.graphOpen) {
+    if (this.uiService.graphOpen && this.search.currentSearchResults && this.search.currentSearchResults.length > 0) {
       return true;
     } else {
       return false;
