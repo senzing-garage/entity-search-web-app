@@ -2,6 +2,7 @@
   padding: 0;
   display: block;
   position: relative;
+  height: 100%;
 
   .graph-context-menu {
     border: 1px solid #686868;
@@ -42,6 +43,9 @@
   .content-container {
     position: relative;
     background-color: #fff;
+    height: 100%;
+    overflow: hidden;
+
     --sz-large-graph-height: 720px;
     --sz-entity-graph-control-border-top: none;
     --sz-entity-graph-control-border-right: none;

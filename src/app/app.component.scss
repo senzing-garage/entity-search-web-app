@@ -161,6 +161,9 @@ app-spinner {
   z-index: 10;
 }
 
+.view-primary {
+  height: calc(100vh - 280px);
+}
 
 // spinner animations
 @-webkit-keyframes sk-stretchdelay {
