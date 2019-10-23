@@ -163,6 +163,11 @@ app-spinner {
 
 .view-primary {
   height: calc(100vh - 280px);
+  transition: height 2s;
+
+  &.expanded {
+      height: calc(100vh - 88px);
+  }
 }
 
 // spinner animations
