@@ -9,11 +9,11 @@
   }
 
   .tab-container {
-    width: 338px;
+    width: 250px;
     height: 24px;
     position: absolute;
-    top: -24px;
-    right: 2px;
+    top: -40px;
+    right: 89px;
     /*background-color: #f8f7f5;*/
 
     .tab {
@@ -24,7 +24,7 @@
       border-bottom: 1px solid #cfcfcf;
       border-radius: 4px 4px 0 0;
       padding: 4px 0px;
-      width: 35%;
+      width: 50%;
       color: #fff;
       cursor: pointer;
 
@@ -42,11 +42,12 @@
 
   .content-container {
     position: relative;
+    top: -17px;
     background-color: #fff;
-    height: 100%;
+    height: calc(100% + 17px);
     overflow: hidden;
 
-    --sz-large-graph-height: 720px;
+    --sz-large-graph-height: 100%;
     --sz-entity-graph-control-border-top: none;
     --sz-entity-graph-control-border-right: none;
     --sz-entity-graph-control-border-bottom: none;
@@ -66,6 +67,10 @@
       top: 0px;
       right: 0px;
       overflow: scroll;
+    }
+
+    .graph-container {
+      height: var(--sz-large-graph-height);
     }
   }
 }

@@ -16,7 +16,8 @@ import {
   SzPrefsService,
   SzSdkPrefsModel,
   SzStandaloneGraphComponent,
-  SzSearchService
+  SzSearchService,
+  SzEntityData
 } from '@senzing/sdk-components-ng';
 import { UiService } from '../services/ui.service';
 import { LOCAL_STORAGE, StorageService } from 'ngx-webstorage-service';
@@ -192,7 +193,34 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     public searchService: SzSearchService,
     @Inject(LOCAL_STORAGE) private storage: StorageService
     ) {
-      this.route.params.subscribe( (params) => this.entityId = parseInt(params.entityId, 10) );
+
+      /* currently were only set up to resolve data to a single entity */
+      this.route.data.subscribe((data) => {
+        // we're using the route resolver to activate spinner
+        // this could be more efficient and use networkData to feed
+        // directly to component views
+      });
+      this.route.params.subscribe(
+        (params) => {
+          if(params && params.entityId) {
+            this.graphIds = [parseInt(params.entityId, 10)];
+            this.showSearchResults = true;
+          } else if(params && params.entityIds) {
+            this.showSearchResults = true;
+          }
+          if(params && params.detailId) {
+            this.currentlySelectedEntityId = params.detailId;
+            this.showEntityDetail = true;
+            this.showFilters = false;
+          } else if(params && params.entityId) {
+            // no detail view
+            // check if they have a search entityId and use that
+            this.currentlySelectedEntityId = parseInt(params.entityId, 10);
+            this.showEntityDetail = false;
+            this.showFilters = true;
+          }
+        }
+      );
   }
 
   ngAfterViewInit() {
@@ -225,18 +253,17 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onRequestStarted(evt: any) {
-    console.log('onRequestStarted: ', evt);
+    //console.log('onRequestStarted: ', evt);
     this.uiService.spinnerActive = false;
   }
   onRequestComplete(evt: any) {
-    console.log('onRequestComplete: ', evt);
+    //console.log('onRequestComplete: ', evt);
   }
   onRenderComplete(evt: any) {
-    console.log('onRenderComplete: ', evt);
+    //console.log('onRenderComplete: ', evt);
     this.uiService.spinnerActive = false;
   }
   onTabClick(tabName: string) {
-    console.log('onTabClick: ' + tabName);
     switch (tabName) {
       case 'detail':
         this.showFilters = false;
