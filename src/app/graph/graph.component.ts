@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Input, TemplateRef, ViewContainerRef, Output, ElementRef, EventEmitter, OnDestroy, ChangeDetectorRef, Inject, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, TemplateRef, ViewContainerRef, Output, ElementRef, EventEmitter, OnDestroy, ChangeDetectorRef, Inject, AfterViewInit, Renderer2 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EntitySearchService } from '../services/entity-search.service';
 import { tap, filter, take, takeUntil } from 'rxjs/operators';
@@ -37,10 +37,6 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
   public showSearchResults = false;
   public showSpinner = false;
   // prefs related vars
-  /** localstorage key to store pref data in */
-  public STORAGE_KEY = 'senzing-web-app';
-  /** original json value when app was loaded */
-  private _localStorageOriginalValue: SzSdkPrefsModel = this.storage.get(this.STORAGE_KEY);
   /** local cached json model of prefs */
   private _prefsJSON: SzSdkPrefsModel;
 
@@ -191,7 +187,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     public prefs: SzPrefsService,
     private cd: ChangeDetectorRef,
     public searchService: SzSearchService,
-    @Inject(LOCAL_STORAGE) private storage: StorageService
+    private renderer: Renderer2
     ) {
 
       /* currently were only set up to resolve data to a single entity */
@@ -221,6 +217,11 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         }
       );
+      // set body class based on isGraphShowing
+      if (this.uiService.graphOpen) {
+        this.renderer.addClass(document.body, 'graph-open');
+      }
+
   }
 
   ngAfterViewInit() {
@@ -357,6 +358,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     this.uiService.graphOpen = false;
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
+    this.renderer.removeClass(document.body, 'graph-open');
   }
 
   /**

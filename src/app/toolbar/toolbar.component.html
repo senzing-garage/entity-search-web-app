@@ -2,7 +2,8 @@
   <button mat-icon-button [matMenuTriggerFor]="appMenu">
     <mat-icon>more_vert</mat-icon>
   </button>
-  <span>Entity Search</span>
+  <span *ngIf="!showGraphOptions">Entity Search</span>
+  <span *ngIf="showGraphOptions">Explore Networks</span>
   <sz-powered-by format="small"></sz-powered-by>
   <mat-menu #appMenu="matMenu">
     <a (click)="goHome()" routerLink="/" routerLinkActive="active" mat-menu-item><mat-icon>home</mat-icon>Home</a>

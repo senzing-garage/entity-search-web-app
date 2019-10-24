@@ -59,7 +59,7 @@
     --sz-entity-graph-control-item-background-color: none;
 
     .embedded-detail-viewer {
-      background-color: #fafafa;
+      background-color: #f8f7f5;
       border: none;
       width: 340px;
       height: 100%;
@@ -67,6 +67,7 @@
       top: 0px;
       right: 0px;
       overflow: scroll;
+      padding-top: 16px;
     }
 
     .graph-container {

@@ -49,15 +49,14 @@ export class UiService {
     private spinner: SpinnerService
     ) {
     // we need route senzing for graph sensing
+    // because there is also an embedded graph
     route.url.subscribe( (url: UrlSegment[]) => {
       const urlStr = url.join();
       this._graphOpen = (urlStr && urlStr.indexOf && urlStr.indexOf('/graph/') >= 0);
-      console.warn('UiService currentRoutePath: ', urlStr, this.graphOpen);
     });
     router.events.subscribe((event) => {
       if (event instanceof NavigationEnd ) {
         this._graphOpen = (event && event.urlAfterRedirects && event.urlAfterRedirects.indexOf('/graph/') >= 0);
-        console.log('UiService currentRoutePath: ', event.url, this.graphOpen);
       }
     });
   }
