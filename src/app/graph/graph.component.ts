@@ -286,18 +286,24 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // set up search hooks
     this.route.data
+    .pipe(
+      takeUntil(this.unsubscribe$),
+    )
     .subscribe((data: { results: SzAttributeSearchResult[], parameters: SzEntitySearchParams }) => {
       this.currentSearchParameters = data.parameters;
       this.currentSearchResults = data.results;
       // clear out any globally stored value;
       // this.search.currentlySelectedEntityId = undefined;
-      console.log('Initial Search results changed! ', this.currentSearchResults);
     });
 
     // listen for global search data
-    this.search.results.subscribe((results: SzAttributeSearchResult[]) => {
+    this.search.results.pipe(
+      takeUntil(this.unsubscribe$),
+    ).subscribe((results: SzAttributeSearchResult[]) => {
       this.currentSearchResults = results;
-      this.graphIds = results.map((result: SzAttributeSearchResult) => result.entityId);
+      if(results && results.map){
+        this.graphIds = results.map((result: SzAttributeSearchResult) => result.entityId);
+      }
       this.showSearchResults = (this.graphIds && this.graphIds.length > 0);
       this.uiService.spinnerActive = false;
       console.log('Search results changed! ', this.graphIds);

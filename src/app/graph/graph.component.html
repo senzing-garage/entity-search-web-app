@@ -37,6 +37,7 @@
     <div *ngIf="showEntityDetail" class="embedded-detail-viewer">
       <sz-entity-detail
         #entityDetailComponent
+        [updatePrefsOnChange]="false"
         [showGraphSection]="false"
         [forceLayout]="'layout-rail'"
         [entityId]="currentlySelectedEntityId"></sz-entity-detail>
