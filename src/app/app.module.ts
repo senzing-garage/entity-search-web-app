@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material.module';
 import { SenzingSdkModule, SzRestConfiguration } from '@senzing/sdk-components-ng';
+import { SenzingSdkGraphModule } from '@senzing/sdk-graph-components';
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { InMemoryDataService } from '../../e2e/data/services/in-memory-data.service';
 import { OverlayModule } from '@angular/cdk/overlay';
@@ -21,6 +22,7 @@ import { EntitySearchService } from './services/entity-search.service';
 import { AppComponent } from './app.component';
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { DetailComponent } from './detail/detail.component';
+import { GraphComponent } from './graph/graph.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { UiService } from './services/ui.service';
 import { PrefsManagerService } from './services/prefs-manager.service';
@@ -60,6 +62,7 @@ export function SzRestConfigurationFactory() {
     AppComponent,
     SearchResultsComponent,
     DetailComponent,
+    GraphComponent,
     ToolbarComponent,
     ErrorPageComponent,
     PageNotFoundComponent,
@@ -80,6 +83,7 @@ export function SzRestConfigurationFactory() {
     LayoutModule,
     StorageServiceModule,
     SenzingSdkModule.forRoot( SzRestConfigurationFactory ),
+    SenzingSdkGraphModule.forRoot( SzRestConfigurationFactory ),
     SpinnerModule,
     environment.test ? HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService, { delay: 100 }) : []
   ],

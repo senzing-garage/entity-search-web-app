@@ -157,4 +157,9 @@ export class DetailComponent implements OnInit {
       this.overlayRef = null;
     }
   }
+
+  onGraphPopout(event) {
+    console.log('on graph popout: ', event);
+    this.router.navigate(['graph/' + this.entityId]);
+  }
 }

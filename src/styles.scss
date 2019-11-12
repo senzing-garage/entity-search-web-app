@@ -23,6 +23,10 @@ body {
   --sz-search-button-clear-background-color: transparent;
   --sz-search-label-font-size: .8em;
   --sz-search-label-color: #b3b3b3;
+  &.graph-open {
+    overflow: hidden;
+    height: 100vh;
+  }
 }
 
 .graph-context-menu {

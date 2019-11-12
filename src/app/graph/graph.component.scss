@@ -1,0 +1,77 @@
+:host {
+  padding: 0;
+  display: block;
+  position: relative;
+  height: 100%;
+
+  .graph-context-menu {
+    border: 1px solid #686868;
+  }
+
+  .tab-container {
+    width: 250px;
+    height: 24px;
+    position: absolute;
+    top: -40px;
+    right: 89px;
+    /*background-color: #f8f7f5;*/
+
+    .tab {
+      background-color: #a9a9a9;
+      border-top: 1px solid #cfcfcf;
+      border-right: 1px solid #cfcfcf;
+      border-left: none;
+      border-bottom: 1px solid #cfcfcf;
+      border-radius: 0;
+      padding: 4px 0px;
+      width: 50%;
+      color: #fff;
+      cursor: pointer;
+
+      &.active {
+        background-color: #f8f7f5;
+        border-bottom: none;
+        color: #797979;
+        cursor: unset;
+      }
+      &:active, &:focus, &:visited {
+        outline: none !important;
+      }
+    }
+  }
+
+  .content-container {
+    position: relative;
+    top: -17px;
+    background-color: #fff;
+    height: calc(100% + 17px);
+    overflow: hidden;
+
+    --sz-large-graph-height: 100%;
+    --sz-entity-graph-control-border-top: none;
+    --sz-entity-graph-control-border-right: none;
+    --sz-entity-graph-control-border-bottom: none;
+    --sz-entity-graph-control-border-left: none;
+    --sz-entity-graph-control-border-top-left-radius: 0;
+    --sz-entity-graph-control-border-top-right-radius: 0;
+    --sz-entity-graph-control-border-bottom-left-radius: 0;
+    --sz-entity-graph-control-border-bottom-right-radius: 0;
+    --sz-entity-graph-control-item-background-color: none;
+
+    .embedded-detail-viewer {
+      background-color: #f8f7f5;
+      border: none;
+      width: 340px;
+      height: 100%;
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      overflow: scroll;
+      padding-top: 16px;
+    }
+
+    .graph-container {
+      height: var(--sz-large-graph-height);
+    }
+  }
+}

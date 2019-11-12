@@ -1,0 +1,47 @@
+<!-- start entity detail -->
+  <!-- start graph context menu template -->
+  <ng-template #graphContextMenu let-entityEvt>
+      <ul class="graph-context-menu">
+          <li (click)="openGraphItemInNewMenu(entityEvt.entityId)">Open in new tab</li>
+      </ul>
+  </ng-template>
+
+
+  <div class="tab-container">
+    <button (click)="onTabClick('detail')" class="tab" [class.active]="showEntityDetail">details</button>
+    <button (click)="onTabClick('filters')" class="tab" [class.active]="showFilters">filters</button>
+    <!--<button (click)="toggleSpinner()">toggle spinner</button>-->
+  </div>
+  <div class="content-container">
+    <!-- start graph control -->
+    <div class="graph-container" #graphContainer>
+        <sz-standalone-graph data-html2canvas-ignore
+          #graphComponent
+          *ngIf="showSearchResults"
+          filterWidth="320"
+          [graphIds]="graphIds"
+          [showPopOutIcon]="false"
+          [showMatchKeyControl]="false"
+          [showFiltersControl]="showFilters"
+          [filterControlPosition]="'top-right'"
+          (entityClick)="onGraphEntityClick($event)"
+          [showMatchKeys]="true"
+          (requestStarted)="onRequestStarted($event)"
+          (renderComplete)="onRenderComplete($event)"
+          (requestComplete)="onRequestComplete($event)"
+      ></sz-standalone-graph>
+    </div>
+    <!--  end graph control  -->
+
+    <!-- start entity detail -->
+    <div *ngIf="showEntityDetail" class="embedded-detail-viewer">
+      <sz-entity-detail
+        #entityDetailComponent
+        [updatePrefsOnChange]="false"
+        [showGraphSection]="false"
+        [forceLayout]="'layout-rail'"
+        [entityId]="currentlySelectedEntityId"></sz-entity-detail>
+    </div>
+    <!-- end entity detail -->
+  </div>
+<!-- end entity detail -->
