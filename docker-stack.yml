@@ -3,7 +3,6 @@ services:
 
   senzing-api-server:
     image: senzing/senzing-api-server
-    container_name: senzing-api-server
     command:
       - -httpPort
       - "8080"
@@ -29,14 +28,10 @@ services:
     restart: 'on-failure'
 
   senzing-webapp:
-    image: senzing/entity-search-web-app:ssl
-    container_name: senzing-webapp
+    image: senzing/entity-search-web-app:1.0.4
     command: "start:docker"
     depends_on:
       - senzing-api-server
-    build:
-      context: .
-      dockerfile: Dockerfile
     environment:
       SENZING_API_SERVER_URL: "http://senzing-api-server:8080"
       SENZING_WEB_SERVER_PORT: 8080
@@ -57,10 +52,6 @@ services:
         target: server.key
         uid: '1001'
         gid: '1001'
-      - source: SZ_WEBAPP_AUTH_JSON
-        target: users.json
-        uid: '1001'
-        gid: '1001'
 
 networks:
   sz-api-network:
@@ -70,5 +61,3 @@ secrets:
     file: '../CERTS/server.cert'
   SZ_WEBAPP_SSL_KEY:
     file: '../CERTS/server.key'
-  SZ_WEBAPP_AUTH_JSON:
-    file: '../USERS/users.json'

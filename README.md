@@ -28,21 +28,29 @@ It's not meant to be followed along by a developer. Rather it serves as both an 
 
 ### Contents
 
-1. [Preparation](#preparation)
-    1. [Prerequisite software](#prerequisite-software)
-    1. [Clone repository](#clone-repository)
-    1. [Create SENZING_DIR](#create-senzing_dir)
-1. [Using docker-compose](#using-docker-compose)
-1. [Using docker](#using-docker)
-    1. [Air Gapped Environments](#air-gapped-environments)
-    1. [Building from Source](#building-from-source)
-1. [Development](#development)
-    1. [Development server](#development-server)
-    1. [Production server](#production-server)
-1. [Code scaffolding](#code-scaffolding)
-1. [Running unit tests](#running-unit-tests)
-1. [Running end-to-end tests](#running-end-to-end-tests)
-1. [Further help](#further-help)
+- [Entity Search Web App](#entity-search-web-app)
+  - [Overview](#overview)
+    - [Related artifacts](#related-artifacts)
+    - [Contents](#contents)
+  - [Preparation](#preparation)
+    - [Prerequisite software](#prerequisite-software)
+    - [Clone repository](#clone-repository)
+    - [Create SENZING_DIR](#create-senzingdir)
+  - [Using docker-compose](#using-docker-compose)
+  - [Using docker](#using-docker)
+    - [Using SSL](#using-ssl)
+      - [Prerequisites](#prerequisites)
+      - [Self-Signed Certificates](#self-signed-certificates)
+      - [Setting up SSL using Docker Stack](#setting-up-ssl-using-docker-stack)
+    - [Air Gapped Environments](#air-gapped-environments)
+    - [Building from Source](#building-from-source)
+  - [Development](#development)
+    - [Development server](#development-server)
+    - [Production Server](#production-server)
+  - [Code scaffolding](#code-scaffolding)
+  - [Running unit tests](#running-unit-tests)
+  - [Running end-to-end tests](#running-end-to-end-tests)
+  - [Further help](#further-help)
 
 ## Preparation
 
@@ -181,6 +189,47 @@ If you do not already have an `/opt/senzing` directory on your local system, vis
        curl http://machine-host-name:8081
        ```
 
+### Using SSL
+
+The main docker image for the senzing webapp supports running it's webserver over HTTPS. In order to deploy the webapp in a secure way, you must be using the image in a swarm configuration, rather than a standalone service. For more information on swarms and why this is a requirement see [Docker Swarm Secrets](https://docs.docker.com/engine/swarm/secrets/)
+
+#### Prerequisites
+
+1. docker client and daemon with *API version* > 1.25
+you can check what api version your docker client is running by typing `docker version`
+2. Valid SSL certificates(server.key and server.cert) for the webserver. (if you don't have them, you can use a [self-signed certificate](#self-signed-certificates) in the interim)
+
+#### Self-Signed Certificates
+
+A self-signed certificate is sufficent to establish a secure, HTTPS connection for development purposes. It should not be used in a production environment, but if you're just trying to test out encryption to see how it works it's a viable short-term solution. You will need *OpenSSL* installed on your system to generate these. Just do a [google search](https://www.google.com/search?q=using+self+signed+SSL+certificate) or check out [this article](https://flaviocopes.com/express-https-self-signed-certificate/) or [this one](https://flaviocopes.com/express-https-self-signed-certificate/) and come back to this section once you have the server.cert and server.key files
+
+#### Setting up SSL using Docker Stack
+
+For convenience we have included a docker compose [file](./docker-stack.yml) specifically for running in SSL configuration. We suggest starting with this example if you're not familiar how stacks work(you will want a different yml file for stack deployment for a number of reasons).
+If you open that example up you will see two lines at the bottom of the file:
+
+```yaml
+  SZ_WEBAPP_SSL_CERT:
+    file: '../CERTS/server.cert'
+  SZ_WEBAPP_SSL_KEY:
+    file: '../CERTS/server.key'
+```
+
+Those lines tell docker to pass two secrets to the services defined in the docker compose file. These two lines should point to the location of the *server.key* and *server.cert* file you wish to use. The configuration of the *senzing-api-server* service may differ from how you have set up your configuration to run. You should copy over the configuration options defined in your _already working_ docker-compose.yml file to the docker-stack.yml file.
+
+Next you will deploy the services defined in the yml file to your swarm manager by typing `sudo SENZING_DATA_VERSION_DIR=${SENZING_DATA_VERSION_DIR} SENZING_ETC_DIR=${SENZING_ETC_DIR} SENZING_G2_DIR=${SENZING_G2_DIR} SENZING_VAR_DIR=${SENZING_VAR_DIR} docker stack deploy -c docker-stack.yml senzing-webapp`
+check that the services started up successfully by typing `docker stack ps senzing-webapp`. the result should look like the following
+
+```bash
+ID                  NAME                                  IMAGE                               NODE                DESIRED STATE       CURRENT STATE               ERROR               PORTS
+7mxc4jru51pl        senzing-webapp_senzing-api-server.1   senzing/senzing-api-server:latest   americium           Running             Running about an hour ago
+rnguy9d2incb        senzing-webapp_senzing-webapp.1       senzing/entity-search-web-app:ssl   americium           Running             Running about an hour ago
+```
+
+next you can initiate a curl request to your webserver with `curl -I https://localhost:8081`. Note that if you are running with a self-signed certificate if will throw a warning at you. You can do a `curl -k -I https://localhost:8081` instead to check that everything is running.
+
+You can shut down the swarm node with `docker stack rm senzing-webapp`
+
 ### Air Gapped Environments
 
 Obviously if your deployment environment is highly restricted you're probably going
@@ -192,14 +241,14 @@ for how to procedure regarding this use-case.
 The short version is find a machine with network access, then:
 
 1. Pull the docker images you need to that machine.
-1. Package them as a tar file. Example:
+2. Package them as a tar file. Example:
 
     ```console
     sudo docker save senzing/entity-search-web-app --output senzing-entity-search-web-app-latest.tar
     ```
 
-1. Copy that to the deployment machine.
-1. Load via
+3. Copy that to the deployment machine.
+4. Load via
 
     ```console
     sudo docker load --input senzing-entity-search-web-app-latest.tar
