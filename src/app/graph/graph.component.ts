@@ -218,10 +218,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       );
       // set body class based on isGraphShowing
-      if (this.uiService.graphOpen) {
-        this.renderer.addClass(document.body, 'graph-open');
-      }
-
+      this.renderer.addClass(document.body, 'graph-open');
   }
 
   ngAfterViewInit() {
