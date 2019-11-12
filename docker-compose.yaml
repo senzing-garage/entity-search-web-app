@@ -4,13 +4,29 @@ services:
   senzing-api-server:
     image: senzing/senzing-api-server
     container_name: senzing-api-server
-    command: "-iniFile /opt/senzing/g2/python/G2Module.ini -httpPort 8080 -bindAddr all"
+    command:
+      - -httpPort
+      - "8080"
+      - -bindAddr
+      - all
+      - -iniFile
+      - /etc/opt/senzing/G2Module.ini
+      - -allowedOrigins
+      - "*"
+      - -concurrency
+      - "16"
+
     networks:
       - sz-api-network
     expose:
       - 8080
+    ports:
+      - 8080:8080
     volumes:
-      - /opt/senzing:/opt/senzing
+      - ${SENZING_DATA_VERSION_DIR:-/opt/senzing/data/1.0.0}:/opt/senzing/data
+      - ${SENZING_ETC_DIR:-/etc/opt/senzing}:/etc/opt/senzing
+      - ${SENZING_G2_DIR:-/opt/senzing/g2}:/opt/senzing/g2
+      - ${SENZING_VAR_DIR:-/var/opt/senzing}:/var/opt/senzing
     restart: 'on-failure'
 
   senzing-webapp:
