@@ -16,8 +16,6 @@ services:
       - "16"
     networks:
       - sz-api-network
-    expose:
-      - 8080
     ports:
       - 8080:8080
     volumes:

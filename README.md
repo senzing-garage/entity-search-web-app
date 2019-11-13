@@ -216,6 +216,21 @@ If you open that example up you will see two lines at the bottom of the file:
 ```
 
 Those lines tell docker to pass two secrets to the services defined in the docker compose file. These two lines should point to the location of the *server.key* and *server.cert* file you wish to use. The configuration of the *senzing-api-server* service may differ from how you have set up your configuration to run. You should copy over the configuration options defined in your _already working_ docker-compose.yml file to the docker-stack.yml file.
+The other important lines(under the *senzing-webapp* service definition) are:
+
+```yaml
+secrets:
+      - source: SZ_WEBAPP_SSL_CERT
+        target: server.cert
+        uid: '1001'
+        gid: '1001'
+      - source: SZ_WEBAPP_SSL_KEY
+        target: server.key
+        uid: '1001'
+        gid: '1001'
+```
+
+They tell the webapp service to use the content of the secrets defined at the bottom of the file. It's like passing the files in.. but also not. docker secrets are weird.
 
 Next you will deploy the services defined in the yml file to your swarm manager by typing `sudo SENZING_DATA_VERSION_DIR=${SENZING_DATA_VERSION_DIR} SENZING_ETC_DIR=${SENZING_ETC_DIR} SENZING_G2_DIR=${SENZING_G2_DIR} SENZING_VAR_DIR=${SENZING_VAR_DIR} docker stack deploy -c docker-stack.yml senzing-webapp`
 check that the services started up successfully by typing `docker stack ps senzing-webapp`. the result should look like the following
@@ -226,7 +241,47 @@ ID                  NAME                                  IMAGE                 
 rnguy9d2incb        senzing-webapp_senzing-webapp.1       senzing/entity-search-web-app:ssl   americium           Running             Running about an hour ago
 ```
 
-next you can initiate a curl request to your webserver with `curl -I https://localhost:8081`. Note that if you are running with a self-signed certificate if will throw a warning at you. You can do a `curl -k -I https://localhost:8081` instead to check that everything is running.
+next you can initiate a curl request to your webserver with `curl -kvv https://localhost:8081`. The output should looks something like the following:
+
+```bash
+* Rebuilt URL to: https://localhost:8081/
+*   Trying 127.0.0.1...
+* TCP_NODELAY set
+* Connected to localhost (127.0.0.1) port 8081 (#0)
+* ALPN, offering h2
+* ALPN, offering http/1.1
+* successfully set certificate verify locations:
+*   CAfile: /etc/ssl/certs/ca-certificates.crt
+  CApath: /etc/ssl/certs
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+* TLSv1.3 (IN), TLS handshake, Server hello (2):
+* TLSv1.3 (IN), TLS Unknown, Certificate Status (22):
+* TLSv1.3 (IN), TLS handshake, Unknown (8):
+* TLSv1.3 (IN), TLS Unknown, Certificate Status (22):
+* TLSv1.3 (IN), TLS handshake, Certificate (11):
+* TLSv1.3 (IN), TLS Unknown, Certificate Status (22):
+* TLSv1.3 (IN), TLS handshake, CERT verify (15):
+* TLSv1.3 (IN), TLS Unknown, Certificate Status (22):
+* TLSv1.3 (IN), TLS handshake, Finished (20):
+* TLSv1.3 (OUT), TLS change cipher, Client hello (1):
+* TLSv1.3 (OUT), TLS Unknown, Certificate Status (22):
+* TLSv1.3 (OUT), TLS handshake, Finished (20):
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384
+* ALPN, server accepted to use http/1.1
+* Server certificate:
+*  subject: C=US; ST=OR; L=SenzingTown; O=Senzing; CN=localhost
+*  start date: Nov 13 00:49:12 2019 GMT
+*  expire date: Nov 12 00:49:12 2020 GMT
+*  issuer: C=US; ST=OR; L=SenzingTown; O=Senzing; CN=localhost
+*  SSL certificate verify result: self signed certificate (18), continuing anyway.
+* TLSv1.3 (OUT), TLS Unknown, Unknown (23):
+> GET / HTTP/1.1
+> Host: localhost:8081
+> User-Agent: curl/7.58.0
+> Accept: */*
+```
+
+I'm using a self-signed cert in this example, but the important part is that you see the *TLSvx.x* handshake(s) and the *Server certificate:* response block. At this point you open up a normal browser(chrome, ff, edge etc) to your server instance, something like [https://localhost:8081](https://localhost:8081). You _should_ see information next to the address in the address bar with the SSL information provided by the certificate. If you self-signed you will be greeted with a warning message asking whether you want to proceed or not, this is normal.
 
 You can shut down the swarm node with `docker stack rm senzing-webapp`
 
