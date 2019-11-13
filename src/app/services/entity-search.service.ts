@@ -5,7 +5,7 @@ import {
   ActivatedRouteSnapshot
 } from '@angular/router';
 import { Observable, of, EMPTY, Subject } from 'rxjs';
-import { mergeMap, take, catchError } from 'rxjs/operators';
+import { mergeMap, take, catchError, tap, map } from 'rxjs/operators';
 
 import {
   SzEntitySearchParams,
@@ -14,9 +14,10 @@ import {
   SzSearchResultEntityData,
   SzEntityData
 } from '@senzing/sdk-components-ng';
-
+import { EntityGraphService, SzEntityNetworkData } from '@senzing/rest-api-client-ng';
 import { SpinnerService } from './spinner.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { PrefsManagerService } from './prefs-manager.service';
 
 const getErrorRouteFromCode = (errorCode: number): string => {
   if (errorCode === 504) {
@@ -183,5 +184,62 @@ export class CurrentEntityUnResolverService implements Resolve<number | undefine
     this.search.currentlySelectedEntityId = undefined;
     this.spinner.hide();
     return of(this.search.currentlySelectedEntityId);
+  }
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class GraphEntityNetworkResolverService implements Resolve<SzEntityNetworkData> {
+  constructor(
+    private sdkSearchService: SzSearchService,
+    private graphService: EntityGraphService,
+    private prefsService: PrefsManagerService,
+    private router: Router,
+    private search: EntitySearchService,
+    private spinner: SpinnerService) {}
+
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<SzEntityNetworkData> | Observable<never> {
+    this.spinner.show();
+    const entityId = parseInt( route.paramMap.get('entityId'), 10);
+    if (entityId && entityId > 0) {
+      return this.graphService.findNetworkByEntityID(
+        [entityId],
+        this.prefsService.prefs.graph.maxDegreesOfSeparation,
+        this.prefsService.prefs.graph.buildOut,
+        this.prefsService.prefs.graph.maxEntities,
+        false ).pipe(
+          tap(res => console.log('GraphEntityNetworkResolverService.findNetworkByEntityID: ' + entityId, res.data)),
+          map(res => (res.data as SzEntityNetworkData)),
+          mergeMap((networkData) => {
+            this.spinner.hide();
+            if (networkData) {
+              return of(networkData);
+            } else { // no results
+              this.search.currentlySelectedEntityId = undefined;
+              this.router.navigate(['errors/404']);
+              return EMPTY;
+            }
+          }),
+          catchError( (error: HttpErrorResponse) => {
+            this.spinner.hide();
+            const message = `Retrieval error: ${error.message}`;
+            console.error(message);
+            if (error && error.status) {
+              this.router.navigate( [getErrorRouteFromCode(error.status)] );
+            } else {
+              this.router.navigate(['errors/unknown']);
+            }
+            return EMPTY;
+          }
+        )
+      );
+
+    } else {
+      this.spinner.hide();
+      this.search.currentlySelectedEntityId = undefined;
+      this.router.navigate(['errors/404']);
+      return EMPTY;
+    }
   }
 }

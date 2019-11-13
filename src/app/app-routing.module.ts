@@ -1,8 +1,9 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { SearchResultsResolverService, SearchParamsResolverService, EntityDetailResolverService, CurrentEntityUnResolverService } from './services/entity-search.service';
+import { SearchResultsResolverService, SearchParamsResolverService, EntityDetailResolverService, CurrentEntityUnResolverService, GraphEntityNetworkResolverService } from './services/entity-search.service';
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { DetailComponent } from './detail/detail.component';
+import { GraphComponent } from './graph/graph.component';
 import { PageNotFoundComponent } from './errors/page-not-found/page-not-found.component';
 import { NoResultsComponent } from './errors/no-results/no-results.component';
 import { BlankComponent } from './common/blank/blank.component';
@@ -15,6 +16,8 @@ export const routes: Routes = [
   { path: 'search', component: TipsComponent, resolve:  {entityId: CurrentEntityUnResolverService}, data: { animation: 'search-results' }},
   { path: 'search/results', component: SearchResultsComponent, resolve: { params: SearchParamsResolverService, results: SearchResultsResolverService }, data: { animation: 'search-results' } },
   { path: 'entity/:entityId', component: DetailComponent, resolve: { entityData: EntityDetailResolverService }, data: { animation: 'search-detail' } },
+  { path: 'graph/:entityId', component: GraphComponent, resolve: { networkData: GraphEntityNetworkResolverService, entityData: EntityDetailResolverService }, data: { animation: 'search-detail' } },
+  { path: 'graph/:entityId/:detailId', component: GraphComponent, resolve: { networkData: GraphEntityNetworkResolverService, entityData: EntityDetailResolverService }, data: { animation: 'search-detail' } },
   { path: 'errors/no-results', component: NoResultsComponent, data: { animation: 'search-detail' } },
   { path: 'errors/404', component: PageNotFoundComponent, data: { animation: 'search-detail' } },
   { path: 'errors/500', component: ServerErrorComponent, data: { animation: 'search-detail' } },

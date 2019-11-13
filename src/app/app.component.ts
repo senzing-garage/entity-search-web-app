@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy, HostBinding } from '@angular/core';
-import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { RouterOutlet, Router, NavigationEnd, ActivatedRoute, UrlSegment } from '@angular/router';
 import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
-import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil, filter, map } from 'rxjs/operators';
 
 import { slideInAnimation } from './animations';
 import {
@@ -37,6 +37,7 @@ export class AppComponent implements OnInit, OnDestroy {
   /** prefs storage mode (do not directly modify)
    * local | session | memory
   */
+  public isGraphOpen = false;
   public get prefsStorageMode() {
     if ( this.prefsManager.storePrefsInLocalStorage ) {
       return 'local';
@@ -95,11 +96,16 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(
     private entitySearchService: EntitySearchService,
     private router: Router,
+    private route: ActivatedRoute,
     public breakpointObserver: BreakpointObserver,
     private spinner: SpinnerService,
     private ui: UiService,
+    public uiService: UiService,
+    private search: EntitySearchService,
     private prefsManager: PrefsManagerService
-  ) {}
+  ) {
+
+  }
 
   ngOnInit() {
     const layoutChanges = this.breakpointObserver.observe(this.layoutMediaQueries);
@@ -166,17 +172,28 @@ export class AppComponent implements OnInit, OnDestroy {
     // console.log('hit breakpoint: ', this.layoutClasses, state);
   }
 
+  /** whether or not to show menu options specific to detail view */
+  public get showGraphOptions() {
+    return this.uiService.graphOpen && this.search.currentSearchResults && this.search.currentSearchResults.length > 0;
+  }
+
   /**
    * Event handler for when a search has been performed in
    * the SzSearchComponent.
    */
   onSearchResults(evt: SzAttributeSearchResult[]) {
-    console.info('onSearchResultsChange: ', evt);
-    // show results
-    this.router.navigate(['search/results'], {
-      queryParams: {refresh: new Date().getTime()}
-    });
-    this.entitySearchService.currentSearchResults = evt;
+
+    console.info('onSearchResultsChange: ', evt, this.isGraphOpen);
+    if (this.uiService.graphOpen) {
+      // show results in graph
+      this.entitySearchService.currentSearchResults = evt;
+    } else {
+      // show results
+      this.router.navigate(['search/results'], {
+        queryParams: {refresh: new Date().getTime()}
+      });
+      this.entitySearchService.currentSearchResults = evt;
+    }
   }
 
   /**

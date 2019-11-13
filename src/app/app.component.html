@@ -47,7 +47,7 @@
     <mat-icon (click)="toggleRibbonState($event)"*ngIf="searchExpanded && !showPrefs" class="toggle-icon">expand_less</mat-icon>
 </div>
 <app-spinner></app-spinner>
-<div [@routeAnimation]="getAnimationData(routerOutlet)">
+<div class="view-primary" [class.expanded]="!this.uiService.searchExpanded" [@routeAnimation]="getAnimationData(routerOutlet)">
   <router-outlet #routerOutlet="outlet"></router-outlet>
 </div>
 <router-outlet name="popup"></router-outlet>

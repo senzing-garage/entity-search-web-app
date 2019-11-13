@@ -12,6 +12,9 @@
   (entityIdChanged)="onEntityIdChanged($event)"
   [showGraphMatchKeys]="_showGraphMatchKeys"
   (graphContextMenuClick)="onGraphContextClick($event)"
+  [graphShowPopOutIcon]="true"
+  [graphPopOutIconPosition]="'bottom-left'"
+  (graphPopOutClick)="onGraphPopout($event)"
   ></sz-entity-detail>
 </div>
 <!-- end entity detail -->

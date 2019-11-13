@@ -46,6 +46,15 @@ export class ToolbarComponent implements OnInit, OnDestroy {
   public get showEntityOptions() {
     return (this.search.currentlySelectedEntityId && this.search.currentlySelectedEntityId >= 0) ? true : false;
   }
+
+  /** whether or not to show menu options specific to detail view */
+  public get showGraphOptions() {
+    if (this.uiService.graphOpen) {
+      return true;
+    } else {
+      return false;
+    }
+  }
   public showPreferences() {
     this.showSection.emit('preferences');
     this.uiService.searchExpanded = true;
@@ -66,6 +75,10 @@ export class ToolbarComponent implements OnInit, OnDestroy {
 
   public get entityRouteLink() {
     return '/entity/' + this.currentlySelectedEntityId;
+  }
+
+  public get graphRouteLink() {
+    return '/graph/' + this.currentlySelectedEntityId;
   }
 
   toggleSearch(evt?) {
