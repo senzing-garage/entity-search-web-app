@@ -28,29 +28,30 @@ It's not meant to be followed along by a developer. Rather it serves as both an 
 
 ### Contents
 
-- [Entity Search Web App](#entity-search-web-app)
-  - [Overview](#overview)
-    - [Related artifacts](#related-artifacts)
-    - [Contents](#contents)
-  - [Preparation](#preparation)
-    - [Prerequisite software](#prerequisite-software)
-    - [Clone repository](#clone-repository)
-    - [Create SENZING_DIR](#create-senzingdir)
-  - [Using docker-compose](#using-docker-compose)
-  - [Using docker](#using-docker)
-    - [Using SSL](#using-ssl)
-      - [Prerequisites](#prerequisites)
-      - [Self-Signed Certificates](#self-signed-certificates)
-      - [Setting up SSL using Docker Stack](#setting-up-ssl-using-docker-stack)
-    - [Air Gapped Environments](#air-gapped-environments)
-    - [Building from Source](#building-from-source)
-  - [Development](#development)
-    - [Development server](#development-server)
-    - [Production Server](#production-server)
-  - [Code scaffolding](#code-scaffolding)
-  - [Running unit tests](#running-unit-tests)
-  - [Running end-to-end tests](#running-end-to-end-tests)
-  - [Further help](#further-help)
+1. [Entity Search Web App](#entity-search-web-app)
+   1. [Overview](#overview)
+      1. [Related artifacts](#related-artifacts)
+      2. [Contents](#contents)
+   2. [Preparation](#preparation)
+      1. [Prerequisite software](#prerequisite-software)
+      2. [Clone repository](#clone-repository)
+      3. [Create SENZING_DIR](#create-senzingdir)
+   3. [Using docker-compose](#using-docker-compose)
+   4. [Using docker](#using-docker)
+      1. [Using SSL](#using-ssl)
+         1. [Prerequisites](#prerequisites)
+         2. [Self-Signed Certificates](#self-signed-certificates)
+         3. [Setting up SSL using Docker Stack](#setting-up-ssl-using-docker-stack)
+      2. [Air Gapped Environments](#air-gapped-environments)
+      3. [Building from Source](#building-from-source)
+   5. [Development](#development)
+      1. [Development server](#development-server)
+      2. [Production Server](#production-server)
+      3. [Code scaffolding](#code-scaffolding)
+   6. [Testing](#testing)
+      1. [Running unit tests](#running-unit-tests)
+      2. [Running end-to-end tests](#running-end-to-end-tests)
+   7. [Further help](#further-help)
 
 ## Preparation
 
@@ -59,7 +60,7 @@ It's not meant to be followed along by a developer. Rather it serves as both an 
 The following software programs need to be installed:
 
 1. [docker](https://github.com/Senzing/knowledge-base/blob/master/HOWTO/install-docker.md)
-1. [docker-compose](https://github.com/Senzing/knowledge-base/blob/master/HOWTO/install-docker-compose.md)
+2. [docker-compose](https://github.com/Senzing/knowledge-base/blob/master/HOWTO/install-docker-compose.md)
 
 ### Clone repository
 
@@ -368,7 +369,7 @@ You may also need to install [NodeJS](https://nodejs.org), and [AngularCLI](http
     ng build --prod
     ```
 
-1. Compiled assets can be served by ExpressJS by running:
+2. Compiled assets can be served by ExpressJS by running:
 
     ```console
     node webserver
@@ -382,13 +383,15 @@ You may also need to install [NodeJS](https://nodejs.org), and [AngularCLI](http
     ng generate component component-name
     ```
 
-1. Alternatively, you can use
+2. Alternatively, you can use
 
     ```console
     ng generate directive|pipe|service|class|guard|interface|enum|module
     ```
 
-## Running unit tests
+## Testing
+
+### Running unit tests
 
 There are several ways to run unit tests.
 
@@ -398,19 +401,19 @@ There are several ways to run unit tests.
     npm run test
     ```
 
-1. These tests can also be run in a headless mode by running
+2. These tests can also be run in a headless mode by running
 
     ```console
     npm run test:headless
     ```
 
-1. For running unit tests from inside a docker container make sure you have the latest docker container, the script or [docker-compose.yaml](docker-compose.yaml) should pass the appropriate test script command to the container by
+3. For running unit tests from inside a docker container make sure you have the latest docker container, the script or [docker-compose.yaml](docker-compose.yaml) should pass the appropriate test script command to the container by
 
     ```console
     sudo docker-compose up --abort-on-container-exit senzing-webapp-test
     ```
 
-## Running end-to-end tests
+### Running end-to-end tests
 
 1. For running e2e tests from inside a docker container make sure you have the latest docker container, the script or docker-compose.yml should pass the appropriate e2e script command to the container. Example:
 
@@ -418,7 +421,7 @@ There are several ways to run unit tests.
     sudo docker-compose up --abort-on-container-exit senzing-webapp-e2e
     ```
 
-1. Alternately you can pass the commands directly to the container by adding an
+2. Alternately you can pass the commands directly to the container by adding an
 `e2e:docker` to the end of your docker run command. Example:
 
     ```console
