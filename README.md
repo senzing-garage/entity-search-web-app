@@ -28,21 +28,30 @@ It's not meant to be followed along by a developer. Rather it serves as both an 
 
 ### Contents
 
-1. [Preparation](#preparation)
-    1. [Prerequisite software](#prerequisite-software)
-    1. [Clone repository](#clone-repository)
-    1. [Create SENZING_DIR](#create-senzing_dir)
-1. [Using docker-compose](#using-docker-compose)
-1. [Using docker](#using-docker)
-    1. [Air Gapped Environments](#air-gapped-environments)
-    1. [Building from Source](#building-from-source)
-1. [Development](#development)
-    1. [Development server](#development-server)
-    1. [Production server](#production-server)
-1. [Code scaffolding](#code-scaffolding)
-1. [Running unit tests](#running-unit-tests)
-1. [Running end-to-end tests](#running-end-to-end-tests)
-1. [Further help](#further-help)
+1. [Entity Search Web App](#entity-search-web-app)
+   1. [Overview](#overview)
+      1. [Related artifacts](#related-artifacts)
+      2. [Contents](#contents)
+   2. [Preparation](#preparation)
+      1. [Prerequisite software](#prerequisite-software)
+      2. [Clone repository](#clone-repository)
+      3. [Create SENZING_DIR](#create-senzingdir)
+   3. [Using docker-compose](#using-docker-compose)
+   4. [Using docker](#using-docker)
+      1. [Using SSL](#using-ssl)
+         1. [Prerequisites](#prerequisites)
+         2. [Self-Signed Certificates](#self-signed-certificates)
+         3. [Setting up SSL using Docker Stack](#setting-up-ssl-using-docker-stack)
+      2. [Air Gapped Environments](#air-gapped-environments)
+      3. [Building from Source](#building-from-source)
+   5. [Development](#development)
+      1. [Development server](#development-server)
+      2. [Production Server](#production-server)
+      3. [Code scaffolding](#code-scaffolding)
+   6. [Testing](#testing)
+      1. [Running unit tests](#running-unit-tests)
+      2. [Running end-to-end tests](#running-end-to-end-tests)
+   7. [Further help](#further-help)
 
 ## Preparation
 
@@ -51,7 +60,7 @@ It's not meant to be followed along by a developer. Rather it serves as both an 
 The following software programs need to be installed:
 
 1. [docker](https://github.com/Senzing/knowledge-base/blob/master/HOWTO/install-docker.md)
-1. [docker-compose](https://github.com/Senzing/knowledge-base/blob/master/HOWTO/install-docker-compose.md)
+2. [docker-compose](https://github.com/Senzing/knowledge-base/blob/master/HOWTO/install-docker-compose.md)
 
 ### Clone repository
 
@@ -181,6 +190,102 @@ If you do not already have an `/opt/senzing` directory on your local system, vis
        curl http://machine-host-name:8081
        ```
 
+### Using SSL
+
+The main docker image for the senzing webapp supports running it's webserver over HTTPS. In order to deploy the webapp in a secure way, you must be using the image in a swarm configuration, rather than a standalone service. For more information on swarms and why this is a requirement see [Docker Swarm Secrets](https://docs.docker.com/engine/swarm/secrets/)
+
+#### Prerequisites
+
+1. docker client and daemon with *API version* > 1.25
+you can check what api version your docker client is running by typing `docker version`
+2. Valid SSL certificates(server.key and server.cert) for the webserver. (if you don't have them, you can use a [self-signed certificate](#self-signed-certificates) in the interim)
+
+#### Self-Signed Certificates
+
+A self-signed certificate is sufficent to establish a secure, HTTPS connection for development purposes. It should not be used in a production environment, but if you're just trying to test out encryption to see how it works it's a viable short-term solution. You will need *OpenSSL* installed on your system to generate these. Just do a [google search](https://www.google.com/search?q=using+self+signed+SSL+certificate) or check out [this article](https://flaviocopes.com/express-https-self-signed-certificate/) or [this one](https://flaviocopes.com/express-https-self-signed-certificate/) and come back to this section once you have the server.cert and server.key files
+
+#### Setting up SSL using Docker Stack
+
+For convenience we have included a docker compose [file](./docker-stack.yml) specifically for running in SSL configuration. We suggest starting with this example if you're not familiar how stacks work(you will want a different yml file for stack deployment for a number of reasons).
+If you open that example up you will see two lines at the bottom of the file:
+
+```yaml
+  SZ_WEBAPP_SSL_CERT:
+    file: '../CERTS/server.cert'
+  SZ_WEBAPP_SSL_KEY:
+    file: '../CERTS/server.key'
+```
+
+Those lines tell docker to pass two secrets to the services defined in the docker compose file. These two lines should point to the location of the *server.key* and *server.cert* file you wish to use. The configuration of the *senzing-api-server* service may differ from how you have set up your configuration to run. You should copy over the configuration options defined in your _already working_ docker-compose.yml file to the docker-stack.yml file.
+The other important lines(under the *senzing-webapp* service definition) are:
+
+```yaml
+secrets:
+      - source: SZ_WEBAPP_SSL_CERT
+        target: server.cert
+        uid: '1001'
+        gid: '1001'
+      - source: SZ_WEBAPP_SSL_KEY
+        target: server.key
+        uid: '1001'
+        gid: '1001'
+```
+
+They tell the webapp service to use the content of the secrets defined at the bottom of the file. It's like passing the files in.. but also not. docker secrets are weird.
+
+Next you will deploy the services defined in the yml file to your swarm manager by typing `sudo SENZING_DATA_VERSION_DIR=${SENZING_DATA_VERSION_DIR} SENZING_ETC_DIR=${SENZING_ETC_DIR} SENZING_G2_DIR=${SENZING_G2_DIR} SENZING_VAR_DIR=${SENZING_VAR_DIR} docker stack deploy -c docker-stack.yml senzing-webapp`
+check that the services started up successfully by typing `docker stack ps senzing-webapp`. the result should look like the following
+
+```bash
+ID                  NAME                                  IMAGE                               NODE                DESIRED STATE       CURRENT STATE               ERROR               PORTS
+7mxc4jru51pl        senzing-webapp_senzing-api-server.1   senzing/senzing-api-server:latest   americium           Running             Running about an hour ago
+rnguy9d2incb        senzing-webapp_senzing-webapp.1       senzing/entity-search-web-app:ssl   americium           Running             Running about an hour ago
+```
+
+next you can initiate a curl request to your webserver with `curl -kvv https://localhost:8081`. The output should looks something like the following:
+
+```bash
+* Rebuilt URL to: https://localhost:8081/
+*   Trying 127.0.0.1...
+* TCP_NODELAY set
+* Connected to localhost (127.0.0.1) port 8081 (#0)
+* ALPN, offering h2
+* ALPN, offering http/1.1
+* successfully set certificate verify locations:
+*   CAfile: /etc/ssl/certs/ca-certificates.crt
+  CApath: /etc/ssl/certs
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+* TLSv1.3 (IN), TLS handshake, Server hello (2):
+* TLSv1.3 (IN), TLS Unknown, Certificate Status (22):
+* TLSv1.3 (IN), TLS handshake, Unknown (8):
+* TLSv1.3 (IN), TLS Unknown, Certificate Status (22):
+* TLSv1.3 (IN), TLS handshake, Certificate (11):
+* TLSv1.3 (IN), TLS Unknown, Certificate Status (22):
+* TLSv1.3 (IN), TLS handshake, CERT verify (15):
+* TLSv1.3 (IN), TLS Unknown, Certificate Status (22):
+* TLSv1.3 (IN), TLS handshake, Finished (20):
+* TLSv1.3 (OUT), TLS change cipher, Client hello (1):
+* TLSv1.3 (OUT), TLS Unknown, Certificate Status (22):
+* TLSv1.3 (OUT), TLS handshake, Finished (20):
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384
+* ALPN, server accepted to use http/1.1
+* Server certificate:
+*  subject: C=US; ST=OR; L=SenzingTown; O=Senzing; CN=localhost
+*  start date: Nov 13 00:49:12 2019 GMT
+*  expire date: Nov 12 00:49:12 2020 GMT
+*  issuer: C=US; ST=OR; L=SenzingTown; O=Senzing; CN=localhost
+*  SSL certificate verify result: self signed certificate (18), continuing anyway.
+* TLSv1.3 (OUT), TLS Unknown, Unknown (23):
+> GET / HTTP/1.1
+> Host: localhost:8081
+> User-Agent: curl/7.58.0
+> Accept: */*
+```
+
+I'm using a self-signed cert in this example, but the important part is that you see the *TLSvx.x* handshake(s) and the *Server certificate:* response block. At this point you open up a normal browser(chrome, ff, edge etc) to your server instance, something like [https://localhost:8081](https://localhost:8081). You _should_ see information next to the address in the address bar with the SSL information provided by the certificate. If you self-signed you will be greeted with a warning message asking whether you want to proceed or not, this is normal.
+
+You can shut down the swarm node with `docker stack rm senzing-webapp`
+
 ### Air Gapped Environments
 
 Obviously if your deployment environment is highly restricted you're probably going
@@ -192,14 +297,14 @@ for how to procedure regarding this use-case.
 The short version is find a machine with network access, then:
 
 1. Pull the docker images you need to that machine.
-1. Package them as a tar file. Example:
+2. Package them as a tar file. Example:
 
     ```console
     sudo docker save senzing/entity-search-web-app --output senzing-entity-search-web-app-latest.tar
     ```
 
-1. Copy that to the deployment machine.
-1. Load via
+3. Copy that to the deployment machine.
+4. Load via
 
     ```console
     sudo docker load --input senzing-entity-search-web-app-latest.tar
@@ -264,7 +369,7 @@ You may also need to install [NodeJS](https://nodejs.org), and [AngularCLI](http
     ng build --prod
     ```
 
-1. Compiled assets can be served by ExpressJS by running:
+2. Compiled assets can be served by ExpressJS by running:
 
     ```console
     node webserver
@@ -278,13 +383,15 @@ You may also need to install [NodeJS](https://nodejs.org), and [AngularCLI](http
     ng generate component component-name
     ```
 
-1. Alternatively, you can use
+2. Alternatively, you can use
 
     ```console
     ng generate directive|pipe|service|class|guard|interface|enum|module
     ```
 
-## Running unit tests
+## Testing
+
+### Running unit tests
 
 There are several ways to run unit tests.
 
@@ -294,19 +401,19 @@ There are several ways to run unit tests.
     npm run test
     ```
 
-1. These tests can also be run in a headless mode by running
+2. These tests can also be run in a headless mode by running
 
     ```console
     npm run test:headless
     ```
 
-1. For running unit tests from inside a docker container make sure you have the latest docker container, the script or [docker-compose.yaml](docker-compose.yaml) should pass the appropriate test script command to the container by
+3. For running unit tests from inside a docker container make sure you have the latest docker container, the script or [docker-compose.yaml](docker-compose.yaml) should pass the appropriate test script command to the container by
 
     ```console
     sudo docker-compose up --abort-on-container-exit senzing-webapp-test
     ```
 
-## Running end-to-end tests
+### Running end-to-end tests
 
 1. For running e2e tests from inside a docker container make sure you have the latest docker container, the script or docker-compose.yml should pass the appropriate e2e script command to the container. Example:
 
@@ -314,7 +421,7 @@ There are several ways to run unit tests.
     sudo docker-compose up --abort-on-container-exit senzing-webapp-e2e
     ```
 
-1. Alternately you can pass the commands directly to the container by adding an
+2. Alternately you can pass the commands directly to the container by adding an
 `e2e:docker` to the end of your docker run command. Example:
 
     ```console

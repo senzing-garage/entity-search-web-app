@@ -1,7 +1,7 @@
 ARG BASE_IMAGE=node:12.2.0
 FROM ${BASE_IMAGE}
 
-ENV REFRESHED_AT=2019-07-23
+ENV REFRESHED_AT=2019-10-8
 
 LABEL Name="senzing/entity-search-web-app" \
       Maintainer="support@senzing.com" \
@@ -38,7 +38,7 @@ RUN npm config set loglevel warn \
  && npm install --silent -g @angular/cli@7.3.9
 
 # Copy files from repository.
-COPY ./rootfs / 
+COPY ./rootfs /
 COPY . /app
 COPY --chown=1001:1001 ./proxy.conf.json /app
 

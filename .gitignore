@@ -42,6 +42,16 @@ testem.log
 .DS_Store
 Thumbs.db
 
+# SSL
+/cert
+
+# Auth
+/users/users.json
+
+# Docker Swarm mock files
+/run
+/run/secrets
+
 # Sub repos
 /.gitmodules
 /sdk-components-ng
