@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start:staging": "ng serve --disableHostCheck --host 0.0.0.0",
     "start:docker": "node inject-env && node webserver",
     "start:server": "java -jar \"..\\senzing-api-server\\target\\senzing-api-server-1.7.6.jar\" -iniFile \"%LOCALAPPDATA%\\Senzing\\Workbench\\project_1\\g2.ini\" -httpPort 8080 -allowedOrigins \"*\"",
     "build": "ng build",
