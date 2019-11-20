@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild, Input, TemplateRef, ViewContainerRef, Output } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EntitySearchService } from '../services/entity-search.service';
 import { tap, filter, take } from 'rxjs/operators';
@@ -7,6 +8,9 @@ import { TemplatePortal } from '@angular/cdk/portal';
 import { Subscription, fromEvent } from 'rxjs';
 import { SzEntityDetailComponent, SzPdfUtilService } from '@senzing/sdk-components-ng';
 import { UiService } from '../services/ui.service';
+import {
+  SzEntityData
+} from '@senzing/rest-api-client-ng';
 
 @Component({
   selector: 'app-detail',
@@ -40,7 +44,8 @@ export class DetailComponent implements OnInit {
     public pdfUtil: SzPdfUtilService,
     public overlay: Overlay,
     public uiService: UiService,
-    public viewContainerRef: ViewContainerRef
+    public viewContainerRef: ViewContainerRef,
+    private titleService: Title
     ) {
     this.route.params.subscribe( (params) => this.entityId = parseInt(params.entityId, 10) );
   }
@@ -157,7 +162,22 @@ export class DetailComponent implements OnInit {
       this.overlayRef = null;
     }
   }
-
+  /** update the page title to the entity name */
+  onEntityDataChanged(data: SzEntityData) {
+    const titleCaseWord = (word: string) => {
+      if (!word) { return word; }
+      return word[0].toUpperCase() + word.substr(1).toLowerCase();
+    };
+    const titleCaseSentence = (words: string) => {
+      if (!words) { return words; }
+      return (words.split(' ').map( titleCaseWord ).join(' '));
+    };
+    if(data && data.resolvedEntity) {
+      if(data.resolvedEntity.entityName) {
+        this.titleService.setTitle( titleCaseSentence(data.resolvedEntity.entityName) + ': Details');
+      }
+    }
+  }
   onGraphPopout(event) {
     console.log('on graph popout: ', event);
     this.router.navigate(['graph/' + this.entityId]);
