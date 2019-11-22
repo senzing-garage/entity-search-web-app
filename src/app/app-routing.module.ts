@@ -11,6 +11,7 @@ import { TipsComponent } from './common/tips/tips.component';
 import { ServerErrorComponent } from './errors/server/server.component';
 import { GatewayTimeoutErrorComponent } from './errors/timeout/timeout.component';
 import { UnknownErrorComponent } from './errors/uknown/uknown.component';
+import { AboutComponent } from './about/about.component';
 
 export const routes: Routes = [
   { path: 'search', component: TipsComponent, resolve:  {entityId: CurrentEntityUnResolverService}, data: { animation: 'search-results' }},
@@ -23,6 +24,7 @@ export const routes: Routes = [
   { path: 'errors/500', component: ServerErrorComponent, data: { animation: 'search-detail' } },
   { path: 'errors/504', component: GatewayTimeoutErrorComponent, data: { animation: 'search-detail' } },
   { path: 'errors/unknown', component: UnknownErrorComponent, data: { animation: 'search-detail' } },
+  { path: 'about', component: AboutComponent, data: { animation: 'search-detail'} },
   { path: '',   redirectTo: 'search', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent }
 ];

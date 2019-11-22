@@ -6,6 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material.module';
 import { SenzingSdkModule, SzRestConfiguration } from '@senzing/sdk-components-ng';
 import { SenzingSdkGraphModule } from '@senzing/sdk-graph-components';
+import { ApiModule as SenzingDataServiceModule } from '@senzing/rest-api-client-ng';
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { InMemoryDataService } from '../../e2e/data/services/in-memory-data.service';
 import { OverlayModule } from '@angular/cdk/overlay';
@@ -18,6 +19,7 @@ import { StorageServiceModule } from 'ngx-webstorage-service';
 import { AppRoutingModule } from './app-routing.module';
 import { SpinnerModule } from './common/spinner/spinner.module';
 import { EntitySearchService } from './services/entity-search.service';
+import { AboutInfoService } from './services/about.service';
 // components
 import { AppComponent } from './app.component';
 import { SearchResultsComponent } from './search-results/search-results.component';
@@ -29,6 +31,7 @@ import { PrefsManagerService } from './services/prefs-manager.service';
 import { TipsComponent } from './common/tips/tips.component';
 import { BlankComponent } from './common/blank/blank.component';
 import { NoResultsComponent } from './errors/no-results/no-results.component';
+import { AboutComponent } from './about/about.component';
 
 // errors
 import { PageNotFoundComponent } from './errors/page-not-found/page-not-found.component';
@@ -71,7 +74,8 @@ export function SzRestConfigurationFactory() {
     ServerErrorComponent,
     UnknownErrorComponent,
     BlankComponent,
-    TipsComponent
+    TipsComponent,
+    AboutComponent
   ],
   imports: [
     BrowserModule,
@@ -84,10 +88,11 @@ export function SzRestConfigurationFactory() {
     StorageServiceModule,
     SenzingSdkModule.forRoot( SzRestConfigurationFactory ),
     SenzingSdkGraphModule.forRoot( SzRestConfigurationFactory ),
+    SenzingDataServiceModule.forRoot( SzRestConfigurationFactory ),
     SpinnerModule,
     environment.test ? HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService, { delay: 100 }) : []
   ],
-  providers: [ EntitySearchService, UiService, PrefsManagerService ],
+  providers: [ EntitySearchService, UiService, PrefsManagerService, AboutInfoService ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }
