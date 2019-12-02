@@ -35,10 +35,15 @@ It's not meant to be followed along by a developer. Rather it serves as both an 
       1. [Legend](#legend)
    1. [Preparation](#preparation)
       1. [Prerequisite software](#prerequisite-software)
+      1. [Pull latest docker images](#pull-latest-docker-images)
       1. [Clone repository](#clone-repository)
       1. [Initialize Senzing](#initialize-senzing)
+      1. [Configuration](#configuration)
+      1. [Volumes](#volumes)
    1. [Using docker-compose](#using-docker-compose)
    1. [Using docker](#using-docker)
+      1. [Docker network](#docker-network)
+      1. [Run](#run)
       1. [Using SSL](#using-ssl)
          1. [Prerequisites](#prerequisites)
          1. [Self-Signed Certificates](#self-signed-certificates)
@@ -462,7 +467,7 @@ You may also need to install [NodeJS](https://nodejs.org), and [AngularCLI](http
     node webserver
     ```
 
-## Code scaffolding
+### Code scaffolding
 
 1. To generate a new component, Run
 
