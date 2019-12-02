@@ -12,6 +12,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Now a non-root, immutable container
 
+## [1.0.3] - 2019-09-30
+
+### Added to 1.0.3
+
+- [sdk-components-ng](https://github.com/Senzing/sdk-components-ng) updated to [1.0.9](https://github.com/Senzing/sdk-components-ng/releases/tag/1.0.9) and [sdk-graph-components](https://github.com/Senzing/sdk-graph-components) updated to [0.0.6](https://github.com/Senzing/sdk-graph-components/releases/tag/0.0.6)
+
+![2019-09-30_122901](https://user-images.githubusercontent.com/13721038/65909647-eaba3600-e37d-11e9-92f8-2d8f7e4ceca3.png)
+
+- Preferences UI interface added to top ribbon
+- Added [SzPrefsService](https://senzing.github.io/sdk-components-ng/injectables/SzPrefsService.html)
+- Added [SzPreferencesComponent](https://senzing.github.io/sdk-components-ng/components/SzPreferencesComponent.html)
+- CSS for responsive breakpoint(s) and/or reflow on narrow width
+- Various UI/UX layout bugfixes
+- Graph should reload on entityIdChange
+- Graph should collapse on *0* results
+- Include "other data" in records area.
+- Text highlighting no longer triggers click-thru
+- Search identifiers drop-down should auto-update on api config change
+
 ## [1.0.2] - 2019-08-03
 
 ### Added to 1.0.2
