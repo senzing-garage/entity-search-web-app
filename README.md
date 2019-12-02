@@ -247,7 +247,7 @@ The following docker containers communicate over a docker network.
         -concurrency 10 \
         -httpPort 8080 \
         -bindAddr all \
-        -iniFile /opt/senzing/g2/python/G2Module.ini
+        -iniFile /etc/opt/senzing/G2Module.ini
     ```
 
 1. Run entity search web app.
