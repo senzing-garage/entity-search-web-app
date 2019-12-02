@@ -9,15 +9,15 @@
 
 This is a more complex example of SDK component usage. It differs from the example web apps in the following features:
 
-* Routing (bookmarkable urls)
-* Resolvers
-* Activity Spinner
-* Angular Material
-* Direct interaction with SDK Services, not just components
-* Error feedback
-* Reverse proxy support
-* ExpressJS web server(for production deployment)
-* Open detail view in new tab
+- Routing (bookmarkable urls)
+- Resolvers
+- Activity Spinner
+- Angular Material
+- Direct interaction with SDK Services, not just components
+- Error feedback
+- Reverse proxy support
+- ExpressJS web server(for production deployment)
+- Open detail view in new tab
 
 It's not meant to be followed along by a developer. Rather it serves as both an example of what a more full-featured implementation looks like, as well as a ready to build and deploy docker container.
 
@@ -170,7 +170,7 @@ The following examples show how to identify each output directory.
       docker-compose up senzing-webapp
     ```
 
-1. To verify that containers are running and accessible:
+1. Verify that containers are running and accessible:
     1. Open a web browser on [http://localhost:8081](http://localhost:8081) (or substitute hostname or IP for `localhost`).
     1. Alternatively, `curl` can be used.
        Example:
@@ -183,22 +183,40 @@ The following examples show how to identify each output directory.
 
 ### Docker network
 
-:thinking: **Optional:**  Use if docker container is part of a docker network.
+The following docker containers communicate over a docker network.
 
-1. List docker networks.
-   Example:
+1. :thinking: Find or create a docker network.
 
-    ```console
-    sudo docker network ls
-    ```
+    1. Find a docker network.
+        1. List docker networks.
+           Example:
 
-1. :pencil2: Specify docker network.
-   Choose value from NAME column of `docker network ls`.
-   Example:
+            ```console
+            sudo docker network ls
+            ```
 
-    ```console
-    export SENZING_NETWORK=*nameofthe_network*
-    ```
+        1. :pencil2: Specify docker network.
+           Choose value from NAME column of `docker network ls`.
+           Example:
+
+            ```console
+            export SENZING_NETWORK=*nameofthe_network*
+            ```
+
+    1. Create docker network.
+        1. Specify network name.
+           Example:
+
+            ```console
+            export SENZING_NETWORK=sz-api-network
+            ```
+
+        1. Create docker network.
+           Example:
+
+            ```console
+            sudo docker network create -d bridge ${SENZING_NETWORK}
+            ```
 
 1. Construct parameter for `docker run`.
    Example:
@@ -207,27 +225,7 @@ The following examples show how to identify each output directory.
     export SENZING_NETWORK_PARAMETER="--net ${SENZING_NETWORK}"
     ```
 
-1. :pencil2: Configure the app.
-   You can do this by setting environment variables, or by setting them through a [docker-compose.yaml](docker-compose.yaml),
-   or by passing them in at run-time.
-   The following are the important ones:
-
-    ```console
-    SENZING_API_SERVER_URL="http://senzing-api-server:8080"
-    SENZING_WEB_SERVER_PORT=8081
-    SENZING_WEB_SERVER_API_PATH="/api"
-    ```
-
-1. Create Network.
-   In order to have the docker containers talk to one another it is suggested that you create a network for your docker
-   containers to communicate with each other.
-   If using docker-compose.yaml to run the formation you can skip steps 3-5
-   as this is handled in the docker-compose.yaml.
-   Example:
-
-    ```console
-    sudo docker network create -d bridge sz-api-network
-    ```
+### Run
 
 1. Attach senzing-api-server.
    Example:
@@ -236,11 +234,14 @@ The following examples show how to identify each output directory.
     sudo docker run \
       --interactive \
       --name=senzing-api-server \
-      --network=sz-api-network \
       --publish 8080:8080 \
       --rm \
       --tty \
-      --volume /opt/senzing:/opt/senzing \
+      --volume ${SENZING_DATA_VERSION_DIR}:/opt/senzing/data \
+      --volume ${SENZING_ETC_DIR}:/etc/opt/senzing \
+      --volume ${SENZING_G2_DIR}:/opt/senzing/g2 \
+      --volume ${SENZING_VAR_DIR}:/var/opt/senzing \
+      ${SENZING_NETWORK_PARAMETER} \
       senzing/senzing-api-server \
         -concurrency 10 \
         -httpPort 8080 \
@@ -257,10 +258,10 @@ The following examples show how to identify each output directory.
       --env SENZING_WEB_SERVER_PORT=8081 \
       --interactive \
       --name=senzing-webapp \
-      --network=sz-api-network \
       --publish 8081:8081 \
       --rm \
       --tty \
+      ${SENZING_NETWORK_PARAMETER} \
       senzing/entity-search-web-app
     ```
 
