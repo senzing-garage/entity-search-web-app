@@ -31,27 +31,36 @@ It's not meant to be followed along by a developer. Rather it serves as both an 
 1. [Entity Search Web App](#entity-search-web-app)
    1. [Overview](#overview)
       1. [Related artifacts](#related-artifacts)
-      2. [Contents](#contents)
-   2. [Preparation](#preparation)
+      1. [Contents](#contents)
+      1. [Legend](#legend)
+   1. [Preparation](#preparation)
       1. [Prerequisite software](#prerequisite-software)
-      2. [Clone repository](#clone-repository)
-      3. [Create SENZING_DIR](#create-senzingdir)
-   3. [Using docker-compose](#using-docker-compose)
-   4. [Using docker](#using-docker)
+      1. [Clone repository](#clone-repository)
+      1. [Initialize Senzing](#initialize-senzing)
+   1. [Using docker-compose](#using-docker-compose)
+   1. [Using docker](#using-docker)
       1. [Using SSL](#using-ssl)
          1. [Prerequisites](#prerequisites)
-         2. [Self-Signed Certificates](#self-signed-certificates)
-         3. [Setting up SSL using Docker Stack](#setting-up-ssl-using-docker-stack)
-      2. [Air Gapped Environments](#air-gapped-environments)
-      3. [Building from Source](#building-from-source)
-   5. [Development](#development)
+         1. [Self-Signed Certificates](#self-signed-certificates)
+         1. [Setting up SSL using Docker Stack](#setting-up-ssl-using-docker-stack)
+      1. [Air Gapped Environments](#air-gapped-environments)
+      1. [Building from Source](#building-from-source)
+   1. [Development](#development)
       1. [Development server](#development-server)
-      2. [Production Server](#production-server)
-      3. [Code scaffolding](#code-scaffolding)
-   6. [Testing](#testing)
+      1. [Production Server](#production-server)
+      1. [Code scaffolding](#code-scaffolding)
+   1. [Testing](#testing)
       1. [Running unit tests](#running-unit-tests)
-      2. [Running end-to-end tests](#running-end-to-end-tests)
-   7. [Further help](#further-help)
+      1. [Running end-to-end tests](#running-end-to-end-tests)
+   1. [Further help](#further-help)
+
+### Legend
+
+1. :thinking: - A "thinker" icon means that a little extra thinking may be required.
+   Perhaps you'll need to make some choices.
+   Perhaps it's an optional step.
+1. :pencil2: - A "pencil" icon means that the instructions may need modification before performing.
+1. :warning: - A "warning" icon means that something tricky is happening, so pay attention.
 
 ## Preparation
 
@@ -87,14 +96,11 @@ The following software programs need to be installed:
 
     ```console
     cd ${GIT_REPOSITORY_DIR}
-
     sudo docker-compose up senzing-webapp
     ```
 
 1. To verify that containers are running and accessible:
-
     1. Open a web browser on [http://localhost:8081](http://localhost:8081) (or substitute hostname or IP for `localhost`).
-
     1. Alternatively, `curl` can be used.
        Example:
 
@@ -159,7 +165,8 @@ The following software programs need to be installed:
         -iniFile /opt/senzing/g2/python/G2Module.ini
     ```
 
-1. Run entity search web app.   Example:
+1. Run entity search web app.
+   Example:
 
     ```console
     sudo docker run \
