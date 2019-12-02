@@ -27,7 +27,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - proxy.conf perm issue
 - entity icon fixes
 - graph overflow issue
-- relevant tickets:  #51 #53 #47 #36 #32
+- relevant tickets:
+  [#32](https://github.com/Senzing/entity-search-web-app/pull/32),
+  [#36](https://github.com/Senzing/entity-search-web-app/pull/36),
+  [#47](https://github.com/Senzing/entity-search-web-app/pull/47),
+  [#51](https://github.com/Senzing/entity-search-web-app/pull/51),
+  [#53](https://github.com/Senzing/entity-search-web-app/pull/53)
 
 ## [1.0.1] - 2019-06-26
 
