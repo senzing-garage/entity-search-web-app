@@ -6,11 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.0] - 2019-07-xx
 
-### Added to 1.1.0
+## [1.0.4] - 2019-11-19
 
-- Now a non-root, immutable container
+### Added to 1.0.4
+
+- Standalone graph.
+- graph filtering.
+- embedded rail-format entity detail viewer (for graph)
+- search result(s) directly displayed in standalone graph.
+- graph color(s) by datasource membership.
+- SSL support for docker image.
+- basic auth support (alpha) for docker image.
+- premature loading indicator disapearing fix.
+- relevant tickets:
+  [#34](https://github.com/Senzing/entity-search-web-app/pull/34),
+  [#67](https://github.com/Senzing/entity-search-web-app/pull/67),
+  [#69](https://github.com/Senzing/entity-search-web-app/pull/69),
+  [#71](https://github.com/Senzing/entity-search-web-app/pull/71)
+
+![2019-11-19_154007](https://user-images.githubusercontent.com/13721038/69196314-04a50900-0ae3-11ea-9ef4-74903c507360.png)
+![2019-11-19_154500](https://user-images.githubusercontent.com/13721038/69196516-96ad1180-0ae3-11ea-9848-7d868d874a01.png)
 
 ## [1.0.3] - 2019-09-30
 
