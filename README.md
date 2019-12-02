@@ -186,6 +186,7 @@ The following examples show how to identify each output directory.
 The following docker containers communicate over a docker network.
 
 1. :thinking: Find or create a docker network.
+   Perform one of the following procedures.
 
     1. Find a docker network.
         1. List docker networks.
@@ -204,7 +205,7 @@ The following docker containers communicate over a docker network.
             ```
 
     1. Create docker network.
-        1. Specify network name.
+        1. :pencil2: Specify network name.
            Example:
 
             ```console
