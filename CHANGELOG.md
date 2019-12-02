@@ -12,6 +12,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Now a non-root, immutable container
 
+## [1.0.2] - 2019-08-03
+
+### Added to 1.0.2
+
+- SDK components updated to [1.0.8](https://github.com/senzingiris/sdk-components-ng/releases/tag/1.0.8)
+- Graph components updated to [0.0.4](https://github.com/Senzing/sdk-graph-components/releases)
+- PDF downloads
+- minor UI/UX changes
+
+### Fixed in 1.0.2
+
+- identifier dropdown issue
+- proxy.conf perm issue
+- entity icon fixes
+- graph overflow issue
+- relevant tickets:  #51 #53 #47 #36 #32
+
 ## [1.0.1] - 2019-06-26
 
 ### Added to 1.0.1
