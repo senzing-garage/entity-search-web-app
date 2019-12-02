@@ -6,11 +6,68 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.0] - 2019-07-xx
 
-### Added to 1.1.0
+## [1.0.4] - 2019-11-19
 
-- Now a non-root, immutable container
+### Added to 1.0.4
+
+- Standalone graph.
+- graph filtering.
+- embedded rail-format entity detail viewer (for graph)
+- search result(s) directly displayed in standalone graph.
+- graph color(s) by datasource membership.
+- SSL support for docker image.
+- basic auth support (alpha) for docker image.
+- premature loading indicator disapearing fix.
+- relevant tickets:
+  [#34](https://github.com/Senzing/entity-search-web-app/pull/34),
+  [#67](https://github.com/Senzing/entity-search-web-app/pull/67),
+  [#69](https://github.com/Senzing/entity-search-web-app/pull/69),
+  [#71](https://github.com/Senzing/entity-search-web-app/pull/71)
+
+![2019-11-19_154007](https://user-images.githubusercontent.com/13721038/69196314-04a50900-0ae3-11ea-9ef4-74903c507360.png)
+![2019-11-19_154500](https://user-images.githubusercontent.com/13721038/69196516-96ad1180-0ae3-11ea-9848-7d868d874a01.png)
+
+## [1.0.3] - 2019-09-30
+
+### Added to 1.0.3
+
+- [sdk-components-ng](https://github.com/Senzing/sdk-components-ng) updated to [1.0.9](https://github.com/Senzing/sdk-components-ng/releases/tag/1.0.9) and [sdk-graph-components](https://github.com/Senzing/sdk-graph-components) updated to [0.0.6](https://github.com/Senzing/sdk-graph-components/releases/tag/0.0.6)
+
+![2019-09-30_122901](https://user-images.githubusercontent.com/13721038/65909647-eaba3600-e37d-11e9-92f8-2d8f7e4ceca3.png)
+
+- Preferences UI interface added to top ribbon
+- Added [SzPrefsService](https://senzing.github.io/sdk-components-ng/injectables/SzPrefsService.html)
+- Added [SzPreferencesComponent](https://senzing.github.io/sdk-components-ng/components/SzPreferencesComponent.html)
+- CSS for responsive breakpoint(s) and/or reflow on narrow width
+- Various UI/UX layout bugfixes
+- Graph should reload on entityIdChange
+- Graph should collapse on *0* results
+- Include "other data" in records area.
+- Text highlighting no longer triggers click-thru
+- Search identifiers drop-down should auto-update on api config change
+
+## [1.0.2] - 2019-08-03
+
+### Added to 1.0.2
+
+- SDK components updated to [1.0.8](https://github.com/senzingiris/sdk-components-ng/releases/tag/1.0.8)
+- Graph components updated to [0.0.4](https://github.com/Senzing/sdk-graph-components/releases)
+- PDF downloads
+- minor UI/UX changes
+
+### Fixed in 1.0.2
+
+- identifier dropdown issue
+- proxy.conf perm issue
+- entity icon fixes
+- graph overflow issue
+- relevant tickets:
+  [#32](https://github.com/Senzing/entity-search-web-app/pull/32),
+  [#36](https://github.com/Senzing/entity-search-web-app/pull/36),
+  [#47](https://github.com/Senzing/entity-search-web-app/pull/47),
+  [#51](https://github.com/Senzing/entity-search-web-app/pull/51),
+  [#53](https://github.com/Senzing/entity-search-web-app/pull/53)
 
 ## [1.0.1] - 2019-06-26
 

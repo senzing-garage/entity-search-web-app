@@ -9,15 +9,15 @@
 
 This is a more complex example of SDK component usage. It differs from the example web apps in the following features:
 
-* Routing (bookmarkable urls)
-* Resolvers
-* Activity Spinner
-* Angular Material
-* Direct interaction with SDK Services, not just components
-* Error feedback
-* Reverse proxy support
-* ExpressJS web server(for production deployment)
-* Open detail view in new tab
+- Routing (bookmarkable urls)
+- Resolvers
+- Activity Spinner
+- Angular Material
+- Direct interaction with SDK Services, not just components
+- Error feedback
+- Reverse proxy support
+- ExpressJS web server(for production deployment)
+- Open detail view in new tab
 
 It's not meant to be followed along by a developer. Rather it serves as both an example of what a more full-featured implementation looks like, as well as a ready to build and deploy docker container.
 
@@ -31,27 +31,41 @@ It's not meant to be followed along by a developer. Rather it serves as both an 
 1. [Entity Search Web App](#entity-search-web-app)
    1. [Overview](#overview)
       1. [Related artifacts](#related-artifacts)
-      2. [Contents](#contents)
-   2. [Preparation](#preparation)
+      1. [Contents](#contents)
+      1. [Legend](#legend)
+   1. [Preparation](#preparation)
       1. [Prerequisite software](#prerequisite-software)
-      2. [Clone repository](#clone-repository)
-      3. [Create SENZING_DIR](#create-senzingdir)
-   3. [Using docker-compose](#using-docker-compose)
-   4. [Using docker](#using-docker)
+      1. [Pull latest docker images](#pull-latest-docker-images)
+      1. [Clone repository](#clone-repository)
+      1. [Initialize Senzing](#initialize-senzing)
+      1. [Configuration](#configuration)
+      1. [Volumes](#volumes)
+   1. [Using docker-compose](#using-docker-compose)
+   1. [Using docker](#using-docker)
+      1. [Docker network](#docker-network)
+      1. [Run](#run)
       1. [Using SSL](#using-ssl)
          1. [Prerequisites](#prerequisites)
-         2. [Self-Signed Certificates](#self-signed-certificates)
-         3. [Setting up SSL using Docker Stack](#setting-up-ssl-using-docker-stack)
-      2. [Air Gapped Environments](#air-gapped-environments)
-      3. [Building from Source](#building-from-source)
-   5. [Development](#development)
+         1. [Self-Signed Certificates](#self-signed-certificates)
+         1. [Setting up SSL using Docker Stack](#setting-up-ssl-using-docker-stack)
+      1. [Air Gapped Environments](#air-gapped-environments)
+      1. [Building from Source](#building-from-source)
+   1. [Development](#development)
       1. [Development server](#development-server)
-      2. [Production Server](#production-server)
-      3. [Code scaffolding](#code-scaffolding)
-   6. [Testing](#testing)
+      1. [Production Server](#production-server)
+      1. [Code scaffolding](#code-scaffolding)
+   1. [Testing](#testing)
       1. [Running unit tests](#running-unit-tests)
-      2. [Running end-to-end tests](#running-end-to-end-tests)
-   7. [Further help](#further-help)
+      1. [Running end-to-end tests](#running-end-to-end-tests)
+   1. [Further help](#further-help)
+
+### Legend
+
+1. :thinking: - A "thinker" icon means that a little extra thinking may be required.
+   Perhaps you'll need to make some choices.
+   Perhaps it's an optional step.
+1. :pencil2: - A "pencil" icon means that the instructions may need modification before performing.
+1. :warning: - A "warning" icon means that something tricky is happening, so pay attention.
 
 ## Preparation
 
@@ -62,52 +76,7 @@ The following software programs need to be installed:
 1. [docker](https://github.com/Senzing/knowledge-base/blob/master/HOWTO/install-docker.md)
 2. [docker-compose](https://github.com/Senzing/knowledge-base/blob/master/HOWTO/install-docker-compose.md)
 
-### Clone repository
-
-1. Set these environment variable values:
-
-    ```console
-    export GIT_ACCOUNT=senzing
-    export GIT_REPOSITORY=entity-search-web-app
-    ```
-
-1. Follow steps in [clone-repository](https://github.com/Senzing/knowledge-base/blob/master/HOWTO/clone-repository.md) to install the Git repository.
-
-1. After the repository has been cloned, be sure the following are set:
-
-    ```console
-    export GIT_ACCOUNT_DIR=~/${GIT_ACCOUNT}.git
-    export GIT_REPOSITORY_DIR="${GIT_ACCOUNT_DIR}/${GIT_REPOSITORY}"
-    ```
-
-### Create SENZING_DIR
-
-If you do not already have an `/opt/senzing` directory on your local system, visit
-[HOWTO - Create SENZING_DIR](https://github.com/Senzing/knowledge-base/blob/master/HOWTO/create-senzing-dir.md).
-
-## Using docker-compose
-
-1. Run in a docker-compose formation.
-   Example:
-
-    ```console
-    cd ${GIT_REPOSITORY_DIR}
-
-    sudo docker-compose up senzing-webapp
-    ```
-
-1. To verify that containers are running and accessible:
-
-    1. Open a web browser on [http://localhost:8081](http://localhost:8081) (or substitute hostname or IP for `localhost`).
-
-    1. Alternatively, `curl` can be used.
-       Example:
-
-       ```console
-       curl http://machine-host-name:8081
-       ```
-
-## Using docker
+### Pull latest docker images
 
 1. Pull the latest release of this app from [Docker Hub](https://hub.docker.com/r/senzing/entity-search-web-app).
    Example:
@@ -123,27 +92,146 @@ If you do not already have an `/opt/senzing` directory on your local system, vis
     sudo docker pull senzing/senzing-api-server
     ```
 
-1. :pencil2: Configure the app.
-   You can do this by setting environment variables, or by setting them through a [docker-compose.yaml](docker-compose.yaml),
-   or by passing them in at run-time.
-   The following are the important ones:
+### Clone repository
+
+1. Set these environment variable values:
 
     ```console
-    SENZING_API_SERVER_URL="http://senzing-api-server:8080"
-    SENZING_WEB_SERVER_PORT=8081
-    SENZING_WEB_SERVER_API_PATH="/api"
+    export GIT_ACCOUNT=senzing
+    export GIT_REPOSITORY=entity-search-web-app
+    export GIT_ACCOUNT_DIR=~/${GIT_ACCOUNT}.git
+    export GIT_REPOSITORY_DIR="${GIT_ACCOUNT_DIR}/${GIT_REPOSITORY}"
     ```
 
-1. Create Network.
-   In order to have the docker containers talk to one another it is suggested that you create a network for your docker
-   containers to communicate with each other.
-   If using docker-compose.yaml to run the formation you can skip steps 3-5
-   as this is handled in the docker-compose.yaml.
+1. Follow steps in [clone-repository](https://github.com/Senzing/knowledge-base/blob/master/HOWTO/clone-repository.md) to install the Git repository.
+
+### Initialize Senzing
+
+1. If Senzing has not been initialized, visit
+   "[How to initialize Senzing with Docker](https://github.com/Senzing/knowledge-base/blob/master/HOWTO/initialize-senzing-with-docker.md)".
+
+### Configuration
+
+Configuration values specified by environment variable or command line parameter.
+
+- **[SENZING_DATA_VERSION_DIR](https://github.com/Senzing/knowledge-base/blob/master/lists/environment-variables.md#senzing_data_version_dir)**
+- **[SENZING_ETC_DIR](https://github.com/Senzing/knowledge-base/blob/master/lists/environment-variables.md#senzing_etc_dir)**
+- **[SENZING_G2_DIR](https://github.com/Senzing/knowledge-base/blob/master/lists/environment-variables.md#senzing_g2_dir)**
+- **[SENZING_NETWORK](https://github.com/Senzing/knowledge-base/blob/master/lists/environment-variables.md#senzing_network)**
+- **[SENZING_RUNAS_USER](https://github.com/Senzing/knowledge-base/blob/master/lists/environment-variables.md#senzing_runas_user)**
+- **[SENZING_VAR_DIR](https://github.com/Senzing/knowledge-base/blob/master/lists/environment-variables.md#senzing_var_dir)**
+
+### Volumes
+
+:thinking:
+"[How to initialize Senzing with Docker](https://github.com/Senzing/knowledge-base/blob/master/HOWTO/initialize-senzing-with-docker.md)"
+places files in different directories.
+The following examples show how to identify each output directory.
+
+1. **Example #1:**
+   To mimic an actual RPM installation,
+   identify directories for RPM output in this manner:
+
+    ```console
+    export SENZING_DATA_VERSION_DIR=/opt/senzing/data/1.0.0
+    export SENZING_ETC_DIR=/etc/opt/senzing
+    export SENZING_G2_DIR=/opt/senzing/g2
+    export SENZING_VAR_DIR=/var/opt/senzing
+    ```
+
+1. :pencil2: **Example #2:**
+   If Senzing directories were put in alternative directories,
+   set environment variables to reflect where the directories were placed.
    Example:
 
     ```console
-    sudo docker network create -d bridge sz-api-network
+    export SENZING_VOLUME=/opt/my-senzing
+
+    export SENZING_DATA_VERSION_DIR=${SENZING_VOLUME}/data/1.0.0
+    export SENZING_ETC_DIR=${SENZING_VOLUME}/etc
+    export SENZING_G2_DIR=${SENZING_VOLUME}/g2
+    export SENZING_VAR_DIR=${SENZING_VOLUME}/var
     ```
+
+1. :thinking: If internal database is used, permissions may need to be changed in `/var/opt/senzing`.
+   Example:
+
+    ```console
+    sudo chown $(id -u):$(id -g) -R ${SENZING_VAR_DIR}
+    ```
+
+## Using docker-compose
+
+1. Run in a docker-compose formation.
+   Example:
+
+    ```console
+    cd ${GIT_REPOSITORY_DIR}
+    sudo \
+      SENZING_DATA_VERSION_DIR=${SENZING_DATA_VERSION_DIR} \
+      SENZING_ETC_DIR=${SENZING_ETC_DIR} \
+      SENZING_G2_DIR=${SENZING_G2_DIR} \
+      SENZING_VAR_DIR=${SENZING_VAR_DIR} \
+      docker-compose up senzing-webapp
+    ```
+
+1. Verify that containers are running and accessible:
+    1. Open a web browser on [http://localhost:8081](http://localhost:8081) (or substitute hostname or IP for `localhost`).
+    1. Alternatively, `curl` can be used.
+       Example:
+
+       ```console
+       curl http://machine-host-name:8081
+       ```
+
+## Using docker
+
+### Docker network
+
+The following docker containers communicate over a docker network.
+
+1. :thinking: Find or create a docker network.
+   Perform one of the following procedures.
+
+    1. Find a docker network.
+        1. List docker networks.
+           Example:
+
+            ```console
+            sudo docker network ls
+            ```
+
+        1. :pencil2: Specify docker network.
+           Choose value from NAME column of `docker network ls`.
+           Example:
+
+            ```console
+            export SENZING_NETWORK=*nameofthe_network*
+            ```
+
+    1. Create docker network.
+        1. :pencil2: Specify network name.
+           Example:
+
+            ```console
+            export SENZING_NETWORK=sz-api-network
+            ```
+
+        1. Create docker network.
+           Example:
+
+            ```console
+            sudo docker network create -d bridge ${SENZING_NETWORK}
+            ```
+
+1. Construct parameter for `docker run`.
+   Example:
+
+    ```console
+    export SENZING_NETWORK_PARAMETER="--net ${SENZING_NETWORK}"
+    ```
+
+### Run
 
 1. Attach senzing-api-server.
    Example:
@@ -152,19 +240,23 @@ If you do not already have an `/opt/senzing` directory on your local system, vis
     sudo docker run \
       --interactive \
       --name=senzing-api-server \
-      --network=sz-api-network \
       --publish 8080:8080 \
       --rm \
       --tty \
-      --volume /opt/senzing:/opt/senzing \
+      --volume ${SENZING_DATA_VERSION_DIR}:/opt/senzing/data \
+      --volume ${SENZING_ETC_DIR}:/etc/opt/senzing \
+      --volume ${SENZING_G2_DIR}:/opt/senzing/g2 \
+      --volume ${SENZING_VAR_DIR}:/var/opt/senzing \
+      ${SENZING_NETWORK_PARAMETER} \
       senzing/senzing-api-server \
         -concurrency 10 \
         -httpPort 8080 \
         -bindAddr all \
-        -iniFile /opt/senzing/g2/python/G2Module.ini
+        -iniFile /etc/opt/senzing/G2Module.ini
     ```
 
-1. Run entity search web app.   Example:
+1. Run entity search web app.
+   Example:
 
     ```console
     sudo docker run \
@@ -172,10 +264,10 @@ If you do not already have an `/opt/senzing` directory on your local system, vis
       --env SENZING_WEB_SERVER_PORT=8081 \
       --interactive \
       --name=senzing-webapp \
-      --network=sz-api-network \
       --publish 8081:8081 \
       --rm \
       --tty \
+      ${SENZING_NETWORK_PARAMETER} \
       senzing/entity-search-web-app
     ```
 
@@ -375,7 +467,7 @@ You may also need to install [NodeJS](https://nodejs.org), and [AngularCLI](http
     node webserver
     ```
 
-## Code scaffolding
+### Code scaffolding
 
 1. To generate a new component, Run
 
