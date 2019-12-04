@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Input, TemplateRef, ViewContainerRef, Output, ElementRef, EventEmitter, OnDestroy, ChangeDetectorRef, Inject, AfterViewInit, Renderer2 } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, TemplateRef, ViewContainerRef, Output, ElementRef, EventEmitter, OnDestroy, ChangeDetectorRef, Inject, AfterViewInit, Renderer2, HostBinding } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EntitySearchService } from '../services/entity-search.service';
 import { tap, filter, take, takeUntil } from 'rxjs/operators';
@@ -17,7 +17,8 @@ import {
   SzSdkPrefsModel,
   SzStandaloneGraphComponent,
   SzSearchService,
-  SzEntityData
+  SzEntityData,
+  SzEntityDetailGraphFilterComponent
 } from '@senzing/sdk-components-ng';
 import { UiService } from '../services/ui.service';
 import { LOCAL_STORAGE, StorageService } from 'ngx-webstorage-service';
@@ -45,6 +46,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     this._showGraphMatchKeys = value;
   }
   public showEntityDetail: boolean = false;
+
   public showFilters: boolean = true;
   public get showSearchResultDetail(): boolean {
     if (this.currentlySelectedEntityId && this.currentlySelectedEntityId > 0) {
@@ -86,8 +88,12 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() maxEntities: number = 20;
   @Input() buildOut: number = 1;
 
-  // @HostBinding('class.open') get cssClssOpen() { return this.expanded; };
-  // @HostBinding('class.closed') get cssClssClosed() { return !this.expanded; };
+  private _showRightRail = true;
+  @HostBinding('class.right-rail-open')
+  get showRightRail() { return this._showRightRail; }
+  @HostBinding('class.right-rail-closed')
+  get hideFilters() { return !this._showRightRail; }
+
   @ViewChild('graphContainer') graphContainerEle: ElementRef;
   // @ViewChild(SzEntityDetailGraphControlComponent) graphControlComponent: SzEntityDetailGraphControlComponent;
   @ViewChild(SzRelationshipNetworkComponent) graph: SzRelationshipNetworkComponent;
@@ -97,6 +103,8 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(SzEntityDetailComponent) entityDetailComponent: SzEntityDetailComponent;
   /** graph component */
   @ViewChild(SzStandaloneGraphComponent) graphComponent: SzStandaloneGraphComponent;
+  /** graph filters */
+  @ViewChild(SzEntityDetailGraphFilterComponent) graphFilter: SzEntityDetailGraphFilterComponent;
 
   /**
    * emitted when the player right clicks a entity node.
@@ -169,11 +177,17 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public onOptionChange(event: {name: string, value: any}) {
+    console.log('GraphComponent.onOptionChange: ', event);
     switch(event.name) {
       case 'showLinkLabels':
         this.showMatchKeys = event.value;
         break;
     }
+  }
+
+  public onToggleFilters(event) {
+    this._showRightRail = !this._showRightRail;
+    console.log('GraphComponent.onToggleFilters: ', this.showRightRail, this._showRightRail, event);
   }
 
   constructor(
@@ -266,11 +280,12 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
       case 'detail':
         this.showFilters = false;
         this.showEntityDetail = true;
+        this._showRightRail = true;
         break;
       case 'filters':
         this.showFilters = true;
         this.showEntityDetail = false;
-
+        this._showRightRail = true;
     }
     this.graphComponent.showFiltersControl = false;
   }
@@ -298,7 +313,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
       takeUntil(this.unsubscribe$),
     ).subscribe((results: SzAttributeSearchResult[]) => {
       this.currentSearchResults = results;
-      if(results && results.map){
+      if(results && results.map) {
         this.graphIds = results.map((result: SzAttributeSearchResult) => result.entityId);
       }
       this.showSearchResults = (this.graphIds && this.graphIds.length > 0);
