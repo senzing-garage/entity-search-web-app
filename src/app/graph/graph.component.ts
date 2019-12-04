@@ -88,6 +88,9 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() maxEntities: number = 20;
   @Input() buildOut: number = 1;
 
+  /** array of data sources to limit "filter by datasource" to. */
+  public _showDataSourcesInFilter: string[];
+  /** whether or not to show the right-rail element */
   private _showRightRail = true;
   @HostBinding('class.right-rail-open')
   get showRightRail() { return this._showRightRail; }
@@ -177,7 +180,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public onOptionChange(event: {name: string, value: any}) {
-    console.log('GraphComponent.onOptionChange: ', event);
+    //console.log('GraphComponent.onOptionChange: ', event);
     switch(event.name) {
       case 'showLinkLabels':
         this.showMatchKeys = event.value;
@@ -185,9 +188,9 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  /** toggle the visibility of the right rail section */
   public onToggleFilters(event) {
     this._showRightRail = !this._showRightRail;
-    console.log('GraphComponent.onToggleFilters: ', this.showRightRail, this._showRightRail, event);
   }
 
   constructor(
@@ -260,6 +263,14 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  /** handler for graph components dataLoaded event */
+  onDataLoaded(evt: any) {
+      //console.log('onDataLoaded: ', evt);
+  }
+  /** handler for graph components dataSourcesChange event */
+  onDataSourcesChange(evt: any) {
+      this._showDataSourcesInFilter = evt;
+  }
   onSearchException(err: Error) {
     throw (err.message);
   }

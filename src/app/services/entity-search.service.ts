@@ -142,7 +142,7 @@ export class EntityDetailResolverService implements Resolve<SzEntityData> {
     if (entityId && entityId > 0) {
       return this.sdkSearchService.getEntityById(entityId, true).pipe(
         mergeMap(entityData => {
-          console.info('EntityDetailResolverService: ', entityData);
+          //console.info('EntityDetailResolverService: ', entityData);
           this.spinner.hide();
           if (entityData) {
             return of(entityData);
@@ -209,7 +209,6 @@ export class GraphEntityNetworkResolverService implements Resolve<SzEntityNetwor
         this.prefsService.prefs.graph.buildOut,
         this.prefsService.prefs.graph.maxEntities,
         false ).pipe(
-          tap(res => console.log('GraphEntityNetworkResolverService.findNetworkByEntityID: ' + entityId, res.data)),
           map(res => (res.data as SzEntityNetworkData)),
           mergeMap((networkData) => {
             this.spinner.hide();

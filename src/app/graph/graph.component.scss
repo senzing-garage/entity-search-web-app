@@ -18,7 +18,7 @@
     height: 24px;
     position: absolute;
     top: -40px;
-    right: -218px;
+    right: -226px;
     transition: right .2s linear;
     /*background-color: #f8f7f5;*/
 
@@ -46,6 +46,15 @@
     }
     .toggle {
       width: 24px;
+      background-color: #333;
+      border-top: none;
+      border-right: none;
+
+      mat-icon {
+        width: 16px;
+        height: 16px;
+        font-size: 16px;
+      }
     }
   }
 
@@ -63,14 +72,17 @@
     .embedded-detail-viewer,
     .embedded-filters {
       border: none;
-      height: 100%;
-      overflow: hidden;
+      /*height: 100%;
+      overflow: hidden;*/
       padding-top: 16px;
     }
 
     sz-entity-detail-graph-filter {
       margin-left: 20px;
       display: block;
+      color: #6b6666;
+      font-weight: 500;
+      font-size: 14px;
     }
   }
 
