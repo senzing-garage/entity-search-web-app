@@ -1,7 +1,7 @@
 <app-toolbar
   (showSection)="onToolBarSectionChange($event)"
   [prefsIsShowing]="showPrefs"></app-toolbar>
-<div class="tool-tray" [class.expanded]="searchExpanded" [class.prefs-showing]="showPrefs">
+<div class="tool-tray" [class.expanded]="searchExpanded" [class.graph-open]="isGraphOpen" [class.prefs-showing]="showPrefs">
     <div id="toolbar-col1" class="column">
       <sz-preferences *ngIf="showPrefs"
         showControls="true"></sz-preferences>
