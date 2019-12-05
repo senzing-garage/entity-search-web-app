@@ -74,6 +74,40 @@ export class EntitySearchService {
 
   constructor(private sdkSearchService: SzSearchService) {
   }
+  /** get the page title for the current search */
+  public get searchTitle(): string {
+    let retVal = '(0) Results';
+    const params = [];
+    if(this.currentSearchParameters) {
+      // build title by search params
+      if (this.currentSearchParameters.NAME_FULL) {
+        params.push(this.currentSearchParameters.NAME_FULL);
+      }
+      if (this.currentSearchParameters.DATE_OF_BIRTH) {
+        params.push(this.currentSearchParameters.DATE_OF_BIRTH);
+      }
+      if (this.currentSearchParameters.IDENTIFIER) {
+        params.push(this.currentSearchParameters.IDENTIFIER);
+        // IDENTIFIER_TYPE
+      }
+      if (this.currentSearchParameters.ADDR_FULL) {
+        params.push(this.currentSearchParameters.ADDR_FULL);
+      }
+      if (this.currentSearchParameters.PHONE_NUMBER) {
+        params.push(this.currentSearchParameters.PHONE_NUMBER);
+      }
+      if (this.currentSearchParameters.EMAIL_ADDRESS) {
+        params.push(this.currentSearchParameters.EMAIL_ADDRESS);
+      }
+    }
+    if (params && params.length > 0) {
+      retVal = params.join(', ');
+      if(this.currentSearchResults && this.currentSearchResults.length > 0) {
+        retVal = '(' + this.currentSearchResults.length + ') Result' + (this.currentSearchResults.length > 1 ? 's' : '') + ' for "' + retVal + '"';
+      }
+    }
+    return retVal;
+  }
 }
 
 @Injectable({

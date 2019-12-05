@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild, Input, TemplateRef, ViewContainerRef, Output, ElementRef, EventEmitter, OnDestroy, ChangeDetectorRef, Inject, AfterViewInit, Renderer2 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 import { EntitySearchService } from '../services/entity-search.service';
 import { tap, filter, take, takeUntil } from 'rxjs/operators';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
@@ -187,7 +188,8 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     public prefs: SzPrefsService,
     private cd: ChangeDetectorRef,
     public searchService: SzSearchService,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private titleService: Title
     ) {
 
       /* currently were only set up to resolve data to a single entity */
@@ -219,6 +221,8 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
       );
       // set body class based on isGraphShowing
       this.renderer.addClass(document.body, 'graph-open');
+      // set page title
+      this.titleService.setTitle( 'Explore Networks' );
   }
 
   ngAfterViewInit() {
@@ -298,12 +302,13 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
       takeUntil(this.unsubscribe$),
     ).subscribe((results: SzAttributeSearchResult[]) => {
       this.currentSearchResults = results;
-      if(results && results.map){
+      if(results && results.map) {
         this.graphIds = results.map((result: SzAttributeSearchResult) => result.entityId);
       }
       this.showSearchResults = (this.graphIds && this.graphIds.length > 0);
       this.uiService.spinnerActive = false;
-      console.log('Search results changed! ', this.graphIds);
+      //console.log('Search results changed! ', this.graphIds, title);
+      this.titleService.setTitle( 'Explore Networks: ' + this.search.searchTitle );
     });
 
     // graph prefs
