@@ -51,9 +51,22 @@ export class SearchResultsComponent implements OnInit {
     });
 
   }
-
+  /** when user clicks on a search result item */
   onSearchResultClick(param) {
     this.router.navigate(['entity/' + param.entityId]);
+  }
+  /** when user clicks the "open results in graph" button */
+  onOpenInGraph($event) {
+    const entityIds = this.currentSearchResults.map( (ent) => {
+      return ent.entityId;
+    });
+    if(entityIds && entityIds.length === 1) {
+      // single result
+      this.router.navigate(['graph/' + entityIds[0] ]);
+    } else if(entityIds && entityIds.length > 1) {
+      // multiple matches
+      this.router.navigate(['graph/' + entityIds.join(',') ]);
+    }
   }
 
 }

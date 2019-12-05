@@ -192,16 +192,19 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     private titleService: Title
     ) {
 
-      /* currently were only set up to resolve data to a single entity */
       this.route.data.subscribe((data) => {
         // we're using the route resolver to activate spinner
         // this could be more efficient and use networkData to feed
         // directly to component views
+        // console.warn('GraphComponent.route.data change: ', data);
       });
       this.route.params.subscribe(
         (params) => {
           if(params && params.entityId) {
-            this.graphIds = [parseInt(params.entityId, 10)];
+            // if entityId has "," in it
+            // assume collection of ids
+            this.graphIds = (params.entityId && params.entityId.indexOf(',')) ? params.entityId.split(',').map( (strEntId) => parseInt(strEntId, 10) ) : [parseInt(params.entityId, 10)];
+            // console.log('GraphComponent.route.params change: ', this.graphIds, params.entityId);
             this.showSearchResults = true;
           } else if(params && params.entityIds) {
             this.showSearchResults = true;
@@ -226,19 +229,11 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    /**
-    const searchParams = this.searchBox.getSearchParams();
-    if (searchParams){
-      if ( Object.keys(searchParams).length > 0) {
-        // do auto search
-        this.searchBox.submitSearch();
-      }
-    }*/
     // current results
 
     // future results
     this.search.results.subscribe((results: SzAttributeSearchResult[]) => {
-      console.log('GraphComponent.search.results = ', results);
+      //console.log('GraphComponent.search.results = ', results);
     });
 
     this.prefs.prefsChanged.pipe(
