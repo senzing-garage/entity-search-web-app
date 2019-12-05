@@ -1,9 +1,12 @@
-import { Component, OnInit, OnDestroy, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, ViewChild } from '@angular/core';
 import { SpinnerService } from '../services/spinner.service';
 import { UiService } from '../services/ui.service';
 import { EntitySearchService } from '../services/entity-search.service';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
+import {Overlay, CdkOverlayOrigin, OverlayConfig, OverlayRef} from '@angular/cdk/overlay';
+import { ComponentPortal } from '@angular/cdk/portal';
+import { AboutComponent } from '../about/about.component';
 
 @Component({
   selector: 'app-toolbar',
@@ -20,11 +23,18 @@ export class ToolbarComponent implements OnInit, OnDestroy {
   @Output() showSection: EventEmitter<string> = new EventEmitter<string>();
 
   @Input() public prefsIsShowing =  false;
+  private aboutInfoIsShowing = false;
+  private overlayRef: OverlayRef;
+
+  @ViewChild(CdkOverlayOrigin) _overlayOrigin: CdkOverlayOrigin;
+  @ViewChild('poweredByOrigin') poweredByOrigin: CdkOverlayOrigin;
+
 
   constructor(
     private spinner: SpinnerService,
     private uiService: UiService,
     private router: Router,
+    public overlay: Overlay,
     private search: EntitySearchService) { }
 
   ngOnInit() {
@@ -79,6 +89,36 @@ export class ToolbarComponent implements OnInit, OnDestroy {
 
   public get graphRouteLink() {
     return '/graph/' + this.currentlySelectedEntityId;
+  }
+
+  toggleAboutInfo() {
+    // TODO(jelbourn): separate overlay demo for connected positioning.
+    if( this.aboutInfoIsShowing && this.overlayRef) {
+      // dispose
+      this.overlayRef.detach();
+      this.aboutInfoIsShowing = false;
+    } else {
+      if(this.overlayRef) {
+        // reattach
+        this.overlayRef.attach(new ComponentPortal(AboutComponent));
+      } else {
+        // create
+        const strategy = this.overlay.position()
+        .connectedTo(
+            this._overlayOrigin.elementRef,
+            {originX: 'end', originY: 'bottom'},
+            {overlayX: 'end', overlayY: 'top'} );
+
+        const config = new OverlayConfig({
+          positionStrategy: strategy,
+          width: '170px'
+        });
+
+        this.overlayRef = this.overlay.create(config);
+        this.overlayRef.attach(new ComponentPortal(AboutComponent));
+      }
+      this.aboutInfoIsShowing = true;
+    }
   }
 
   toggleSearch(evt?) {
