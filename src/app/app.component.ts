@@ -93,6 +93,10 @@ export class AppComponent implements OnInit, OnDestroy {
     return false;
   }
 
+  public get showSearchById(): boolean {
+    return (this.uiService && this.uiService.searchType === 'id');
+  }
+
   constructor(
     private entitySearchService: EntitySearchService,
     private router: Router,
@@ -127,6 +131,10 @@ export class AppComponent implements OnInit, OnDestroy {
       case 'preferences':
         this.showPrefs = true;
         break;
+      case 'searchById':
+          this.uiService.searchType = 'id';
+          this.showPrefs = false;
+          break;
       default:
         this.showPrefs = false;
     }

@@ -80,7 +80,7 @@ sz-powered-by {
 
   &.expanded {
     height: 282px;
-    sz-search {
+    sz-search, sz-search-by-id {
       opacity: 1;
     }
 
@@ -89,7 +89,7 @@ sz-powered-by {
     }
   }
 
-  sz-search {
+  sz-search, sz-search-by-id {
     width: 100%;
     margin: 50px 0 0 6px;
     opacity: 0;

@@ -8,6 +8,7 @@ import { Router, ActivatedRoute, UrlSegment, NavigationEnd } from '@angular/rout
 })
 export class UiService {
   private _searchExpanded = true;
+  private _searchType = 'default';
   public createPdfClicked = new Subject<number>();
   private _graphOpen = false;
 
@@ -16,6 +17,12 @@ export class UiService {
   }
   public set searchExpanded(value) {
     this._searchExpanded = value;
+  }
+  public get searchType(): string {
+    return this._searchType;
+  }
+  public set searchType(value: string) {
+    this._searchType = value;
   }
 
   public get graphOpen(): boolean {

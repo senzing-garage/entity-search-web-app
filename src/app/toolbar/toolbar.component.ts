@@ -32,7 +32,7 @@ export class ToolbarComponent implements OnInit, OnDestroy {
 
   constructor(
     private spinner: SpinnerService,
-    private uiService: UiService,
+    public uiService: UiService,
     private router: Router,
     public overlay: Overlay,
     private search: EntitySearchService) { }
@@ -72,6 +72,16 @@ export class ToolbarComponent implements OnInit, OnDestroy {
   public showSearch() {
     this.showSection.emit('search');
     this.uiService.searchExpanded = true;
+  }
+
+  public get searchById(): boolean {
+    return this.uiService.searchType === 'id';
+  }
+  public set searchById(value: boolean) {
+    this.uiService.searchType = (value === true) ? 'id' : 'default';
+    //this.uiService.searchType = (value) ? 'id' : 'default';
+    //this.showSection.emit('searchById');
+    console.log('set searchById to: ', this.searchById, value, (value === true), this.uiService.searchType);
   }
 
   /** true if the search tray is expanded. false if not. */

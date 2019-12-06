@@ -12,10 +12,16 @@
       <mat-icon *ngIf="!ribbonExpanded">visibility</mat-icon>
       Show/Hide Search
     </a>
+    <a *ngIf="!showGraphOptions" (click)="searchById = !searchById" mat-menu-item>
+      <mat-icon>open_in_new</mat-icon>
+
+      <span *ngIf="!searchById">Search By Id</span>
+      <span *ngIf="searchById">Search By Attribute</span>
+    </a>
     <a *ngIf="showEntityOptions && !showGraphOptions" [href]="graphRouteLink" target="_blank" mat-menu-item>
         <mat-icon>open_in_new</mat-icon>
         Open Entity in Graph View
-      </a>
+    </a>
     <a *ngIf="showEntityOptions" [href]="entityRouteLink" target="_blank" mat-menu-item>
       <mat-icon>open_in_new</mat-icon>
       Open Entity in New Tab
