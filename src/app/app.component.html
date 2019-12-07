@@ -11,6 +11,10 @@
       (parameterChange)="onSearchParameterChange($event)"
       (searchStart)="onSearchStart($event)"></sz-search>
       <sz-search-by-id *ngIf="!showPrefs && showSearchById"
+        (parameterChange)="onSearchParameterChange($event)"
+        (entityChange)="onEntityResult($event)"
+        (resultCleared)="onSearchResultsCleared($event)"
+        (resultChange)="onRecordChange($event)"
       ></sz-search-by-id>
     </div>
     <div id="toolbar-col2" class="column" *ngIf="showPrefs">

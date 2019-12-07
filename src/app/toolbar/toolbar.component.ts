@@ -7,6 +7,7 @@ import { Subject } from 'rxjs';
 import {Overlay, CdkOverlayOrigin, OverlayConfig, OverlayRef} from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { AboutComponent } from '../about/about.component';
+import { SzAttributeSearchResult } from '@senzing/sdk-components-ng';
 
 @Component({
   selector: 'app-toolbar',
@@ -65,6 +66,15 @@ export class ToolbarComponent implements OnInit, OnDestroy {
       return false;
     }
   }
+  /** whether or not to show menu options specific to search results */
+  public get showResultsOptions() {
+    if (this.search.currentSearchResults && this.search.currentSearchResults.length > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   public showPreferences() {
     this.showSection.emit('preferences');
     this.uiService.searchExpanded = true;
@@ -83,6 +93,20 @@ export class ToolbarComponent implements OnInit, OnDestroy {
     //this.showSection.emit('searchById');
     console.log('set searchById to: ', this.searchById, value, (value === true), this.uiService.searchType);
   }
+  public get showResultsAsList(): boolean {
+    return (this.uiService.resultsViewType === 'list' || this.uiService.resultsViewType === 'default');
+  }
+  public set showResultsAsList(value: boolean) {
+    this.uiService.resultsViewType = (value === true) ? 'list' : 'default';
+    console.log('set showResultsAsList to: ', this.searchById, value, (value === true), this.uiService.searchType);
+  }
+  public get showResultsAsGraph(): boolean {
+    return this.uiService.resultsViewType === 'graph';
+  }
+  public set showResultsAsGraph(value: boolean) {
+    this.uiService.resultsViewType = (value === true) ? 'graph' : 'list';
+    console.log('set showResultsAsGraph to: ', this.showResultsAsGraph, value, (value === true), this.uiService);
+  }
 
   /** true if the search tray is expanded. false if not. */
   public get ribbonExpanded() {
@@ -99,6 +123,16 @@ export class ToolbarComponent implements OnInit, OnDestroy {
 
   public get graphRouteLink() {
     return '/graph/' + this.currentlySelectedEntityId;
+  }
+  public get graphSearchResultsRouteLink() {
+    if(this.search.currentSearchResults && this.search.currentSearchResults.length > 0) {
+      return '/graph/' + this.search.currentSearchResults.map( (result: SzAttributeSearchResult) => {
+        return result.entityId;
+      }).join(',');
+    }
+  }
+  public get listSearchResultsRouteLink() {
+    return '/search';
   }
 
   toggleAboutInfo() {

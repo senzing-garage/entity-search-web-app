@@ -12,7 +12,9 @@ import {
   SzAttributeSearchResult,
   SzSearchService,
   SzSearchResultEntityData,
-  SzEntityData
+  SzEntityData,
+  SzEntityRecord,
+  SzSearchByIdFormParams
 } from '@senzing/sdk-components-ng';
 import { EntityGraphService, SzEntityNetworkData } from '@senzing/rest-api-client-ng';
 import { SpinnerService } from './spinner.service';
@@ -43,6 +45,8 @@ export class EntitySearchService {
   /** the current search results */
   private _currentSearchResults: SzAttributeSearchResult[];
   private _results = new Subject<SzAttributeSearchResult[]>();
+  private _currentRecord: SzEntityRecord;
+  private _recordChange = new Subject<SzEntityRecord>();
 
   public set currentSearchResults(value) {
     this._currentSearchResults = value;
@@ -52,8 +56,18 @@ export class EntitySearchService {
     // TODO: pull from last subject
     return this._currentSearchResults;
   }
+  public set currentRecord(value: SzEntityRecord) {
+    this._currentRecord = value;
+    this._recordChange.next(value);
+  }
+  public get currentRecord(): SzEntityRecord {
+    return this._currentRecord;
+  }
   public get results(): Observable<SzAttributeSearchResult[]> {
     return this._results.asObservable();
+  }
+  public get record(): Observable<SzEntityRecord> {
+    return this._recordChange.asObservable();
   }
 
   /** the entity to show in the detail view */
@@ -71,6 +85,8 @@ export class EntitySearchService {
   }
   /** the search parameters from the last search performed */
   public currentSearchParameters: SzEntitySearchParams;
+  /** the search parameters from the last search-by-id performed */
+  public currentSearchByIdParameters: SzSearchByIdFormParams;
 
   constructor(private sdkSearchService: SzSearchService) {
   }
@@ -159,6 +175,21 @@ export class SearchParamsResolverService implements Resolve<SzEntitySearchParams
     return this.sdkSearchService.getSearchParams();
   }
 }
+@Injectable({
+  providedIn: 'root'
+})
+export class SearchByIdParamsResolverService implements Resolve<SzSearchByIdFormParams> {
+  constructor(
+    private search: EntitySearchService,
+    private sdkSearchService: SzSearchService,
+    private router: Router) {}
+
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): SzSearchByIdFormParams | Observable<never> {
+    const sparams = this.search.currentSearchByIdParameters;
+    return sparams;
+  }
+}
+
 
 @Injectable({
   providedIn: 'root'
@@ -201,6 +232,57 @@ export class EntityDetailResolverService implements Resolve<SzEntityData> {
     } else {
       this.spinner.hide();
       this.search.currentlySelectedEntityId = undefined;
+      this.router.navigate(['errors/404']);
+      return EMPTY;
+    }
+  }
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class RecordResolverService implements Resolve<SzEntityRecord> {
+  constructor(
+    private sdkSearchService: SzSearchService,
+    private router: Router,
+    private search: EntitySearchService,
+    private spinner: SpinnerService) {}
+
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<SzEntityRecord> | Observable<never> {
+    this.spinner.show();
+    const dsName = route.paramMap.get('datasource');
+    const recordId = parseInt( route.paramMap.get('recordId'), 10);
+    if (dsName && recordId && recordId > 0) {
+      return this.sdkSearchService.getEntityByRecordId(dsName, recordId).pipe(
+        map(res => (res as SzEntityRecord)),
+        mergeMap(recordData => {
+          console.info('RecordResolverService: ', recordData);
+          this.spinner.hide();
+          if (recordData) {
+            return of(recordData);
+          } else { // no results
+            this.search.currentlySelectedEntityId = undefined;
+            this.search.currentRecord = undefined;
+            this.router.navigate(['errors/404']);
+            return EMPTY;
+          }
+        }),
+        catchError( (error: HttpErrorResponse) => {
+          this.spinner.hide();
+          const message = `Retrieval error: ${error.message}`;
+          console.error(message);
+          if (error && error.status) {
+            this.router.navigate( [getErrorRouteFromCode(error.status)] );
+          } else {
+            this.router.navigate(['errors/unknown']);
+          }
+          return EMPTY;
+        })
+      );
+    } else {
+      this.spinner.hide();
+      this.search.currentlySelectedEntityId = undefined;
+      this.search.currentRecord = undefined;
       this.router.navigate(['errors/404']);
       return EMPTY;
     }
