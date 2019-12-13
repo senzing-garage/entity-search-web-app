@@ -17,5 +17,17 @@
       width: calc(100% - 110px);
       flex-basis: calc(100% - 110px);
     }
+    .key-full, .value-full {
+      width: 100%;
+    }
+    hr {
+      width: 100%;
+      height: 1px;
+      background-color: #d5d5d5;
+      border: none;
+    }
+    .native-group {
+      margin: 5px 0 0 0;
+    }
   }
 }
