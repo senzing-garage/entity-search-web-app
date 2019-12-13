@@ -11,4 +11,10 @@
   <div *ngIf="aboutService.sdkComponentsVersion" class="value">{{ aboutService.sdkComponentsVersion }}</div>
   <div *ngIf="aboutService.graphComponentsVersion" class="key">Graph Components: </div>
   <div *ngIf="aboutService.graphComponentsVersion" class="value">{{ aboutService.graphComponentsVersion }}</div>
+  <hr>
+  <div class="key" style="flex-basis: auto; flex-grow: 2;">NAPI Version: </div>
+  <div class="value" style="flex-basis: unset; width: auto;">{{ aboutService.nativeApiVersion }}</div>
+  <div class="native-group">NAPI Build # {{ aboutService.nativeApiBuildNumber }}</div>
+  <div class="native-group key-full">NAPI Build Date: </div>
+  <div class="value-full">{{ aboutService.nativeApiBuildDate }}</div>
 </div>
