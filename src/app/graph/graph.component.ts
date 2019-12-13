@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild, Input, TemplateRef, ViewContainerRef, Output, ElementRef, EventEmitter, OnDestroy, ChangeDetectorRef, Inject, AfterViewInit, Renderer2, HostBinding } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 import { EntitySearchService } from '../services/entity-search.service';
 import { tap, filter, take, takeUntil } from 'rxjs/operators';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
@@ -204,19 +205,23 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     public prefs: SzPrefsService,
     private cd: ChangeDetectorRef,
     public searchService: SzSearchService,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private titleService: Title
     ) {
 
-      /* currently were only set up to resolve data to a single entity */
       this.route.data.subscribe((data) => {
         // we're using the route resolver to activate spinner
         // this could be more efficient and use networkData to feed
         // directly to component views
+        // console.warn('GraphComponent.route.data change: ', data);
       });
       this.route.params.subscribe(
         (params) => {
           if(params && params.entityId) {
-            this.graphIds = [parseInt(params.entityId, 10)];
+            // if entityId has "," in it
+            // assume collection of ids
+            this.graphIds = (params.entityId && params.entityId.indexOf(',')) ? params.entityId.split(',').map( (strEntId) => parseInt(strEntId, 10) ) : [parseInt(params.entityId, 10)];
+            // console.log('GraphComponent.route.params change: ', this.graphIds, params.entityId);
             this.showSearchResults = true;
           } else if(params && params.entityIds) {
             this.showSearchResults = true;
@@ -236,22 +241,16 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
       );
       // set body class based on isGraphShowing
       this.renderer.addClass(document.body, 'graph-open');
+      // set page title
+      this.titleService.setTitle( 'Explore Networks' );
   }
 
   ngAfterViewInit() {
-    /**
-    const searchParams = this.searchBox.getSearchParams();
-    if (searchParams){
-      if ( Object.keys(searchParams).length > 0) {
-        // do auto search
-        this.searchBox.submitSearch();
-      }
-    }*/
     // current results
 
     // future results
     this.search.results.subscribe((results: SzAttributeSearchResult[]) => {
-      console.log('GraphComponent.search.results = ', results);
+      //console.log('GraphComponent.search.results = ', results);
     });
 
     this.prefs.prefsChanged.pipe(
@@ -329,7 +328,8 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.showSearchResults = (this.graphIds && this.graphIds.length > 0);
       this.uiService.spinnerActive = false;
-      console.log('Search results changed! ', this.graphIds);
+      //console.log('Search results changed! ', this.graphIds, title);
+      this.titleService.setTitle( 'Explore Networks: ' + this.search.searchTitle );
     });
 
     // graph prefs

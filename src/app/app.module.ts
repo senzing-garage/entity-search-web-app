@@ -1,5 +1,5 @@
 /** core angular, material, and senzing modules */
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, Title } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -25,6 +25,7 @@ import { AppComponent } from './app.component';
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { DetailComponent } from './detail/detail.component';
 import { GraphComponent } from './graph/graph.component';
+import { SearchRecordComponent } from './record/record.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { UiService } from './services/ui.service';
 import { PrefsManagerService } from './services/prefs-manager.service';
@@ -64,6 +65,7 @@ export function SzRestConfigurationFactory() {
   declarations: [
     AppComponent,
     SearchResultsComponent,
+    SearchRecordComponent,
     DetailComponent,
     GraphComponent,
     ToolbarComponent,
@@ -92,7 +94,7 @@ export function SzRestConfigurationFactory() {
     SpinnerModule,
     environment.test ? HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService, { delay: 100 }) : []
   ],
-  providers: [ EntitySearchService, UiService, PrefsManagerService, AboutInfoService ],
+  providers: [ EntitySearchService, UiService, PrefsManagerService, AboutInfoService, Title ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }

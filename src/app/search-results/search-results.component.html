@@ -1,5 +1,12 @@
 <!-- start search results -->
 <div class="search-results">
-    <sz-search-results [results]="currentSearchResults" (resultClick)="onSearchResultClick($event)"></sz-search-results>
+  <button mat-stroked-button (click)="onOpenInGraph($event)" class="open-in-graph">
+    Open in Graph
+    <button
+      mat-mini-fab color="primary" class="graph">
+      <mat-icon color="secondary" class="graph" aria-hidden="false" aria-label="Open Results in Graph">bubble_chart</mat-icon>
+    </button>
+  </button>
+  <sz-search-results [results]="currentSearchResults" (resultClick)="onSearchResultClick($event)"></sz-search-results>
 </div>
 <!-- end search results -->
