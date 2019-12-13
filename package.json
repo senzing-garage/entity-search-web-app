@@ -32,7 +32,7 @@
     "@angular/platform-browser": "~7.1.0",
     "@angular/platform-browser-dynamic": "~7.1.0",
     "@angular/router": "~7.1.0",
-    "@senzing/rest-api-client-ng": "^1.0.2",
+    "@senzing/rest-api-client-ng": "^1.1.0",
     "@senzing/sdk-components-ng": "^1.2.0",
     "@senzing/sdk-graph-components": "^0.1.0",
     "@types/d3": "^5.7.1",
