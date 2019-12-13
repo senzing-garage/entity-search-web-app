@@ -7,7 +7,10 @@ import { takeUntil, filter, map } from 'rxjs/operators';
 import { slideInAnimation } from './animations';
 import {
   SzEntitySearchParams,
-  SzAttributeSearchResult
+  SzAttributeSearchResult,
+  SzEntityRecord,
+  SzEntityData,
+  SzSearchByIdFormParams
 } from '@senzing/sdk-components-ng';
 
 import { EntitySearchService } from './services/entity-search.service';
@@ -93,6 +96,10 @@ export class AppComponent implements OnInit, OnDestroy {
     return false;
   }
 
+  public get showSearchById(): boolean {
+    return (this.uiService && this.uiService.searchType === 'id');
+  }
+
   constructor(
     private entitySearchService: EntitySearchService,
     private router: Router,
@@ -101,7 +108,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private spinner: SpinnerService,
     private ui: UiService,
     public uiService: UiService,
-    private search: EntitySearchService,
+    public search: EntitySearchService,
     private prefsManager: PrefsManagerService
   ) {
 
@@ -127,6 +134,10 @@ export class AppComponent implements OnInit, OnDestroy {
       case 'preferences':
         this.showPrefs = true;
         break;
+      case 'searchById':
+          this.uiService.searchType = 'id';
+          this.showPrefs = false;
+          break;
       default:
         this.showPrefs = false;
     }
@@ -209,16 +220,45 @@ export class AppComponent implements OnInit, OnDestroy {
 
   /**
    * Event handler for when the parameters of the search performed from
-   * the SzSearchComponent has changed. This only happens on submit button click
+   * the SzSearchComponent | SzSearchByIdComponent has changed.
+   * This only happens on submit button click
    */
-  public onSearchParameterChange(searchParams: SzEntitySearchParams) {
-    console.log('onSearchParameterChange: ', searchParams);
-    this.entitySearchService.currentSearchParameters = searchParams;
+  public onSearchParameterChange(searchParams: SzEntitySearchParams | SzSearchByIdFormParams) {
+    //console.log('onSearchParameterChange: ', searchParams);
+    let isByIdParams = false;
+    const byIdParams = (searchParams as SzSearchByIdFormParams);
+    if ( byIdParams && ((byIdParams.dataSource && byIdParams.recordId) || byIdParams.entityId)  ) {
+      isByIdParams = true;
+    } else {
+      // console.warn('not by id: ' + isByIdParams, byIdParams);
+    }
+    if (!isByIdParams) {
+      this.entitySearchService.currentSearchParameters = (searchParams as SzEntitySearchParams);
+    } else {
+      this.entitySearchService.currentSearchByIdParameters = (searchParams as SzSearchByIdFormParams);
+    }
   }
 
   public onSearchStart(evt) {
     console.log('onSearchStart: ', evt);
     this.spinner.show();
+  }
+
+  /** when the value from the sz-search-by-id component changes */
+  onRecordChange(evt: SzEntityRecord) {
+    console.log('onRecordChange: ', evt);
+    this.entitySearchService.currentSearchResults = undefined;
+    this.entitySearchService.currentlySelectedEntityId = undefined;
+    this.entitySearchService.currentRecord = evt;
+    this.router.navigate(['datasources', this.entitySearchService.currentSearchByIdParameters.dataSource, 'records', evt.recordId ]);
+  }
+  /** when the by entity id result from the sz-search-by-id component changes */
+  onEntityResult(evt: SzEntityData) {
+    console.log('onEntityResult: ', evt);
+    this.entitySearchService.currentSearchResults = undefined;
+    this.entitySearchService.currentRecord = undefined;
+    this.entitySearchService.currentlySelectedEntityId = evt.resolvedEntity.entityId;
+    this.router.navigate(['entity', this.entitySearchService.currentlySelectedEntityId ]);
   }
 
   /** toggle the ui state of the ribbon */

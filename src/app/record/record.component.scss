@@ -1,0 +1,35 @@
+
+:host {
+  .search-results {
+    position: relative;
+  }
+
+  button.open-in-graph {
+    display: inline-block;
+    overflow: hidden;
+    position: absolute;
+    top: -40px;
+    right: 20px;
+    /*
+    margin-right: 20px;
+    margin-top: 6px;
+    margin-bottom: 9px;*/
+  }
+
+  sz-search-results {
+    padding-top: 0px;
+  }
+
+  button.graph {
+    width: 24px;
+    height: 24px;
+    margin-left: 7px;
+    /* background-color: var(--sz-color-graph-relationships); */
+    background-color: #333;
+  }
+  mat-icon.graph {
+    vertical-align: inherit;
+    color: var(--sz-color-graph-relationships);
+  }
+}
+

@@ -5,11 +5,17 @@
     <div id="toolbar-col1" class="column">
       <sz-preferences *ngIf="showPrefs"
         showControls="true"></sz-preferences>
-      <sz-search *ngIf="!showPrefs"
+      <sz-search *ngIf="!showPrefs && !showSearchById"
       (resultsChange)="onSearchResults($event)"
       (resultsCleared)="onSearchResultsCleared($event)"
       (parameterChange)="onSearchParameterChange($event)"
       (searchStart)="onSearchStart($event)"></sz-search>
+      <sz-search-by-id *ngIf="!showPrefs && showSearchById"
+        (parameterChange)="onSearchParameterChange($event)"
+        (entityChange)="onEntityResult($event)"
+        (resultCleared)="onSearchResultsCleared($event)"
+        (resultChange)="onRecordChange($event)"
+      ></sz-search-by-id>
     </div>
     <div id="toolbar-col2" class="column" *ngIf="showPrefs">
       <h2 class="title">Storage Mode</h2>

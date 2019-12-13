@@ -7,15 +7,24 @@
   <sz-powered-by cdkOverlayOrigin #poweredByOrigin="cdkOverlayOrigin" format="small" (click)="toggleAboutInfo()"></sz-powered-by>
   <mat-menu #appMenu="matMenu">
     <a (click)="goHome()" routerLink="/" routerLinkActive="active" mat-menu-item><mat-icon>home</mat-icon>Home</a>
-    <a (click)="toggleSearch($event)" mat-menu-item>
-      <mat-icon *ngIf="ribbonExpanded">visibility_off</mat-icon>
-      <mat-icon *ngIf="!ribbonExpanded">visibility</mat-icon>
-      Show/Hide Search
+    <a *ngIf="!showGraphOptions" (click)="searchById = !searchById" mat-menu-item>
+      <mat-icon *ngIf="!searchById">assignment</mat-icon>
+      <mat-icon *ngIf="searchById">assignment_ind</mat-icon>
+      <span *ngIf="!searchById">Search By Id</span>
+      <span *ngIf="searchById">Search By Attribute</span>
     </a>
-    <a *ngIf="showEntityOptions && !showGraphOptions" [href]="graphRouteLink" target="_blank" mat-menu-item>
-        <mat-icon>open_in_new</mat-icon>
+    <a *ngIf="showEntityOptions && !showGraphOptions" [href]="graphRouteLink" mat-menu-item>
+        <mat-icon>insert_chart</mat-icon>
         Open Entity in Graph View
-      </a>
+    </a>
+    <a *ngIf="!showEntityOptions && !showGraphOptions && showResultsOptions" (click)="showResultsAsGraph = true" [href]="graphSearchResultsRouteLink" mat-menu-item>
+        <mat-icon>insert_chart</mat-icon>
+        Open in Graph View
+    </a>
+    <a *ngIf="!showEntityOptions && showGraphOptions" (click)="showResultsAsList = true" [href]="listSearchResultsRouteLink" mat-menu-item>
+        <mat-icon>insert_chart</mat-icon>
+        Exit Graph View
+    </a>
     <a *ngIf="showEntityOptions" [href]="entityRouteLink" target="_blank" mat-menu-item>
       <mat-icon>open_in_new</mat-icon>
       Open Entity in New Tab
@@ -24,6 +33,11 @@
       <mat-icon>picture_as_pdf</mat-icon>
       Download Entity as PDF
     </a>
+    <a (click)="toggleSearch($event)" mat-menu-item>
+        <mat-icon *ngIf="ribbonExpanded">visibility_off</mat-icon>
+        <mat-icon *ngIf="!ribbonExpanded">visibility</mat-icon>
+        Show/Hide Search
+      </a>
     <a *ngIf="!prefsIsShowing" (click)="showPreferences()" mat-menu-item>
       <mat-icon>settings_applications</mat-icon>
       Preferences

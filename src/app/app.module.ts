@@ -25,6 +25,7 @@ import { AppComponent } from './app.component';
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { DetailComponent } from './detail/detail.component';
 import { GraphComponent } from './graph/graph.component';
+import { SearchRecordComponent } from './record/record.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { UiService } from './services/ui.service';
 import { PrefsManagerService } from './services/prefs-manager.service';
@@ -64,6 +65,7 @@ export function SzRestConfigurationFactory() {
   declarations: [
     AppComponent,
     SearchResultsComponent,
+    SearchRecordComponent,
     DetailComponent,
     GraphComponent,
     ToolbarComponent,
