@@ -8,6 +8,10 @@
 
 
   <div class="tab-container">
+    <button (click)="onToggleFilters($event)" class="tab toggle">
+      <mat-icon *ngIf="this.showRightRail"aria-hidden="false" aria-label="Show Filters">double_arrow</mat-icon>
+      <mat-icon *ngIf="!this.showRightRail"aria-hidden="false" aria-label="Show Filters">visibility</mat-icon>
+    </button>
     <button (click)="onTabClick('detail')" class="tab" [class.active]="showEntityDetail">details</button>
     <button (click)="onTabClick('filters')" class="tab" [class.active]="showFilters">filters</button>
     <!--<button (click)="toggleSpinner()">toggle spinner</button>-->
@@ -15,27 +19,41 @@
   <div class="content-container">
     <!-- start graph control -->
     <div class="graph-container" #graphContainer>
-        <sz-standalone-graph data-html2canvas-ignore
+      <sz-standalone-graph data-html2canvas-ignore
           #graphComponent
           *ngIf="showSearchResults"
-          filterWidth="320"
+          [filterWidth]="0"
           [graphIds]="graphIds"
           [showPopOutIcon]="false"
           [showMatchKeyControl]="false"
-          [showFiltersControl]="showFilters"
-          [filterControlPosition]="'top-right'"
+          [showFiltersControl]="false"
           (entityClick)="onGraphEntityClick($event)"
           [showMatchKeys]="true"
           (requestStarted)="onRequestStarted($event)"
           (renderComplete)="onRenderComplete($event)"
           (requestComplete)="onRequestComplete($event)"
+          (dataLoaded)="onDataLoaded($event)"
+          (dataSourcesChange)="onDataSourcesChange($event)"
       ></sz-standalone-graph>
     </div>
     <!--  end graph control  -->
 
     <!-- start entity detail -->
-    <div *ngIf="showEntityDetail" class="embedded-detail-viewer">
+    <div class="right-rail">
+
+      <!-- start filters control -->
+      <sz-entity-detail-graph-filter #graphFilter
+      *ngIf="showFilters"
+      class="sz-entity-detail-graph-filter"
+      [showLinkLabels]="_showMatchKeys"
+      [showDataSources]="_showDataSourcesInFilter"
+      (optionChanged)="onOptionChange($event)"
+      ></sz-entity-detail-graph-filter>
+      <!--  end filters control  -->
+
       <sz-entity-detail
+        *ngIf="showEntityDetail"
+        class="embedded-detail-viewer"
         #entityDetailComponent
         [updatePrefsOnChange]="false"
         [showGraphSection]="false"

@@ -8,12 +8,18 @@
     border: 1px solid #686868;
   }
 
+  sz-standalone-graph {
+    width: calc( 100% - 0px);
+    transition: all .2s linear;
+  }
+
   .tab-container {
     width: 250px;
     height: 24px;
     position: absolute;
     top: -40px;
-    right: 89px;
+    right: -226px;
+    transition: right .2s linear;
     /*background-color: #f8f7f5;*/
 
     .tab {
@@ -24,7 +30,7 @@
       border-bottom: 1px solid #cfcfcf;
       border-radius: 0;
       padding: 4px 0px;
-      width: 50%;
+      width: calc(50% - 25px); /* accounting for the toggle button */
       color: #fff;
       cursor: pointer;
 
@@ -37,6 +43,46 @@
       &:active, &:focus, &:visited {
         outline: none !important;
       }
+    }
+    .toggle {
+      width: 24px;
+      background-color: #333;
+      border-top: none;
+      border-right: none;
+
+      mat-icon {
+        width: 16px;
+        height: 16px;
+        font-size: 16px;
+      }
+    }
+  }
+
+  .right-rail {
+    display: block;
+    width: 0px;
+    height: 100%;
+    overflow: hidden;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    background-color: #f8f7f5;
+    transition: width .2s linear;
+
+    .embedded-detail-viewer,
+    .embedded-filters {
+      border: none;
+      /*height: 100%;
+      overflow: hidden;*/
+      padding-top: 16px;
+    }
+
+    sz-entity-detail-graph-filter {
+      margin-left: 20px;
+      display: block;
+      color: #6b6666;
+      font-weight: 500;
+      font-size: 14px;
     }
   }
 
@@ -58,20 +104,22 @@
     --sz-entity-graph-control-border-bottom-right-radius: 0;
     --sz-entity-graph-control-item-background-color: none;
 
-    .embedded-detail-viewer {
-      background-color: #f8f7f5;
-      border: none;
-      width: 340px;
-      height: 100%;
-      position: absolute;
-      top: 0px;
-      right: 0px;
-      overflow: scroll;
-      padding-top: 16px;
-    }
-
     .graph-container {
       height: var(--sz-large-graph-height);
+
+    }
+  }
+
+  &.right-rail-open {
+    sz-standalone-graph {
+      width: calc( 100% - 340px);
+    }
+    .tab-container {
+      right: 89px;
+    }
+    .right-rail {
+      width: 340px;
+      overflow: scroll;
     }
   }
 }
