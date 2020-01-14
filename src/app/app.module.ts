@@ -21,6 +21,7 @@ import { SpinnerModule } from './common/spinner/spinner.module';
 import { EntitySearchService } from './services/entity-search.service';
 import { AboutInfoService } from './services/about.service';
 // components
+import { AdminComponent } from './admin/admin.component';
 import { AppComponent } from './app.component';
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { DetailComponent } from './detail/detail.component';
@@ -63,6 +64,7 @@ export function SzRestConfigurationFactory() {
 
 @NgModule({
   declarations: [
+    AdminComponent,
     AppComponent,
     SearchResultsComponent,
     SearchRecordComponent,

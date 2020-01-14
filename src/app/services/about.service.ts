@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import {
   Router, Resolve,
   RouterStateSnapshot,
-  ActivatedRouteSnapshot
+  ActivatedRouteSnapshot,
 } from '@angular/router';
-import { Observable, of, EMPTY, Subject } from 'rxjs';
+import { Observable, interval, from, of, EMPTY, Subject } from 'rxjs';
 import { AdminService, SzBaseResponse, SzBaseResponseMeta, SzVersionResponse, SzVersionInfo } from '@senzing/rest-api-client-ng';
-import { map } from 'rxjs/operators';
+import { switchMap, tap, takeWhile } from 'rxjs/operators';
 import { version as appVersion, dependencies as appDependencies } from '../../../package.json';
-import { SzAdminService } from '@senzing/sdk-components-ng';
+import { SzAdminService, SzServerInfo } from '@senzing/sdk-components-ng';
 
 /**
  * Service to provide package and release versions of key
@@ -35,7 +35,31 @@ export class AboutInfoService {
   public nativeApiBuildDate: Date;
   public nativeApiBuildNumber: string;
   public nativeApiVersion: string;
-
+  public isReadOnly: boolean;
+  public isAdminEnabled: boolean;
+  private pollingInterval = 60 * 1000;
+  /** poll for version info */
+  public pollForVersionInfo(): Observable<SzVersionInfo> {
+    return interval(this.pollingInterval).pipe(
+        switchMap(() => from( this.adminService.getVersionInfo() )),
+        tap( this.setVersionInfo.bind(this) )
+    );
+  }
+  /** poll for server health */
+  public pollForHeartbeat(): Observable<SzVersionInfo> {
+    return interval(this.pollingInterval).pipe(
+        switchMap(() => from( this.adminService.getHeartbeat() )),
+        takeWhile( (resp: SzBaseResponseMeta) => resp.httpStatusCode !== 403 && resp.httpStatusCode !== 500 ),
+        tap( this.setHeartbeatInfo.bind(this) )
+    );
+  }
+  /** poll for server health */
+  public pollForServerInfo(): Observable<SzServerInfo> {
+    return interval(this.pollingInterval).pipe(
+        switchMap(() => from( this.adminService.getServerInfo() )),
+        tap( this.setServerInfo.bind(this) )
+    );
+  }
   constructor(private adminService: SzAdminService, private router: Router) {
     this.appVersion = appVersion;
     if(appDependencies) {
@@ -53,16 +77,11 @@ export class AboutInfoService {
     }
 
     // get version info from SzAdminService
-    this.getVersionInfo().subscribe( (info: any) => {
-      console.warn('version data: ', info, this.adminService);
-      this.apiServerVersion           = this.adminService.versionInfo.apiServerVersion;
-      this.configCompatibilityVersion = this.adminService.versionInfo.configCompatibilityVersion;
-      this.nativeApiVersion           = this.adminService.versionInfo.nativeApiVersion;
-      this.restApiVersion             = this.adminService.versionInfo.restApiVersion;
-      this.nativeApiBuildNumber       = this.adminService.versionInfo.nativeApiBuildNumber;
-      this.nativeApiBuildDate         = this.adminService.versionInfo.nativeApiBuildDate;
-
-    });
+    this.getVersionInfo().subscribe( this.setVersionInfo.bind(this) );
+    this.getServerInfo().subscribe( this.setServerInfo.bind(this) );
+    this.pollForVersionInfo().subscribe();
+    this.pollForHeartbeat().subscribe();
+    this.pollForServerInfo().subscribe();
   }
   /** get heartbeat information from the rest-api-server host */
   public getHealthInfo(): Observable<SzBaseResponseMeta> {
@@ -73,6 +92,10 @@ export class AboutInfoService {
   public getVersionInfo(): Observable<SzVersionInfo> {
     // get version info
     return this.adminService.getVersionInfo();
+  }
+  /** get the server information from the rest-api-server host */
+  public getServerInfo(): Observable<SzServerInfo> {
+    return this.adminService.getServerInfo();
   }
   public getVersionFromLocalTarPath(packagePath: string | undefined, packagePrefix?: string | undefined ): undefined | string {
     let retVal = packagePath;
@@ -91,4 +114,25 @@ export class AboutInfoService {
     }
     return retVal;
   }
+  private setHeartbeatInfo(heartBeatResp: SzBaseResponseMeta) {
+    //heartBeatResp.
+  }
+  private setServerInfo(info: SzServerInfo) {
+    console.info('SzAdminService.setServerInfo: ', info, this);
+    //this.concurrency = info.concurrency;
+    //this.activeConfigId = info.activeConfigId;
+    //this.dynamicConfig = info.dynamicConfig;
+    this.isReadOnly = info.readOnly;
+    this.isAdminEnabled = info.adminEnabled;
+  }
+
+  private setVersionInfo(serverInfo: SzVersionInfo): void {
+    this.apiServerVersion           = serverInfo.apiServerVersion;
+    this.configCompatibilityVersion = serverInfo.configCompatibilityVersion;
+    this.nativeApiVersion           = serverInfo.nativeApiVersion;
+    this.restApiVersion             = serverInfo.restApiVersion;
+    this.nativeApiBuildNumber       = serverInfo.nativeApiBuildNumber;
+    this.nativeApiBuildDate         = serverInfo.nativeApiBuildDate;
+  }
+
 }
