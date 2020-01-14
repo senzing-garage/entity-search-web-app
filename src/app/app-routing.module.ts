@@ -37,7 +37,9 @@ export const routes: Routes = [
   { path: 'errors/500', component: ServerErrorComponent, data: { animation: 'search-detail' } },
   { path: 'errors/504', component: GatewayTimeoutErrorComponent, data: { animation: 'search-detail' } },
   { path: 'errors/unknown', component: UnknownErrorComponent, data: { animation: 'search-detail' } },
-  { path: 'about', component: AboutComponent, data: { animation: 'search-detail'} }
+  { path: 'about', component: AboutComponent, data: { animation: 'search-detail'} },
+  { path: '',   redirectTo: 'search', pathMatch: 'full' },
+  { path: '**', component: PageNotFoundComponent }
 ];
 
 @NgModule({
