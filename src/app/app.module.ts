@@ -17,6 +17,9 @@ import { StorageServiceModule } from 'ngx-webstorage-service';
 
 // local components and modules
 import { AppRoutingModule } from './app-routing.module';
+// import { AdminModule } from './admin/admin.module';
+import { AdminModule } from './admin/admin.module';
+
 import { SpinnerModule } from './common/spinner/spinner.module';
 import { EntitySearchService } from './services/entity-search.service';
 import { AboutInfoService } from './services/about.service';
@@ -65,9 +68,9 @@ export function SzRestConfigurationFactory() {
 
 @NgModule({
   declarations: [
+    AppComponent,
     AdminComponent,
     AdminDataSourcesComponent,
-    AppComponent,
     SearchResultsComponent,
     SearchRecordComponent,
     DetailComponent,
@@ -89,6 +92,7 @@ export function SzRestConfigurationFactory() {
     FormsModule,
     OverlayModule,
     MaterialModule,
+    AdminModule,
     AppRoutingModule,
     LayoutModule,
     StorageServiceModule,

@@ -20,10 +20,12 @@ import { ServerErrorComponent } from './errors/server/server.component';
 import { GatewayTimeoutErrorComponent } from './errors/timeout/timeout.component';
 import { UnknownErrorComponent } from './errors/uknown/uknown.component';
 import { AboutComponent } from './about/about.component';
-import { AdminComponent } from './admin/admin.component';
+//import { AdminComponent } from './admin/admin.component';
+//import { AdminDataSourcesComponent } from './admin/datasources.component';
 
 export const routes: Routes = [
-  { path: 'admin', component: AdminComponent, data: { animation: 'search-results' }},
+  /*{ path: 'admin', component: AdminComponent, data: { animation: 'search-results' }},
+  { path: 'admin/datasources', component: AdminDataSourcesComponent },*/
   { path: 'search', component: TipsComponent, resolve:  {entityId: CurrentEntityUnResolverService}, data: { animation: 'search-results' }},
   { path: 'search/results', component: SearchResultsComponent, resolve: { params: SearchParamsResolverService, results: SearchResultsResolverService }, data: { animation: 'search-results' } },
   { path: 'entity/:entityId', component: DetailComponent, resolve: { entityData: EntityDetailResolverService }, data: { animation: 'search-detail' } },
@@ -35,9 +37,7 @@ export const routes: Routes = [
   { path: 'errors/500', component: ServerErrorComponent, data: { animation: 'search-detail' } },
   { path: 'errors/504', component: GatewayTimeoutErrorComponent, data: { animation: 'search-detail' } },
   { path: 'errors/unknown', component: UnknownErrorComponent, data: { animation: 'search-detail' } },
-  { path: 'about', component: AboutComponent, data: { animation: 'search-detail'} },
-  { path: '',   redirectTo: 'search', pathMatch: 'full' },
-  { path: '**', component: PageNotFoundComponent }
+  { path: 'about', component: AboutComponent, data: { animation: 'search-detail'} }
 ];
 
 @NgModule({
