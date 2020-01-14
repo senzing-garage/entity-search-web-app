@@ -22,6 +22,7 @@ import { EntitySearchService } from './services/entity-search.service';
 import { AboutInfoService } from './services/about.service';
 // components
 import { AdminComponent } from './admin/admin.component';
+import { AdminDataSourcesComponent } from './admin/datasources.component';
 import { AppComponent } from './app.component';
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { DetailComponent } from './detail/detail.component';
@@ -65,6 +66,7 @@ export function SzRestConfigurationFactory() {
 @NgModule({
   declarations: [
     AdminComponent,
+    AdminDataSourcesComponent,
     AppComponent,
     SearchResultsComponent,
     SearchRecordComponent,

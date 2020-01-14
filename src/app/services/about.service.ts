@@ -53,7 +53,7 @@ export class AboutInfoService {
         tap( this.setHeartbeatInfo.bind(this) )
     );
   }
-  /** poll for server health */
+  /** poll for server info */
   public pollForServerInfo(): Observable<SzServerInfo> {
     return interval(this.pollingInterval).pipe(
         switchMap(() => from( this.adminService.getServerInfo() )),
@@ -80,7 +80,7 @@ export class AboutInfoService {
     this.getVersionInfo().subscribe( this.setVersionInfo.bind(this) );
     this.getServerInfo().subscribe( this.setServerInfo.bind(this) );
     this.pollForVersionInfo().subscribe();
-    this.pollForHeartbeat().subscribe();
+    //this.pollForHeartbeat().subscribe();
     this.pollForServerInfo().subscribe();
   }
   /** get heartbeat information from the rest-api-server host */
@@ -114,11 +114,11 @@ export class AboutInfoService {
     }
     return retVal;
   }
-  private setHeartbeatInfo(heartBeatResp: SzBaseResponseMeta) {
-    //heartBeatResp.
+  private setHeartbeatInfo(resp: SzBaseResponseMeta) {
+    //
   }
   private setServerInfo(info: SzServerInfo) {
-    console.info('SzAdminService.setServerInfo: ', info, this);
+    console.info('SzAdminService.setServerInfo: ', this.isReadOnly, info.readOnly, this.isAdminEnabled, info.adminEnabled);
     //this.concurrency = info.concurrency;
     //this.activeConfigId = info.activeConfigId;
     //this.dynamicConfig = info.dynamicConfig;
