@@ -14,18 +14,17 @@ import { DetailComponent } from './detail/detail.component';
 import { GraphComponent } from './graph/graph.component';
 import { PageNotFoundComponent } from './errors/page-not-found/page-not-found.component';
 import { NoResultsComponent } from './errors/no-results/no-results.component';
-import { BlankComponent } from './common/blank/blank.component';
 import { TipsComponent } from './common/tips/tips.component';
 import { ServerErrorComponent } from './errors/server/server.component';
 import { GatewayTimeoutErrorComponent } from './errors/timeout/timeout.component';
 import { UnknownErrorComponent } from './errors/uknown/uknown.component';
 import { AboutComponent } from './about/about.component';
-//import { AdminComponent } from './admin/admin.component';
-//import { AdminDataSourcesComponent } from './admin/datasources.component';
+import { BlankComponent } from './common/blank/blank.component';
 
 export const routes: Routes = [
   /*{ path: 'admin', component: AdminComponent, data: { animation: 'search-results' }},
   { path: 'admin/datasources', component: AdminDataSourcesComponent },*/
+  { path: 'debug', component: BlankComponent},
   { path: 'search', component: TipsComponent, resolve:  {entityId: CurrentEntityUnResolverService}, data: { animation: 'search-results' }},
   { path: 'search/results', component: SearchResultsComponent, resolve: { params: SearchParamsResolverService, results: SearchResultsResolverService }, data: { animation: 'search-results' } },
   { path: 'entity/:entityId', component: DetailComponent, resolve: { entityData: EntityDetailResolverService }, data: { animation: 'search-detail' } },

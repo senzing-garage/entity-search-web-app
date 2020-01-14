@@ -1,0 +1,98 @@
+
+:host {
+  display: inline-block;
+
+  button {
+    border: 1px solid grey;
+    width: 150px;
+  }
+  table.general-stats {
+    margin: 20px 0px 20px 20px;
+  }
+
+  table.general-stats th {
+    text-align: right;
+    width: 300px;
+  }
+
+  table.general-stats td {
+    padding-left: 20px;
+  }
+
+
+  .mat-background {
+      background-color: rgba($color: #000000, $alpha: 0.20);
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      margin: 0px;
+      padding: 0px;
+      left: 0;
+      top: 0;
+  }
+  .spinner {
+      margin: 50vh auto;
+      text-align: center;
+      font-size: 10px;
+      width: 60px;
+      height: 60px;
+
+      div {
+          background-color: #333;
+          height: 100%;
+          width: 9px;
+          display: inline-block;
+          margin: 0 3px 0 0;
+
+          -webkit-animation: sk-stretchdelay 1.2s infinite ease-in-out;
+          animation: sk-stretchdelay 1.2s infinite ease-in-out;
+      }
+
+      .rect2 {
+      -webkit-animation-delay: -1.1s;
+      animation-delay: -1.1s;
+      }
+
+      .rect3 {
+      -webkit-animation-delay: -1.0s;
+      animation-delay: -1.0s;
+      }
+
+      .rect4 {
+      -webkit-animation-delay: -0.9s;
+      animation-delay: -0.9s;
+      }
+
+      .rect5 {
+      -webkit-animation-delay: -0.8s;
+      animation-delay: -0.8s;
+      }
+  }
+}
+
+.header {
+  border: 1px outset #C0C0C0;
+  background-color: #e1e1e1;
+  font-weight: bold;
+
+  .column {
+    margin: 4px 10px;
+  }
+}
+
+.row, .header {
+  display: flex;
+}
+
+.column {
+  flex: 50%;
+  margin: 0 2px 0 2px;
+}
+.row {
+  padding: 2px 0 2px 10px;
+  border-bottom: 1px inset #c0c0c0;
+}
+.cell {
+  /*border: 1px inset #C0C0C0;*/
+  padding: 2p
+}

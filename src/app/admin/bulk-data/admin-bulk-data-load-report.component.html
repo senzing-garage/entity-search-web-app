@@ -1,0 +1,16 @@
+<!-- start BulkDataLoadReport -->
+<table class="data-source-mapping" *ngIf="result">
+  <tr>
+    <th>Data Source</th>
+    <th>Number of Records</th>
+    <th>Number of Loaded Records</th>
+    <th>Number of Failed Records</th>
+  </tr>
+  <tr *ngFor="let dsa of result.resultsByDataSource; let l = index;">
+    <td>{{ dsa.dataSource && dsa.dataSource.trim().length > 0 ? dsa.dataSource : '[NONE]' }}</td>
+    <td>{{ dsa.recordCount }}</td>
+    <td>{{ dsa.loadedRecordCount }}</td>
+    <td>{{ dsa.failedRecordCount }}</td>
+  </tr>
+</table>
+<!--  end BulkDataLoadReport  -->
