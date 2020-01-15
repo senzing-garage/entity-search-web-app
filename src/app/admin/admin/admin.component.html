@@ -1,9 +1,16 @@
-Admin Landing
-<ul class="navigation">
-  <li routerLink="/admin">Home</li>
-  <li routerLink="datasources">Data Sources</li>
-  <li routerLink="load">Load Data</li>
-</ul>
-<div class="container">
-    <router-outlet></router-outlet>
+<div class="admin">
+  <mat-sidenav-container>
+    <mat-sidenav opened mode="side" class="navigation">
+      <ul class="navigation">
+        <li routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</li>
+        <li routerLink="datasources" routerLinkActive="active">Data Sources</li>
+        <li routerLink="load" routerLinkActive="active">Load Data</li>
+      </ul>
+    </mat-sidenav>
+    <mat-sidenav-content>
+      <div class="container">
+        <router-outlet></router-outlet>
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
 </div>

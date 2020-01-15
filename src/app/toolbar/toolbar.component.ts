@@ -3,6 +3,7 @@ import { SpinnerService } from '../services/spinner.service';
 import { UiService } from '../services/ui.service';
 import { EntitySearchService } from '../services/entity-search.service';
 import { Router } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 import {Overlay, CdkOverlayOrigin, OverlayConfig, OverlayRef} from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
@@ -36,7 +37,8 @@ export class ToolbarComponent implements OnInit, OnDestroy {
     public uiService: UiService,
     private router: Router,
     public overlay: Overlay,
-    private search: EntitySearchService) { }
+    private search: EntitySearchService,
+    private titleService: Title) { }
 
   ngOnInit() {
     this.search.entityIdChange.subscribe(
@@ -73,6 +75,10 @@ export class ToolbarComponent implements OnInit, OnDestroy {
     } else {
       return false;
     }
+  }
+
+  public get headerTitle(): string {
+    return this.titleService.getTitle();
   }
 
   public showPreferences() {

@@ -6,6 +6,14 @@
     visibility: hidden;
     position: absolute;
   }
+
+  button {
+    margin-right: 1em;
+    padding: 0 2em 0 2em;
+    &:last-child {
+      margin-right: 0;
+    }
+  }
 }
 
 .header {
