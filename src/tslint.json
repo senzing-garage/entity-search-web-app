@@ -11,6 +11,8 @@
             true,
             "element",
             "app",
+            "sz",
+            "admin",
             "kebab-case"
         ]
     }
