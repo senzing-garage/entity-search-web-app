@@ -4,6 +4,9 @@
        xmlns="http://www.w3.org/1999/html">
 <button mat-stroked-button color="primary" (click)="chooseFileInput($event)" *ngIf="!analysis">Analyze File</button>
 <button mat-stroked-button color="primary" (click)="loadFile($event)"  *ngIf="analysis && !result">Load File</button>
-<button mat-stroked-button (click)="clear()"  *ngIf="analysis || result">Clear</button>
+<button mat-stroked-button color="secondary" (click)="chooseFileInput($event)" *ngIf="analysis && !result">Analyze Another File</button>
+<button mat-stroked-button color="primary" (click)="chooseFileInput($event)" *ngIf="analysis && result">Analyze Another File</button>
+
+<!-- <button mat-stroked-button (click)="clear()"  *ngIf="analysis || result">Clear</button> -->
 <admin-bulk-data-analysis-summary *ngIf="showAnalysis && analysis"></admin-bulk-data-analysis-summary>
 <admin-bulk-data-load-summary *ngIf="showResults && result"></admin-bulk-data-load-summary>

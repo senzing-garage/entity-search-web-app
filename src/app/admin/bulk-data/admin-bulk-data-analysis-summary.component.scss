@@ -1,10 +1,8 @@
+@import '../../scss/_admin.scss';
+
 :host {
   display: block;
 
-  button {
-    border: 1px solid grey;
-    width: 150px;
-  }
   table.general-stats {
     margin: 20px 0px 20px 20px;
   }

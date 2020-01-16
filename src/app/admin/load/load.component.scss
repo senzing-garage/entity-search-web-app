@@ -1,10 +1,6 @@
-.section-title {
-  margin-top: 0;
-}
-.section-instructions {
-  font-size: 0.7em;
-}
-admin-bulk-data-load {
+@import '../../scss/_admin.scss';
+
+admin-bulk-data-analysis {
   display: block;
   margin-bottom: 40px;
 }

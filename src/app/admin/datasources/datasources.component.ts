@@ -29,6 +29,11 @@ export class AdminDataSourcesComponent implements OnInit {
     }
   }
 
+  private _loading: boolean = false;
+  public get loading(): boolean {
+    return this._loading;
+  }
+
   constructor(
     private datasourcesServices: SzDataSourcesService,
     private titleService: Title
@@ -38,10 +43,15 @@ export class AdminDataSourcesComponent implements OnInit {
     this.datasource.paginator = this.paginator;
     // set page title
     this.titleService.setTitle( 'Admin Area - Data Sources' );
-    this.datasourcesServices.listDataSourcesDetails().subscribe( (data: SzDataSourcesResponseData) => {
-      this.dataSourcesData = data.dataSourceDetails;
-      console.warn('admin datasources: ', data);
-    });
+    this._loading = true;
+    this.datasourcesServices.listDataSourcesDetails().subscribe( this.onDataResponse.bind(this) );
+  }
+
+  private onDataResponse(data: SzDataSourcesResponseData) {
+    this.dataSourcesData = data.dataSourceDetails;
+    this._loading = false;
+    console.warn('admin datasources: ', data, this._loading, this);
+    this._loading = false;
   }
 
 }

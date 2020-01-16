@@ -1,0 +1,27 @@
+@mixin datagrid-header {
+  height: 33px;
+  background-color: #333;
+  .mat-header-cell {
+    font-weight: 500;
+    color: #b3b3b3;
+  }
+}
+@mixin datagrid-row {
+  height: 33px;
+}
+/*
+tr.mat-header-row {
+  height: 33px;
+  background-color: #333;
+  .mat-header-cell {
+    font-weight: 500;
+    color: #b3b3b3;
+  }
+}
+tr.mat-row {
+  height: 33px;
+  .mat-cell {
+
+  }
+}
+*/

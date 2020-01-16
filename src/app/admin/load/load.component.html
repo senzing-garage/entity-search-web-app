@@ -6,8 +6,19 @@
 <p class="section-instructions">
   The data should be in pre-mapped format using JSON property names or CSV column names as described by the <a href="https://senzing.zendesk.com/hc/en-us/articles/231925448-Generic-Entity-Specification" target="EntitySpec">Senzing Generic Entity Specification</a>.
 </p><br/>
+<admin-bulk-data-analysis *ngIf="analysis || result"></admin-bulk-data-analysis>
 <admin-bulk-data-load [showSummaries]="false"></admin-bulk-data-load>
-<admin-bulk-data-analysis></admin-bulk-data-analysis>
 <!--<sz-bulk-data-load [showSummaries]="false"></sz-bulk-data-load>
 <sz-bulk-data-analysis></sz-bulk-data-analysis>
 -->
+<!-- start spinner overlay -->
+<div class="mat-background" *ngIf="analyzingFile || loadingFile">
+  <div class="spinner">
+      <div class="rect1"></div>
+      <div class="rect2"></div>
+      <div class="rect3"></div>
+      <div class="rect4"></div>
+      <div class="rect5"></div>
+  </div>
+</div>
+<!-- end spinner overlay -->

@@ -88,6 +88,7 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
 
     /** take the current file focus and pass to api load endpoint */
     public onFileInputChange(event: Event) {
+      this.bulkDataService.isAnalyzingFile = true;
       this.bulkDataService.analyzingFile.next(true);
       const target: HTMLInputElement = <HTMLInputElement> event.target;
       const fileList = target.files;

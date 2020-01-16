@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewContainerRef } from '@angular/core';
+import { Component, OnInit, ViewContainerRef, OnDestroy } from '@angular/core';
 import { SzPrefsService, SzBulkDataService } from '@senzing/sdk-components-ng';
 import { SzBulkDataAnalysis, SzBulkLoadResult } from '@senzing/rest-api-client-ng';
 import { Subject } from 'rxjs';
@@ -16,7 +16,7 @@ import { Subject } from 'rxjs';
   templateUrl: './admin-bulk-data-load-summary.component.html',
   styleUrls: ['./admin-bulk-data-load-summary.component.scss']
 })
-export class AdminBulkDataLoadSummaryComponent implements OnInit {
+export class AdminBulkDataLoadSummaryComponent implements OnInit, OnDestroy {
   /** subscription to notify subscribers to unbind */
   public unsubscribe$ = new Subject<void>();
   /** get the file reference currently loaded in the the bulk data service */
