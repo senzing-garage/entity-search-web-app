@@ -1,41 +1,42 @@
 :host {
   display: block;
+  width: 100%;
 
-  table.data-source-mapping {
+  table.data-source-mapping-plain {
     border-collapse: collapse;
+    th {
+      border: 1px solid grey;
+      padding: 5px 10px;
+    }
+    td {
+      border: 1px solid grey;
+      padding: 5px 10px;
+      text-align: center;
+
+      &.data-source-map {
+        width: 300px;
+        text-align: left;
+      }
+
+      input {
+        width: 200px;
+        font-size: 16px;
+        padding: 4px;
+      }
+
+      span {
+        background-color: #000000;
+        color: white;
+        border-radius: 50%;
+        padding: 3px 8px;
+        margin: 0px 10px;
+        font-size: 14px;
+      }
+    }
   }
 
-  table.data-source-mapping th {
-    border: 1px solid grey;
-    padding: 5px 10px;
-  }
-
-  table.data-source-mapping td {
-    border: 1px solid grey;
-    padding: 5px 10px;
-  }
-
-  table.data-source-mapping td {
-    text-align: center;
-  }
-
-  table.data-source-mapping td.data-source-map {
-    width: 300px;
-    text-align: left;
-  }
-
-  table.data-source-mapping td input {
-    width: 200px;
-    font-size: 16px;
-    padding: 4px;
-  }
-
-  table.data-source-mapping td span {
-    background-color: #000000;
-    color: white;
-    border-radius: 50%;
-    padding: 3px 8px;
-    margin: 0px 10px;
-    font-size: 14px;
+  /* angular material data table */
+  .mat-table {
+    width: 100%;
   }
 }

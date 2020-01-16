@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, ViewContainerRef, Input } from '@angular/core';
+import { Component, OnInit, Inject, ViewContainerRef, Input, OnDestroy } from '@angular/core';
 import { SzPrefsService, SzAdminService, SzBulkDataService } from '@senzing/sdk-components-ng';
 
 import {
@@ -21,7 +21,7 @@ import { takeUntil } from 'rxjs/operators';
   templateUrl: './admin-bulk-data-analysis.component.html',
   styleUrls: ['./admin-bulk-data-analysis.component.scss']
 })
-export class AdminBulkDataAnalysisComponent implements OnInit {
+export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy {
   /** subscription to notify subscribers to unbind */
   public unsubscribe$ = new Subject<void>();
   /** show the textual summaries for analyze and  */
@@ -29,7 +29,7 @@ export class AdminBulkDataAnalysisComponent implements OnInit {
   /** get the current analysis from service */
   get analysis(): SzBulkDataAnalysis {
     return this.bulkDataService.currentAnalysis;
-  };
+  }
   /** does user have admin rights */
   public get adminEnabled() {
     return this.adminService.adminEnabled;
@@ -48,7 +48,7 @@ export class AdminBulkDataAnalysisComponent implements OnInit {
   }
   /** set result of load operation from service */
   @Input() public set result(value: SzBulkLoadResult) {
-    if(value){ this.bulkDataService.currentLoadResult = value; }
+    if(value) { this.bulkDataService.currentLoadResult = value; }
   }
   /** get result of load operation from service */
   public get result(): SzBulkLoadResult {
@@ -68,7 +68,7 @@ export class AdminBulkDataAnalysisComponent implements OnInit {
   }
   /** set the file to be analyzed */
   @Input() public set file(value: File) {
-    if(value){ this.analyzeFile(value); }
+    if(value) { this.analyzeFile(value); }
   }
 
   constructor( public prefs: SzPrefsService,

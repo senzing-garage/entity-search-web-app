@@ -1,6 +1,6 @@
 
 :host {
-  display: inline-block;
+  display: block;
 
   button {
     border: 1px solid grey;
@@ -17,6 +17,10 @@
 
   table.general-stats td {
     padding-left: 20px;
+  }
+
+  admin-bulk-data-load-summary, .summary {
+    margin-bottom: 20px;
   }
 
 

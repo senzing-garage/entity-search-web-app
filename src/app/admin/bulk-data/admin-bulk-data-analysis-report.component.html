@@ -1,5 +1,5 @@
 <!-- start BulkDataAnalysisReport -->
-<table *ngIf="analysis" class="data-source-mapping">
+<!-- <table *ngIf="analysis" class="data-source-mapping-plain">
   <tr>
     <th>Record Data Source</th>
     <th>Number of Records</th>
@@ -21,5 +21,43 @@
       <span *ngIf="targetDS.value && (targetDS.value.trim().length > 0) && (dataSources.indexOf(targetDS.value) < 0)">new</span>
     </td>
   </tr>
+</table> -->
+<table *ngIf="analysis" mat-table [dataSource]="analysis.analysisByDataSource" class="data-source-mapping-dyn mat-elevation-z8">
+
+  <!--- Note that these columns can be defined in any order.
+        The actual rendered columns are set as a property on the row definition" -->
+  <!-- Id Column -->
+  <ng-container matColumnDef="dataSource">
+    <th mat-header-cell *matHeaderCellDef>Record Data Source</th>
+    <td mat-cell *matCellDef="let element"> {{element.dataSource}} {{ element.dataSource && element.dataSource.trim().length > 0 ? element.dataSource : '[NONE]' }}</td>
+  </ng-container>
+
+  <!-- number of records Column -->
+  <ng-container matColumnDef="recordCount">
+    <th mat-header-cell *matHeaderCellDef> Number of Records </th>
+    <td mat-cell *matCellDef="let element"> {{element.recordCount}} </td>
+  </ng-container>
+  <!-- Records with Record ID Column -->
+  <ng-container matColumnDef="recordsWithRecordIdCount">
+    <th mat-header-cell *matHeaderCellDef> Records with Record ID </th>
+    <td mat-cell *matCellDef="let element"> {{element.recordsWithRecordIdCount}} </td>
+  </ng-container>
+  <!-- Map to Data Source Column -->
+  <ng-container matColumnDef="dataSourceCode">
+    <th mat-header-cell *matHeaderCellDef> Map to Data Source </th>
+    <td mat-cell *matCellDef="let element">
+      <input type="text" placeholder="Choose a Data Source" #targetDS
+             [value]="dataSources.indexOf(element.dataSource) >= 0 ? element.dataSource : ''"
+             [attr.list]="'ds-name-'+l"
+             (change)="handleDataSourceChange(element.dataSource, targetDS.value)">
+      <datalist #dataSourceOptions [id]="'ds-name-'+l">
+        <option *ngFor="let dataSource of dataSources" [value]="dataSource" (click)="handleDataSourceChange(element.dataSource,  dataSource)">{{dataSource}}</option>
+      </datalist>
+      <span *ngIf="targetDS.value && (targetDS.value.trim().length > 0) && (dataSources.indexOf(targetDS.value) < 0)">new</span>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 </table>
 <!-- start BulkDataAnalysisReport -->

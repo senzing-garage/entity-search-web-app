@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, ViewContainerRef, Input, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Inject, ViewContainerRef, Input, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { SzPrefsService, SzAdminService, SzDataSourcesService, SzBulkDataService } from '@senzing/sdk-components-ng';
 
 import {
@@ -21,7 +21,7 @@ import { Subject } from 'rxjs';
   templateUrl: './admin-bulk-data-load.component.html',
   styleUrls: ['./admin-bulk-data-load.component.scss']
 })
-export class AdminBulkDataLoadComponent implements OnInit {
+export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDestroy {
   /** subscription to notify subscribers to unbind */
   public unsubscribe$ = new Subject<void>();
   /** show the analysis summary embedded in component */
@@ -35,7 +35,7 @@ export class AdminBulkDataLoadComponent implements OnInit {
   /** get the current analysis from service */
   get analysis(): SzBulkDataAnalysis {
     return this.bulkDataService.currentAnalysis;
-  };
+  }
   /** does user have admin rights */
   public get adminEnabled() {
     return this.adminService.adminEnabled;
@@ -46,7 +46,7 @@ export class AdminBulkDataLoadComponent implements OnInit {
   }
   /** set result of load operation from service */
   @Input() public set result(value: SzBulkLoadResult) {
-    if(value){ this.bulkDataService.currentLoadResult = value; }
+    if(value) { this.bulkDataService.currentLoadResult = value; }
   }
   /** get result of load operation from service */
   public get result(): SzBulkLoadResult {
@@ -74,7 +74,7 @@ export class AdminBulkDataLoadComponent implements OnInit {
     public prefs: SzPrefsService,
     private adminService: SzAdminService,
     private bulkDataService: SzBulkDataService,
-    public viewContainerRef: ViewContainerRef){}
+    public viewContainerRef: ViewContainerRef) {}
 
     ngOnInit() {}
     ngAfterViewInit() {}

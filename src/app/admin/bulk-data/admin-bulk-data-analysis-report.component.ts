@@ -1,12 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { SzPrefsService, SzAdminService, SzBulkDataService } from '@senzing/sdk-components-ng';
 
 import {
   SzBulkDataAnalysis,
-  SzBulkLoadResult
+  SzBulkLoadResult,
+  SzDataSource
 } from '@senzing/rest-api-client-ng';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { MatTableDataSource } from '@angular/material';
 
 /**
  * Provides a visual report for a file analysis request.
@@ -21,9 +23,11 @@ import { takeUntil } from 'rxjs/operators';
   templateUrl: './admin-bulk-data-analysis-report.component.html',
   styleUrls: ['./admin-bulk-data-analysis-report.component.scss']
 })
-export class AdminBulkDataAnalysisReportComponent implements OnInit {
+export class AdminBulkDataAnalysisReportComponent implements OnInit, OnDestroy, AfterViewInit {
   /** subscription to notify subscribers to unbind */
   public unsubscribe$ = new Subject<void>();
+  displayedColumns: string[] = ['dataSource', 'recordCount', 'recordsWithRecordIdCount', 'dataSourceCode'];
+
   /** get the file reference currently loaded in the the bulk data service */
   public get file(): File {
     if(this.bulkDataService) {
