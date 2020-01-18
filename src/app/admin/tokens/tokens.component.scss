@@ -1,0 +1,8 @@
+@import '../../scss/_admin.scss';
+
+:host {
+  display: block;
+  label {
+    margin-right: 20px;
+  }
+}

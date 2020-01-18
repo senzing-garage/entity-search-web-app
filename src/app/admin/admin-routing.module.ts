@@ -17,20 +17,25 @@ import { SzRestConfigurationFactory } from '../common/sdk-config.factory';
 import { AdminComponent } from './admin/admin.component';
 import { AdminDataSourcesComponent } from './datasources/datasources.component';
 import { AdminDataLoaderComponent } from './load/load.component';
+import { AdminOAuthTokensComponent } from './tokens/tokens.component';
 
 const routes: Routes = [
     {
         path: 'admin',
         component: AdminComponent,
         children: [
-            {
-                path: 'datasources',
-                component: AdminDataSourcesComponent
-            },
-            {
-                path: 'load',
-                component: AdminDataLoaderComponent
-            }
+          {
+            path: 'tokens',
+            component: AdminOAuthTokensComponent
+          },
+          {
+              path: 'datasources',
+              component: AdminDataSourcesComponent
+          },
+          {
+              path: 'load',
+              component: AdminDataLoaderComponent
+          }
         ]
     }
 ];

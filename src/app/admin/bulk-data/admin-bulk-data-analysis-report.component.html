@@ -22,14 +22,14 @@
     </td>
   </tr>
 </table> -->
-<table *ngIf="analysis" mat-table [dataSource]="analysis.analysisByDataSource" class="mat-table-full-width mat-elevation-z8">
+<table *ngIf="analysis && !currentError" mat-table [dataSource]="analysis.analysisByDataSource" class="mat-table-full-width mat-elevation-z8">
 
   <!--- Note that these columns can be defined in any order.
         The actual rendered columns are set as a property on the row definition" -->
   <!-- Id Column -->
   <ng-container matColumnDef="dataSource">
     <th mat-header-cell *matHeaderCellDef>Record Data Source</th>
-    <td mat-cell *matCellDef="let element"> {{element.dataSource}} {{ element.dataSource && element.dataSource.trim().length > 0 ? element.dataSource : '[NONE]' }}</td>
+    <td mat-cell *matCellDef="let element"> {{ element.dataSource && element.dataSource.trim().length > 0 ? element.dataSource : '[NONE]' }}</td>
   </ng-container>
 
   <!-- number of records Column -->
@@ -47,15 +47,22 @@
     <th mat-header-cell *matHeaderCellDef> Map to Data Source </th>
     <td mat-cell *matCellDef="let element">
       <mat-form-field class="example-full-width">
-        <input matInput type="text" placeholder="Data Source to map to" #targetDS
-        [value]="dataSources.indexOf(element.dataSource) >= 0 ? element.dataSource : ''"
-        [attr.list]="'ds-name-'+l"
+        <input
+        matInput
+        type="text" placeholder="Data Source to map to" #targetDS
+        [value]="element.dataSource"
+        [attr.list]="getDataSourceInputName(l)"
+        matBadgeOverlap="true"
         (change)="handleDataSourceChange(element.dataSource, targetDS.value)">
       </mat-form-field>
-      <datalist #dataSourceOptions [id]="'ds-name-'+l">
+      <datalist #dataSourceOptions [id]="getDataSourceInputName(l)">
         <option *ngFor="let dataSource of dataSources" [value]="dataSource" (click)="handleDataSourceChange(element.dataSource,  dataSource)">{{dataSource}}</option>
       </datalist>
-      <span *ngIf="targetDS.value && (targetDS.value.trim().length > 0) && (dataSources.indexOf(targetDS.value) < 0)">new</span>
+      <span class="mat-badge"
+      matBadge="new" matBadgeOverlap="false" matBadgeDescription="New Data Source"
+      matBadgePosition="after"
+      matBadgeSize="medium"
+      [matBadgeHidden]="!isNewDataDource( targetDS.value )"></span>
     </td>
   </ng-container>
 

@@ -27,6 +27,21 @@ export class AdminBulkDataAnalysisSummaryComponent implements OnInit {
     }
     return undefined;
   }
+  /** get the file size for computer notation to display */
+  public getFileSize(sizeInBytes: number): string {
+    let _retVal = '';
+    if(sizeInBytes > 999999999) {
+      // gb
+      _retVal = (sizeInBytes / 1000000000 ).toFixed(1) + ' GB';
+    } else if (sizeInBytes > 999999) {
+      // mb
+      _retVal = (sizeInBytes / 1000000 ).toFixed(1) + ' MB';
+    } else if (sizeInBytes > 999) {
+      // mb
+      _retVal = (sizeInBytes / 1000 ).toFixed(1) + ' KB';
+    }
+    return _retVal;
+  }
   /** result of last analysis operation */
   public get analysis(): SzBulkDataAnalysis {
     return this.bulkDataService.currentAnalysis;

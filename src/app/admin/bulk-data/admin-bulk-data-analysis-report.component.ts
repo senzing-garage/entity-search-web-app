@@ -4,9 +4,10 @@ import { SzPrefsService, SzAdminService, SzBulkDataService } from '@senzing/sdk-
 import {
   SzBulkDataAnalysis,
   SzBulkLoadResult,
-  SzDataSource
+  SzDataSource,
+  SzServerInfo
 } from '@senzing/rest-api-client-ng';
-import { Subject } from 'rxjs';
+import { Subject, Observable, interval } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { MatTableDataSource } from '@angular/material';
 
@@ -27,7 +28,6 @@ export class AdminBulkDataAnalysisReportComponent implements OnInit, OnDestroy, 
   /** subscription to notify subscribers to unbind */
   public unsubscribe$ = new Subject<void>();
   displayedColumns: string[] = ['dataSource', 'recordCount', 'recordsWithRecordIdCount', 'dataSourceCode'];
-
   /** get the file reference currently loaded in the the bulk data service */
   public get file(): File {
     if(this.bulkDataService) {
@@ -42,6 +42,19 @@ export class AdminBulkDataAnalysisReportComponent implements OnInit, OnDestroy, 
   /** get result of load operation from service */
   public get result(): SzBulkLoadResult {
     return this.bulkDataService.currentLoadResult;
+  }
+  public getDataSourceInputName(index: number): string {
+    return 'ds-name-' + index;
+  }
+  public getIsNew(value: boolean): boolean | undefined {
+    return (value === true) ? value : false;
+  }
+  public isNewDataDource(value: string): boolean {
+    //return true;
+    return value && (value.trim().length > 0) && (this.dataSources.indexOf(value) < 0);
+  }
+  public get currentError(): Error {
+    return this.bulkDataService.currentError;
   }
   /**
    * when the user changes the file dest for a datasource
@@ -65,6 +78,15 @@ export class AdminBulkDataAnalysisReportComponent implements OnInit, OnDestroy, 
         takeUntil( this.unsubscribe$ )
       ).subscribe((info) => {
         //console.log('SzBulkDataAnalysisReportComponent.ServerInfo obtained: ', info);
+      });
+
+      this.bulkDataService.onDataSourcesChange.pipe(
+        takeUntil( this.unsubscribe$ )
+      ).subscribe((datasources: string[]) => {
+        console.warn('UPDATE DATASOURCES! ', datasources, this.bulkDataService._dataSources);
+      });
+      this.bulkDataService.onError.subscribe((err) => {
+        console.warn('AdminBulkDataAnalysisReportComponent.onError SHOW Err MSG: ', err);
       });
     }
 

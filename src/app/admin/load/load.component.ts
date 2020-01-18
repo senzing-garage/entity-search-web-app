@@ -25,6 +25,9 @@ export class AdminDataLoaderComponent implements OnInit {
   public get loadingFile(): boolean {
     return this.bulkDataService.isLoadingFile;
   }
+  public get currentError(): Error {
+    return this.bulkDataService.currentError;
+  }
 
   constructor(
     private titleService: Title,
@@ -34,6 +37,12 @@ export class AdminDataLoaderComponent implements OnInit {
   ngOnInit() {
     // set page title
     this.titleService.setTitle( 'Admin Area - Bulk Import' );
+
+    this.bulkDataService.onError.subscribe((err) => {
+      if(!this.bulkDataService.currentError) { this.bulkDataService.currentError = err; }
+      console.warn('AdminDataLoaderComponent.onInit SHOW Err MSG: ', err, this.currentError);
+      //this.currentError = err;
+    });
   }
 
 }

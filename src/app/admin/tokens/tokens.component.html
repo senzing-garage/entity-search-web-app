@@ -1,0 +1,9 @@
+<h2 class="section-title">API Tokens</h2>
+<p class="section-instructions">
+  Ask your administrator for an OAuth Token to use for secure api endpoints.
+</p>
+<br/>
+<label for="OauthToken">Rest Server API token:</label>
+<input type="text" id="OauthToken" (change)="onTokenValueChange($event)">
+<hr>
+<button (click)="verifyToken()">Verify</button>

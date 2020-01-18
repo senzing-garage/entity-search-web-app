@@ -87,3 +87,18 @@ table.general-stats th {
 table.general-stats td {
   padding-left: 20px;
 }
+
+.general-stats-reflow {
+    display: flex;
+    margin-bottom: 22px;
+
+    .stats-col {
+      width: 40%;
+      &:first-child {
+        margin-right: 50px;
+      }
+      th:first-child {
+        text-align: left;
+      }
+    }
+  }

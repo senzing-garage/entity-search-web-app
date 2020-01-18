@@ -69,6 +69,9 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
     this._showAnalysis = value;
     this._showResults = value;
   }
+  public get currentError(): Error {
+    return this.bulkDataService.currentError;
+  }
 
   constructor(
     public prefs: SzPrefsService,

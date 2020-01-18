@@ -17,6 +17,9 @@ import { AdminBulkDataAnalysisSummaryComponent } from './bulk-data/admin-bulk-da
 import { AdminBulkDataLoadComponent } from './bulk-data/admin-bulk-data-load.component';
 import { AdminBulkDataLoadReportComponent } from './bulk-data/admin-bulk-data-load-report.component';
 import { AdminBulkDataLoadSummaryComponent } from './bulk-data/admin-bulk-data-load-summary.component';
+import { AdminOAuthTokensComponent } from './tokens/tokens.component';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { OAuthInterceptor } from '../services/oAuthInterceptor';
 
 @NgModule({
   declarations: [
@@ -28,12 +31,19 @@ import { AdminBulkDataLoadSummaryComponent } from './bulk-data/admin-bulk-data-l
     AdminBulkDataAnalysisSummaryComponent,
     AdminBulkDataLoadComponent,
     AdminBulkDataLoadReportComponent,
-    AdminBulkDataLoadSummaryComponent
+    AdminBulkDataLoadSummaryComponent,
+    AdminOAuthTokensComponent
   ],
   imports: [
     CommonModule,
     MaterialModule,
     AdminRoutingModule
+  ],
+  providers: [
+    {  provide: HTTP_INTERCEPTORS,
+       useClass: OAuthInterceptor,
+       multi: true
+    }
   ]
 })
 export class AdminModule { }

@@ -82,6 +82,9 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy {
     ).subscribe((info) => {
       console.log('ServerInfo obtained: ', info);
     });
+    this.bulkDataService.onError.subscribe((err) => {
+      console.warn('SHOW ERROR MESSAGE!', err);
+    });
   }
 
   /** convenience method to analyze a file. used by file setter. */
