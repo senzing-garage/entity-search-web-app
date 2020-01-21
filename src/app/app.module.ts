@@ -57,6 +57,8 @@ import { ErrorPageComponent } from './common/error/error.component';
 */
 import { apiConfig, environment } from './../environments/environment';
 import { SzRestConfigurationFactory } from './common/sdk-config.factory';
+import { AuthGuardService } from './services/ag.service';
+import { AdminAuthService } from './services/admin.service';
 
 @NgModule({
   declarations: [
@@ -92,7 +94,7 @@ import { SzRestConfigurationFactory } from './common/sdk-config.factory';
     SpinnerModule,
     environment.test ? HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService, { delay: 100 }) : []
   ],
-  providers: [ EntitySearchService, UiService, PrefsManagerService, AboutInfoService, Title ],
+  providers: [ EntitySearchService, AdminAuthService, AuthGuardService, UiService, PrefsManagerService, AboutInfoService, Title ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }

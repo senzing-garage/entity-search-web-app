@@ -18,6 +18,9 @@ import { AdminComponent } from './admin/admin.component';
 import { AdminDataSourcesComponent } from './datasources/datasources.component';
 import { AdminDataLoaderComponent } from './load/load.component';
 import { AdminOAuthTokensComponent } from './tokens/tokens.component';
+import { AuthGuardService } from '../services/ag.service';
+import { AdminErrorNoAdminModeComponent } from './errors/no-admin.component';
+import { AdminLoginComponent } from './login/login.component';
 
 const routes: Routes = [
     {
@@ -30,11 +33,20 @@ const routes: Routes = [
           },
           {
               path: 'datasources',
+              canActivate: [AuthGuardService],
               component: AdminDataSourcesComponent
           },
           {
               path: 'load',
               component: AdminDataLoaderComponent
+          },
+          {
+            path: 'error/admin-mode-disabled',
+            component: AdminErrorNoAdminModeComponent
+          },
+          {
+            path: 'login',
+            component: AdminLoginComponent
           }
         ]
     }

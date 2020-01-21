@@ -20,6 +20,8 @@ import { AdminBulkDataLoadSummaryComponent } from './bulk-data/admin-bulk-data-l
 import { AdminOAuthTokensComponent } from './tokens/tokens.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { OAuthInterceptor } from '../services/oAuthInterceptor';
+import { AdminErrorNoAdminModeComponent } from './errors/no-admin.component';
+import { AdminLoginComponent } from './login/login.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +34,9 @@ import { OAuthInterceptor } from '../services/oAuthInterceptor';
     AdminBulkDataLoadComponent,
     AdminBulkDataLoadReportComponent,
     AdminBulkDataLoadSummaryComponent,
-    AdminOAuthTokensComponent
+    AdminOAuthTokensComponent,
+    AdminErrorNoAdminModeComponent,
+    AdminLoginComponent
   ],
   imports: [
     CommonModule,
