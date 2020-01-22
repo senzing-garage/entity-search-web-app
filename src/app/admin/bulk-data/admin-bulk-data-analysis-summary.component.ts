@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SzAdminService, SzBulkDataService } from '@senzing/sdk-components-ng';
 import { SzBulkDataAnalysis, SzBulkLoadResult } from '@senzing/rest-api-client-ng';
 import { Subject } from 'rxjs';
@@ -17,7 +17,7 @@ import { takeUntil } from 'rxjs/operators';
   templateUrl: './admin-bulk-data-analysis-summary.component.html',
   styleUrls: ['./admin-bulk-data-analysis-summary.component.scss']
 })
-export class AdminBulkDataAnalysisSummaryComponent implements OnInit {
+export class AdminBulkDataAnalysisSummaryComponent implements OnInit, OnDestroy {
   /** subscription to notify subscribers to unbind */
   public unsubscribe$ = new Subject<void>();
   /** get the file reference currently loaded in the the bulk data service */
@@ -62,7 +62,6 @@ export class AdminBulkDataAnalysisSummaryComponent implements OnInit {
       //console.log('SzBulkDataAnalysisSummaryComponent.ServerInfo obtained: ', info);
     });
   }
-  ngAfterViewInit() {}
   /**
    * unsubscribe when component is destroyed
    */

@@ -6,6 +6,13 @@ import { AdminRoutingModule } from './admin-routing.module';
 import { AdminComponent } from './admin/admin.component';
 import { AdminDataSourcesComponent } from './datasources/datasources.component';
 import { AdminDataLoaderComponent } from './load/load.component';
+import { AdminOAuthTokensComponent } from './tokens/tokens.component';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { OAuthInterceptor } from '../services/oAuthInterceptor';
+import { AdminErrorNoAdminModeComponent } from './errors/no-admin.component';
+import { AdminLoginComponent } from './login/login.component';
+import { AdminServerInfoComponent } from './server-info/server-info.component';
+import { AdminLicenseInfoComponent } from './license-info/license-info.component';
 
 /**
  * bulk data components. these are workaround clones.
@@ -17,11 +24,6 @@ import { AdminBulkDataAnalysisSummaryComponent } from './bulk-data/admin-bulk-da
 import { AdminBulkDataLoadComponent } from './bulk-data/admin-bulk-data-load.component';
 import { AdminBulkDataLoadReportComponent } from './bulk-data/admin-bulk-data-load-report.component';
 import { AdminBulkDataLoadSummaryComponent } from './bulk-data/admin-bulk-data-load-summary.component';
-import { AdminOAuthTokensComponent } from './tokens/tokens.component';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { OAuthInterceptor } from '../services/oAuthInterceptor';
-import { AdminErrorNoAdminModeComponent } from './errors/no-admin.component';
-import { AdminLoginComponent } from './login/login.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +38,9 @@ import { AdminLoginComponent } from './login/login.component';
     AdminBulkDataLoadSummaryComponent,
     AdminOAuthTokensComponent,
     AdminErrorNoAdminModeComponent,
-    AdminLoginComponent
+    AdminLicenseInfoComponent,
+    AdminLoginComponent,
+    AdminServerInfoComponent
   ],
   imports: [
     CommonModule,

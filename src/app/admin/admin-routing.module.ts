@@ -9,8 +9,7 @@ import { OverlayModule } from '@angular/cdk/overlay';
 import { LayoutModule } from '@angular/cdk/layout';
 import { Routes, RouterModule } from '@angular/router';
 import {
-  SenzingSdkModule, SzRestConfiguration,
-  SzBulkDataLoadComponent
+  SenzingSdkModule
  } from '@senzing/sdk-components-ng';
 import { SzRestConfigurationFactory } from '../common/sdk-config.factory';
 
@@ -20,7 +19,8 @@ import { AdminDataLoaderComponent } from './load/load.component';
 import { AdminOAuthTokensComponent } from './tokens/tokens.component';
 import { AuthGuardService } from '../services/ag.service';
 import { AdminErrorNoAdminModeComponent } from './errors/no-admin.component';
-import { AdminLoginComponent } from './login/login.component';
+import { AdminServerInfoComponent } from './server-info/server-info.component';
+import { AdminLicenseInfoComponent } from './license-info/license-info.component';
 
 const routes: Routes = [
     {
@@ -29,6 +29,7 @@ const routes: Routes = [
         children: [
           {
             path: 'tokens',
+            canActivate: [AuthGuardService],
             component: AdminOAuthTokensComponent
           },
           {
@@ -38,15 +39,20 @@ const routes: Routes = [
           },
           {
               path: 'load',
+              canActivate: [AuthGuardService],
               component: AdminDataLoaderComponent
+          },
+          {
+            path: 'server/info',
+            component: AdminServerInfoComponent
+          },
+          {
+            path: 'license/info',
+            component: AdminLicenseInfoComponent
           },
           {
             path: 'error/admin-mode-disabled',
             component: AdminErrorNoAdminModeComponent
-          },
-          {
-            path: 'login',
-            component: AdminLoginComponent
           }
         ]
     }

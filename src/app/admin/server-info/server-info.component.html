@@ -1,0 +1,40 @@
+<h2 class="section-title">Server Information</h2>
+<!-- <div class="section-instructions">
+  <p>Please, Don-Bot… look into your hard drive, and open your mercy file! All I want is to be a monkey of moderate intelligence who wears a suit… that's why I'm transferring to business school!</p>
+  <p>A sexy mistake. Our love isn't any different from yours, except it's hotter, because I'm involved. I am Singing Wind, Chief of the Martians. That's not soon enough!</p>
+  <p>Soon enough. Yes, I saw. You were doing well, until everyone died. But I've never been to the moon! I'm sorry, guys. I never meant to hurt you. Just to destroy everything you ever believed in. Hey! I'm a porno-dealing monster, what do I care what you think?</p>
+  <p>Oh, I don't have time for this. I have to go and buy a single piece of fruit with a coupon and then return it, making people wait behind me while I complain. Bite my shiny metal ass. Look, everyone wants to be like Germany, but do we really have the pure strength of 'will'?</p>
+  <p>You won't have time for sleeping, soldier, not with all the bed making you'll be doing. Leela, Bender, we're going grave robbing. Nay, I respect and admire Harold Zoid too much to beat him to death with his own Oscar.</p>
+  <p>Look, last night was a mistake. Check it out, y'all. Everyone who was invited is here. No argument here. OK, if everyone's finished being stupid. For example, if you killed your grandfather, you'd cease to exist!</p>
+</div> -->
+<div class="section-instructions">
+  When filing bug reports or feature requests please include the information below for debugging purposes.
+</div>
+<div class="info-wrapper">
+  <div class="list-format">
+    <div class="row key">Web App Version: </div>
+    <div class="row value">{{ aboutService.appVersion }}</div>
+    <div class="row key">API Server Version: </div>
+    <div class="row value">{{ aboutService.apiServerVersion }}</div>
+    <div class="row key">REST API Version: </div>
+    <div class="row value">{{ aboutService.restApiVersion }}</div>
+    <div *ngIf="aboutService.restApiClientVersion" class="row key">REST Client: </div>
+    <div *ngIf="aboutService.restApiClientVersion" class="row value">{{ aboutService.restApiClientVersion }}</div>
+    <div *ngIf="aboutService.sdkComponentsVersion" class="row key">SDK Components: </div>
+    <div *ngIf="aboutService.sdkComponentsVersion" class="row value">{{ aboutService.sdkComponentsVersion }}</div>
+    <div *ngIf="aboutService.graphComponentsVersion" class="row key">Graph Components: </div>
+    <div *ngIf="aboutService.graphComponentsVersion" class="row value">{{ aboutService.graphComponentsVersion }}</div>
+    <hr>
+    <div class="row key">Admin Mode:</div>
+    <div class="row value" *ngIf="!aboutService.isAdminEnabled">Disabled</div>
+    <div class="row value" *ngIf="aboutService.isAdminEnabled">
+      <button mat-button color="warn" class="admin-enabled-link blinking" routerLink="/admin">Enabled</button>
+    </div>
+    <div class="row key">NAPI Version: </div>
+    <div class="row value">{{ aboutService.nativeApiVersion }}</div>
+    <div class="row key">NAPI Build </div>
+    <div class="row value"># {{ aboutService.nativeApiBuildNumber }}</div>
+    <div class="row key native-group">NAPI Build Date: </div>
+    <div class="row value">{{ aboutService.nativeApiBuildDate }}</div>
+  </div>
+</div>
