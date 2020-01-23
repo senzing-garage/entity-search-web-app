@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '../material.module';
+import { FormsModule } from '@angular/forms';
+import { JwtModule } from '@auth0/angular-jwt';
 
 import { AdminRoutingModule } from './admin-routing.module';
 import { AdminComponent } from './admin/admin.component';
@@ -25,6 +27,10 @@ import { AdminBulkDataLoadComponent } from './bulk-data/admin-bulk-data-load.com
 import { AdminBulkDataLoadReportComponent } from './bulk-data/admin-bulk-data-load-report.component';
 import { AdminBulkDataLoadSummaryComponent } from './bulk-data/admin-bulk-data-load-summary.component';
 
+// ...
+export function tokenGetter() {
+  return localStorage.getItem('access_token');
+}
 @NgModule({
   declarations: [
     AdminComponent,
@@ -45,7 +51,15 @@ import { AdminBulkDataLoadSummaryComponent } from './bulk-data/admin-bulk-data-l
   imports: [
     CommonModule,
     MaterialModule,
-    AdminRoutingModule
+    FormsModule,
+    AdminRoutingModule,
+    JwtModule.forRoot({
+      config: {
+        tokenGetter: tokenGetter,
+        whitelistedDomains: ['localhost:8000'],
+        blacklistedRoutes: ['localhost:8000/authsdfsdf']
+      }
+    })
   ],
   providers: [
     {  provide: HTTP_INTERCEPTORS,

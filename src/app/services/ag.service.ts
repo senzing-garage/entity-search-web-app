@@ -3,7 +3,7 @@ import { CanActivate, Router } from '@angular/router';
 import { ActivatedRouteSnapshot } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { map, catchError, tap } from 'rxjs/operators';
+import { map, catchError, tap, first } from 'rxjs/operators';
 import { SzConfigurationService, SzAdminService, SzServerInfo } from '@senzing/sdk-components-ng';
 import { AdminAuthService } from './admin.service';
 
@@ -25,18 +25,30 @@ export class AuthGuardService implements CanActivate {
   /** route guard check to see if user can access a route */
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean> {
     // console.log("guard!");
-    return this.adminAuth.checkServerInfo().pipe(
-      tap( (isAuthed) => {
-        //console.log('AuthGuardService.canActivate: ', isAuthed, this.adminAuth);
-        if(!this.adminAuth.isAdminModeEnabled) {
-          // rest server operating in read-only mode
-          this.router.navigate( ['admin', 'error', 'admin-mode-disabled'] );
-        } else if(this.adminAuth.isAdminModeEnabled && !this.adminAuth.isAuthenticated) {
-          // we are using the token validator for the time being to act as a login
-          // mechanism. for the time being that's the best way to auth SU
-          this.router.navigate( ['admin'] );
-        }
-      })
-    );
+    const encodedToken = localStorage.getItem('access_token');
+    // const hasToken = (localStorage.getItem('access_token')) ? true : false;
+
+    if ( !encodedToken || encodedToken === undefined || encodedToken === 'undefined' ) {
+      // no token, redirect to /login
+      //console.warn('redirecting to login..', encodedToken);
+      this.router.navigate( ['admin', 'login']);
+    } else {
+      //console.warn(`verifying token: "${encodedToken}"`, typeof encodedToken, encodedToken === undefined);
+
+      return this.adminAuth.verifyJWT(encodedToken).pipe(
+        tap( (isValid) => {
+          //console.warn('redirecting to login..', isValid);
+          if(!isValid) {
+            this.adminAuth.logout();
+            this.router.navigate( ['admin', 'login']);
+          }
+        }),
+        catchError( (err) => {
+          this.router.navigate( ['admin', 'login']);
+          this.adminAuth.logout();
+          return of(false);
+        })
+      );
+    }
   }
 }

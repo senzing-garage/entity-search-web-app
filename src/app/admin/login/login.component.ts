@@ -1,7 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Title } from '@angular/platform-browser';
 import { SzDataSourcesService } from '@senzing/sdk-components-ng';
 import { AdminAuthService } from 'src/app/services/admin.service';
+import { Observable } from 'rxjs';
+import { map, first } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'admin-login',
@@ -9,10 +13,14 @@ import { AdminAuthService } from 'src/app/services/admin.service';
   styleUrls: ['./login.component.scss']
 })
 export class AdminLoginComponent implements OnInit {
+  public adminToken: string;
+  public error: string;
 
   constructor(
     private titleService: Title,
-    private adminAuth: AdminAuthService
+    private adminAuth: AdminAuthService,
+    private http: HttpClient,
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -23,5 +31,37 @@ export class AdminLoginComponent implements OnInit {
         // redirect to home instead
       }
     });
+
+  }
+
+  login(adminToken: string): Observable<boolean> {
+    /**
+     * in the future we might want to use the /admin/auth/jwt/login to
+     * go from straight token validation to masking by looking up against secret.
+     */
+    return this.adminAuth.verifyJWT(adminToken);
+  }
+
+  logout() {
+    this.adminAuth.logout();
+    localStorage.removeItem('access_token');
+  }
+
+  public get loggedIn(): boolean {
+    return (localStorage.getItem('access_token') !== null);
+  }
+
+  public submit() {
+    this.adminAuth.login(this.adminToken)
+      .subscribe(
+        (token) => {
+          if( token && typeof token === 'string') {
+            localStorage.setItem('access_token', token);
+          }
+          // set local storage
+          this.router.navigate(['/admin']);
+        },
+        err => this.error = 'Could not authenticate'
+      );
   }
 }

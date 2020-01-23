@@ -4,6 +4,7 @@ import { ActivatedRouteSnapshot } from '@angular/router';
 import { Observable, of, from, interval, Subject } from 'rxjs';
 import { map, catchError, tap, switchMap } from 'rxjs/operators';
 import { SzConfigurationService, SzAdminService, SzServerInfo, SzBaseResponseMeta } from '@senzing/sdk-components-ng';
+import { HttpClient } from '@angular/common/http';
 /**
  * A service used to provide methods and services
  * used in the /admin interface
@@ -36,6 +37,8 @@ export class AdminAuthService {
   public onAdminAuthenticatedChange: Subject<boolean> =  new Subject<boolean>();
 
   constructor(
+    private http: HttpClient,
+    private router: Router,
     private configService: SzConfigurationService,
     private adminService: SzAdminService,
   ) {
@@ -44,19 +47,45 @@ export class AdminAuthService {
     // poll for updates
     this.pollForIsAdminEnabled().subscribe();
   }
-  /** check whether a token is authentic or not */
-  public isTokenAuthentic( token: string | (() => string) ) {
 
-    this.adminService.getHeartbeat().subscribe(
-      (resp: SzBaseResponseMeta) => {
-        // TODO: plug this is to a real auth endpoint to verify the tokens match
-        // for now just return true
-        this._isAuthenticated = true;
-        this.onAdminAuthenticatedChange.next( this._isAuthenticated );
-        return this.isAuthenticated;
-      }
-    );
+  /** verify a provided JWT token against service */
+  verifyJWT(adminToken: string): Observable<boolean> {
+    /**
+     * in the future we might want to use the /admin/auth/jwt/login to
+     * go from straight token validation to masking by looking up against secret.
+     */
+    if(!adminToken || adminToken === undefined) {
+      //throw new Error('no token');
+      return  of(false);
+    }
+    return this.http.get<{adminToken: string | undefined}>('/admin/auth/jwt/auth', {
+      params: {adminToken: adminToken}})
+      .pipe(
+        map(result => {
+          //console.info('AdminAuthService.login: ', result.adminToken);
+          return (result.adminToken ? true : false);
+        })
+      );
   }
+  /** log a user in with a provided admin token */
+  login(adminToken: string): Observable<string | boolean | undefined> {
+    /**
+     * in the future we might want to use the /admin/auth/jwt/login to
+     * go from straight token validation to masking by looking up against secret.
+     */
+    const res = new Subject<string | boolean>();
+    this.verifyJWT(adminToken).subscribe((isValid: boolean) => {
+      res.next(adminToken);
+    }, (err) => {
+      res.next(false);
+    });
+    return res.asObservable();
+  }
+  /** clears the JWT token set in local storage */
+  logout() {
+    localStorage.removeItem('access_token');
+  }
+
   /** poll for server info */
   public pollForIsAdminEnabled(): Observable<boolean> {
     return interval(this._pollingInterval).pipe(

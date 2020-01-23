@@ -21,6 +21,7 @@ import { AuthGuardService } from '../services/ag.service';
 import { AdminErrorNoAdminModeComponent } from './errors/no-admin.component';
 import { AdminServerInfoComponent } from './server-info/server-info.component';
 import { AdminLicenseInfoComponent } from './license-info/license-info.component';
+import { AdminLoginComponent } from './login/login.component';
 
 const routes: Routes = [
     {
@@ -43,11 +44,16 @@ const routes: Routes = [
               component: AdminDataLoaderComponent
           },
           {
+            path: 'login',
+            component: AdminLoginComponent
+          },
+          {
             path: 'server/info',
             component: AdminServerInfoComponent
           },
           {
             path: 'license/info',
+            canActivate: [AuthGuardService],
             component: AdminLicenseInfoComponent
           },
           {

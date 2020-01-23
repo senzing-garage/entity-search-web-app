@@ -1,4 +1,4 @@
-<h2 class="section-title">Login</h2>
+<h2 class="section-title">Admin Token</h2>
 <!-- <div class="section-instructions">
   <p>Please, Don-Bot… look into your hard drive, and open your mercy file! All I want is to be a monkey of moderate intelligence who wears a suit… that's why I'm transferring to business school!</p>
   <p>A sexy mistake. Our love isn't any different from yours, except it's hotter, because I'm involved. I am Singing Wind, Chief of the Martians. That's not soon enough!</p>
@@ -8,9 +8,16 @@
   <p>Look, last night was a mistake. Check it out, y'all. Everyone who was invited is here. No argument here. OK, if everyone's finished being stupid. For example, if you killed your grandfather, you'd cease to exist!</p>
 </div> -->
 <div class="section-instructions">
-  Please provide the API key that is provided during startup of the rest api server. This api key is used for communicating
-  with the secure rest server endpoints that are only available when running the instance in admin mode.
+  Please provide the Admin Token that is provided during startup of the webapp server. This token is randomly generated on startup and can be found in the output of the webapp startup.
 </div>
 <div class="api-token-wrapper">
-  <admin-api-tokens hideTitle="true" hideInstruction="true"></admin-api-tokens>
+  <h4 *ngIf="error">{{error}}</h4>
+  <form (ngSubmit)="submit()">
+    <div class="form-group col-3">
+      <textarea matInput type="text" name="adminToken" class="form-control admin-token-input" [(ngModel)]="adminToken"></textarea>
+    </div>
+    <div class="form-group col-3">
+      <button mat-stroked-button color="primary" class="btn btn-primary" type="submit">Login</button>
+    </div>
+  </form>
 </div>

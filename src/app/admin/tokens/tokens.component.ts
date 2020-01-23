@@ -77,7 +77,7 @@ export class AdminOAuthTokensComponent implements OnInit {
   }
   /** verify that token in config is valid against api server instance */
   public verifyToken() {
-    this.authService.isTokenAuthentic( this.apiToken );
+    // make call to service to verify API token
   }
 
   public getUndefinedAsEmpty(value: any) {
