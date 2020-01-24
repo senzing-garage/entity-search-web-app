@@ -10,12 +10,16 @@ const auth = require('express-basic-auth');
 const path = require('path');
 const fs = require('fs');
 const url = require('url');
+const AuthModule = require('./auth');
+const AdminAuth = AuthModule.module;
 
 // grab env vars
 let env = process.env;
-
 // server(s)
 const app = express();
+// auth module
+const adminAuthOptions = AuthModule.getOptionsFromInput();
+const adminAuth = new AdminAuth( adminAuthOptions );
 
 // api config
 var cfg = {
@@ -82,7 +86,22 @@ for(proxyPath in proxyCfg){
 // static files
 app.use('/node_modules/@senzing/sdk-components-web', express.static(__dirname + '/node_modules/@senzing/sdk-components-web/'));
 app.use(express.static(__dirname + '/dist/entity-search-web-app/'));
+// admin auth tokens
+const authRes = (req, res, next) => {
+  const body = req.body;
+  const encodedToken = (body && body.adminToken) ? body.adminToken : req.query.adminToken;
 
+  res.status(200).json({
+    tokenIsValid: true,
+    adminToken: encodedToken
+  });
+};
+app.post('/jwt/login', adminAuth.login.bind(adminAuth));
+app.post('/jwt/auth', adminAuth.auth.bind(adminAuth), authRes);
+app.get('/jwt/auth', adminAuth.auth.bind(adminAuth), authRes);
+app.get('/jwt/protected', adminAuth.auth.bind(adminAuth), authRes);
+app.post('/admin/auth/jwt/auth', adminAuth.auth.bind(adminAuth), authRes);
+app.get('/admin/auth/jwt/auth', adminAuth.auth.bind(adminAuth), authRes);
 // SPA page
 app.use('*',function(req, res) {
     res.sendFile(path.join(__dirname + path.sep +'dist/entity-search-web-app/index.html'));
@@ -104,4 +123,18 @@ if( cfg.SENZING_WEB_SERVER_SSL_SUPPORT ){
   // http
   ExpressSrvInstance = app.listen(cfg.SENZING_WEB_SERVER_PORT);
   console.log('Express Server started on port '+ cfg.SENZING_WEB_SERVER_PORT);
+  console.log('');
+  console.log('To access the /admin area you will need a Admin Token.');
+  console.log('Admin Tokens are generated from a randomly generated secret unless one is specified with the -adminSecret flag.');
+  console.log('');
+  console.log('---------------------');
+  console.log('');
+  console.log('ADMIN SECRET: ', adminAuth.secret);
+  console.log('ADMIN SEED:   ', adminAuth.seed);
+  console.log('');
+  console.log('ADMIN TOKEN:  ');
+  console.log(adminAuth.token);
+  console.log('');
+  console.log('---------------------');
+  console.log('');
 }
