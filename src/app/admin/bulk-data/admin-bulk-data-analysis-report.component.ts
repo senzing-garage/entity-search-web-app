@@ -161,5 +161,9 @@ export class AdminBulkDataAnalysisReportComponent implements OnInit, OnDestroy, 
     public handleEntityTypeChange(fromEntityType: string, toEntityType: string) {
       this.bulkDataService.changeEntityTypeName(fromEntityType, toEntityType);
     }
+    /** return a default value if value is undefined or null */
+    public defaultIfUndefined(value: any, defaultValue: string): string | undefined {
+      return (value && value !== undefined && value !== null) ? value : defaultValue;
+    }
 
 }

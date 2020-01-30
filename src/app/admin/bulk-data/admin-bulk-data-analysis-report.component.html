@@ -74,7 +74,7 @@
         <input
         matInput
         type="text" placeholder="Entity Type to map to" #targetET
-        [value]="element.entityType"
+        [value]="defaultIfUndefined(element.entityType,'GENERIC')"
         [attr.list]="getEntityTypeInputName(l)"
         matBadgeOverlap="true"
         (change)="handleEntityTypeChange(element.entityType, targetET.value)">
@@ -123,7 +123,7 @@
         <input
         matInput
         type="text" placeholder="Entity Type to map to" #targetET
-        [value]="element.entityType"
+        [value]="defaultIfUndefined(element.entityType,'GENERIC')"
         [attr.list]="getEntityTypeInputName(l)"
         matBadgeOverlap="true"
         (change)="handleEntityTypeChange(element.entityType, targetET.value)">

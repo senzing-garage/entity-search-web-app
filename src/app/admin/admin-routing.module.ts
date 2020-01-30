@@ -59,7 +59,8 @@ const routes: Routes = [
           {
             path: 'error/admin-mode-disabled',
             component: AdminErrorNoAdminModeComponent
-          }
+          },
+          { path: '', redirectTo: 'datasources', pathMatch: 'full' }
         ]
     }
 ];

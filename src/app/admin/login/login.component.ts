@@ -51,12 +51,22 @@ export class AdminLoginComponent implements OnInit {
     return (localStorage.getItem('access_token') !== null);
   }
 
+  private stripUnsafeChars(str: string): string {
+    if(str && str.replace) {
+      str = str.replace(/[^a-z0-9\.\-]+/gi, '');
+    }
+    return str;
+  }
+
   public submit() {
-    this.adminAuth.login(this.adminToken)
+    let safeToken = this.adminToken;
+    safeToken = this.stripUnsafeChars(safeToken);
+
+    this.adminAuth.login(safeToken)
       .subscribe(
         (token) => {
           if( token && typeof token === 'string') {
-            localStorage.setItem('access_token', token);
+           localStorage.setItem('access_token', token);
           }
           // set local storage
           this.router.navigate(['/admin']);
