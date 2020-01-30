@@ -2,9 +2,17 @@
     "/api/*": {
       "target": "http://americium.local:8084/",
       "secure": false,
-      "logLevel": "warn",
+      "logLevel": "debug",
       "pathRewrite": {
         "^/api": ""
+      }
+    },
+    "/admin/auth/jwt/*": {
+      "target": "http://localhost:8000/jwt/",
+      "secure": true,
+      "logLevel": "debug",
+      "pathRewrite": {
+        "^/admin/auth/jwt": ""
       }
     }
   }

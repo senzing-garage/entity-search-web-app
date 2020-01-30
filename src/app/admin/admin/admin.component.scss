@@ -3,11 +3,13 @@
     height: 100%;
   }
   mat-sidenav-container {
-     height: 100%;
-     background-color: #fff;
-     .mat-drawer-content {
-       padding: 0px 25px 0 30px;
-     }
+    min-height: 100%;
+    overflow: unset;
+    background-color: #fff;
+    .mat-drawer-content {
+      padding: 0px 25px 0 30px;
+      height: unset;
+    }
   }
   .navigation {
     background-color: #f5f5f5;

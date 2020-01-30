@@ -2,4 +2,17 @@
 
 :host {
   display: block;
+
+  .mat-table-error {
+    width: unset;
+    .mat-table-full-width {
+      width: 100.1%;
+    }
+    .message {
+      text-align: center;
+      padding: 14px 0 14px 0;
+      font-weight: 600;
+      color: #525252;
+    }
+  }
 }
