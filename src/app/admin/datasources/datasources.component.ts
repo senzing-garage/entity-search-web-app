@@ -1,9 +1,14 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, Inject } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { SzDataSourcesService, SzDataSourcesResponseData, SzDataSourcesResponse, SzDataSource } from '@senzing/sdk-components-ng';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { MatTableDataSource, MatPaginator } from '@angular/material';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+
+export interface DialogData {
+  name: string;
+}
 
 @Component({
   selector: 'admin-datasources',
@@ -30,28 +35,72 @@ export class AdminDataSourcesComponent implements OnInit {
   }
 
   private _loading: boolean = false;
+  private _dialogOpen: boolean = false;
+
   public get loading(): boolean {
     return this._loading;
   }
 
   constructor(
     private datasourcesServices: SzDataSourcesService,
-    private titleService: Title
+    private titleService: Title,
+    public dialog: MatDialog
   ) { }
 
   ngOnInit() {
     this.datasource.paginator = this.paginator;
     // set page title
     this.titleService.setTitle( 'Admin Area - Data Sources' );
-    this._loading = true;
-    this.datasourcesServices.listDataSourcesDetails().subscribe( this.onDataResponse.bind(this) );
+    this.updateDataSourcesList();
   }
 
-  private onDataResponse(data: SzDataSourcesResponseData) {
-    this.dataSourcesData = data.dataSourceDetails;
-    this._loading = false;
-    console.warn('admin datasources: ', data, this._loading, this);
-    this._loading = false;
+  private updateDataSourcesList() {
+    this._loading = true;
+    this.datasourcesServices.listDataSourcesDetails().subscribe( (data: SzDataSourcesResponseData) => {
+      this.dataSourcesData = data.dataSourceDetails;
+      this._loading = false;
+      console.warn('admin datasources: ', data, this._loading, this);
+    } );
+  }
+
+  public openNewDataSourceDialog() {
+    console.log('open modal');
+    if(!this._dialogOpen) {
+      const dialogRef = this.dialog.open(NewDataSourceDialogComponent, {
+        width: '400px',
+        data: { name: '' }
+      });
+
+      dialogRef.afterClosed().subscribe(dsName => {
+        console.log('The dialog was closed', dsName);
+        if(dsName && dsName.length > 0) {
+          this.datasourcesServices.addDataSources([ dsName ]).subscribe(
+            (result) => {
+              console.log('created new datasource', result);
+              this.updateDataSourcesList();
+            }
+          );
+        }
+        this._dialogOpen = false;
+      });
+    }
+  }
+
+}
+
+@Component({
+  selector: 'admin-add-datasource-dialog',
+  templateUrl: 'add-datasource.component.html',
+  styleUrls: ['./add-datasource.component.scss']
+})
+export class NewDataSourceDialogComponent {
+
+  constructor(
+    public dialogRef: MatDialogRef<NewDataSourceDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: DialogData) {}
+
+  onNoClick(): void {
+    this.dialogRef.close();
   }
 
 }

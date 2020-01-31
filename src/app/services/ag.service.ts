@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { ActivatedRouteSnapshot } from '@angular/router';
-import { Observable, of } from 'rxjs';
+import { Observable, of, forkJoin } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { map, catchError, tap, first } from 'rxjs/operators';
 import { SzConfigurationService, SzAdminService, SzServerInfo } from '@senzing/sdk-components-ng';
@@ -24,24 +24,24 @@ export class AuthGuardService implements CanActivate {
   ) { }
   /** route guard check to see if user can access a route */
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean> {
-    // console.log("guard!");
     const encodedToken = localStorage.getItem('access_token');
-    // const hasToken = (localStorage.getItem('access_token')) ? true : false;
-
     if ( !encodedToken || encodedToken === undefined || encodedToken === 'undefined' ) {
       // no token, redirect to /login
-      //console.warn('redirecting to login..', encodedToken);
       this.router.navigate( ['admin', 'login']);
     } else {
-      //console.warn(`verifying token: "${encodedToken}"`, typeof encodedToken, encodedToken === undefined);
-
-      return this.adminAuth.verifyJWT(encodedToken).pipe(
-        tap( (isValid) => {
-          //console.warn('redirecting to login..', isValid);
-          if(!isValid) {
+      const sInfo      = this.adminAuth.checkServerInfo();
+      const tokenValid = this.adminAuth.verifyJWT(encodedToken);
+      return forkJoin([sInfo, tokenValid]).pipe(
+        tap( (results: boolean[]) => {
+          if(!results[0]) {
+            this.router.navigate( ['admin', 'error', 'admin-mode-disabled'] );
+          } else if(!results[1]) {
             this.adminAuth.logout();
-            this.router.navigate( ['admin', 'login']);
+            this.router.navigate( ['admin', 'login'] );
           }
+        }),
+        map( (results: boolean[]) => {
+          return (results[0] && results[1]);
         }),
         catchError( (err) => {
           this.router.navigate( ['admin', 'login']);

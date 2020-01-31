@@ -6,7 +6,7 @@ import { JwtModule } from '@auth0/angular-jwt';
 
 import { AdminRoutingModule } from './admin-routing.module';
 import { AdminComponent } from './admin/admin.component';
-import { AdminDataSourcesComponent } from './datasources/datasources.component';
+import { AdminDataSourcesComponent, NewDataSourceDialogComponent } from './datasources/datasources.component';
 import { AdminDataLoaderComponent } from './load/load.component';
 import { AdminOAuthTokensComponent } from './tokens/tokens.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -46,7 +46,8 @@ export function tokenGetter() {
     AdminErrorNoAdminModeComponent,
     AdminLicenseInfoComponent,
     AdminLoginComponent,
-    AdminServerInfoComponent
+    AdminServerInfoComponent,
+    NewDataSourceDialogComponent
   ],
   imports: [
     CommonModule,
@@ -61,6 +62,7 @@ export function tokenGetter() {
       }
     })
   ],
+  entryComponents: [ NewDataSourceDialogComponent ],
   providers: [
     {  provide: HTTP_INTERCEPTORS,
        useClass: OAuthInterceptor,

@@ -1,0 +1,9 @@
+:host {
+  mat-dialog-actions, .mat-dialog-actions {
+    mat-button, .mat-button, mat-stroked-button, .mat-stroked-button {
+      &:last-child {
+        margin-left: auto;
+      }
+    }
+  }
+}
