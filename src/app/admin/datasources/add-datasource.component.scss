@@ -1,8 +1,19 @@
 :host {
+  .mat-dialog-title {
+    margin: 0;
+    color: #5a5a5a;
+  }
+  mat-form-field {
+    width: 70%;
+  }
   mat-dialog-actions, .mat-dialog-actions {
     mat-button, .mat-button, mat-stroked-button, .mat-stroked-button {
-      &:last-child {
+      margin: 0 5px 0 5px;
+      &:first-child {
         margin-left: auto;
+      }
+      &:last-child {
+        margin-right: 0;
       }
     }
   }

@@ -59,12 +59,10 @@ export class AdminDataSourcesComponent implements OnInit {
     this.datasourcesServices.listDataSourcesDetails().subscribe( (data: SzDataSourcesResponseData) => {
       this.dataSourcesData = data.dataSourceDetails;
       this._loading = false;
-      console.warn('admin datasources: ', data, this._loading, this);
     } );
   }
 
   public openNewDataSourceDialog() {
-    console.log('open modal');
     if(!this._dialogOpen) {
       const dialogRef = this.dialog.open(NewDataSourceDialogComponent, {
         width: '400px',
@@ -72,7 +70,6 @@ export class AdminDataSourcesComponent implements OnInit {
       });
 
       dialogRef.afterClosed().subscribe(dsName => {
-        console.log('The dialog was closed', dsName);
         if(dsName && dsName.length > 0) {
           this.datasourcesServices.addDataSources([ dsName ]).subscribe(
             (result) => {
@@ -101,6 +98,10 @@ export class NewDataSourceDialogComponent {
 
   onNoClick(): void {
     this.dialogRef.close();
+  }
+
+  public isEmpty(value: any): boolean {
+    return (value && value.trim() === '');
   }
 
 }
