@@ -53,7 +53,7 @@ export class AdminLoginComponent implements OnInit {
 
   private stripUnsafeChars(str: string): string {
     if(str && str.replace) {
-      str = str.replace(/[^a-z0-9\.\-]+/gi, '');
+      str = str.replace(/[^a-z0-9_\.\-]+/gi, '');
     }
     return str;
   }

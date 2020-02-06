@@ -38,6 +38,8 @@ export class AdminBulkDataLoadSummaryComponent implements OnInit, OnDestroy {
     } else if (sizeInBytes > 999) {
       // mb
       _retVal = (sizeInBytes / 1000 ).toFixed(1) + ' KB';
+    } else if(sizeInBytes > 0) {
+      _retVal = sizeInBytes + ' Bytes';
     }
     return _retVal;
   }

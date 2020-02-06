@@ -33,7 +33,7 @@
     "@angular/platform-browser-dynamic": "~7.1.0",
     "@angular/router": "~7.1.0",
     "@auth0/angular-jwt": "^3.0.1",
-    "@senzing/rest-api-client-ng": "file:../rest-api-client-ng/dist/@senzing/rest-api-client-ng/senzing-rest-api-client-ng-1.2.0.tgz",
+    "@senzing/rest-api-client-ng": "^1.2.0",
     "@senzing/sdk-components-ng": "file:../sdk-components-ng/dist/@senzing/sdk-components-ng/senzing-sdk-components-ng-1.3.0.tgz",
     "@senzing/sdk-graph-components": "^0.1.0",
     "@types/d3": "^5.7.1",
