@@ -15,6 +15,22 @@ export const apiConfig: SzRestConfigurationParameters = {
   'withCredentials': true
 };
 
+/** security options for admin area */
+export const securityConfig = {
+  admin: {
+    mode: 'SSO',
+    checkUrl: '/admin/auth/sso/success',
+    redirectOnFailure: true,
+    loginUrl: '/admin/auth/sso/login'
+  },
+  operator: {
+    mode: 'SSO',
+    checkUrl: 'http://localhost:8000/sso/success',
+    redirectOnFailure: true,
+    loginUrl: 'http://localhost:8000/sso/login'
+  }
+};
+
 /*
  * For easier debugging in development mode, you can import the following file
  * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.

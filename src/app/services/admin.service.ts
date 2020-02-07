@@ -1,10 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { ActivatedRouteSnapshot } from '@angular/router';
 import { Observable, of, from, interval, Subject } from 'rxjs';
 import { map, catchError, tap, switchMap } from 'rxjs/operators';
 import { SzConfigurationService, SzAdminService, SzServerInfo, SzBaseResponseMeta } from '@senzing/sdk-components-ng';
 import { HttpClient } from '@angular/common/http';
+
 /**
  * A service used to provide methods and services
  * used in the /admin interface
@@ -13,6 +14,12 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root'
 })
 export class AdminAuthService {
+  /** options are 'JWT' | 'EXTERNAL' | false */
+  public authMode: string | boolean = 'SSO';
+  public redirectOnFailure = false;
+  public authCheckUrl = '/admin/auth/sso/success';
+  public loginUrl = 'http://localhost:8000/sso/auth/login';
+
   /** whether or not a user is granted admin rights */
   private _isAuthenticated: boolean = true;
   /** interval that the service queries for session authentication check */
@@ -41,11 +48,42 @@ export class AdminAuthService {
     private router: Router,
     private configService: SzConfigurationService,
     private adminService: SzAdminService,
+    @Inject('authConfigProvider') private authConfig
   ) {
+    console.warn('AUTH config! ', authConfig);
     // make initial requests
     this.checkServerInfo();
     // poll for updates
     this.pollForIsAdminEnabled().subscribe();
+  }
+
+  getIsAuthorized(adminToken?: string) {
+    if(!this.authMode) {
+      // auth check disabled
+      return of(true);
+    }
+    if(this.authMode === 'JWT' || this.authMode === 'BUILT-IN') {
+      if(!adminToken) {
+        return of(false);
+      }
+      return this.verifyJWT(adminToken);
+    }
+    if(this.authMode === 'EXTERNAL' || this.authMode === 'SSO') {
+      if(!this.authCheckUrl) {
+        return of(false);
+      }
+      return this.verifyExternalAuthByCode();
+    }
+  }
+
+  /** verify that an external resource(ie: SSO or proxy path) returns a non-401 or 403 code */
+  verifyExternalAuthByCode(): Observable<boolean> {
+    return this.http.get<any>(this.authCheckUrl)
+      .pipe(
+        map( (resp) => {
+          return true;
+        })
+      );
   }
 
   /** verify a provided JWT token against service */
@@ -58,7 +96,7 @@ export class AdminAuthService {
       //throw new Error('no token');
       return  of(false);
     }
-    return this.http.get<{adminToken: string | undefined}>('/admin/auth/jwt/auth', {
+    return this.http.get<{adminToken: string | undefined}>(this.authCheckUrl, {
       params: {adminToken: adminToken}})
       .pipe(
         map(result => {

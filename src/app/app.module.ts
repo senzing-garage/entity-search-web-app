@@ -1,6 +1,6 @@
 /** core angular, material, and senzing modules */
 import { BrowserModule, Title } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, InjectionToken } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material.module';
@@ -57,6 +57,7 @@ import { ErrorPageComponent } from './common/error/error.component';
 */
 import { apiConfig, environment } from './../environments/environment';
 import { SzRestConfigurationFactory } from './common/sdk-config.factory';
+import { AuthConfigFactory } from './common/auth-config.factory';
 import { AuthGuardService } from './services/ag.service';
 import { AdminAuthService } from './services/admin.service';
 
@@ -94,7 +95,19 @@ import { AdminAuthService } from './services/admin.service';
     SpinnerModule,
     environment.test ? HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService, { delay: 100 }) : []
   ],
-  providers: [ EntitySearchService, AdminAuthService, AuthGuardService, UiService, PrefsManagerService, AboutInfoService, Title ],
+  providers: [
+    {
+      provide: 'authConfigProvider',
+      useFactory: AuthConfigFactory,
+    },
+    EntitySearchService,
+    AdminAuthService,
+    AuthGuardService,
+    UiService,
+    PrefsManagerService,
+    AboutInfoService,
+    Title
+  ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }

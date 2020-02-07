@@ -1,8 +1,11 @@
-import { NgModule } from '@angular/core';
+import { NgModule, InjectionToken } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '../material.module';
 import { FormsModule } from '@angular/forms';
 import { JwtModule } from '@auth0/angular-jwt';
+import { ApiModule as SenzingDataServiceModule } from '@senzing/rest-api-client-ng';
+import { SenzingSdkModule } from '@senzing/sdk-components-ng';
+import { SenzingSdkGraphModule } from '@senzing/sdk-graph-components';
 
 import { AdminRoutingModule } from './admin-routing.module';
 import { AdminComponent } from './admin/admin.component';
@@ -31,6 +34,11 @@ import { AdminBulkDataLoadSummaryComponent } from './bulk-data/admin-bulk-data-l
 export function tokenGetter() {
   return localStorage.getItem('access_token');
 }
+import { SzRestConfigurationFactory } from '../common/sdk-config.factory';
+import { AuthConfigFactory } from '../common/auth-config.factory';
+
+export const authConfigProvider = new InjectionToken('authConfig');
+
 @NgModule({
   declarations: [
     AdminComponent,
@@ -53,6 +61,9 @@ export function tokenGetter() {
     CommonModule,
     MaterialModule,
     FormsModule,
+    SenzingSdkModule.forRoot( SzRestConfigurationFactory ),
+    SenzingSdkGraphModule.forRoot( SzRestConfigurationFactory ),
+    SenzingDataServiceModule.forRoot( SzRestConfigurationFactory ),
     AdminRoutingModule,
     JwtModule.forRoot({
       config: {
@@ -67,6 +78,10 @@ export function tokenGetter() {
     {  provide: HTTP_INTERCEPTORS,
        useClass: OAuthInterceptor,
        multi: true
+    },
+    {
+      provide: 'authConfigProvider',
+      useFactory: AuthConfigFactory,
     }
   ]
 })

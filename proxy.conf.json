@@ -14,5 +14,13 @@
       "pathRewrite": {
         "^/admin/auth/jwt": ""
       }
+    },
+    "/admin/auth/sso/*": {
+      "target": "http://localhost:8000/sso/",
+      "secure": true,
+      "logLevel": "debug",
+      "pathRewrite": {
+        "^/admin/auth/sso": "/auth"
+      }
     }
   }

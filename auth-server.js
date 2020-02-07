@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
 const expressJwt = require('express-jwt');
+const path = require('path');
 
 // utils
 const AuthModule = require('./auth');
@@ -32,6 +33,32 @@ app.post('/jwt/login', auth.login.bind(auth));
 app.post('/jwt/auth', auth.auth.bind(auth), authRes);
 app.get('/jwt/auth', auth.auth.bind(auth), authRes);
 app.get('/jwt/protected', auth.auth.bind(auth), authRes);
+
+/** just for testing */
+app.get('/sso/auth/401', (req, res, next) => {
+  res.status(401).json({
+    authorized: false
+  });
+});
+app.get('/sso/auth/403', (req, res, next) => {
+  res.status(403).json({
+    authorized: false
+  });
+});
+app.get('/sso/auth/fail', (req, res, next) => {
+  res.status(401).json({
+    authorized: false
+  });
+});
+app.get('/sso/auth/success', (req, res, next) => {
+  res.status(200).json({
+    authorized: true
+  });
+});
+app.get('/sso/auth/login', (req, res, next) => {
+  res.sendFile(path.join(__dirname+'/sso-login.html'));
+});
+
 
 const ExpressSrvInstance = app.listen(SENZING_AUTH_SERVER_PORT);
 
