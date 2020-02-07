@@ -30,13 +30,27 @@ export class AuthGuardService implements CanActivate {
       //this.router.navigateByUrl(this.adminAuth.loginUrl);
       this.router.navigate(['/admin/externalRedirect', { externalUrl: this.adminAuth.loginUrl }]);
     } else if(this.adminAuth.redirectOnFailure) {
-      this.router.navigate( ['admin', 'login']);
+      console.warn('REDIRECTING TO JWT LOGIN: ', this.adminAuth.loginUrl);
+      if(this.adminAuth.loginUrl && this.adminAuth.loginUrl.indexOf && this.adminAuth.loginUrl.indexOf('http') !== 0) {
+        // probably JWT
+        // use local login
+        this.router.navigate( ['admin', 'login']);
+      } else {
+        // starts with http
+        // probably external link
+        this.router.navigate(['/admin/externalRedirect', { externalUrl: this.adminAuth.loginUrl }]);
+
+      }
     }
     if (this.adminAuth.authMode === 'JWT' || this.adminAuth.authMode === 'BUILT-IN') {
       // if using built-in log user out on failure
       // clears local storage JWT token
       this.adminAuth.logout();
     }
+  }
+
+  isUrlExternal(url: string) {
+    return (url && url.indexOf && url.indexOf('http') === 0);
   }
 
   /** route guard check to see if user can access a route */
@@ -53,7 +67,11 @@ export class AuthGuardService implements CanActivate {
         const encodedToken = localStorage.getItem('access_token');
         if ( !encodedToken || encodedToken === undefined || encodedToken === 'undefined' ) {
           // no token, redirect to login page
-          this.router.navigateByUrl( this.adminAuth.loginUrl );
+          if( this.isUrlExternal(this.adminAuth.loginUrl) ) {
+            this.router.navigate(['/admin/externalRedirect', { externalUrl: this.adminAuth.loginUrl }]);
+          } else {
+            this.router.navigateByUrl( this.adminAuth.loginUrl );
+          }
         } else {
           // add token auth check to requests
           requests.push( this.adminAuth.verifyJWT(encodedToken) );
@@ -72,6 +90,8 @@ export class AuthGuardService implements CanActivate {
           } else if(!results[1]) {
             console.warn('redirecting to SSO: ', results);
             this.redirectOnFailure();
+          } else {
+            return of(true);
           }
         }),
         map( (results: boolean[]) => {

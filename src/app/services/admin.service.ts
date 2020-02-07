@@ -5,6 +5,7 @@ import { Observable, of, from, interval, Subject } from 'rxjs';
 import { map, catchError, tap, switchMap } from 'rxjs/operators';
 import { SzConfigurationService, SzAdminService, SzServerInfo, SzBaseResponseMeta } from '@senzing/sdk-components-ng';
 import { HttpClient } from '@angular/common/http';
+import { AuthConfig } from '../common/auth-config.factory';
 
 /**
  * A service used to provide methods and services
@@ -15,10 +16,19 @@ import { HttpClient } from '@angular/common/http';
 })
 export class AdminAuthService {
   /** options are 'JWT' | 'EXTERNAL' | false */
-  public authMode: string | boolean = 'SSO';
-  public redirectOnFailure = false;
-  public authCheckUrl = '/admin/auth/sso/success';
-  public loginUrl = 'http://localhost:8000/sso/auth/login';
+  public get authMode(): string | boolean {
+    return (this._authConfig && this._authConfig.admin && this._authConfig.admin.mode !== undefined) ? this._authConfig.admin.mode : 'SSO';
+  }
+  public get redirectOnFailure(): boolean {
+    return (this._authConfig && this._authConfig.admin && this._authConfig.admin.redirectOnFailure !== undefined) ? this._authConfig.admin.redirectOnFailure : true;
+  }
+  public get authCheckUrl(): string {
+    return this._authConfig && this._authConfig.admin && this._authConfig.admin.checkUrl ? this._authConfig.admin.checkUrl : '/admin/auth/sso/status';
+  }
+  public get loginUrl(): string {
+    return this._authConfig && this._authConfig.admin && this._authConfig.admin.loginUrl ? this._authConfig.admin.loginUrl : 'http://localhost:8000/sso/auth/login';
+  }
+  private _authConfig: AuthConfig;
 
   /** whether or not a user is granted admin rights */
   private _isAuthenticated: boolean = true;
@@ -48,13 +58,21 @@ export class AdminAuthService {
     private router: Router,
     private configService: SzConfigurationService,
     private adminService: SzAdminService,
-    @Inject('authConfigProvider') private authConfig
+    @Inject('authConfigProvider') private staticAuthConfig: any
   ) {
-    console.warn('AUTH config! ', authConfig);
+    //console.warn('AUTH config! ', authConfig);
+    this._authConfig = staticAuthConfig && staticAuthConfig.default ? this.staticAuthConfig.default : this.staticAuthConfig;
+
+
     // make initial requests
     this.checkServerInfo();
     // poll for updates
     this.pollForIsAdminEnabled().subscribe();
+    this.pollForAuthConfigUpdates().subscribe();
+  }
+
+  updateAuthConfig(): Observable<AuthConfig> {
+    return this.http.get<AuthConfig>('/config/auth');
   }
 
   getIsAuthorized(adminToken?: string) {
@@ -134,6 +152,17 @@ export class AdminAuthService {
           this.adminService.adminEnabled = resp;
           //console.info('AdminAuthService.pollForIsAdminEnabled: ', this.isAdminModeEnabled);
           if( _isChanged ) { this.onAdminModeChange.next( this.adminService.adminEnabled ); }
+        })
+    );
+  }
+  /** poll for auth config changes */
+  public pollForAuthConfigUpdates(): Observable<AuthConfig> {
+    return interval(this._pollingInterval).pipe(
+        switchMap(() => from( this.updateAuthConfig() )),
+        tap((aConf) => {
+          if(aConf) {
+            this._authConfig = aConf;
+          }
         })
     );
   }

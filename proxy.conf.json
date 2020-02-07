@@ -12,7 +12,7 @@
       "secure": true,
       "logLevel": "debug",
       "pathRewrite": {
-        "^/admin/auth/jwt": ""
+        "^/admin/auth/jwt": "/admin"
       }
     },
     "/admin/auth/sso/*": {
@@ -20,7 +20,31 @@
       "secure": true,
       "logLevel": "debug",
       "pathRewrite": {
-        "^/admin/auth/sso": "/auth"
+        "^/admin/auth/sso": "/admin"
+      }
+    },
+    "/auth/jwt/*": {
+      "target": "http://localhost:8000/jwt/",
+      "secure": true,
+      "logLevel": "debug",
+      "pathRewrite": {
+        "^/auth/jwt": ""
+      }
+    },
+    "/auth/sso/*": {
+      "target": "http://localhost:8000/sso/",
+      "secure": true,
+      "logLevel": "debug",
+      "pathRewrite": {
+        "^/auth/sso": ""
+      }
+    },
+    "/config/auth": {
+      "target": "http://localhost:8000/config/auth/",
+      "secure": true,
+      "logLevel": "debug",
+      "pathRewrite": {
+        "^/config/auth": ""
       }
     }
   }

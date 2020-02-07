@@ -16,20 +16,8 @@ export const apiConfig: SzRestConfigurationParameters = {
 };
 
 /** security options for admin area */
-export const securityConfig = {
-  admin: {
-    mode: 'SSO',
-    checkUrl: '/admin/auth/sso/success',
-    redirectOnFailure: true,
-    loginUrl: '/admin/auth/sso/login'
-  },
-  operator: {
-    mode: 'SSO',
-    checkUrl: 'http://localhost:8000/sso/success',
-    redirectOnFailure: true,
-    loginUrl: 'http://localhost:8000/sso/login'
-  }
-};
+import * as SEC_OPTS from '../../auth.conf.json';
+export const securityConfig = SEC_OPTS;
 
 /*
  * For easier debugging in development mode, you can import the following file

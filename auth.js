@@ -1,6 +1,10 @@
 'use strict';
+const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const uuidv4 = require('uuid/v4');
+
+// let authConfig = JSON.parse( fs.readFileSync('./auth.conf.json', 'utf8') );
+// let authConfig = require('./auth.conf.json');
 
 // grab env vars
 let env = process.env;
@@ -38,6 +42,11 @@ function getOptionsFromInput() {
 }
 /** Manages admin area auth token state */
 class AuthModule {
+  get authConfig() {
+    let authConfig = JSON.parse( fs.readFileSync('./auth.conf.json', 'utf8') );
+    return authConfig;
+  }
+
   get token() {
     return this.CRYPTED_TOKEN;
   }
