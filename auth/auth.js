@@ -2,9 +2,8 @@
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const uuidv4 = require('uuid/v4');
-
-// let authConfig = JSON.parse( fs.readFileSync('./auth.conf.json', 'utf8') );
-// let authConfig = require('./auth.conf.json');
+const compile = require('template-literal');
+const path = require('path');
 
 // grab env vars
 let env = process.env;
@@ -28,6 +27,11 @@ function getOptionsFromInput() {
       authOpts[ retKey ] = retVal;
     })
   }
+  if(env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE) {
+    authOpts = authOpts ? authOpts : {
+      adminAuthMode: env.SENZING_WEB_SERVER_ADMIN_SECRET
+    }
+  }
   if(env.SENZING_WEB_SERVER_ADMIN_SECRET) {
     authOpts = authOpts ? authOpts : {
       adminSecret: env.SENZING_WEB_SERVER_ADMIN_SECRET
@@ -40,10 +44,93 @@ function getOptionsFromInput() {
   }
   return authOpts;
 }
+
+/** get auth conf template */
+function createAuthConfigFromInput( dirToWriteTo ) {
+  // grab env vars
+  let env = process.env;
+  // grab cmdline args
+  let cl = process.argv;
+  let authOpts = undefined;
+  // default template is no security (for now)
+  let authTemplate = 'auth.conf.tmpl.json';
+
+  if(cl && cl.forEach){
+    authOpts = {};
+    cl.forEach( (val, ind, arr) => {
+      let retVal = val;
+      let retKey = val;
+      if(val && val.indexOf && val.indexOf('=')){
+        retKey = (val.split('='))[0];
+        retVal = (val.split('='))[1];
+      }
+      authOpts[ retKey ] = retVal;
+    })
+  }
+
+  if(env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE && env.SENZING_WEB_SERVER_OPERATOR_AUTH_MODE){
+    authOpts.adminAuthMode = authOpts.adminAuthMode ? authOpts.adminAuthMode : env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE;
+    authOpts.operatorAuthMode = authOpts.operatorAuthMode ? authOpts.operatorAuthMode : env.SENZING_WEB_SERVER_OPERATOR_AUTH_MODE;
+  } else if(env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE) {
+    authOpts.adminAuthMode = authOpts.adminAuthMode ? authOpts.adminAuthMode : env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE;
+  } else {
+    authOpts.adminAuthMode    = false;
+    authOpts.operatorAuthMode = false;
+  }
+  if(env.SENZING_WEB_SERVER_ADMIN_AUTH_REDIRECT){
+    authOpts.adminAuthRedirectUrl = env.SENZING_WEB_SERVER_ADMIN_AUTH_REDIRECT;
+  }
+  if(env.SENZING_WEB_SERVER_OPERATOR_AUTH_REDIRECT){
+    authOpts.operatorAuthRedirectUrl = env.SENZING_WEB_SERVER_OPERATOR_AUTH_REDIRECT;
+  }
+
+  if(authOpts.adminAuthMode == 'SSO') {
+    authOpts.adminAuthStatusUrl = '/admin/auth/sso/status';
+  } else if(authOpts.adminAuthMode == 'JWT') {
+    authOpts.adminAuthStatusUrl = '/admin/auth/jwt/status';
+    authOpts.adminAuthRedirectUrl = '/admin/login'
+  }
+  if(authOpts.operatorAuthMode == 'SSO') {
+    authOpts.operatorAuthStatusUrl   = '/auth/sso/status';
+  } else if(authOpts.operatorAuthMode == 'JWT') {
+    authOpts.operatorAuthStatusUrl   = '/auth/jwt/status';
+    authOpts.operatorAuthRedirectUrl = '/login';
+  }
+
+  if(authOpts.adminAuthMode && authOpts.operatorAuthMode) {
+    authTemplate = 'auth.conf.tmpl.full.json';
+  } else if(authOpts.adminAuthMode) {
+    authTemplate = 'auth.conf.tmpl.admin.json';
+  }
+  authTemplate = __dirname + path.sep + authTemplate;
+
+  //console.log('AUTH TEMPLATE: ', authTemplate, fs.existsSync(authTemplate));
+  //console.log('AUTH OPTS: ', JSON.stringify(authOpts, null, 2));
+  //console.log('ENV VARS: ', JSON.stringify(process.env.SENZING_WEB_AUTH_SERVER_ADMIN_MODE, null, 2));
+  //console.log('Write to Directory: ', __dirname);
+
+  if(fs.existsSync(authTemplate) ){
+    // compile new auth conf
+    let authTmpl = fs.readFileSync(authTemplate, 'utf8');
+    let authTmplAction = compile(authTmpl);
+
+    fs.writeFile(__dirname + path.sep + 'auth.conf.json', authTmplAction(authOpts), function(err){
+      if(!err) {
+          //file written on disk
+          //console.log('wrote auth.conf.output.json \n');
+      } else {
+          console.log('could not write auth.conf.output.json',err);
+      }
+    });
+  }
+
+  return authOpts;
+}
+
 /** Manages admin area auth token state */
 class AuthModule {
   get authConfig() {
-    let authConfig = JSON.parse( fs.readFileSync('./auth.conf.json', 'utf8') );
+    let authConfig = JSON.parse( fs.readFileSync(__dirname + path.sep + 'auth.conf.json', 'utf8') );
     return authConfig;
   }
 
@@ -147,5 +234,6 @@ class AuthModule {
 
 module.exports = {
   "module" : AuthModule,
-  "getOptionsFromInput": getOptionsFromInput
+  "getOptionsFromInput": getOptionsFromInput,
+  "createAuthConfigFromInput": createAuthConfigFromInput
 }

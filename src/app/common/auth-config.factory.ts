@@ -4,15 +4,15 @@ import { apiConfig, securityConfig, environment } from '../../environments/envir
 export interface AuthConfig {
     admin: {
       mode: string | boolean;
-      checkUrl: string;
+      checkUrl?: string;
       redirectOnFailure: boolean;
-      loginUrl: string;
+      loginUrl?: string;
     };
-    operator: {
+    operator?: {
       mode: string | boolean;
-      checkUrl: string;
+      checkUrl?: string;
       redirectOnFailure: boolean;
-      loginUrl: string;
+      loginUrl?: string;
     };
 }
 

@@ -10,7 +10,7 @@ const auth = require('express-basic-auth');
 const path = require('path');
 const fs = require('fs');
 const url = require('url');
-const AuthModule = require('./auth');
+const AuthModule = require('./auth/auth');
 const AdminAuth = AuthModule.module;
 
 // grab env vars
@@ -25,6 +25,8 @@ const adminAuth = new AdminAuth( adminAuthOptions );
 var cfg = {
   SENZING_WEB_SERVER_PORT: (env.SENZING_WEB_SERVER_PORT ? env.SENZING_WEB_SERVER_PORT : 4200),
   SENZING_WEB_SERVER_API_PATH: (env.SENZING_WEB_SERVER_API_PATH ? env.SENZING_WEB_SERVER_API_PATH : "/api"),
+  SENZING_WEB_SERVER_AUTH_PATH: (env.SENZING_WEB_SERVER_AUTH_PATH ? env.SENZING_WEB_SERVER_AUTH_PATH : "http://localhost:8000"),
+  SENZING_WEB_SERVER_ADMIN_AUTH_MODE: (env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE ? env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE : "JWT"),
   SENZING_API_SERVER_URL: (env.SENZING_API_SERVER_URL ? env.SENZING_API_SERVER_URL : "http://localhost:8080"),
   SENZING_WEB_SERVER_SSL_CERT_PATH: (env.SENZING_WEB_SERVER_SSL_CERT_PATH ? env.SENZING_WEB_SERVER_SSL_CERT_PATH : "/run/secrets/server.cert"),
   SENZING_WEB_SERVER_SSL_KEY_PATH: (env.SENZING_WEB_SERVER_SSL_KEY_PATH ? env.SENZING_WEB_SERVER_SSL_KEY_PATH : "/run/secrets/server.key"),

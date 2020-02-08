@@ -1,0 +1,8 @@
+{
+  "admin": {
+    "mode": "JWT",
+    "checkUrl": "/admin/auth/jwt/status",
+    "redirectOnFailure": true,
+    "loginUrl": "/admin/login"
+  }
+}

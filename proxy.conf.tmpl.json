@@ -1,34 +1,50 @@
 {
-    "/api/*": {
-      "target": "${d.SENZING_API_SERVER_URL}",
-      "secure": false,
-      "logLevel": "warn",
-      "pathRewrite": {
-        "^/api": ""
-      }
-    },
-    "/admin/auth/jwt/*": {
-      "target": "http://localhost:8000/jwt/",
-      "secure": true,
-      "logLevel": "debug",
-      "pathRewrite": {
-        "^/admin/auth/jwt": ""
-      }
-    },
-    "/admin/auth/sso/*": {
-      "target": "http://localhost:8000/sso/",
-      "secure": true,
-      "logLevel": "debug",
-      "pathRewrite": {
-        "^/admin/auth/sso": "/auth"
-      }
-    },
-    "/config/auth": {
-      "target": "http://localhost:8000/config/auth/",
-      "secure": true,
-      "logLevel": "debug",
-      "pathRewrite": {
-        "^/config/auth": ""
-      }
+  "/api/*": {
+    "target": "${d.SENZING_API_SERVER_URL}",
+    "secure": false,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/api": ""
+    }
+  },
+  "/admin/auth/jwt/*": {
+    "target": "${d.SENZING_WEB_SERVER_ADMIN_AUTH_PATH}/jwt/",
+    "secure": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/admin/auth/jwt": "/admin"
+    }
+  },
+  "/admin/auth/sso/*": {
+    "target": "${d.SENZING_WEB_SERVER_ADMIN_AUTH_PATH}/sso/",
+    "secure": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/admin/auth/sso": "/admin"
+    }
+  },
+  "/auth/jwt/*": {
+    "target": "${d.SENZING_WEB_SERVER_ADMIN_AUTH_PATH}/jwt/",
+    "secure": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/auth/jwt": ""
+    }
+  },
+  "/auth/sso/*": {
+    "target": "${d.SENZING_WEB_SERVER_ADMIN_AUTH_PATH}/sso/",
+    "secure": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/auth/sso": ""
+    }
+  },
+  "/config/auth": {
+    "target": "http://localhost:8000/config/auth/",
+    "secure": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/config/auth": ""
     }
   }
+}
