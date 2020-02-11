@@ -2,13 +2,13 @@
   "admin": {
     "mode": "${d.adminAuthMode}",
     "checkUrl": "${d.adminAuthStatusUrl}",
-    "redirectOnFailure": true,
+    "redirectOnFailure": false,
     "loginUrl": "${d.adminAuthRedirectUrl}"
   },
   "operator": {
     "mode": "${d.operatorAuthMode}",
     "checkUrl": "${d.operatorAuthStatusUrl}",
-    "redirectOnFailure": true,
+    "redirectOnFailure": false,
     "loginUrl": "${d.operatorAuthRedirectUrl}"
   }
 }

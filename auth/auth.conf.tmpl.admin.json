@@ -2,7 +2,7 @@
   "admin": {
     "mode": "${d.adminAuthMode}",
     "checkUrl": "${d.adminAuthStatusUrl}",
-    "redirectOnFailure": true,
+    "redirectOnFailure": false,
     "loginUrl": "${d.adminAuthRedirectUrl}"
   }
 }
