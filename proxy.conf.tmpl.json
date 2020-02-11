@@ -15,8 +15,16 @@
       "^/admin/auth/jwt": "/jwt/admin"
     }
   },
-  "/admin/auth/sso/*": {
-    "target": "${d.SENZING_WEB_SERVER_ADMIN_AUTH_PATH}/sso/",
+  "/admin/auth/sso/status": {
+    "target": "${d.SENZING_WEB_SERVER_ADMIN_AUTH_PATH}/sso/admin/status",
+    "secure": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/admin/auth/sso": "/sso/admin"
+    }
+  },
+  "/admin/auth/sso/login": {
+    "target": "${d.SENZING_WEB_SERVER_ADMIN_AUTH_PATH}/sso/admin/login",
     "secure": true,
     "logLevel": "debug",
     "pathRewrite": {
