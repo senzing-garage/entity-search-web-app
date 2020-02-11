@@ -88,7 +88,7 @@ export class AuthGuardService implements CanActivate {
           if(!results[0]) {
             this.router.navigate( ['admin', 'error', 'admin-mode-disabled'] );
           } else if(!results[1]) {
-            console.warn('redirecting to SSO: ', results);
+            console.warn('redirecting to SSO: ' + (!results[1]), results[1], results);
             this.redirectOnFailure();
           } else {
             return of(true);
@@ -98,7 +98,7 @@ export class AuthGuardService implements CanActivate {
           return (results[0] && results[1]);
         }),
         catchError( (err) => {
-          console.warn('redirecting to SSO: ', err);
+          console.warn('redirecting to SSO on err: ', err);
           this.redirectOnFailure();
           return of(false);
         })

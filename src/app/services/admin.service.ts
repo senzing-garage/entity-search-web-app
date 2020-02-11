@@ -94,7 +94,10 @@ export class AdminAuthService {
     }
     if(this.authMode === 'EXTERNAL' || this.authMode === 'SSO') {
       if(!this.authCheckUrl) {
+        console.warn('NO AUTH CHECK URL for SSO! ', this.authCheckUrl);
         return of(false);
+      } else {
+        console.log('returning value of "verifyExternalAuthByCode()"');
       }
       return this.verifyExternalAuthByCode();
     }
