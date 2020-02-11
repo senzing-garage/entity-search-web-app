@@ -29,6 +29,7 @@ export class AdminAuthService {
     return this._authConfig && this._authConfig.admin && this._authConfig.admin.loginUrl ? this._authConfig.admin.loginUrl : 'http://localhost:8000/sso/auth/login';
   }
   private _authConfig: AuthConfig;
+  private _configLoadedFromResource = false;
 
   /** whether or not a user is granted admin rights */
   private _isAuthenticated: boolean = true;
@@ -68,6 +69,7 @@ export class AdminAuthService {
     this.checkServerInfo();
     this.updateAuthConfig().subscribe((aConf) => {
       if(aConf) {
+        this._configLoadedFromResource = true;
         this._authConfig = aConf;
         console.log('got initial auth config! ', this._authConfig);
       }
@@ -96,8 +98,6 @@ export class AdminAuthService {
       if(!this.authCheckUrl) {
         console.warn('NO AUTH CHECK URL for SSO! ', this.authCheckUrl);
         return of(false);
-      } else {
-        console.log('returning value of "verifyExternalAuthByCode()"');
       }
       return this.verifyExternalAuthByCode();
     }

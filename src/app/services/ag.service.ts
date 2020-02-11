@@ -27,19 +27,21 @@ export class AuthGuardService implements CanActivate {
     if (this.adminAuth.redirectOnFailure && this.adminAuth.loginUrl) {
       // redirect to external SSO login page
       console.warn('REDIRECTING TO SSO LOGIN: ', this.adminAuth.loginUrl, this.adminAuth);
-      //this.router.navigateByUrl(this.adminAuth.loginUrl);
-      //this.router.navigate(['/admin/externalRedirect', { externalUrl: this.adminAuth.loginUrl }]);
+      if( this.isUrlExternal(this.adminAuth.loginUrl) ) {
+        this.router.navigate(['/admin/externalRedirect', { externalUrl: this.adminAuth.loginUrl }]);
+      } else {
+        this.router.navigateByUrl(this.adminAuth.loginUrl);
+      }
     } else if(this.adminAuth.redirectOnFailure) {
       console.warn('REDIRECTING TO JWT LOGIN: ', this.adminAuth.loginUrl);
-      if(this.adminAuth.loginUrl && this.adminAuth.loginUrl.indexOf && this.adminAuth.loginUrl.indexOf('http') !== 0) {
+      if(this.adminAuth.loginUrl && !this.isUrlExternal(this.adminAuth.loginUrl)) {
         // probably JWT
         // use local login
         this.router.navigate( ['admin', 'login']);
       } else {
         // starts with http
         // probably external link
-        //this.router.navigate(['/admin/externalRedirect', { externalUrl: this.adminAuth.loginUrl }]);
-
+        this.router.navigate(['/admin/externalRedirect', { externalUrl: this.adminAuth.loginUrl }]);
       }
     }
     if (this.adminAuth.authMode === 'JWT' || this.adminAuth.authMode === 'BUILT-IN') {
@@ -80,15 +82,14 @@ export class AuthGuardService implements CanActivate {
         // SSO or EXTERNAL auth check
         requests.push( this.adminAuth.getIsAuthorized() );
       }
-
-      console.log('AG Service: ' + this.adminAuth.authMode, requests);
+      //console.log('AG Service: ' + this.adminAuth.authMode, requests);
 
       return forkJoin(requests).pipe(
         tap( (results: boolean[]) => {
           if(!results[0]) {
             this.router.navigate( ['admin', 'error', 'admin-mode-disabled'] );
           } else if(!results[1]) {
-            console.warn('redirecting to SSO: ' + (!results[1]), results[1], results);
+            //console.warn('redirecting to SSO: ' + (!results[1]), results[1], results);
             this.redirectOnFailure();
           } else {
             return of(true);
@@ -98,7 +99,7 @@ export class AuthGuardService implements CanActivate {
           return (results[0] && results[1]);
         }),
         catchError( (err) => {
-          console.warn('redirecting to SSO on err: ', err);
+          //console.warn('redirecting to SSO on err: ', err);
           this.redirectOnFailure();
           return of(false);
         })
