@@ -66,6 +66,12 @@ export class AdminAuthService {
 
     // make initial requests
     this.checkServerInfo();
+    this.updateAuthConfig().subscribe((aConf) => {
+      if(aConf) {
+        this._authConfig = aConf;
+        console.log('got initial auth config! ', this._authConfig);
+      }
+    });
     // poll for updates
     this.pollForIsAdminEnabled().subscribe();
     this.pollForAuthConfigUpdates().subscribe();

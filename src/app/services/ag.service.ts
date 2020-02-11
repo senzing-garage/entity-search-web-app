@@ -26,9 +26,9 @@ export class AuthGuardService implements CanActivate {
     // failed external check
     if (this.adminAuth.redirectOnFailure && this.adminAuth.loginUrl) {
       // redirect to external SSO login page
-      console.warn('REDIRECTING TO SSO LOGIN: ', this.adminAuth.loginUrl);
+      console.warn('REDIRECTING TO SSO LOGIN: ', this.adminAuth.loginUrl, this.adminAuth);
       //this.router.navigateByUrl(this.adminAuth.loginUrl);
-      this.router.navigate(['/admin/externalRedirect', { externalUrl: this.adminAuth.loginUrl }]);
+      //this.router.navigate(['/admin/externalRedirect', { externalUrl: this.adminAuth.loginUrl }]);
     } else if(this.adminAuth.redirectOnFailure) {
       console.warn('REDIRECTING TO JWT LOGIN: ', this.adminAuth.loginUrl);
       if(this.adminAuth.loginUrl && this.adminAuth.loginUrl.indexOf && this.adminAuth.loginUrl.indexOf('http') !== 0) {
@@ -38,7 +38,7 @@ export class AuthGuardService implements CanActivate {
       } else {
         // starts with http
         // probably external link
-        this.router.navigate(['/admin/externalRedirect', { externalUrl: this.adminAuth.loginUrl }]);
+        //this.router.navigate(['/admin/externalRedirect', { externalUrl: this.adminAuth.loginUrl }]);
 
       }
     }
