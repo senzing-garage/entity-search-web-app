@@ -129,7 +129,7 @@ if(adminAuth.authConfig) {
     // especially if the SSO uses cookies etc
     app.get('/sso/admin/status', ssoResForceTrue);
     app.get('/sso/admin/login', (req, res, next) => {
-      res.sendFile(path.join(__dirname+'/sso-login.html'));
+      res.sendFile(path.join(__dirname+'/auth/sso-login.html'));
     });
     //STARTUP_MSG = STARTUP_MSG + '\n'+'';
     STARTUP_MSG = STARTUP_MSG + '\n'+'---------------------';

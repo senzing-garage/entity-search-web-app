@@ -12,7 +12,7 @@
     "secure": true,
     "logLevel": "debug",
     "pathRewrite": {
-      "^/admin/auth/jwt": "/admin"
+      "^/admin/auth/jwt": "/jwt/admin"
     }
   },
   "/admin/auth/sso/*": {
@@ -20,7 +20,7 @@
     "secure": true,
     "logLevel": "debug",
     "pathRewrite": {
-      "^/admin/auth/sso": "/admin"
+      "^/admin/auth/sso": "/sso/admin"
     }
   },
   "/auth/jwt/*": {
@@ -28,7 +28,7 @@
     "secure": true,
     "logLevel": "debug",
     "pathRewrite": {
-      "^/auth/jwt": ""
+      "^/auth/jwt": "/jwt"
     }
   },
   "/auth/sso/*": {
@@ -36,7 +36,7 @@
     "secure": true,
     "logLevel": "debug",
     "pathRewrite": {
-      "^/auth/sso": ""
+      "^/auth/sso": "/sso"
     }
   },
   "/config/auth": {
