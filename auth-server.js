@@ -18,41 +18,16 @@ const app = express();
 app.use(bodyParser.json());
 // port to run the auth server on
 const SENZING_AUTH_SERVER_PORT = 8000;
-
 let STARTUP_MSG = '';
 
-/** just for testing */
-/*
-app.get('/sso/auth/401', (req, res, next) => {
-  res.status(401).json({
-    authorized: false
-  });
-});
-app.get('/sso/auth/403', (req, res, next) => {
-  res.status(403).json({
-    authorized: false
-  });
-});
-app.get('/sso/auth/fail', (req, res, next) => {
-  res.status(401).json({
-    authorized: false
-  });
-});
-app.get('/sso/auth/success', (req, res, next) => {
-  res.status(200).json({
-    authorized: true
-  });
-});
-*/
-
 if(auth.authConfig) {
-  app.get('/config/auth', (req, res, next) => {
+  app.get('/conf/auth', (req, res, next) => {
     res.status(200).json( auth.authConfig );
   });
-  app.get('/config/auth/admin', (req, res, next) => {
+  app.get('/conf/auth/admin', (req, res, next) => {
     res.status(200).json( auth.authConfig.admin );
   });
-  app.get('/config/auth/operator', (req, res, next) => {
+  app.get('/conf/auth/operator', (req, res, next) => {
     res.status(200).json( auth.authConfig.operator );
   });
 
@@ -69,7 +44,7 @@ if(auth.authConfig) {
     };
     // dunno if this should be a reverse proxy req or not
     // especially if the SSO uses cookies etc
-    app.get('/sso/admin/status', ssoResForceFalse);
+    app.get('/sso/admin/status', ssoResForceTrue);
     app.get('/sso/admin/login', (req, res, next) => {
       res.sendFile(path.join(__dirname+'/sso-login.html'));
     });
@@ -143,11 +118,6 @@ if(auth.authConfig) {
     STARTUP_MSG = STARTUP_MSG + '\n'+'/admin path not protected via ';
     STARTUP_MSG = STARTUP_MSG + '\n'+'authentication mechanism.';
     STARTUP_MSG = STARTUP_MSG + '\n'+'';
-    //STARTUP_MSG = STARTUP_MSG + '\n'+'Hopefully this is just an oversight ';
-    //STARTUP_MSG = STARTUP_MSG + '\n'+'or there is another method like transparent ';
-    //STARTUP_MSG = STARTUP_MSG + '\n'+'proxy that is configured to handle authorization ';
-    //STARTUP_MSG = STARTUP_MSG + '\n'+'for this path.';
-    //STARTUP_MSG = STARTUP_MSG + '\n'+'';
     STARTUP_MSG = STARTUP_MSG + '\n'+'To add built-in Token authentication for the /admin path '
     STARTUP_MSG = STARTUP_MSG + '\n'+'set the \'SENZING_WEB_SERVER_ADMIN_AUTH_MODE="JWT"\' env variable ';
     STARTUP_MSG = STARTUP_MSG + '\n'+'or the \'adminAuthMode="JWT"\' command line arg.'

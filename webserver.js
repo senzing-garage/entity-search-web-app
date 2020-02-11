@@ -18,14 +18,18 @@ let env = process.env;
 // server(s)
 const app = express();
 // auth module
-const adminAuthOptions = AuthModule.getOptionsFromInput();
-const adminAuth = new AdminAuth( adminAuthOptions );
+const authOptions = AuthModule.getOptionsFromInput();
+const adminAuth = new AdminAuth( authOptions );
+
+//const adminAuthOptions = AuthModule.getOptionsFromInput();
+//const adminAuth = new AdminAuth( adminAuthOptions );
+let STARTUP_MSG = '';
 
 // api config
 var cfg = {
   SENZING_WEB_SERVER_PORT: (env.SENZING_WEB_SERVER_PORT ? env.SENZING_WEB_SERVER_PORT : 4200),
   SENZING_WEB_SERVER_API_PATH: (env.SENZING_WEB_SERVER_API_PATH ? env.SENZING_WEB_SERVER_API_PATH : "/api"),
-  SENZING_WEB_SERVER_AUTH_PATH: (env.SENZING_WEB_SERVER_AUTH_PATH ? env.SENZING_WEB_SERVER_AUTH_PATH : "http://localhost:8000"),
+  SENZING_WEB_SERVER_AUTH_PATH: (env.SENZING_WEB_SERVER_AUTH_PATH ? env.SENZING_WEB_SERVER_AUTH_PATH : "http://localhost:8080"),
   SENZING_WEB_SERVER_ADMIN_AUTH_MODE: (env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE ? env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE : "JWT"),
   SENZING_API_SERVER_URL: (env.SENZING_API_SERVER_URL ? env.SENZING_API_SERVER_URL : "http://localhost:8080"),
   SENZING_WEB_SERVER_SSL_CERT_PATH: (env.SENZING_WEB_SERVER_SSL_CERT_PATH ? env.SENZING_WEB_SERVER_SSL_CERT_PATH : "/run/secrets/server.cert"),
@@ -42,7 +46,7 @@ if(cfg.SENZING_WEB_SERVER_SSL_CERT_PATH && cfg.SENZING_WEB_SERVER_SSL_KEY_PATH){
   try {
     if (fs.existsSync(cfg.SENZING_WEB_SERVER_SSL_CERT_PATH) && fs.existsSync(cfg.SENZING_WEB_SERVER_SSL_KEY_PATH)) {
       //file exists
-      console.log('-- SSL ENABLED --');
+      STARTUP_MSG = STARTUP_MSG + '\n'+'-- SSL ENABLED --';
       cfg.SENZING_WEB_SERVER_SSL_SUPPORT = true;
     } else {
       cfg.SENZING_WEB_SERVER_SSL_SUPPORT = false;
@@ -64,13 +68,13 @@ if( cfg.SENZING_WEB_SERVER_BASIC_AUTH_JSON ){
         challenge: true,
         users: require( _authJSONPath )
       }));
-      console.log('-- AUTH MODULE ENABLED --');
-      console.log('\tJSON DB PATH:',_authJSONPath, '\n\r');
+      STARTUP_MSG = STARTUP_MSG + '\n'+'-- AUTH MODULE ENABLED --';
+      STARTUP_MSG = STARTUP_MSG + '\n'+'\tJSON DB PATH:'+ _authJSONPath +'\n';
     } else {
-      console.log('-- AUTH MODULE ERROR: auth JSON not found ('+ _authJSONPath +') --\n\r');
+      STARTUP_MSG = STARTUP_MSG + '\n'+'-- AUTH MODULE ERROR: auth JSON not found ('+ _authJSONPath +') --\n';
     }
   } catch(err) {
-    console.log('-- AUTH MODULE DISABLED : '+ err +' --\n\r');
+    STARTUP_MSG = STARTUP_MSG + '\n'+'-- AUTH MODULE DISABLED : '+ err +' --\n';
     cfg.SENZING_WEB_SERVER_BASIC_AUTH = false;
   }
 }
@@ -98,12 +102,129 @@ const authRes = (req, res, next) => {
     adminToken: encodedToken
   });
 };
+
+if(adminAuth.authConfig) {
+  app.get('/conf/auth', (req, res, next) => {
+    res.status(200).json( adminAuth.authConfig );
+  });
+  app.get('/conf/auth/admin', (req, res, next) => {
+    res.status(200).json( adminAuth.authConfig.admin );
+  });
+  app.get('/conf/auth/operator', (req, res, next) => {
+    res.status(200).json( adminAuth.authConfig.operator );
+  });
+
+  if(adminAuth.authConfig.admin && adminAuth.authConfig.admin.mode === 'SSO' || adminAuth.authConfig.admin.mode === 'EXTERNAL') {
+    const ssoResForceTrue = (req, res, next) => {
+      res.status(200).json({
+        authorized: true,
+      });
+    };
+    const ssoResForceFalse = (req, res, next) => {
+      res.status(401).json({
+        authorized: false,
+      });
+    };
+    // dunno if this should be a reverse proxy req or not
+    // especially if the SSO uses cookies etc
+    app.get('/sso/admin/status', ssoResForceTrue);
+    app.get('/sso/admin/login', (req, res, next) => {
+      res.sendFile(path.join(__dirname+'/sso-login.html'));
+    });
+    //STARTUP_MSG = STARTUP_MSG + '\n'+'';
+    STARTUP_MSG = STARTUP_MSG + '\n'+'---------------------';
+    STARTUP_MSG = STARTUP_MSG + '\n'+'--- Auth SETTINGS ---';
+    STARTUP_MSG = STARTUP_MSG + '\n'+'';
+    //STARTUP_MSG = STARTUP_MSG + '\n'+'/admin area:';
+    STARTUP_MSG = STARTUP_MSG + '\n'+ JSON.stringify(adminAuth.authConfig, null, "  ");
+    STARTUP_MSG = STARTUP_MSG + '\n'+'';
+    //STARTUP_MSG = STARTUP_MSG + '\n'+'/ operators:';
+    //STARTUP_MSG = STARTUP_MSG + '\n'+ JSON.stringify(adminAuth.authConfig.admin, null, "  ");
+    STARTUP_MSG = STARTUP_MSG + '\n'+'---------------------';
+
+  } else if(adminAuth.authConfig.admin.mode === 'JWT' || adminAuth.authConfig.admin.mode === 'BUILT-IN') {
+    const jwtRes = (req, res, next) => {
+      const body = req.body;
+      const encodedToken = (body && body.adminToken) ? body.adminToken : req.query.adminToken;
+
+      res.status(200).json({
+        tokenIsValid: true,
+        adminToken: encodedToken
+      });
+    };
+    const jwtResForceTrue = (req, res, next) => {
+      res.status(200).json({
+        tokenIsValid: true,
+      });
+    };
+    /** admin endpoints */
+    app.post('/jwt/admin/status', adminAuth.auth.bind(auth), jwtRes);
+    app.post('/jwt/admin/login', adminAuth.login.bind(auth));
+    app.get('/jwt/admin/status', adminAuth.auth.bind(auth), jwtRes);
+    app.get('/jwt/admin/login', adminAuth.auth.bind(auth), jwtRes);
+    /** operator endpoints */
+    if(adminAuth.authConfig.operator && adminAuth.authConfig.operator.mode === 'JWT') {
+      // token auth for operators
+      app.post('/jwt/status', adminAuth.auth.bind(auth), jwtRes);
+      app.post('/jwt/login', adminAuth.login.bind(auth));
+      app.get('/jwt/status', adminAuth.auth.bind(auth), jwtRes);
+      app.get('/jwt/login', adminAuth.auth.bind(auth), jwtRes);
+    } else {
+      // always return true for operators
+      app.post('/jwt/status', jwtResForceTrue);
+      app.post('/jwt/login', jwtResForceTrue);
+      app.get('/jwt/status', jwtResForceTrue);
+      app.get('/jwt/login', jwtResForceTrue);
+    }
+
+    STARTUP_MSG = STARTUP_MSG + '\n'+'';
+    STARTUP_MSG = STARTUP_MSG + '\n'+'To access the /admin area you will need a Admin Token.';
+    STARTUP_MSG = STARTUP_MSG + '\n'+'Admin Tokens are generated from a randomly generated secret unless one is specified with the -adminSecret flag.';
+    STARTUP_MSG = STARTUP_MSG + '\n'+'';
+    STARTUP_MSG = STARTUP_MSG + '\n'+'---------------------';
+    STARTUP_MSG = STARTUP_MSG + '\n'+'';
+    STARTUP_MSG = STARTUP_MSG + '\n'+'ADMIN SECRET: ', adminAuth.secret;
+    STARTUP_MSG = STARTUP_MSG + '\n'+'ADMIN SEED:   ', adminAuth.seed;
+    STARTUP_MSG = STARTUP_MSG + '\n'+'';
+    STARTUP_MSG = STARTUP_MSG + '\n'+'ADMIN TOKEN:  ';
+    STARTUP_MSG = STARTUP_MSG + '\n'+adminAuth.token;
+    STARTUP_MSG = STARTUP_MSG + '\n'+'';
+    STARTUP_MSG = STARTUP_MSG + '\n'+'---------------------';
+    STARTUP_MSG = STARTUP_MSG + '\n'+'Copy and Paste the line above when prompted for the Admin Token in the admin area.';
+  } else {
+    // no auth
+    STARTUP_MSG = STARTUP_MSG + '\n'+'';
+    STARTUP_MSG = STARTUP_MSG + '\n'+'---------------------';
+    STARTUP_MSG = STARTUP_MSG + '\n'+'';
+    STARTUP_MSG = STARTUP_MSG + '\n'+'    CAUTION    ';
+    STARTUP_MSG = STARTUP_MSG + '\n'+'';
+    STARTUP_MSG = STARTUP_MSG + '\n'+'/admin path not protected via ';
+    STARTUP_MSG = STARTUP_MSG + '\n'+'authentication mechanism.';
+    STARTUP_MSG = STARTUP_MSG + '\n'+'';
+    STARTUP_MSG = STARTUP_MSG + '\n'+'To add built-in Token authentication for the /admin path '
+    STARTUP_MSG = STARTUP_MSG + '\n'+'set the \'SENZING_WEB_SERVER_ADMIN_AUTH_MODE="JWT"\' env variable ';
+    STARTUP_MSG = STARTUP_MSG + '\n'+'or the \'adminAuthMode="JWT"\' command line arg.'
+    STARTUP_MSG = STARTUP_MSG + '\n'+'';
+    STARTUP_MSG = STARTUP_MSG + '\n'+'To add an external authentication check configure your ';
+    STARTUP_MSG = STARTUP_MSG + '\n'+'proxy to resolve with a 401 or 403 header for ';
+    STARTUP_MSG = STARTUP_MSG + '\n'+'"/admin/auth/status" requests to this instance.';
+    STARTUP_MSG = STARTUP_MSG + '\n'+'Set the auth mode to SSO by setting \'SENZING_WEB_SERVER_ADMIN_AUTH_MODE="SSO"\'';
+    STARTUP_MSG = STARTUP_MSG + '\n'+'A failure can be redirected by setting "SENZING_WEB_SERVER_ADMIN_AUTH_REDIRECT="https://my-sso.my-domain.com/path-to/login""';
+    STARTUP_MSG = STARTUP_MSG + '\n'+'or via cmdline \'adminAuthRedirectUrl="https://my-sso.my-domain.com/path-to/login"\''
+
+    STARTUP_MSG = STARTUP_MSG + '\n'+'---------------------';
+    STARTUP_MSG = STARTUP_MSG + '\n'+'';
+  }
+}
+/*
 app.post('/jwt/login', adminAuth.login.bind(adminAuth));
 app.post('/jwt/auth', adminAuth.auth.bind(adminAuth), authRes);
 app.get('/jwt/auth', adminAuth.auth.bind(adminAuth), authRes);
 app.get('/jwt/protected', adminAuth.auth.bind(adminAuth), authRes);
 app.post('/admin/auth/jwt/auth', adminAuth.auth.bind(adminAuth), authRes);
 app.get('/admin/auth/jwt/auth', adminAuth.auth.bind(adminAuth), authRes);
+*/
+
 // SPA page
 app.use('*',function(req, res) {
     res.sendFile(path.join(__dirname + path.sep +'dist/entity-search-web-app/index.html'));
@@ -118,25 +239,16 @@ if( cfg.SENZING_WEB_SERVER_SSL_SUPPORT ){
     cert: fs.readFileSync(cfg.SENZING_WEB_SERVER_SSL_CERT_PATH)
   }
   ExpressSrvInstance = https.createServer(ssl_opts, app).listen(cfg.SENZING_WEB_SERVER_PORT)
-  console.log('\nSSL Express Server started on port '+ cfg.SENZING_WEB_SERVER_PORT);
-  console.log('\tKEY: ', cfg.SENZING_WEB_SERVER_SSL_KEY_PATH);
-  console.log('\tCERT: ', cfg.SENZING_WEB_SERVER_SSL_CERT_PATH);
+  STARTUP_MSG_POST = '\n'+'SSL Express Server started on port '+ cfg.SENZING_WEB_SERVER_PORT;
+  STARTUP_MSG_POST = STARTUP_MSG_POST + '\n'+'\tKEY: ', cfg.SENZING_WEB_SERVER_SSL_KEY_PATH;
+  STARTUP_MSG_POST = STARTUP_MSG_POST + '\n'+'\tCERT: ', cfg.SENZING_WEB_SERVER_SSL_CERT_PATH;
+  STARTUP_MSG_POST = STARTUP_MSG_POST + '\n'+'';
+  STARTUP_MSG = STARTUP_MSG_POST + STARTUP_MSG;
 } else {
   // http
   ExpressSrvInstance = app.listen(cfg.SENZING_WEB_SERVER_PORT);
-  console.log('Express Server started on port '+ cfg.SENZING_WEB_SERVER_PORT);
-  console.log('');
-  console.log('To access the /admin area you will need a Admin Token.');
-  console.log('Admin Tokens are generated from a randomly generated secret unless one is specified with the -adminSecret flag.');
-  console.log('');
-  console.log('---------------------');
-  console.log('');
-  console.log('ADMIN SECRET: ', adminAuth.secret);
-  console.log('ADMIN SEED:   ', adminAuth.seed);
-  console.log('');
-  console.log('ADMIN TOKEN:  ');
-  console.log(adminAuth.token);
-  console.log('');
-  console.log('---------------------');
-  console.log('');
+  STARTUP_MSG = '\n'+'Express Server started on port '+ cfg.SENZING_WEB_SERVER_PORT +'\n'+ STARTUP_MSG;
+
 }
+
+console.log( STARTUP_MSG );

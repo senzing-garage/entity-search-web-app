@@ -40,7 +40,7 @@
     }
   },
   "/config/auth": {
-    "target": "http://localhost:8000/config/auth/",
+    "target": "${d.SENZING_WEB_SERVER_ADMIN_AUTH_PATH}/conf/auth/",
     "secure": true,
     "logLevel": "debug",
     "pathRewrite": {

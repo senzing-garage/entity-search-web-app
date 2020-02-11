@@ -1,8 +1,8 @@
 {
   "admin": {
-    "mode": "JWT",
-    "checkUrl": "/admin/auth/jwt/status",
+    "mode": "SSO",
+    "checkUrl": "/admin/auth/sso/status",
     "redirectOnFailure": true,
-    "loginUrl": "/admin/login"
+    "loginUrl": "http://localhost:8080/sso/admin/login"
   }
 }
