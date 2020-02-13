@@ -1,0 +1,30 @@
+<h2 class="section-title" *ngIf="!currentError">Import Data from a file</h2>
+<h2 class="section-title" *ngIf="currentError">Error Encountered</h2>
+<p class="section-instructions">
+  To begin importing data please provide a file for analysis by clicking on the <b>Analyze File</b> button
+  below.
+</p>
+<p class="section-instructions">
+  The data should be in pre-mapped format using JSON property names or CSV column names as described by the <a href="https://senzing.zendesk.com/hc/en-us/articles/231925448-Generic-Entity-Specification" target="EntitySpec">Senzing Generic Entity Specification</a>.
+</p>
+<div class="error-msg" *ngIf="currentError">
+  <mat-icon aria-hidden="false" aria-label="Error!">error_outline</mat-icon>
+  {{ currentError.message}}
+</div>
+<br/>
+<admin-bulk-data-analysis *ngIf="analysis || result"></admin-bulk-data-analysis>
+<admin-bulk-data-load [showSummaries]="false"></admin-bulk-data-load>
+<!--<sz-bulk-data-load [showSummaries]="false"></sz-bulk-data-load>
+<sz-bulk-data-analysis></sz-bulk-data-analysis>
+-->
+<!-- start spinner overlay -->
+<div class="mat-background" *ngIf="analyzingFile || loadingFile">
+  <div class="spinner">
+      <div class="rect1"></div>
+      <div class="rect2"></div>
+      <div class="rect3"></div>
+      <div class="rect4"></div>
+      <div class="rect5"></div>
+  </div>
+</div>
+<!-- end spinner overlay -->

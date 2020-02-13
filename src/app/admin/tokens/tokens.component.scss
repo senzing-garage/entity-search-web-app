@@ -1,0 +1,30 @@
+@import '../../scss/_admin.scss';
+
+:host {
+  display: block;
+  label {
+    margin-right: 20px;
+  }
+  mat-form-field {
+    margin: 0 2em 0 2em;
+  }
+  .actions {
+    margin-top: 2em;
+  }
+  .mat-stroked-button {
+    margin-right: 2em;
+    &:last-child { margin-right: 0; }
+  }
+  .section-instructions {
+    margin-bottom: 2em;
+  }
+  .row {
+    display: block;
+    font-size: .8em;
+
+    label {
+      width: 115px;
+      display: inline-block;
+    }
+  }
+}

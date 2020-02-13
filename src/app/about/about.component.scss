@@ -4,6 +4,21 @@
   font-size: 11px;
   padding: 10px 4px 5px 8px;
 
+  .color-warning {
+    background-color: pink;
+  }
+
+  .admin-enabled-link {
+    cursor: pointer;
+    color: #f44336;
+    text-align: center;
+    width: 95%;
+    background-color: #9e9e9e;
+    height: 18px;
+    font-size: 14px;
+    line-height: 10px;
+  }
+
   .list-format {
     display: flex;
     flex-direction: row;

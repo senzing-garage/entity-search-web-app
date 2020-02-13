@@ -1,0 +1,17 @@
+<!-- start BulkDataLoadSummary -->
+<div class="general-stats-reflow">
+  <table class="stats-col">
+    <tr><th>Total Number of Records:</th><td>{{ result.recordCount }}</td></tr>
+    <tr><th>Number of Loaded Records:</th><td>{{ result.loadedRecordCount }}</td></tr>
+    <tr><th>Number of Failed Records:</th><td>{{ result.failedRecordCount }}</td></tr>
+    <tr><th>Number of Records Missing Data Sources:</th><td>{{ result.missingDataSourceCount }}</td></tr>
+    <tr><th>Number of Records Missing Entity Types:</th><td>{{ result.missingEntityTypeCount }}</td></tr>
+  </table>
+  <table class="stats-col">
+    <tr><th *ngIf="file && file.name">File Name:</th><td>{{ file.name }}</td></tr>
+    <tr><th *ngIf="file && file.size">File Size:</th><td>{{ getFileSize(file.size) }}</td></tr>
+    <tr><th>Character Encoding:</th><td>{{ result.characterEncoding }}</td></tr>
+    <tr><th>Media Type:</th><td>{{ result.mediaType }}</td></tr>
+  </table>
+</div>
+<!-- end BulkDataLoadSummary -->

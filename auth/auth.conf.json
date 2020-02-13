@@ -1,0 +1,8 @@
+{
+  "admin": {
+    "mode": "SSO",
+    "checkUrl": "/admin/auth/sso/status",
+    "redirectOnFailure": true,
+    "loginUrl": "http://localhost:8081/sso/admin/login"
+  }
+}

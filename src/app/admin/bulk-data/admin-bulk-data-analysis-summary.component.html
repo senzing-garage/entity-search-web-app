@@ -1,0 +1,16 @@
+<!-- start BulkDataAnalysisSummary -->
+<div class="general-stats-reflow">
+  <table class="stats-col">
+    <tr><th>Total Number of Records:</th><td>{{ analysis.recordCount }}</td></tr>
+    <tr><th>Number of Records with Data Source:</th><td>{{ analysis.recordsWithDataSourceCount }}</td></tr>
+    <tr><th>Number of Records with Record ID:</th><td>{{ analysis.recordsWithRecordIdCount }}</td></tr>
+    <tr><th>Number of Records with Entity Type:</th><td>{{ analysis.recordsWithEntityTypeCount }}</td></tr>
+  </table>
+  <table class="stats-col">
+    <tr><th *ngIf="file && file.name">File Name:</th><td>{{ file.name }}</td></tr>
+    <tr><th *ngIf="file && file.size">File Size:</th><td>{{ getFileSize(file.size) }}</td></tr>
+    <tr><th>Character Encoding:</th><td>{{ analysis.characterEncoding }}</td></tr>
+    <tr><th>Media Type:</th><td>{{ analysis.mediaType }}</td></tr>
+  </table>
+</div>
+<!-- end BulkDataAnalysisSummary -->

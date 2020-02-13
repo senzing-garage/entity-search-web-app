@@ -1,0 +1,47 @@
+<h2 class="section-title">
+  Data Sources
+  <mat-paginator [pageSizeOptions]="[10, 20, 50]" [pageSize]="10" showFirstLastButtons></mat-paginator>
+</h2>
+<!-- <div class="section-instructions">
+  <p>Please, Don-Bot… look into your hard drive, and open your mercy file! All I want is to be a monkey of moderate intelligence who wears a suit… that's why I'm transferring to business school!</p>
+  <p>A sexy mistake. Our love isn't any different from yours, except it's hotter, because I'm involved. I am Singing Wind, Chief of the Martians. That's not soon enough!</p>
+  <p>Soon enough. Yes, I saw. You were doing well, until everyone died. But I've never been to the moon! I'm sorry, guys. I never meant to hurt you. Just to destroy everything you ever believed in. Hey! I'm a porno-dealing monster, what do I care what you think?</p>
+  <p>Oh, I don't have time for this. I have to go and buy a single piece of fruit with a coupon and then return it, making people wait behind me while I complain. Bite my shiny metal ass. Look, everyone wants to be like Germany, but do we really have the pure strength of 'will'?</p>
+  <p>You won't have time for sleeping, soldier, not with all the bed making you'll be doing. Leela, Bender, we're going grave robbing. Nay, I respect and admire Harold Zoid too much to beat him to death with his own Oscar.</p>
+  <p>Look, last night was a mistake. Check it out, y'all. Everyone who was invited is here. No argument here. OK, if everyone's finished being stupid. For example, if you killed your grandfather, you'd cease to exist!</p>
+</div> -->
+<div>
+  <table mat-table matSort [dataSource]="datasource" class="mat-elevation-z8">
+    <!--- Note that these columns can be defined in any order.
+          The actual rendered columns are set as a property on the row definition" -->
+
+    <!-- Id Column -->
+    <ng-container matColumnDef="dataSourceId">
+      <th mat-header-cell *matHeaderCellDef class="header-cell"> Data Source Id</th>
+      <td mat-cell *matCellDef="let element"> {{element.dataSourceId}} </td>
+    </ng-container>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="dataSourceCode">
+      <th mat-header-cell *matHeaderCellDef> Name </th>
+      <td mat-cell *matCellDef="let element"> {{element.dataSourceCode}} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</div>
+<div class="form-group form-actions">
+  <button mat-stroked-button color="primary" class="btn btn-primary" type="button" (click)="openNewDataSourceDialog()">New Data Source</button>
+</div>
+<!-- start spinner overlay -->
+<div class="mat-background" *ngIf="loading">
+  <div class="spinner">
+      <div class="rect1"></div>
+      <div class="rect2"></div>
+      <div class="rect3"></div>
+      <div class="rect4"></div>
+      <div class="rect5"></div>
+  </div>
+</div>
+<!-- end spinner overlay -->

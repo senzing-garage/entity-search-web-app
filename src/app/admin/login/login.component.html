@@ -1,0 +1,15 @@
+<h2 class="section-title">Admin Token</h2>
+<div class="section-instructions">
+  Please provide the Admin Token that is provided during startup of the webapp server. This token is randomly generated on startup and can be found in the output of the webapp startup.
+</div>
+<div class="api-token-wrapper">
+  <h4 *ngIf="error">{{error}}</h4>
+  <form (ngSubmit)="submit()">
+    <div class="form-group col-3">
+      <textarea matInput type="text" name="adminToken" class="form-control admin-token-input" [(ngModel)]="adminToken"></textarea>
+    </div>
+    <div class="form-group col-3">
+      <button mat-stroked-button color="primary" class="btn btn-primary" type="submit">Login</button>
+    </div>
+  </form>
+</div>

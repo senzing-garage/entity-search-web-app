@@ -1,6 +1,6 @@
 /** core angular, material, and senzing modules */
 import { BrowserModule, Title } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, InjectionToken } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material.module';
@@ -17,10 +17,15 @@ import { StorageServiceModule } from 'ngx-webstorage-service';
 
 // local components and modules
 import { AppRoutingModule } from './app-routing.module';
+// import { AdminModule } from './admin/admin.module';
+import { AdminModule } from './admin/admin.module';
+
 import { SpinnerModule } from './common/spinner/spinner.module';
 import { EntitySearchService } from './services/entity-search.service';
 import { AboutInfoService } from './services/about.service';
 // components
+//import { AdminComponent } from './admin/admin.component';
+//import { AdminDataSourcesComponent } from './admin/datasources.component';
 import { AppComponent } from './app.component';
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { DetailComponent } from './detail/detail.component';
@@ -41,6 +46,7 @@ import { ServerErrorComponent } from './errors/server/server.component';
 import { UnknownErrorComponent } from './errors/uknown/uknown.component';
 import { ErrorPageComponent } from './common/error/error.component';
 
+// config factory for sdk(s)
 /**
 * Pull in api configuration(SzRestConfigurationParameters)
 * from: environments/environment
@@ -50,16 +56,10 @@ import { ErrorPageComponent } from './common/error/error.component';
 * ng serve -c docker
 */
 import { apiConfig, environment } from './../environments/environment';
-
-/**
- * create exportable config factory
- * for AOT compilation.
- *
- * @export
- */
-export function SzRestConfigurationFactory() {
-  return new SzRestConfiguration( (apiConfig ? apiConfig : undefined) );
-}
+import { SzRestConfigurationFactory } from './common/sdk-config.factory';
+import { AuthConfigFactory } from './common/auth-config.factory';
+import { AuthGuardService } from './services/ag.service';
+import { AdminAuthService } from './services/admin.service';
 
 @NgModule({
   declarations: [
@@ -85,6 +85,7 @@ export function SzRestConfigurationFactory() {
     FormsModule,
     OverlayModule,
     MaterialModule,
+    AdminModule,
     AppRoutingModule,
     LayoutModule,
     StorageServiceModule,
@@ -94,7 +95,19 @@ export function SzRestConfigurationFactory() {
     SpinnerModule,
     environment.test ? HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService, { delay: 100 }) : []
   ],
-  providers: [ EntitySearchService, UiService, PrefsManagerService, AboutInfoService, Title ],
+  providers: [
+    {
+      provide: 'authConfigProvider',
+      useFactory: AuthConfigFactory,
+    },
+    EntitySearchService,
+    AdminAuthService,
+    AuthGuardService,
+    UiService,
+    PrefsManagerService,
+    AboutInfoService,
+    Title
+  ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }

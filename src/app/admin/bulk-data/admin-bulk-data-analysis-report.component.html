@@ -1,0 +1,144 @@
+<!-- start BulkDataAnalysisReport -->
+<!-- <table *ngIf="analysis" class="data-source-mapping-plain">
+  <tr>
+    <th>Record Data Source</th>
+    <th>Number of Records</th>
+    <th>Records with Record ID</th>
+    <th>Map to Data Source</th>
+  </tr>
+  <tr *ngFor="let dsa of analysis.analysisByDataSource; let l = index;">
+    <td>{{ dsa.dataSource && dsa.dataSource.trim().length > 0 ? dsa.dataSource : '[NONE]' }}</td>
+    <td>{{ dsa.recordCount }}</td>
+    <td>{{ dsa.recordsWithRecordIdCount }}</td>
+    <td class="data-source-map">
+      <input type="text" placeholder="Choose a Data Source" #targetDS
+             [value]="dataSources.indexOf(dsa.dataSource) >= 0 ? dsa.dataSource : ''"
+             [attr.list]="'ds-name-'+l"
+             (change)="handleDataSourceChange(dsa.dataSource, targetDS.value)">
+      <datalist #dataSourceOptions [id]="'ds-name-'+l">
+        <option *ngFor="let dataSource of dataSources" [value]="dataSource" (click)="handleDataSourceChange(dsa.dataSource,  dataSource)">{{dataSource}}</option>
+      </datalist>
+      <span *ngIf="targetDS.value && (targetDS.value.trim().length > 0) && (dataSources.indexOf(targetDS.value) < 0)">new</span>
+    </td>
+  </tr>
+</table> -->
+<!-- start BulkDataAnalysisReport -->
+<table *ngIf="analysis && !currentError" mat-table [dataSource]="comboAnalysis" class="mat-table-full-width mat-elevation-z8">
+
+  <!--- Note that these columns can be defined in any order.
+        The actual rendered columns are set as a property on the row definition" -->
+  <!-- Id Column -->
+  <ng-container matColumnDef="dataSource">
+    <th mat-header-cell *matHeaderCellDef>Record Data Source</th>
+    <td mat-cell *matCellDef="let element"> {{ element.dataSource && element.dataSource.trim().length > 0 ? element.dataSource : '[NONE]' }}</td>
+  </ng-container>
+
+  <!-- number of records Column -->
+  <ng-container matColumnDef="recordCount">
+    <th mat-header-cell *matHeaderCellDef > Number of Records </th>
+    <td mat-cell *matCellDef="let element"> {{element.recordCount}} </td>
+  </ng-container>
+  <!-- Records with Record ID Column -->
+  <ng-container matColumnDef="recordsWithRecordIdCount">
+    <th mat-header-cell *matHeaderCellDef > Records with Record ID </th>
+    <td mat-cell *matCellDef="let element"> {{element.recordsWithRecordIdCount}} </td>
+  </ng-container>
+  <!-- Map to Data Source Column -->
+  <ng-container matColumnDef="dataSourceCode">
+    <th mat-header-cell *matHeaderCellDef > Map to Data Source </th>
+    <td mat-cell *matCellDef="let element">
+      <mat-form-field class="example-full-width">
+        <input
+        matInput
+        type="text" placeholder="Data Source to map to" #targetDS
+        [value]="element.dataSource"
+        [attr.list]="getDataSourceInputName(l)"
+        matBadgeOverlap="true"
+        (change)="handleDataSourceChange(element.dataSource, targetDS.value)">
+      </mat-form-field>
+      <datalist #dataSourceOptions [id]="getDataSourceInputName(l)">
+        <option *ngFor="let dataSource of dataSources" [value]="dataSource" (click)="handleDataSourceChange(element.dataSource,  dataSource)">{{dataSource}}</option>
+      </datalist>
+      <span class="mat-badge"
+      matBadge="new" matBadgeOverlap="false" matBadgeDescription="New Data Source"
+      matBadgePosition="after"
+      matBadgeSize="medium"
+      [matBadgeHidden]="!isNewDataDource( targetDS.value )"></span>
+    </td>
+  </ng-container>
+  <!-- Map to Entity Type Column -->
+  <ng-container matColumnDef="entityType">
+    <th mat-header-cell *matHeaderCellDef > Map to Entity Type </th>
+    <td mat-cell *matCellDef="let element">
+      <mat-form-field class="example-full-width">
+        <input
+        matInput
+        type="text" placeholder="Entity Type to map to" #targetET
+        [value]="defaultIfUndefined(element.entityType,'GENERIC')"
+        [attr.list]="getEntityTypeInputName(l)"
+        matBadgeOverlap="true"
+        (change)="handleEntityTypeChange(element.entityType, targetET.value)">
+      </mat-form-field>
+      <datalist #entityTypeOptions [id]="getEntityTypeInputName(l)">
+        <option *ngFor="let eType of entityTypes" [value]="eType" (click)="handleEntityTypeChange(element.entityType,  eType)">{{eType}}</option>
+      </datalist>
+      <span class="mat-badge"
+      matBadge="new" matBadgeOverlap="false" matBadgeDescription="New Data Source"
+      matBadgePosition="after"
+      matBadgeSize="medium"
+      [matBadgeHidden]="!isNewEntityType( targetET.value )"></span>
+    </td>
+  </ng-container>
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
+<!-- end BulkDataAnalysisReport (single ds, single etype) -->
+
+<!-- start entity type map table -->
+<table *ngIf="analysis && !currentError && isMoreThanOneEntityType" mat-table [dataSource]="analysis.analysisByEntityType" class="mat-table-full-width mat-elevation-z8">
+
+  <!--- Note that these columns can be defined in any order.
+        The actual rendered columns are set as a property on the row definition" -->
+  <!-- Id Column -->
+  <ng-container matColumnDef="entityType">
+    <th mat-header-cell *matHeaderCellDef>Record Entity Type</th>
+    <td mat-cell *matCellDef="let element"> {{ element.entityType && element.entityType.trim().length > 0 ? element.entityType : '[NONE]' }}</td>
+  </ng-container>
+
+  <!-- number of records Column -->
+  <ng-container matColumnDef="recordCount">
+    <th mat-header-cell *matHeaderCellDef > Number of Records </th>
+    <td mat-cell *matCellDef="let element"> {{element.recordCount}} </td>
+  </ng-container>
+  <!-- Records with Record ID Column -->
+  <ng-container matColumnDef="recordsWithRecordIdCount">
+    <th mat-header-cell *matHeaderCellDef > Records with Record ID </th>
+    <td mat-cell *matCellDef="let element"> {{element.recordsWithRecordIdCount}} </td>
+  </ng-container>
+  <!-- Map to Entity Type Column -->
+  <ng-container matColumnDef="entityTypeCode">
+    <th mat-header-cell *matHeaderCellDef > Map to Entity Type </th>
+    <td mat-cell *matCellDef="let element">
+      <mat-form-field class="example-full-width">
+        <input
+        matInput
+        type="text" placeholder="Entity Type to map to" #targetET
+        [value]="defaultIfUndefined(element.entityType,'GENERIC')"
+        [attr.list]="getEntityTypeInputName(l)"
+        matBadgeOverlap="true"
+        (change)="handleEntityTypeChange(element.entityType, targetET.value)">
+      </mat-form-field>
+      <datalist #entityTypeOptions [id]="getEntityTypeInputName(l)">
+        <option *ngFor="let eType of entityTypes" [value]="eType" (click)="handleEntityTypeChange(element.entityType,  eType)">{{eType}}</option>
+      </datalist>
+      <span class="mat-badge"
+      matBadge="new" matBadgeOverlap="false" matBadgeDescription="New Data Source"
+      matBadgePosition="after"
+      matBadgeSize="medium"
+      [matBadgeHidden]="!isNewEntityType( targetET.value )"></span>
+    </td>
+  </ng-container>
+  <tr mat-header-row *matHeaderRowDef="entityTypeColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: entityTypeColumns;"></tr>
+</table>
+<!-- end BulkDataAnalysisReport (single ds, single etype) -->

@@ -1,0 +1,86 @@
+<!-- start BulkDataLoadReport -->
+<!-- <table class="data-source-mapping" *ngIf="result">
+  <tr>
+    <th>Data Source</th>
+    <th>Number of Records</th>
+    <th>Number of Loaded Records</th>
+    <th>Number of Failed Records</th>
+  </tr>
+  <tr *ngFor="let dsa of result.resultsByDataSource; let l = index;">
+    <td>{{ dsa.dataSource && dsa.dataSource.trim().length > 0 ? dsa.dataSource : '[NONE]' }}</td>
+    <td>{{ dsa.recordCount }}</td>
+    <td>{{ dsa.loadedRecordCount }}</td>
+    <td>{{ dsa.failedRecordCount }}</td>
+  </tr>
+</table>-->
+<table *ngIf="result && result.resultsByDataSource.length > 0" mat-table [dataSource]="result.resultsByDataSource" class="mat-table-full-width mat-elevation-z8">
+  <!--- Note that these columns can be defined in any order.
+        The actual rendered columns are set as a property on the row definition" -->
+  <!-- Id Column -->
+  <ng-container matColumnDef="dataSource">
+    <th mat-header-cell *matHeaderCellDef>Data Source</th>
+    <td mat-cell *matCellDef="let element"> {{ element.dataSource && element.dataSource.trim().length > 0 ? element.dataSource : '[NONE]' }} </td>
+  </ng-container>
+  <!-- number of records Column -->
+  <ng-container matColumnDef="recordCount">
+    <th mat-header-cell *matHeaderCellDef > Number of Records </th>
+    <td mat-cell *matCellDef="let element"> {{element.recordCount}} </td>
+  </ng-container>
+  <!-- number of loaded records Column -->
+  <ng-container matColumnDef="loadedRecordCount">
+    <th mat-header-cell *matHeaderCellDef > Number of Loaded Records </th>
+    <td mat-cell *matCellDef="let element"> {{ element.loadedRecordCount }} </td>
+  </ng-container>
+  <!-- number of failed records Column -->
+  <ng-container matColumnDef="failedRecordCount">
+    <th mat-header-cell *matHeaderCellDef > Number of Failed Records </th>
+    <td mat-cell *matCellDef="let element"> {{element.failedRecordCount}} </td>
+  </ng-container>
+  <!-- number of incomplete records -->
+  <ng-container matColumnDef="incompleteRecordCount">
+    <th mat-header-cell *matHeaderCellDef > Number of Incomplete Records </th>
+    <td mat-cell *matCellDef="let element"> {{element.incompleteRecordCount}} </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns" ></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;" ></tr>
+</table>
+
+<div *ngIf="result && result.resultsByDataSource.length <= 0" class="mat-table-error mat-elevation-z8">
+  <table mat-table [dataSource]="result.resultsByDataSource" class="mat-table-full-width mat-elevation-z8">
+    <!--- Note that these columns can be defined in any order.
+          The actual rendered columns are set as a property on the row definition" -->
+    <!-- Id Column -->
+    <ng-container matColumnDef="dataSource">
+      <th mat-header-cell *matHeaderCellDef >Data Source</th>
+      <td mat-cell *matCellDef="let element"> {{ element.dataSource && element.dataSource.trim().length > 0 ? element.dataSource : '[NONE]' }}</td>
+    </ng-container>
+    <!-- number of records Column -->
+    <ng-container matColumnDef="recordCount">
+      <th mat-header-cell *matHeaderCellDef > Number of Records </th>
+      <td mat-cell *matCellDef="let element"> {{element.recordCount}} </td>
+    </ng-container>
+    <!-- number of records Column -->
+    <ng-container matColumnDef="loadedRecordCount">
+      <th mat-header-cell *matHeaderCellDef > Number of Loaded Records </th>
+      <td mat-cell *matCellDef="let element"> {{element.loadedRecordCount}} </td>
+    </ng-container>
+    <!-- Records with Record ID Column -->
+    <ng-container matColumnDef="failedRecordCount">
+      <th mat-header-cell *matHeaderCellDef > Number of Failed Records </th>
+      <td mat-cell *matCellDef="let element"> {{element.failedRecordCount}} </td>
+    </ng-container>
+    <!-- number of incomplete records -->
+    <ng-container matColumnDef="incompleteRecordCount">
+      <th mat-header-cell *matHeaderCellDef > Number of Incomplete Records </th>
+      <td mat-cell *matCellDef="let element"> {{element.incompleteRecordCount}} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns" ></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;" ></tr>
+  </table>
+  <div class="message">
+    No Results
+  </div>
+</div>
+<!--  end BulkDataLoadReport  -->

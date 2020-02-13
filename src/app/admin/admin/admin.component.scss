@@ -1,0 +1,57 @@
+:host {
+  .admin {
+    height: 100%;
+  }
+  mat-sidenav-container {
+    min-height: 100%;
+    overflow: unset;
+    background-color: #fff;
+    .mat-drawer-content {
+      padding: 0px 25px 30px 30px;
+      height: unset;
+    }
+  }
+  .navigation {
+    background-color: #f5f5f5;
+    width: 220px;
+    ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 1px 0 1px 0;
+      width: 219px;
+
+      li {
+        padding: 3px 10px;
+        text-align: left;
+        cursor: pointer;
+        background-color: #999;
+        color: #eee;
+        margin: 1px 0px 2px;
+        font-size: 14px;
+
+        &:focus {outline:0;}
+
+        &:first-child {
+          margin-top: 0;
+        }
+
+        &:hover, &.active {
+          color: #868686;
+          /* font-weight: bold; */
+          background-color: #ffa20761;
+        }
+
+      }
+    }
+  }
+  .section-title {
+    margin-top: 0;
+  }
+  .section-instructions {
+    font-size: 0.8em;
+  }
+  .container {
+    margin: 0;
+    padding: 0;
+  }
+}

@@ -1,0 +1,19 @@
+@import '../../scss/_admin.scss';
+
+admin-bulk-data-analysis {
+  display: block;
+  margin-bottom: 40px;
+}
+
+.error-msg {
+  color: red;
+  font-size: 25px;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: #f5f5f5;
+}
+
+.mat-icon {
+  font-weight: 800;
+  font-size: 23px;
+}

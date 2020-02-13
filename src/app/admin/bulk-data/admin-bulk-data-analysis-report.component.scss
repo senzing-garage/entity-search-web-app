@@ -1,0 +1,27 @@
+@import '../../scss/_admin.scss';
+
+:host {
+  display: block;
+  width: 100%;
+
+  /* angular material data table */
+  .mat-table-full-width {
+    width: 100%;
+  }
+  .mat-badge {
+    display: inline-block;
+    width: 25px;
+
+    .mat-badge-content {
+      width: 25px;
+      height: 23px;
+      border: 1px solid #e0a800;
+      font-size: 10px;
+      color: #4a4a4a;
+      box-shadow: 1px 1px 5px #888888;
+    }
+    .mat-badge-active {
+      /*border: 2px dotted red;*/
+    }
+  }
+}

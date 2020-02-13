@@ -1,0 +1,19 @@
+<div class="admin">
+  <mat-sidenav-container>
+    <mat-sidenav opened mode="side" class="navigation">
+      <ul class="navigation">
+        <!-- <li routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</li> -->
+        <li routerLink="datasources" routerLinkActive="active">Data Sources</li>
+        <li routerLink="load" routerLinkActive="active">Load Data</li>
+        <!-- <li routerLink="tokens" routerLinkActive="active">API Configuration</li> -->
+        <li routerLink="server/info" routerLinkActive="active">Version Info</li>
+        <li routerLink="license/info" routerLinkActive="active">License Info</li>
+      </ul>
+    </mat-sidenav>
+    <mat-sidenav-content>
+      <div class="container">
+        <router-outlet></router-outlet>
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

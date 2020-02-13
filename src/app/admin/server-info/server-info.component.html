@@ -1,0 +1,32 @@
+<h2 class="section-title">Server Information</h2>
+<div class="section-instructions">
+  When filing bug reports or feature requests please include the information below for debugging purposes.
+</div>
+<div class="info-wrapper">
+  <div class="list-format">
+    <div class="row key">Web App Version: </div>
+    <div class="row value">{{ aboutService.appVersion }}</div>
+    <div class="row key">API Server Version: </div>
+    <div class="row value">{{ aboutService.apiServerVersion }}</div>
+    <div class="row key">REST API Version: </div>
+    <div class="row value">{{ aboutService.restApiVersion }}</div>
+    <div *ngIf="aboutService.restApiClientVersion" class="row key">REST Client: </div>
+    <div *ngIf="aboutService.restApiClientVersion" class="row value">{{ aboutService.restApiClientVersion }}</div>
+    <div *ngIf="aboutService.sdkComponentsVersion" class="row key">SDK Components: </div>
+    <div *ngIf="aboutService.sdkComponentsVersion" class="row value">{{ aboutService.sdkComponentsVersion }}</div>
+    <div *ngIf="aboutService.graphComponentsVersion" class="row key">Graph Components: </div>
+    <div *ngIf="aboutService.graphComponentsVersion" class="row value">{{ aboutService.graphComponentsVersion }}</div>
+    <hr>
+    <div class="row key">Admin Mode:</div>
+    <div class="row value" *ngIf="!aboutService.isAdminEnabled">Disabled</div>
+    <div class="row value" *ngIf="aboutService.isAdminEnabled">
+      <button mat-button color="warn" class="admin-enabled-link blinking" routerLink="/admin">Enabled</button>
+    </div>
+    <div class="row key">NAPI Version: </div>
+    <div class="row value">{{ aboutService.nativeApiVersion }}</div>
+    <div class="row key">NAPI Build </div>
+    <div class="row value"># {{ aboutService.nativeApiBuildNumber }}</div>
+    <div class="row key native-group">NAPI Build Date: </div>
+    <div class="row value">{{ aboutService.nativeApiBuildDate }}</div>
+  </div>
+</div>

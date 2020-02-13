@@ -1,0 +1,14 @@
+@import '../../scss/_admin.scss';
+
+:host {
+  label.tokenLabel {
+    display: block;
+  }
+  textarea.admin-token-input {
+    width: 60%;
+    height: 60px;
+    margin: 20px 0 20px 0;
+    border: 1px solid #999;
+    font-size: 12px;
+  }
+}

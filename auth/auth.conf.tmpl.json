@@ -1,0 +1,10 @@
+{
+  "admin": {
+    "mode": false,
+    "redirectOnFailure": false
+  },
+  "operator": {
+    "mode": false,
+    "redirectOnFailure": false
+  }
+}

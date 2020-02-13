@@ -1,10 +1,50 @@
 {
-    "/api/*": {
-      "target": "http://localhost:8080",
-      "secure": false,
-      "logLevel": "debug",
-      "pathRewrite": {
-        "^/api": ""
-      }
+  "/api/*": {
+    "target": "http://americium.local:8084",
+    "secure": false,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/api": ""
+    }
+  },
+  "/admin/auth/jwt/*": {
+    "target": "http://localhost:8080/jwt/",
+    "secure": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/admin/auth/jwt": "/admin"
+    }
+  },
+  "/admin/auth/sso/*": {
+    "target": "http://localhost:8080/sso/",
+    "secure": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/admin/auth/sso": "/admin"
+    }
+  },
+  "/auth/jwt/*": {
+    "target": "http://localhost:8080/jwt/",
+    "secure": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/auth/jwt": ""
+    }
+  },
+  "/auth/sso/*": {
+    "target": "http://localhost:8080/sso/",
+    "secure": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/auth/sso": ""
+    }
+  },
+  "/config/auth": {
+    "target": "http://localhost:8080/conf/auth/",
+    "secure": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/config/auth": ""
     }
   }
+}

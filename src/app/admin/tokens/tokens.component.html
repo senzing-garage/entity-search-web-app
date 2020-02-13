@@ -1,0 +1,61 @@
+<h2 class="section-title" *ngIf="!hideTitle">Proxy Configuration</h2>
+<p class="section-instructions" *ngIf="!hideInstructions">
+  By default all client api requests are made to the webserver and then forwarded to the
+  rest server instance. By modifying the properties below things like whether or not SSL or
+  OAuth headers are sent to the rest server when specified in the client configuration can be configured.
+</p>
+
+
+<h2 class="section-title" *ngIf="!hideTitle">Client Configuration</h2>
+<p class="section-instructions" *ngIf="!hideInstructions">
+  These are parameters that the webapp uses to connect to the senzing rest api server. In most cases
+  the defaults should be correct. Some installations may require the api server use authentication, access tokens, oauth etc. for security purposes.
+  Docker instances usually use container-to-container communication and so the client requests are made to the webapp itself and fetched from the other container.
+</p>
+
+<div class="row">
+  <label for="username">User Name: </label>
+  <mat-form-field class="example-full-width">
+    <input type="text" id="username"
+      matInput
+      (change)="onConfigValueChange('username', $event)"
+      [value]="getUndefinedAsEmpty(this.apiConfiguration.username)">
+  </mat-form-field>
+</div>
+<div class="row">
+  <label for="password">Password: </label>
+  <mat-form-field class="example-full-width">
+    <input type="password" id="password"
+      matInput
+      [value]="getUndefinedAsEmpty(this.apiConfiguration.password)">
+  </mat-form-field>
+</div>
+<div class="row">
+  <label for="apiKeys">API Keys: </label>
+  <mat-form-field class="example-full-width">
+    <input type="text" id="apiKeys"
+      matInput
+      [value]="getUndefinedAsEmpty(this.apiConfiguration.apiKeys)">
+  </mat-form-field>
+</div>
+<div class="row">
+  <label for="basePath">Base Path: </label>
+  <mat-form-field class="example-full-width">
+    <input type="text" id="basePath"
+      matInput
+      [value]="getUndefinedAsEmpty(this.apiConfiguration.basePath)">
+  </mat-form-field>
+</div>
+<div class="row">
+  <label for="accessToken">Access Token: </label>
+  <mat-form-field class="example-full-width">
+    <input type="text" id="accessToken"
+      matInput
+      placeholder="eg: 324FSDFGF324L67LK"
+      [value]="getUndefinedAsEmpty(this.apiToken)" (change)="onTokenValueChange($event)">
+  </mat-form-field>
+</div>
+<div class="row actions">
+  <button mat-stroked-button [disabled]="isSaveEnabled" color="primary" (click)="verifyConfig()">Verify</button>
+  <button mat-stroked-button [disabled]="!isSaveEnabled" color="primary" (click)="saveConfig()">Save Persistently</button>
+</div>

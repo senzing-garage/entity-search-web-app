@@ -1,0 +1,33 @@
+@import '../../scss/_admin.scss';
+
+:host {
+  display: block;
+
+  table.general-stats {
+    margin: 20px 0px 20px 20px;
+  }
+
+  table.general-stats th {
+    text-align: right;
+    width: 300px;
+    color: #777;
+  }
+
+  table.general-stats td {
+    padding-left: 20px;
+  }
+  .general-stats-reflow {
+    display: flex;
+    margin-bottom: 22px;
+
+    .stats-col {
+      width: 40%;
+      &:first-child {
+        margin-right: 50px;
+      }
+      th:first-child {
+        text-align: left;
+      }
+    }
+  }
+}
