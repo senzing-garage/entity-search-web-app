@@ -1,11 +1,8 @@
 name: Cron Schedule 3 hr Test Entity Search Web App Build on Debian
 
 on:
-  push:
-    branches:
-      - issue-92.bryan-nice
-#  schedule:
-#    - cron: '0 */3 * * *'
+  schedule:
+    - cron: '0 */3 * * *'
 
 jobs:
   cronBuildEntitySearchWebApp:
