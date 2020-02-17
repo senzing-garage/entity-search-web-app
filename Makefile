@@ -5,6 +5,7 @@ GIT_VERSION := $(shell git describe --always --tags --long --dirty | sed -e 's/\
 
 # Docker variables
 
+BASE_IMAGE ?= node:12.2.0
 DOCKER_IMAGE_TAG ?= $(GIT_REPOSITORY_NAME):$(GIT_VERSION)
 DOCKER_IMAGE_NAME := senzing/entity-search-web-app
 
@@ -22,6 +23,7 @@ default: help
 .PHONY: docker-build
 docker-build: docker-rmi-for-build
 	docker build \
+		--build-arg BASE_IMAGE=$(BASE_IMAGE) \
 	    --tag $(DOCKER_IMAGE_NAME) \
 		--tag $(DOCKER_IMAGE_NAME):$(GIT_VERSION) \
 		.
