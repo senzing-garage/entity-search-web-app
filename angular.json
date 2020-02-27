@@ -118,7 +118,7 @@
           "options": {
             "browserTarget": "entity-search-web-app:build",
             "proxyConfig": "proxy.conf.json",
-            "port": 4300
+            "port": 4200
           },
           "configurations": {
             "production": {

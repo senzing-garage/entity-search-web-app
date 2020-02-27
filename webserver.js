@@ -10,6 +10,8 @@ const auth = require('express-basic-auth');
 const path = require('path');
 const fs = require('fs');
 const url = require('url');
+const csp = require(`helmet-csp`);
+const winston = require(`winston`);
 const AuthModule = require('./auth/auth');
 const AdminAuth = AuthModule.module;
 
@@ -20,9 +22,6 @@ const app = express();
 // auth module
 const authOptions = AuthModule.getOptionsFromInput();
 const adminAuth = new AdminAuth( authOptions );
-
-//const adminAuthOptions = AuthModule.getOptionsFromInput();
-//const adminAuth = new AdminAuth( adminAuthOptions );
 let STARTUP_MSG = '';
 
 // api config
@@ -38,6 +37,23 @@ var cfg = {
   SENZING_WEB_SERVER_BASIC_AUTH_JSON: (env.SENZING_WEB_SERVER_BASIC_AUTH_JSON ? env.SENZING_WEB_SERVER_BASIC_AUTH_JSON : false),
   SENZING_WEB_SERVER_BASIC_AUTH: (this.SENZING_WEB_SERVER_BASIC_AUTH_JSON ? true : false),
 }
+
+// security options and middleware
+var CORS_ORIGINS = JSON.parse( fs.readFileSync(__dirname + path.sep + 'auth'+ path.sep +'cors.conf.json', 'utf8') );
+var corsOptions = {
+  origin: function (origin, callback) {
+    if (CORS_ORIGINS.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
+  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+  optionsFailureStatus: 401
+}
+var cspOptions = require('./auth/csp.conf');
+app.options('*', cors(corsOptions)) // include before other routes
+app.use(csp(cspOptions));           // csp options
 
 // ------------------------------------------------------------------------
 
