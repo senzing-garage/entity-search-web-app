@@ -24,8 +24,12 @@ var cspOptions = require('./auth/csp.conf');
 
 // server(s)
 const app = express();
-app.options('*', cors(corsOptions)) // include before other routes
-app.use(csp(cspOptions)); //csp options
+if(Auth.useCors) {
+  app.options('*', cors(corsOptions)) // include before other routes
+}
+if(Auth.useCsp) {
+  app.use(csp(cspOptions)); //csp options
+}
 app.use(bodyParser.json());
 
 // port to run the auth server on

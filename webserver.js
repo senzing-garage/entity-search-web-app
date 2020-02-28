@@ -39,6 +39,7 @@ var cfg = {
 }
 
 // security options and middleware
+/*
 var CORS_ORIGINS = JSON.parse( fs.readFileSync(__dirname + path.sep + 'auth'+ path.sep +'cors.conf.json', 'utf8') );
 var corsOptions = {
   origin: function (origin, callback) {
@@ -50,10 +51,17 @@ var corsOptions = {
   },
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
   optionsFailureStatus: 401
+}*/
+const corsOptions = JSON.parse( fs.readFileSync(__dirname + path.sep + 'auth'+ path.sep +'cors.conf.json', 'utf8') );
+const cspOptions = require('./auth/csp.conf');
+if(adminAuth.useCors) {
+  STARTUP_MSG = STARTUP_MSG + '\n'+'-- CORS ENABLED --';
+  app.options('*', cors(corsOptions)) // include before other routes
 }
-var cspOptions = require('./auth/csp.conf');
-app.options('*', cors(corsOptions)) // include before other routes
-app.use(csp(cspOptions));           // csp options
+if(adminAuth.useCsp) {
+  STARTUP_MSG = STARTUP_MSG + '\n'+'-- CSP ENABLED --';
+  app.use(csp(cspOptions)); //csp options
+}
 
 // ------------------------------------------------------------------------
 
@@ -174,17 +182,25 @@ if(adminAuth.authConfig) {
       });
     };
     /** admin endpoints */
-    app.post('/jwt/admin/status', adminAuth.auth.bind(auth), jwtRes);
-    app.post('/jwt/admin/login', adminAuth.login.bind(auth));
-    app.get('/jwt/admin/status', adminAuth.auth.bind(auth), jwtRes);
-    app.get('/jwt/admin/login', adminAuth.auth.bind(auth), jwtRes);
+    /*
+    app.post('/jwt/admin/status', jwtResForceTrue);
+    app.post('/jwt/admin/login', jwtResForceTrue);
+    app.get('/jwt/admin/status', jwtResForceTrue);
+    app.get('/jwt/admin/login', jwtResForceTrue);
+    */
+
+    app.post('/jwt/admin/status', adminAuth.auth.bind(adminAuth), jwtRes);
+    app.post('/jwt/admin/login', adminAuth.login.bind(adminAuth));
+    app.get('/jwt/admin/status', adminAuth.auth.bind(adminAuth), jwtRes);
+    app.get('/jwt/admin/login', adminAuth.auth.bind(adminAuth), jwtRes);
+
     /** operator endpoints */
     if(adminAuth.authConfig.operator && adminAuth.authConfig.operator.mode === 'JWT') {
       // token auth for operators
-      app.post('/jwt/status', adminAuth.auth.bind(auth), jwtRes);
-      app.post('/jwt/login', adminAuth.login.bind(auth));
-      app.get('/jwt/status', adminAuth.auth.bind(auth), jwtRes);
-      app.get('/jwt/login', adminAuth.auth.bind(auth), jwtRes);
+      app.post('/jwt/status', adminAuth.auth.bind(adminAuth), jwtRes);
+      app.post('/jwt/login', adminAuth.login.bind(adminAuth));
+      app.get('/jwt/status', adminAuth.auth.bind(adminAuth), jwtRes);
+      app.get('/jwt/login', adminAuth.auth.bind(adminAuth), jwtRes);
     } else {
       // always return true for operators
       app.post('/jwt/status', jwtResForceTrue);
@@ -199,11 +215,11 @@ if(adminAuth.authConfig) {
     STARTUP_MSG = STARTUP_MSG + '\n'+'';
     STARTUP_MSG = STARTUP_MSG + '\n'+'---------------------';
     STARTUP_MSG = STARTUP_MSG + '\n'+'';
-    STARTUP_MSG = STARTUP_MSG + '\n'+'ADMIN SECRET: ', adminAuth.secret;
-    STARTUP_MSG = STARTUP_MSG + '\n'+'ADMIN SEED:   ', adminAuth.seed;
+    STARTUP_MSG = STARTUP_MSG + '\n'+'ADMIN SECRET: '+ adminAuth.TOKEN_SECRET;
+    STARTUP_MSG = STARTUP_MSG + '\n'+'ADMIN SEED:   '+ adminAuth.ADMINTOKEN;
     STARTUP_MSG = STARTUP_MSG + '\n'+'';
     STARTUP_MSG = STARTUP_MSG + '\n'+'ADMIN TOKEN:  ';
-    STARTUP_MSG = STARTUP_MSG + '\n'+adminAuth.token;
+    STARTUP_MSG = STARTUP_MSG + '\n'+ adminAuth.token;
     STARTUP_MSG = STARTUP_MSG + '\n'+'';
     STARTUP_MSG = STARTUP_MSG + '\n'+'---------------------';
     STARTUP_MSG = STARTUP_MSG + '\n'+'Copy and Paste the line above when prompted for the Admin Token in the admin area.';
