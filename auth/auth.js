@@ -168,14 +168,19 @@ function createCorsConfigFromInput( dirToWriteTo ) {
   } else {
     // shrug, allow everything?
     // delete the cors.conf.json file
-    if(fs.existsSync(__dirname + path.sep + 'cors.conf.json')) {
-      fs.unlink(__dirname + path.sep + 'cors.conf.json', function(err) {
-        if(!err) {
-          // successfully removed file
-        } else {
-          console.log('could not remove cors.conf.json',err);
-        }
-      });
+    console.log('cors conf exists? ');
+    try {
+      if(fs.existsSync(__dirname + path.sep + 'cors.conf.json')) {
+        fs.unlink(__dirname + path.sep + 'cors.conf.json', function(err) {
+          if(!err) {
+            // successfully removed file
+          } else {
+            console.log('could not remove cors.conf.json',err);
+          }
+        });
+      }
+    } catch(err){
+      console.log('no cors conf to remove..');
     }
   }
 }
