@@ -1,7 +1,7 @@
 {
   "/api/*": {
     "target": "${d.SENZING_API_SERVER_URL}",
-    "secure": false,
+    "secure": true,
     "logLevel": "debug",
     "pathRewrite": {
       "^/api": ""
@@ -45,6 +45,15 @@
     "logLevel": "debug",
     "pathRewrite": {
       "^/config/auth": ""
+    }
+  },
+  "/cors/test": {
+    "target": "${d.SENZING_WEB_SERVER_ADMIN_AUTH_PATH}/cors/test/",
+    "secure": true,
+    "logLevel": "debug",
+    "withCredentials": true,
+    "pathRewrite": {
+      "^/cors/test": ""
     }
   }
 }
