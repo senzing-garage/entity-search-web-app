@@ -50,8 +50,8 @@ if(adminAuth.useCsp) {
   app.use(csp(cspOptions)); //csp options
 }
 // cors test endpoint
-app.get('/cors/test', cors(corsOptions), (req, res, next) => {
-  res.status(200).json( auth.authConfig );
+app.get('/cors/test', (req, res, next) => {
+  res.status(200).json( adminAuth.authConfig );
 });
 app.post(`/api/csp/report`, (req, res) => {
   winston.warn(`CSP header violation`, req.body[`csp-report`])
