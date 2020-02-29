@@ -39,19 +39,6 @@ var cfg = {
 }
 
 // security options and middleware
-/*
-var CORS_ORIGINS = JSON.parse( fs.readFileSync(__dirname + path.sep + 'auth'+ path.sep +'cors.conf.json', 'utf8') );
-var corsOptions = {
-  origin: function (origin, callback) {
-    if (CORS_ORIGINS.indexOf(origin) !== -1) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
-  },
-  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
-  optionsFailureStatus: 401
-}*/
 if(adminAuth.useCors) {
   const corsOptions = JSON.parse( fs.readFileSync(__dirname + path.sep + 'auth'+ path.sep +'cors.conf.json', 'utf8') );
   STARTUP_MSG = STARTUP_MSG + '\n'+'-- CORS ENABLED --';
@@ -62,6 +49,14 @@ if(adminAuth.useCsp) {
   STARTUP_MSG = STARTUP_MSG + '\n'+'-- CSP ENABLED --';
   app.use(csp(cspOptions)); //csp options
 }
+// cors test endpoint
+app.get('/cors/test', cors(corsOptions), (req, res, next) => {
+  res.status(200).json( auth.authConfig );
+});
+app.post(`/api/csp/report`, (req, res) => {
+  winston.warn(`CSP header violation`, req.body[`csp-report`])
+  res.status(204).end();
+});
 
 // ------------------------------------------------------------------------
 
