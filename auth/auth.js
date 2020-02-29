@@ -188,10 +188,19 @@ function createCorsConfigFromInput( dirToWriteTo ) {
 /** Manages admin area auth token state */
 class AuthModule {
   get useCsp() {
-    return fs.existsSync(__dirname + path.sep + 'csp.conf.js');
+    try{
+      return fs.existsSync(__dirname + path.sep + 'csp.conf.js');
+    } catch(err){
+      return false;
+    }
   }
   get useCors() {
-    return fs.existsSync(__dirname + path.sep + 'cors.conf.json');
+    console.log('useCors? ');
+    try{
+      return fs.existsSync(__dirname + path.sep + 'cors.conf.json');
+    } catch(err) {
+      return false;
+    }
   }
   get corsAllowedOrigin() {
     if( this.useCors ){

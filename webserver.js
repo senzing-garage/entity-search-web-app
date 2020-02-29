@@ -52,13 +52,13 @@ var corsOptions = {
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
   optionsFailureStatus: 401
 }*/
-const corsOptions = JSON.parse( fs.readFileSync(__dirname + path.sep + 'auth'+ path.sep +'cors.conf.json', 'utf8') );
-const cspOptions = require('./auth/csp.conf');
 if(adminAuth.useCors) {
+  const corsOptions = JSON.parse( fs.readFileSync(__dirname + path.sep + 'auth'+ path.sep +'cors.conf.json', 'utf8') );
   STARTUP_MSG = STARTUP_MSG + '\n'+'-- CORS ENABLED --';
   app.options('*', cors(corsOptions)) // include before other routes
 }
 if(adminAuth.useCsp) {
+  const cspOptions = require('./auth/csp.conf');
   STARTUP_MSG = STARTUP_MSG + '\n'+'-- CSP ENABLED --';
   app.use(csp(cspOptions)); //csp options
 }
