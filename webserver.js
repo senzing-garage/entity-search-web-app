@@ -103,6 +103,14 @@ var proxyCfg = require('./proxy.conf.json');
 // set up proxy tunnels
 for(proxyPath in proxyCfg){
   let proxyTargetOptions = proxyCfg[proxyPath];
+  // add custom error handler to prevent XSS/Injection in to error response
+  function onError(err, req, res) {
+    res.writeHead(500, {
+      'Content-Type': 'text/plain'
+    });
+    res.end('proxy encountered an error.');
+  }
+  proxyTargetOptions.onError = onError;
   //console.log('Proxy CFG: '+ proxyPath);
   //console.log(proxyTargetOptions);
   app.use(proxyPath, apiProxy(proxyTargetOptions));
