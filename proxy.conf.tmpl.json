@@ -2,7 +2,7 @@
   "/api/*": {
     "target": "${d.SENZING_API_SERVER_URL}",
     "secure": true,
-    "logLevel": "debug",
+    "logLevel": "error",
     "pathRewrite": {
       "^/api": ""
     }
@@ -10,7 +10,7 @@
   "/admin/auth/jwt/*": {
     "target": "${d.SENZING_WEB_SERVER_ADMIN_AUTH_PATH}",
     "secure": true,
-    "logLevel": "debug",
+    "logLevel": "error",
     "pathRewrite": {
       "^/admin/auth/jwt": "/jwt/admin"
     }
@@ -18,7 +18,7 @@
   "/admin/auth/sso/*": {
     "target": "${d.SENZING_WEB_SERVER_ADMIN_AUTH_PATH}",
     "secure": true,
-    "logLevel": "debug",
+    "logLevel": "error",
     "pathRewrite": {
       "^/admin/auth/sso": "/sso/admin"
     }
@@ -26,7 +26,7 @@
   "/auth/jwt/*": {
     "target": "${d.SENZING_WEB_SERVER_ADMIN_AUTH_PATH}/jwt/",
     "secure": true,
-    "logLevel": "debug",
+    "logLevel": "error",
     "pathRewrite": {
       "^/auth/jwt": "/jwt"
     }
@@ -34,7 +34,7 @@
   "/auth/sso/*": {
     "target": "${d.SENZING_WEB_SERVER_ADMIN_AUTH_PATH}/sso/",
     "secure": true,
-    "logLevel": "debug",
+    "logLevel": "error",
     "pathRewrite": {
       "^/auth/sso": "/sso"
     }
@@ -42,7 +42,7 @@
   "/config/auth": {
     "target": "${d.SENZING_WEB_SERVER_ADMIN_AUTH_PATH}/conf/auth/",
     "secure": true,
-    "logLevel": "debug",
+    "logLevel": "error",
     "pathRewrite": {
       "^/config/auth": ""
     }
@@ -50,7 +50,7 @@
   "/cors/test": {
     "target": "${d.SENZING_WEB_SERVER_ADMIN_AUTH_PATH}/cors/test/",
     "secure": true,
-    "logLevel": "debug",
+    "logLevel": "error",
     "withCredentials": true,
     "pathRewrite": {
       "^/cors/test": ""

@@ -168,7 +168,6 @@ function createCorsConfigFromInput( dirToWriteTo ) {
   } else {
     // shrug, allow everything?
     // delete the cors.conf.json file
-    console.log('cors conf exists? ');
     try {
       if(fs.existsSync(__dirname + path.sep + 'cors.conf.json')) {
         fs.unlink(__dirname + path.sep + 'cors.conf.json', function(err) {
@@ -195,7 +194,6 @@ class AuthModule {
     }
   }
   get useCors() {
-    console.log('useCors? ');
     try{
       return fs.existsSync(__dirname + path.sep + 'cors.conf.json');
     } catch(err) {
