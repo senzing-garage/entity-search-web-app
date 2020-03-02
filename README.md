@@ -28,41 +28,41 @@ It's not meant to be followed along by a developer. Rather it serves as both an 
 
 ### Contents
 
-- [Entity Search Web App](#entity-search-web-app)
-  - [Overview](#overview)
-    - [Related artifacts](#related-artifacts)
-    - [Contents](#contents)
-    - [Legend](#legend)
-  - [Preparation](#preparation)
-    - [Prerequisite software](#prerequisite-software)
-    - [Pull latest docker images](#pull-latest-docker-images)
-    - [Clone repository](#clone-repository)
-    - [Initialize Senzing](#initialize-senzing)
-    - [Configuration](#configuration)
-    - [Volumes](#volumes)
-  - [Using docker-compose](#using-docker-compose)
-  - [Using docker](#using-docker)
-    - [Docker network](#docker-network)
-    - [Run](#run)
-    - [Using SSL](#using-ssl)
-      - [Prerequisites](#prerequisites)
-      - [Self-Signed Certificates](#self-signed-certificates)
-      - [Setting up SSL using Docker Stack](#setting-up-ssl-using-docker-stack)
-    - [Admin Area](#admin-area)
-      - [Admin Area Configuration](#admin-area-configuration)
-    - [Security Safeguards](#security-safeguards)
-      - [CORS](#cors)
-      - [CSP (Content Security Policy)](#csp-content-security-policy)
-    - [Air Gapped Environments](#air-gapped-environments)
-    - [Building from Source](#building-from-source)
-  - [Development](#development)
-    - [Development server](#development-server)
-    - [Production Server](#production-server)
-    - [Code scaffolding](#code-scaffolding)
-  - [Testing](#testing)
-    - [Running unit tests](#running-unit-tests)
-    - [Running end-to-end tests](#running-end-to-end-tests)
-  - [Further help](#further-help)
+1. [Entity Search Web App](#entity-search-web-app)
+   1. [Overview](#overview)
+      1. [Related artifacts](#related-artifacts)
+      1. [Contents](#contents)
+      1. [Legend](#legend)
+   1. [Preparation](#preparation)
+      1. [Prerequisite software](#prerequisite-software)
+      1. [Pull latest docker images](#pull-latest-docker-images)
+      1. [Clone repository](#clone-repository)
+      1. [Initialize Senzing](#initialize-senzing)
+      1. [Configuration](#configuration)
+      1. [Volumes](#volumes)
+   1. [Using docker-compose](#using-docker-compose)
+   1. [Using docker](#using-docker)
+      1. [Docker network](#docker-network)
+      1. [Run](#run)
+      1. [Using SSL](#using-ssl)
+         1. [Prerequisites](#prerequisites)
+         1. [Self-Signed Certificates](#self-signed-certificates)
+         1. [Setting up SSL using Docker Stack](#setting-up-ssl-using-docker-stack)
+      1. [Admin Area](#admin-area)
+         1. [Admin Area Configuration](#admin-area-configuration)
+      1. [Security Safeguards](#security-safeguards)
+         1. [CORS (Cross Origin Request)](#cors-cross-origin-request)
+         1. [CSP (Content Security Policy)](#csp-content-security-policy)
+      1. [Air Gapped Environments](#air-gapped-environments)
+      1. [Building from Source](#building-from-source)
+   1. [Development](#development)
+      1. [Development server](#development-server)
+      1. [Production Server](#production-server)
+      1. [Code scaffolding](#code-scaffolding)
+   1. [Testing](#testing)
+      1. [Running unit tests](#running-unit-tests)
+      1. [Running end-to-end tests](#running-end-to-end-tests)
+   1. [Further help](#further-help)
 
 ### Legend
 
@@ -402,13 +402,13 @@ variables:
 
 ### Security Safeguards
 
-#### CORS
+#### CORS (Cross Origin Request)
 
 By default the webapp instance will not enable CORS requests to it's api endpoints. It can be specified to allow specific domains to talk to it by setting the `SENZING_WEB_SERVER_CORS_ALLOWED_ORIGIN` env variable to the value of the domain that the interface you wish to allow communication to resides on.
 
 #### CSP (Content Security Policy)
 
-By default a CSP is deployed to the routes that serve content on the webapp's host. It does allows assets from itself to be loaded(and some cdn assets) and nothing else. For more information on CSP and how it offers some protection against XSS issues see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
+By default a CSP is deployed to the routes that serve content on the webapp's host. It allows assets from itself to be loaded(and some cdn assets) and nothing else. For more information on CSP and how it offers some protection against XSS issues see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
 
 ### Air Gapped Environments
 
