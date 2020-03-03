@@ -1,8 +1,12 @@
 const jwt = require('jsonwebtoken');
 const express = require('express');
+const cors = require('cors');
+const csp = require(`helmet-csp`);
+const winston = require(`winston`);
 const router = express.Router();
 const bodyParser = require('body-parser');
 const expressJwt = require('express-jwt');
+const fs = require('fs');
 const path = require('path');
 
 // utils
@@ -13,21 +17,42 @@ const Auth = AuthModule.module;
 const authOptions = AuthModule.getOptionsFromInput();
 const auth = new Auth( authOptions );
 
+// cors
+var corsOptions = JSON.parse( fs.readFileSync(__dirname + path.sep + 'auth'+ path.sep +'cors.conf.json', 'utf8') );
+// csp
+var cspOptions = require('./auth/csp.conf');
+
 // server(s)
 const app = express();
+if(Auth.useCors) {
+  app.options('*', cors(corsOptions)) // include before other routes
+}
+if(Auth.useCsp) {
+  app.use(csp(cspOptions)); //csp options
+}
 app.use(bodyParser.json());
+
 // port to run the auth server on
 const SENZING_AUTH_SERVER_PORT = 8000;
 let STARTUP_MSG = '';
+
+// cors test endpoint
+app.get('/cors/test', cors(corsOptions), (req, res, next) => {
+  res.status(200).json( auth.authConfig );
+});
+app.post(`/api/csp/report`, (req, res) => {
+  winston.warn(`CSP header violation`, req.body[`csp-report`])
+  res.status(204).end()
+})
 
 if(auth.authConfig) {
   app.get('/conf/auth', (req, res, next) => {
     res.status(200).json( auth.authConfig );
   });
-  app.get('/conf/auth/admin', (req, res, next) => {
+  app.get('/conf/auth/admin', cors(corsOptions), (req, res, next) => {
     res.status(200).json( auth.authConfig.admin );
   });
-  app.get('/conf/auth/operator', (req, res, next) => {
+  app.get('/conf/auth/operator', cors(corsOptions), (req, res, next) => {
     res.status(200).json( auth.authConfig.operator );
   });
 

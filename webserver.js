@@ -10,6 +10,8 @@ const auth = require('express-basic-auth');
 const path = require('path');
 const fs = require('fs');
 const url = require('url');
+const csp = require(`helmet-csp`);
+const winston = require(`winston`);
 const AuthModule = require('./auth/auth');
 const AdminAuth = AuthModule.module;
 
@@ -20,9 +22,6 @@ const app = express();
 // auth module
 const authOptions = AuthModule.getOptionsFromInput();
 const adminAuth = new AdminAuth( authOptions );
-
-//const adminAuthOptions = AuthModule.getOptionsFromInput();
-//const adminAuth = new AdminAuth( adminAuthOptions );
 let STARTUP_MSG = '';
 
 // api config
@@ -38,6 +37,26 @@ var cfg = {
   SENZING_WEB_SERVER_BASIC_AUTH_JSON: (env.SENZING_WEB_SERVER_BASIC_AUTH_JSON ? env.SENZING_WEB_SERVER_BASIC_AUTH_JSON : false),
   SENZING_WEB_SERVER_BASIC_AUTH: (this.SENZING_WEB_SERVER_BASIC_AUTH_JSON ? true : false),
 }
+
+// security options and middleware
+if(adminAuth.useCors) {
+  const corsOptions = JSON.parse( fs.readFileSync(__dirname + path.sep + 'auth'+ path.sep +'cors.conf.json', 'utf8') );
+  STARTUP_MSG = STARTUP_MSG + '\n'+'-- CORS ENABLED --';
+  app.options('*', cors(corsOptions)) // include before other routes
+}
+if(adminAuth.useCsp) {
+  const cspOptions = require('./auth/csp.conf');
+  STARTUP_MSG = STARTUP_MSG + '\n'+'-- CSP ENABLED --';
+  app.use(csp(cspOptions)); //csp options
+}
+// cors test endpoint
+app.get('/cors/test', (req, res, next) => {
+  res.status(200).json( adminAuth.authConfig );
+});
+app.post(`/api/csp/report`, (req, res) => {
+  winston.warn(`CSP header violation`, req.body[`csp-report`])
+  res.status(204).end();
+});
 
 // ------------------------------------------------------------------------
 
@@ -84,6 +103,14 @@ var proxyCfg = require('./proxy.conf.json');
 // set up proxy tunnels
 for(proxyPath in proxyCfg){
   let proxyTargetOptions = proxyCfg[proxyPath];
+  // add custom error handler to prevent XSS/Injection in to error response
+  function onError(err, req, res) {
+    res.writeHead(500, {
+      'Content-Type': 'text/plain'
+    });
+    res.end('proxy encountered an error.');
+  }
+  proxyTargetOptions.onError = onError;
   //console.log('Proxy CFG: '+ proxyPath);
   //console.log(proxyTargetOptions);
   app.use(proxyPath, apiProxy(proxyTargetOptions));
@@ -158,17 +185,25 @@ if(adminAuth.authConfig) {
       });
     };
     /** admin endpoints */
-    app.post('/jwt/admin/status', adminAuth.auth.bind(auth), jwtRes);
-    app.post('/jwt/admin/login', adminAuth.login.bind(auth));
-    app.get('/jwt/admin/status', adminAuth.auth.bind(auth), jwtRes);
-    app.get('/jwt/admin/login', adminAuth.auth.bind(auth), jwtRes);
+    /*
+    app.post('/jwt/admin/status', jwtResForceTrue);
+    app.post('/jwt/admin/login', jwtResForceTrue);
+    app.get('/jwt/admin/status', jwtResForceTrue);
+    app.get('/jwt/admin/login', jwtResForceTrue);
+    */
+
+    app.post('/jwt/admin/status', adminAuth.auth.bind(adminAuth), jwtRes);
+    app.post('/jwt/admin/login', adminAuth.login.bind(adminAuth));
+    app.get('/jwt/admin/status', adminAuth.auth.bind(adminAuth), jwtRes);
+    app.get('/jwt/admin/login', adminAuth.auth.bind(adminAuth), jwtRes);
+
     /** operator endpoints */
     if(adminAuth.authConfig.operator && adminAuth.authConfig.operator.mode === 'JWT') {
       // token auth for operators
-      app.post('/jwt/status', adminAuth.auth.bind(auth), jwtRes);
-      app.post('/jwt/login', adminAuth.login.bind(auth));
-      app.get('/jwt/status', adminAuth.auth.bind(auth), jwtRes);
-      app.get('/jwt/login', adminAuth.auth.bind(auth), jwtRes);
+      app.post('/jwt/status', adminAuth.auth.bind(adminAuth), jwtRes);
+      app.post('/jwt/login', adminAuth.login.bind(adminAuth));
+      app.get('/jwt/status', adminAuth.auth.bind(adminAuth), jwtRes);
+      app.get('/jwt/login', adminAuth.auth.bind(adminAuth), jwtRes);
     } else {
       // always return true for operators
       app.post('/jwt/status', jwtResForceTrue);
@@ -183,11 +218,11 @@ if(adminAuth.authConfig) {
     STARTUP_MSG = STARTUP_MSG + '\n'+'';
     STARTUP_MSG = STARTUP_MSG + '\n'+'---------------------';
     STARTUP_MSG = STARTUP_MSG + '\n'+'';
-    STARTUP_MSG = STARTUP_MSG + '\n'+'ADMIN SECRET: ', adminAuth.secret;
-    STARTUP_MSG = STARTUP_MSG + '\n'+'ADMIN SEED:   ', adminAuth.seed;
+    STARTUP_MSG = STARTUP_MSG + '\n'+'ADMIN SECRET: '+ adminAuth.TOKEN_SECRET;
+    STARTUP_MSG = STARTUP_MSG + '\n'+'ADMIN SEED:   '+ adminAuth.ADMINTOKEN;
     STARTUP_MSG = STARTUP_MSG + '\n'+'';
     STARTUP_MSG = STARTUP_MSG + '\n'+'ADMIN TOKEN:  ';
-    STARTUP_MSG = STARTUP_MSG + '\n'+adminAuth.token;
+    STARTUP_MSG = STARTUP_MSG + '\n'+ adminAuth.token;
     STARTUP_MSG = STARTUP_MSG + '\n'+'';
     STARTUP_MSG = STARTUP_MSG + '\n'+'---------------------';
     STARTUP_MSG = STARTUP_MSG + '\n'+'Copy and Paste the line above when prompted for the Admin Token in the admin area.';
