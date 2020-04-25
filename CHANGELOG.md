@@ -34,15 +34,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   [#89](https://github.com/Senzing/entity-search-web-app/pull/89),
   [#96](https://github.com/Senzing/entity-search-web-app/pull/96)
 
-![image](https://user-images.githubusercontent.com/13721038/80262048-14e88380-8641-11ea-9a66-3455d8e3b044.png)
-![image](https://user-images.githubusercontent.com/13721038/80262278-c8ea0e80-8641-11ea-9672-c105a99a45d9.png)
+![image](img/release/80262048-14e88380-8641-11ea-9a66-3455d8e3b044.png)
+![image](img/release/80262278-c8ea0e80-8641-11ea-9672-c105a99a45d9.png)
 
 ### Admin Functionality
 
-![image](https://user-images.githubusercontent.com/13721038/80262370-15354e80-8642-11ea-8361-ce98abf5c5f7.png)
-![image](https://user-images.githubusercontent.com/13721038/80262410-31d18680-8642-11ea-8633-7139911cea68.png)
-![image](https://user-images.githubusercontent.com/13721038/80262422-37c76780-8642-11ea-881b-afe32219f4b9.png)
-![image](https://user-images.githubusercontent.com/13721038/80262433-3dbd4880-8642-11ea-9ecf-fd3465ef85b8.png)
+![image](img/release/80262370-15354e80-8642-11ea-8361-ce98abf5c5f7.png)
+![image](img/release/80262410-31d18680-8642-11ea-8633-7139911cea68.png)
+![image](img/release/80262422-37c76780-8642-11ea-881b-afe32219f4b9.png)
+![image](img/release/80262433-3dbd4880-8642-11ea-9ecf-fd3465ef85b8.png)
 
 ## [1.0.4] - 2019-11-19
 
@@ -62,8 +62,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   [#69](https://github.com/Senzing/entity-search-web-app/pull/69),
   [#71](https://github.com/Senzing/entity-search-web-app/pull/71)
 
-![2019-11-19_154007](https://user-images.githubusercontent.com/13721038/69196314-04a50900-0ae3-11ea-9ef4-74903c507360.png)
-![2019-11-19_154500](https://user-images.githubusercontent.com/13721038/69196516-96ad1180-0ae3-11ea-9848-7d868d874a01.png)
+![2019-11-19_154007](img/release/69196314-04a50900-0ae3-11ea-9ef4-74903c507360.png)
+![2019-11-19_154500](img/release/69196516-96ad1180-0ae3-11ea-9848-7d868d874a01.png)
 
 ## [1.0.3] - 2019-09-30
 
@@ -71,7 +71,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [sdk-components-ng](https://github.com/Senzing/sdk-components-ng) updated to [1.0.9](https://github.com/Senzing/sdk-components-ng/releases/tag/1.0.9) and [sdk-graph-components](https://github.com/Senzing/sdk-graph-components) updated to [0.0.6](https://github.com/Senzing/sdk-graph-components/releases/tag/0.0.6)
 
-![2019-09-30_122901](https://user-images.githubusercontent.com/13721038/65909647-eaba3600-e37d-11e9-92f8-2d8f7e4ceca3.png)
+![2019-09-30_122901](img/release/65909647-eaba3600-e37d-11e9-92f8-2d8f7e4ceca3.png)
 
 - Preferences UI interface added to top ribbon
 - Added [SzPrefsService](https://senzing.github.io/sdk-components-ng/injectables/SzPrefsService.html)
