@@ -22,7 +22,7 @@ jobs:
             BASE_IMAGE="node:12.2.0" \
             docker-build
   logPrBuildEntitySearchWebApp:
-    needs: prBuildSenzingJavaApiServer
+    needs: prBuildEntitySearchWebApp
     if: always()
     runs-on: ubuntu-latest
     steps:
