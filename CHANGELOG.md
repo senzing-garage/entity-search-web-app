@@ -6,6 +6,43 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2020-04-24
+
+### Added to 1.2.1
+
+- Show version information (for diagnostics)
+- Open search results directly in Graph view
+- Allow the user to collapse/expand the filters/detail drawer in the Graph view.
+- Added MSSQL support
+- Added Search by *record Id* or *entity Id* form interfaces
+- Added Record JSON viewer
+- Added Admin functionality. (see [Readme](https://github.com/Senzing/entity-search-web-app#admin-area) for more details)
+  - added ability to view datasources available to an instance
+  - added ability to do bulk import or csv or json files in to a datasource
+  - added randomly generated JWT token to `/admin` routes by default. other authentication options include external SSO relay and NONE.
+- Implemented CORS support for allowing the container to tell the client to directly request api resources. Default is disabled.
+- Implemented CSP (Content Security Policy) - enabled by default. see #96 for more details.
+- relevant tickets:
+  [#66](https://github.com/Senzing/entity-search-web-app/pull/66),
+  [#67](https://github.com/Senzing/entity-search-web-app/pull/67),
+  [#68](https://github.com/Senzing/entity-search-web-app/pull/68),
+  [#73](https://github.com/Senzing/entity-search-web-app/pull/73),
+  [#74](https://github.com/Senzing/entity-search-web-app/pull/74),
+  [#76](https://github.com/Senzing/entity-search-web-app/pull/76),
+  [#83](https://github.com/Senzing/entity-search-web-app/pull/83),
+  [#84](https://github.com/Senzing/entity-search-web-app/pull/84),
+  [#89](https://github.com/Senzing/entity-search-web-app/pull/89),
+  [#96](https://github.com/Senzing/entity-search-web-app/pull/96)
+
+![image](https://user-images.githubusercontent.com/13721038/80262048-14e88380-8641-11ea-9a66-3455d8e3b044.png)
+![image](https://user-images.githubusercontent.com/13721038/80262278-c8ea0e80-8641-11ea-9672-c105a99a45d9.png)
+
+### Admin Functionality
+
+![image](https://user-images.githubusercontent.com/13721038/80262370-15354e80-8642-11ea-8361-ce98abf5c5f7.png)
+![image](https://user-images.githubusercontent.com/13721038/80262410-31d18680-8642-11ea-8633-7139911cea68.png)
+![image](https://user-images.githubusercontent.com/13721038/80262422-37c76780-8642-11ea-881b-afe32219f4b9.png)
+![image](https://user-images.githubusercontent.com/13721038/80262433-3dbd4880-8642-11ea-9ecf-fd3465ef85b8.png)
 
 ## [1.0.4] - 2019-11-19
 
