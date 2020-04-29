@@ -45,6 +45,10 @@ COPY --chown=1001:1001 ./proxy.conf.json /app
 # Build app. build as root and switch back
 USER root
 RUN npm run build:docker
+
+RUN rm /usr/lib/python2.7/urllib.py \
+ && rm /usr/lib/python2.7/lib2to3/pgen2/parse.py
+
 USER 1001
 
 # Runtime execution.
