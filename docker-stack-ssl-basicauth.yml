@@ -2,7 +2,7 @@ version: '3.3'
 services:
 
   senzing-api-server:
-    image: senzing/senzing-api-server
+    image: senzing/senzing-api-server:${SENZING_API_SERVER_VERSION:-1.8.3}
     command:
       - -httpPort
       - "8080"
