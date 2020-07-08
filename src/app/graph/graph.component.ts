@@ -181,7 +181,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public onOptionChange(event: {name: string, value: any}) {
-    //console.log('GraphComponent.onOptionChange: ', event);
+    console.log('GraphComponent.onOptionChange: ', event);
     switch(event.name) {
       case 'showLinkLabels':
         this.showMatchKeys = event.value;
