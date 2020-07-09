@@ -1,6 +1,6 @@
 {
   "name": "@senzing/entity-search-web-app",
-  "version": "1.2.1",
+  "version": "2.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -33,9 +33,9 @@
     "@angular/platform-browser-dynamic": "~7.1.0",
     "@angular/router": "~7.1.0",
     "@auth0/angular-jwt": "^3.0.1",
-    "@senzing/rest-api-client-ng": "2.0.0-beta.0",
-    "@senzing/sdk-components-ng": "2.0.0-beta.0",
-    "@senzing/sdk-graph-components": "2.0.0-beta.0",
+    "@senzing/rest-api-client-ng": "^2.0.0",
+    "@senzing/sdk-components-ng": "^2.0.0",
+    "@senzing/sdk-graph-components": "^2.0.0",
     "@types/d3": "^5.7.1",
     "body-parser": "^1.19.0",
     "classlist.js": "^1.1.20150312",
