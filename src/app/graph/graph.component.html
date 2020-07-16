@@ -28,7 +28,7 @@
           [showMatchKeyControl]="false"
           [showFiltersControl]="false"
           (entityClick)="onGraphEntityClick($event)"
-          [showMatchKeys]="true"
+          [showMatchKeys]="_showMatchKeys"
           (requestStarted)="onRequestStarted($event)"
           (renderComplete)="onRenderComplete($event)"
           (requestComplete)="onRequestComplete($event)"

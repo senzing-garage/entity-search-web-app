@@ -16,7 +16,7 @@ import {
   SzEntityRecord,
   SzSearchByIdFormParams
 } from '@senzing/sdk-components-ng';
-import { EntityGraphService, SzEntityNetworkData } from '@senzing/rest-api-client-ng';
+import { EntityGraphService, SzEntityNetworkData, SzFeatureMode } from '@senzing/rest-api-client-ng';
 import { SpinnerService } from './spinner.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { PrefsManagerService } from './prefs-manager.service';
@@ -319,6 +319,42 @@ export class GraphEntityNetworkResolverService implements Resolve<SzEntityNetwor
     this.spinner.show();
     const entityId = parseInt( route.paramMap.get('entityId'), 10);
     if (entityId && entityId > 0) {
+      return this.graphService.findEntityNetwork(
+        [entityId],
+        undefined,
+        this.prefsService.prefs.graph.maxDegreesOfSeparation,
+        this.prefsService.prefs.graph.buildOut,
+        this.prefsService.prefs.graph.maxEntities,
+        SzFeatureMode.NONE,
+        true,
+        false,
+        false,
+        true).pipe(
+          map(res => (res.data as SzEntityNetworkData)),
+          mergeMap((networkData) => {
+            this.spinner.hide();
+            if (networkData) {
+              return of(networkData);
+            } else { // no results
+              this.search.currentlySelectedEntityId = undefined;
+              this.router.navigate(['errors/404']);
+              return EMPTY;
+            }
+          }),
+          catchError( (error: HttpErrorResponse) => {
+            this.spinner.hide();
+            const message = `Retrieval error: ${error.message}`;
+            console.error(message);
+            if (error && error.status) {
+              this.router.navigate( [getErrorRouteFromCode(error.status)] );
+            } else {
+              this.router.navigate(['errors/unknown']);
+            }
+            return EMPTY;
+          }
+        )
+      );
+      /*
       return this.graphService.findNetworkByEntityID(
         [entityId],
         this.prefsService.prefs.graph.maxDegreesOfSeparation,
@@ -348,7 +384,7 @@ export class GraphEntityNetworkResolverService implements Resolve<SzEntityNetwor
             return EMPTY;
           }
         )
-      );
+      );*/
 
     } else {
       this.spinner.hide();
