@@ -12,7 +12,7 @@ const fs = require('fs');
 const url = require('url');
 const csp = require(`helmet-csp`);
 const winston = require(`winston`);
-const AuthModule = require('./auth/auth');
+const AuthModule = require('../../auth/auth');
 const AdminAuth = AuthModule.module;
 
 // grab env vars
@@ -45,7 +45,7 @@ if(adminAuth.useCors) {
   app.options('*', cors(corsOptions)) // include before other routes
 }
 if(adminAuth.useCsp) {
-  const cspOptions = require('./auth/csp.conf');
+  const cspOptions = require('../../auth/csp.conf');
   STARTUP_MSG = STARTUP_MSG + '\n'+'-- CSP ENABLED --';
   app.use(csp(cspOptions)); //csp options
 }
@@ -99,7 +99,7 @@ if( cfg.SENZING_WEB_SERVER_BASIC_AUTH_JSON ){
 }
 
 // borrow proxy config from webpack proxy conf
-var proxyCfg = require('./proxy.conf.json');
+var proxyCfg = require('../../proxy.conf.json');
 // set up proxy tunnels
 for(proxyPath in proxyCfg){
   let proxyTargetOptions = proxyCfg[proxyPath];

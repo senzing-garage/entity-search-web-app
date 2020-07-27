@@ -10,7 +10,7 @@ const fs = require('fs');
 const path = require('path');
 
 // utils
-const AuthModule = require('./auth/auth');
+const AuthModule = require('../../auth/auth');
 const Auth = AuthModule.module;
 
 // grab env/cmdline vars
@@ -20,7 +20,7 @@ const auth = new Auth( authOptions );
 // cors
 var corsOptions = JSON.parse( fs.readFileSync(__dirname + path.sep + 'auth'+ path.sep +'cors.conf.json', 'utf8') );
 // csp
-var cspOptions = require('./auth/csp.conf');
+var cspOptions = require('../../auth/csp.conf');
 
 // server(s)
 const app = express();
