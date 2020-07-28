@@ -1,3 +1,5 @@
+const { env } = require("process");
+
 function createCorsConfigFromInput( dirToWriteTo ) {
   // return value
   let retConfig = undefined;
@@ -239,8 +241,170 @@ function createAuthConfigFromInput() {
   return retConfig;
 }
 
+function createProxyConfigFromInput() {
+  let retConfig = undefined;
+
+  if(env.SENZING_API_SERVER_URL) {
+    retConfig = retConfig !== undefined ? retConfig : {};
+    retConfig["/api/*"] = {
+      "target": env.SENZING_API_SERVER_URL,
+      "secure": true,
+      "logLevel": "error",
+      "pathRewrite": {
+        "^/api": ""
+      }
+    }
+  }
+
+  if(env.SENZING_WEB_SERVER_ADMIN_AUTH_PATH) {
+    let mergeObj = {
+      "/admin/auth/jwt/*": {
+        "target": env.SENZING_WEB_SERVER_ADMIN_AUTH_PATH,
+        "secure": true,
+        "logLevel": "error",
+        "pathRewrite": {
+          "^/admin/auth/jwt": "/jwt/admin"
+        }
+      },
+      "/admin/auth/sso/*": {
+        "target": env.SENZING_WEB_SERVER_ADMIN_AUTH_PATH,
+        "secure": true,
+        "logLevel": "error",
+        "pathRewrite": {
+          "^/admin/auth/sso": "/sso/admin"
+        }
+      },
+      "/auth/jwt/*": {
+        "target": env.SENZING_WEB_SERVER_ADMIN_AUTH_PATH + "/jwt/",
+        "secure": true,
+        "logLevel": "error",
+        "pathRewrite": {
+          "^/auth/jwt": "/jwt"
+        }
+      },
+      "/auth/sso/*": {
+        "target": env.SENZING_WEB_SERVER_ADMIN_AUTH_PATH + "/sso/",
+        "secure": true,
+        "logLevel": "error",
+        "pathRewrite": {
+          "^/auth/sso": "/sso"
+        }
+      },
+      "/config/auth": {
+        "target": env.SENZING_WEB_SERVER_ADMIN_AUTH_PATH + "/conf/auth/",
+        "secure": true,
+        "logLevel": "error",
+        "pathRewrite": {
+          "^/config/auth": ""
+        }
+      },
+      "/cors/test": {
+        "target": env.SENZING_WEB_SERVER_ADMIN_AUTH_PATH + "/cors/test/",
+        "secure": true,
+        "logLevel": "error",
+        "withCredentials": true,
+        "pathRewrite": {
+          "^/cors/test": ""
+        }
+      }
+    }
+    retConfig = Object.assign(retConfig, mergeObj);
+  }
+  // -------------------- start CMD LINE ARGS import -----------
+    // grab cmdline args
+    let cl = process.argv;
+    let proxyOpts = undefined;
+    // import args in to "cl" JSON style object
+    if(cl && cl.forEach){
+      proxyOpts = {};
+      cl.forEach( (val, ind, arr) => {
+        let retVal = val;
+        let retKey = val;
+        if(val && val.indexOf && val.indexOf('=')){
+          retKey = (val.split('='))[0];
+          retVal = (val.split('='))[1];
+        }
+        proxyOpts[ retKey ] = retVal;
+      })
+    }
+     // now check our imported cmdline args
+     if(proxyOpts && proxyOpts !== undefined && proxyOpts.apiServerUrl && proxyOpts.apiServerUrl !== undefined) {
+      retConfig = retConfig !== undefined ? retConfig : {};
+      retConfig.proxy = retConfig && retConfig.proxy ? retConfig.proxy : {};
+      if(proxyOpts.apiServerUrl && proxyOpts.apiServerUrl !== undefined) {
+        retConfig.proxy["/api/*"] = {
+          "target": proxyOpts.apiServerUrl,
+          "secure": true,
+          "logLevel": "error",
+          "pathRewrite": {
+            "^/api": ""
+          }
+        }
+      }
+      if(proxyOpts.adminAuthPath && proxyOpts.adminAuthPath !== undefined) {
+        let mergeObj = {
+          "/admin/auth/jwt/*": {
+            "target": proxyOpts.adminAuthPath,
+            "secure": true,
+            "logLevel": "error",
+            "pathRewrite": {
+              "^/admin/auth/jwt": "/jwt/admin"
+            }
+          },
+          "/admin/auth/sso/*": {
+            "target": proxyOpts.adminAuthPath,
+            "secure": true,
+            "logLevel": "error",
+            "pathRewrite": {
+              "^/admin/auth/sso": "/sso/admin"
+            }
+          },
+          "/auth/jwt/*": {
+            "target": proxyOpts.adminAuthPath + "/jwt/",
+            "secure": true,
+            "logLevel": "error",
+            "pathRewrite": {
+              "^/auth/jwt": "/jwt"
+            }
+          },
+          "/auth/sso/*": {
+            "target": proxyOpts.adminAuthPath + "/sso/",
+            "secure": true,
+            "logLevel": "error",
+            "pathRewrite": {
+              "^/auth/sso": "/sso"
+            }
+          },
+          "/config/auth": {
+            "target": proxyOpts.adminAuthPath + "/conf/auth/",
+            "secure": true,
+            "logLevel": "error",
+            "pathRewrite": {
+              "^/config/auth": ""
+            }
+          },
+          "/cors/test": {
+            "target": proxyOpts.adminAuthPath + "/cors/test/",
+            "secure": true,
+            "logLevel": "error",
+            "withCredentials": true,
+            "pathRewrite": {
+              "^/cors/test": ""
+            }
+          }
+        }
+        retConfig.proxy = Object.assign(retConfig.proxy, mergeObj);
+      }
+
+    }
+  // -------------------- end CMD LINE ARGS import -----------
+
+  return retConfig;
+}
+
 module.exports = {
   "auth": createAuthConfigFromInput(),
   "cors": createCorsConfigFromInput(),
   "csp": createCspConfigFromInput(),
+  "proxy": createProxyConfigFromInput()
 }

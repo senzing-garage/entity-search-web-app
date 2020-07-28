@@ -23,12 +23,13 @@ class inMemoryConfig {
     },
     reportOnly: false
   };
+  proxyConfiguration = undefined;
 
   constructor(options) {
     if(options) {
       this.config = options;
     }
-    console.info("inMemoryConfig.constructor: ", "\n\n", options, "\n\n", this.config);
+    console.info("inMemoryConfig.constructor: ", "\n\n", JSON.stringify(this.config, undefined, 2));
   }
 
   get config() {
@@ -41,10 +42,16 @@ class inMemoryConfig {
     if(this.cspConfiguration && this.cspConfiguration !== undefined && this.cspConfiguration !== null) {
       retValue.csp = this.cspConfiguration;
     }
+    if(this.proxyConfiguration && this.proxyConfiguration !== undefined && this.proxyConfiguration !== null) {
+      retValue.proxy = this.proxyConfiguration;
+    }
     return retValue;
   }
   set config(value) {
     if(value) {
+      if(value.proxy) {
+        this.proxyConfiguration = value.proxy;
+      }
       if(value.auth) {
         if(value.auth.admin) {
           this.authConfiguration.admin = {};
