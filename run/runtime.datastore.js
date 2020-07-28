@@ -1,4 +1,5 @@
-
+const path = require('path');
+const fs = require('fs');
 
 class inMemoryConfig {
   // default Auth Configuration
@@ -121,6 +122,43 @@ class inMemoryConfig {
       }
     }
   }
+
+  writeProxyConfigToFile(filepath, filename) {
+    let fileExists = false;
+    let dirExists = false;
+    filename = filename && filename !== undefined ? filename : 'proxy.conf.json';
+
+    let fullDir   = path.resolve(__dirname, filepath);
+    let fullPath  = path.resolve(fullDir, filename);
+
+    try{
+      dirExists  = fs.existsSync(fullDir);
+      fileExists = fs.existsSync(fullPath);
+    } catch(err){
+      fileExists = false;
+    }
+
+    if(dirExists) {
+      // now write proxy template to file
+      try{
+        fs.writeFileSync(fullPath, JSON.stringify(this.config.proxy, undefined, 2));
+        //file written on disk
+        //console.log('wrote ', fullPath ,'\n');
+      }catch(err){
+        console.log('could not write ', fullPath, '\n', err);
+      }
+    }
+    /*
+    console.log("\nwriteProxyConfigToFile: ");
+    console.log(filepath, '? ', dirExists);
+    console.log(filename, '? ', fileExists);
+    console.log('\n');
+    console.log(fullDir, '? ', dirExists);
+    console.log(fullPath, '? ', fileExists);
+    */
+
+  }
+
 }
 
 

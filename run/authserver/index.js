@@ -26,6 +26,11 @@ var corsOptions = runtimeOptions.config.cors;
 // csp
 var cspOptions = runtimeOptions.config.csp;
 
+// write proxy conf to file? (we need this for DEV mode)
+if(inMemoryConfigFromInputs.writeProxyConfigToFile) {
+  runtimeOptions.writeProxyConfigToFile("../","proxy.conf.json");
+}
+
 // server(s)
 const app = express();
 if(auth.useCors) {
