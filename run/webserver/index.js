@@ -19,30 +19,29 @@ const inMemoryConfig = require("../runtime.datastore");
 const inMemoryConfigFromInputs = require('../runtime.datastore.config');
 const runtimeOptions = new inMemoryConfig(inMemoryConfigFromInputs);
 
-// grab env/cmdline vars
+// auth options
 const authOptions = runtimeOptions.config.auth;
 const auth        = new AuthModule( runtimeOptions.config );
-
 // cors
 var corsOptions   = runtimeOptions.config.cors;
 // csp
 var cspOptions    = runtimeOptions.config.csp;
+// proxy config
+var proxyOptions  = runtimeOptions.config.proxy;
+// web server config
+let serverOptions = runtimeOptions.config.web;
 
 // write proxy conf to file? (we need this for DEV mode)
 if(inMemoryConfigFromInputs.proxyServerOptions.writeToFile) {
   runtimeOptions.writeProxyConfigToFile("../","proxy.conf.json");
 }
 
-// grab env vars
-let env = process.env;
+
 // server(s)
 const app = express();
-// auth module
-//const authOptions = AuthModule.getOptionsFromInput();
-//const adminAuth = new AdminAuth( authOptions );
 let STARTUP_MSG = '';
 
-// api config
+/*
 var cfg = {
   SENZING_WEB_SERVER_PORT: (env.SENZING_WEB_SERVER_PORT ? env.SENZING_WEB_SERVER_PORT : 4200),
   SENZING_WEB_SERVER_API_PATH: (env.SENZING_WEB_SERVER_API_PATH ? env.SENZING_WEB_SERVER_API_PATH : "/api"),
@@ -54,16 +53,15 @@ var cfg = {
   SENZING_WEB_SERVER_SSL_SUPPORT: (this.SENZING_WEB_SERVER_SSL_CERT_PATH && this.SENZING_WEB_SERVER_SSL_KEY_PATH ? true : false),
   SENZING_WEB_SERVER_BASIC_AUTH_JSON: (env.SENZING_WEB_SERVER_BASIC_AUTH_JSON ? env.SENZING_WEB_SERVER_BASIC_AUTH_JSON : false),
   SENZING_WEB_SERVER_BASIC_AUTH: (this.SENZING_WEB_SERVER_BASIC_AUTH_JSON ? true : false),
-}
+}*/
 
 // security options and middleware
-if(auth.useCors) {
-  const corsOptions = JSON.parse( fs.readFileSync(__dirname + path.sep + 'auth'+ path.sep +'cors.conf.json', 'utf8') );
+if(corsOptions && corsOptions.origin) {
   STARTUP_MSG = STARTUP_MSG + '\n'+'-- CORS ENABLED --';
   app.options('*', cors(corsOptions)) // include before other routes
 }
-if(auth.useCsp) {
-  const cspOptions = require('../../auth/csp.conf');
+if(cspOptions) {
+  //const cspOptions = require('../../auth/csp.conf');
   STARTUP_MSG = STARTUP_MSG + '\n'+'-- CSP ENABLED --';
   app.use(csp(cspOptions)); //csp options
 }
@@ -79,23 +77,37 @@ app.post(`/api/csp/report`, (req, res) => {
 // ------------------------------------------------------------------------
 
 // check if SSL file(s) exist
-if(cfg.SENZING_WEB_SERVER_SSL_CERT_PATH && cfg.SENZING_WEB_SERVER_SSL_KEY_PATH){
+if(serverOptions.ssl && serverOptions.ssl.certPath && serverOptions.ssl.keyPath){
   try {
-    if (fs.existsSync(cfg.SENZING_WEB_SERVER_SSL_CERT_PATH) && fs.existsSync(cfg.SENZING_WEB_SERVER_SSL_KEY_PATH)) {
+    if (fs.existsSync(serverOptions.ssl.certPath) && fs.existsSync(serverOptions.ssl.keyPath)) {
       //file exists
       STARTUP_MSG = STARTUP_MSG + '\n'+'-- SSL ENABLED --';
-      cfg.SENZING_WEB_SERVER_SSL_SUPPORT = true;
+      serverOptions.ssl.enabled = true;
     } else {
-      cfg.SENZING_WEB_SERVER_SSL_SUPPORT = false;
+      serverOptions.ssl.enabled = false;
     }
   } catch(err) {
-    cfg.SENZING_WEB_SERVER_SSL_SUPPORT = false;
+    serverOptions.ssl.enabled = false;
   }
 }
 
 // use basic authentication middleware ?
-if( cfg.SENZING_WEB_SERVER_BASIC_AUTH_JSON ){
-  // check that file exists
+if( serverOptions.authBasicJson ){
+  try  {
+    app.use(authBasic({
+      challenge: true,
+      users: serverOptions.authBasicJson
+    }));
+    STARTUP_MSG = STARTUP_MSG + '\n'+'-- BASIC AUTH MODULE ENABLED --';
+  } catch(err){
+    STARTUP_MSG = STARTUP_MSG + '\n'+'-- BASIC AUTH MODULE DISABLED : '+ err +' --\n';
+    serverOptions.authBasicJson = undefined;
+    delete serverOptions.authBasicJson;
+  }
+
+  //STARTUP_MSG = STARTUP_MSG + '\n'+'\tJSON DB:'+ serverOptions.authBasicJson +'\n';
+
+  /*
   const _authJSONPath = (cfg.SENZING_WEB_SERVER_BASIC_AUTH_JSON && cfg.SENZING_WEB_SERVER_BASIC_AUTH_JSON.substr(0,1) !== '/') ? path.join(__dirname + path.sep + cfg.SENZING_WEB_SERVER_BASIC_AUTH_JSON) : cfg.SENZING_WEB_SERVER_BASIC_AUTH_JSON ;
   try {
     if (fs.existsSync(_authJSONPath)) {
@@ -113,30 +125,40 @@ if( cfg.SENZING_WEB_SERVER_BASIC_AUTH_JSON ){
   } catch(err) {
     STARTUP_MSG = STARTUP_MSG + '\n'+'-- AUTH MODULE DISABLED : '+ err +' --\n';
     cfg.SENZING_WEB_SERVER_BASIC_AUTH = false;
-  }
+  }*/
+} else {
+  STARTUP_MSG = STARTUP_MSG + '\n'+'-- BASIC AUTH MODULE DISABLED : no basic auth json provided --';
 }
 
-// borrow proxy config from webpack proxy conf
-var proxyCfg = require('../../proxy.conf.json');
 // set up proxy tunnels
-for(proxyPath in proxyCfg){
-  let proxyTargetOptions = proxyCfg[proxyPath];
-  // add custom error handler to prevent XSS/Injection in to error response
-  function onError(err, req, res) {
-    res.writeHead(500, {
-      'Content-Type': 'text/plain'
-    });
-    res.end('proxy encountered an error.');
+if(proxyOptions) {
+  STARTUP_MSG = STARTUP_MSG + '\n'+'-- REVERSE PROXY PATHS SET UP --';
+
+  for(proxyPath in proxyOptions){
+    let proxyTargetOptions = proxyOptions[proxyPath];
+    // add custom error handler to prevent XSS/Injection in to error response
+    function onError(err, req, res) {
+      res.writeHead(500, {
+        'Content-Type': 'text/plain'
+      });
+      res.end('proxy encountered an error.');
+    }
+    proxyTargetOptions.onError = onError;
+    //console.log('Proxy CFG: '+ proxyPath);
+    //console.log(proxyTargetOptions);
+    app.use(proxyPath, apiProxy(proxyTargetOptions));
   }
-  proxyTargetOptions.onError = onError;
-  //console.log('Proxy CFG: '+ proxyPath);
-  //console.log(proxyTargetOptions);
-  app.use(proxyPath, apiProxy(proxyTargetOptions));
+} else {
+  STARTUP_MSG = STARTUP_MSG + '\n'+'-- REVERSE PROXY TUNNELS COULD NOT BE ENABLED --';
 }
 
 // static files
-app.use('/node_modules/@senzing/sdk-components-web', express.static(__dirname + '/node_modules/@senzing/sdk-components-web/'));
-app.use(express.static(__dirname + '/dist/entity-search-web-app/'));
+let staticPath  = path.resolve(path.join(__dirname, '../../', 'dist/entity-search-web-app'));
+let webCompPath = path.resolve(path.join(__dirname, '../../', '/node_modules/@senzing/sdk-components-web/'));
+app.use('/node_modules/@senzing/sdk-components-web', express.static(webCompPath));
+app.use(express.static(staticPath));
+console.log('\n\n STATIC PATH: '+staticPath,'\n');
+
 // admin auth tokens
 const authRes = (req, res, next) => {
   const body = req.body;
@@ -174,7 +196,7 @@ if(authOptions) {
     // especially if the SSO uses cookies etc
     app.get('/sso/admin/status', ssoResForceTrue);
     app.get('/sso/admin/login', (req, res, next) => {
-      res.sendFile(path.join(__dirname+'/auth/sso-login.html'));
+      res.sendFile(path.resolve(path.join(__dirname,'../../', '/auth/sso-login.html')));
     });
     //STARTUP_MSG = STARTUP_MSG + '\n'+'';
     STARTUP_MSG = STARTUP_MSG + '\n'+'---------------------';
@@ -272,28 +294,27 @@ if(authOptions) {
 
 // SPA page
 app.use('*',function(req, res) {
-    res.sendFile(path.join(__dirname + path.sep +'dist/entity-search-web-app/index.html'));
+    res.sendFile(path.resolve(path.join(__dirname, '..'+path.sep, '..'+path.sep, 'dist/entity-search-web-app/index.html')));
 });
 
 // set up server(s) instance(s)
 var ExpressSrvInstance;
-if( cfg.SENZING_WEB_SERVER_SSL_SUPPORT ){
+if( serverOptions && serverOptions.ssl && serverOptions.ssl.enabled ){
   // https
   const ssl_opts = {
-    key: fs.readFileSync(cfg.SENZING_WEB_SERVER_SSL_KEY_PATH),
-    cert: fs.readFileSync(cfg.SENZING_WEB_SERVER_SSL_CERT_PATH)
+    key: fs.readFileSync(serverOptions.ssl.keyPath),
+    cert: fs.readFileSync(serverOptions.ssl.certPath)
   }
-  ExpressSrvInstance = https.createServer(ssl_opts, app).listen(cfg.SENZING_WEB_SERVER_PORT)
-  STARTUP_MSG_POST = '\n'+'SSL Express Server started on port '+ cfg.SENZING_WEB_SERVER_PORT;
-  STARTUP_MSG_POST = STARTUP_MSG_POST + '\n'+'\tKEY: ', cfg.SENZING_WEB_SERVER_SSL_KEY_PATH;
-  STARTUP_MSG_POST = STARTUP_MSG_POST + '\n'+'\tCERT: ', cfg.SENZING_WEB_SERVER_SSL_CERT_PATH;
+  ExpressSrvInstance = https.createServer(ssl_opts, app).listen(serverOptions.port)
+  STARTUP_MSG_POST = '\n'+'SSL Express Server started on port '+ serverOptions.port;
+  STARTUP_MSG_POST = STARTUP_MSG_POST + '\n'+'\tKEY: ', serverOptions.keyPath;
+  STARTUP_MSG_POST = STARTUP_MSG_POST + '\n'+'\tCERT: ', serverOptions.certPath;
   STARTUP_MSG_POST = STARTUP_MSG_POST + '\n'+'';
   STARTUP_MSG = STARTUP_MSG_POST + STARTUP_MSG;
 } else {
   // http
-  ExpressSrvInstance = app.listen(cfg.SENZING_WEB_SERVER_PORT);
-  STARTUP_MSG = '\n'+'Express Server started on port '+ cfg.SENZING_WEB_SERVER_PORT +'\n'+ STARTUP_MSG;
-
+  ExpressSrvInstance = app.listen(serverOptions.port);
+  STARTUP_MSG = '\n'+'Express Server started on port '+ serverOptions.port +'\n'+ STARTUP_MSG;
 }
 
 console.log( STARTUP_MSG );
