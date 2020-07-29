@@ -53,7 +53,7 @@ class inMemoryConfig {
     if(options) {
       this.config = options;
     }
-    console.info("inMemoryConfig.constructor: ", "\n\n", JSON.stringify(this.config, undefined, 2));
+    //console.info("inMemoryConfig.constructor: ", "\n\n", JSON.stringify(this.config, undefined, 2));
   }
 
   // get an JSON object representing all of the configuration
