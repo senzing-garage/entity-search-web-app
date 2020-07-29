@@ -6,6 +6,8 @@ class inMemoryConfig {
   // we default to "JWT" since we don't want admin functionality
   // to be wide open
   authConfiguration = {
+    "hostname": "localhost",
+    "port": 8080,
     "admin": {
       "mode": "JWT",
       "checkUrl": "/admin/auth/jwt/status",
@@ -54,6 +56,12 @@ class inMemoryConfig {
         this.proxyConfiguration = value.proxy;
       }
       if(value.auth) {
+        if(value.auth.hostname && value.auth.hostname !== undefined) {
+          this.authConfiguration.hostname = value.auth.hostname;
+        }
+        if(value.auth.port && value.auth.port !== undefined) {
+          this.authConfiguration.port = value.auth.port;
+        }
         if(value.auth.admin) {
           this.authConfiguration.admin = {};
           if(value.auth.admin.mode === 'JWT') {

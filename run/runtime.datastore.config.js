@@ -193,6 +193,14 @@ function createAuthConfigFromInput() {
         }
       }
   }
+  if(env.SENZING_WEB_SERVER_PORT) {
+    retConfig = retConfig !== undefined ? retConfig : {};
+    retConfig.port = SENZING_WEB_SERVER_PORT;
+  }
+  if(env.SENZING_WEB_SERVER_HOSTNAME) {
+    retConfig = retConfig !== undefined ? retConfig : {};
+    retConfig.hostname = SENZING_WEB_SERVER_HOSTNAME;
+  }
   // -------------------- end ENV vars import ------------------
   // -------------------- start CMD LINE ARGS import -----------
     // grab cmdline args
@@ -251,6 +259,12 @@ function createAuthConfigFromInput() {
         }
       }
     }
+    if(authOpts && authOpts !== undefined && authOpts.authServerPortNumber && authOpts.authServerPortNumber !== undefined) {
+      retConfig.port = authOpts.authServerPortNumber;
+    }
+    if(authOpts && authOpts !== undefined && authOpts.authServerHostName && authOpts.authServerHostName !== undefined) {
+      retConfig.hostname = authOpts.authServerHostName;
+    }
 
   // -------------------- end CMD LINE ARGS import -----------
 
@@ -264,7 +278,8 @@ function createAuthConfigFromInput() {
 
 function getProxyServerOptionsFromInput() {
   let retOpts = {
-    port: 8080,
+    authServerHostName: "localhost",
+    authServerPortNumber: 8080,
     logLevel: "error",
     apiServerUrl: "",
     adminAuthPath: "http://localhost:8080",
@@ -277,9 +292,9 @@ function getProxyServerOptionsFromInput() {
 
   let cmdLineOpts = getCommandLineArgsAsJSON();
   if(cmdLineOpts && cmdLineOpts !== undefined) {
-    if(cmdLineOpts.proxyPortNumber) {
-      retOpts.port = cmdLineOpts.proxyPortNumber;
-      retOpts.adminAuthPath = "http://localhost:"+ retOpts.port;
+    if(cmdLineOpts.authServerPortNumber) {
+      retOpts.authServerPortNumber  = cmdLineOpts.authServerPortNumber;
+      retOpts.adminAuthPath         = "http://localhost:"+ retOpts.authServerPortNumber;
     }
     if(cmdLineOpts.proxyLogLevel) {
       retOpts.logLevel = cmdLineOpts.proxyLogLevel;
@@ -296,10 +311,17 @@ function getProxyServerOptionsFromInput() {
     if(cmdLineOpts.proxySSOPathRewrite) {
       retOpts.ssoPathRewrite = cmdLineOpts.proxySSOPathRewrite;
     }
+    if(cmdLineOpts.proxyAdminJWTPathRewrite) {
+      retOpts.adminJwtPathRewrite = cmdLineOpts.proxyAdminJWTPathRewrite;
+    }
+    if(cmdLineOpts.proxyAdminSSOPathRewrite) {
+      retOpts.adminSsoPathRewrite = cmdLineOpts.proxyAdminSSOPathRewrite;
+    }
     if(cmdLineOpts.writeProxyConfigToFile === 'true' || cmdLineOpts.writeProxyConfigToFile === 'TRUE') {
       retOpts.writeToFile = true;
     }
   }
+  return retOpts;
 }
 
 function createProxyConfigFromInput() {
@@ -394,7 +416,7 @@ function createProxyConfigFromInput() {
           "secure": true,
           "logLevel": proxyOpts.logLevel,
           "pathRewrite": {
-            "^/admin/auth/jwt": "/jwt/admin"
+            "^/admin/auth/jwt": proxyOpts.adminJwtPathRewrite
           }
         },
         "/admin/auth/sso/*": {
@@ -402,7 +424,7 @@ function createProxyConfigFromInput() {
           "secure": true,
           "logLevel": proxyOpts.logLevel,
           "pathRewrite": {
-            "^/admin/auth/sso": "/sso/admin"
+            "^/admin/auth/sso": proxyOpts.adminSsoPathRewrite
           }
         },
         "/auth/jwt/*": {
@@ -410,7 +432,7 @@ function createProxyConfigFromInput() {
           "secure": true,
           "logLevel": proxyOpts.logLevel,
           "pathRewrite": {
-            "^/auth/jwt": proxyServerOptions.jwtPathRewrite
+            "^/auth/jwt": proxyOpts.jwtPathRewrite
           }
         },
         "/auth/sso/*": {
@@ -418,7 +440,7 @@ function createProxyConfigFromInput() {
           "secure": true,
           "logLevel": proxyOpts.logLevel,
           "pathRewrite": {
-            "^/auth/sso": proxyServerOptions.ssoPathRewrite
+            "^/auth/sso": proxyOpts.ssoPathRewrite
           }
         },
         "/config/auth": {

@@ -6,7 +6,7 @@
     "start": "ng serve",
     "start:staging": "ng serve --disableHostCheck --host 0.0.0.0",
     "start:docker": "node inject-env && node webserver",
-    "start:auth": "node ./run/authserver -- writeProxyConfigToFile=true proxyLogLevel=debug adminAuthMode=JWT apiServerUrl=\"http://g2server:2080\" adminAuthPath=\"http://localhost:8000\"",
+    "start:auth": "node ./run/authserver -- writeProxyConfigToFile=true proxyLogLevel=debug authServerPortNumber=8200 adminAuthMode=JWT apiServerUrl=\"http://g2server:2080\"",
     "start:server": "java -jar \"..\\senzing-api-server\\target\\senzing-api-server-1.7.2.jar\" -iniFile \"%LOCALAPPDATA%\\Senzing\\Workbench\\project_1\\g2.ini\" -httpPort 8080 -allowedOrigins \"*\"",
     "build": "ng build",
     "build:docker": "ng build -c docker",

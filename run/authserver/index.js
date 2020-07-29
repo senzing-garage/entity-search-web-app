@@ -27,7 +27,7 @@ var corsOptions = runtimeOptions.config.cors;
 var cspOptions = runtimeOptions.config.csp;
 
 // write proxy conf to file? (we need this for DEV mode)
-if(inMemoryConfigFromInputs.writeProxyConfigToFile) {
+if(inMemoryConfigFromInputs.proxyServerOptions.writeToFile) {
   runtimeOptions.writeProxyConfigToFile("../","proxy.conf.json");
 }
 
@@ -42,7 +42,7 @@ if(auth.useCsp) {
 app.use(bodyParser.json());
 
 // port to run the auth server on
-const SENZING_AUTH_SERVER_PORT = 8000;
+const SENZING_AUTH_SERVER_PORT = authOptions.port;
 let STARTUP_MSG = '';
 
 // cors test endpoint
