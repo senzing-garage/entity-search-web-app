@@ -1,5 +1,0 @@
-{
-  "origin": "${d.corsAllowedOrigin}",
-  "optionsSuccessStatus": 200,
-  "optionsFailureStatus": 401
-}
