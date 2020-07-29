@@ -157,7 +157,7 @@ let staticPath  = path.resolve(path.join(__dirname, '../../', 'dist/entity-searc
 let webCompPath = path.resolve(path.join(__dirname, '../../', '/node_modules/@senzing/sdk-components-web/'));
 app.use('/node_modules/@senzing/sdk-components-web', express.static(webCompPath));
 app.use(express.static(staticPath));
-console.log('\n\n STATIC PATH: '+staticPath,'\n');
+//console.log('\n\n STATIC PATH: '+staticPath,'\n');
 
 // admin auth tokens
 const authRes = (req, res, next) => {
@@ -318,3 +318,25 @@ if( serverOptions && serverOptions.ssl && serverOptions.ssl.enabled ){
 }
 
 console.log( STARTUP_MSG );
+
+console.log('\n\nPress any key to exit...');
+// capture keyboard input for graceful exit
+const readline = require('readline');
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+rl.on('line', (line) => {
+  rl.question('Are you sure you want to exit? (Y/N)', (answer) => {
+    if (answer.match(/^y(es)?$/i)) {
+      ExpressSrvInstance.close(function () {
+        console.log('Express Server shutdown successfully.');
+        process.exit(0);
+      });
+    } else {
+      console.log('\n\nPress any key to exit...');
+      rl.prompt();
+    }
+  });
+});
+rl.prompt();
