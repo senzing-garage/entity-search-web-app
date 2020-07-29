@@ -5,23 +5,41 @@ const serveStatic = require('serve-static');
 const cors = require('cors');
 const apiProxy = require('http-proxy-middleware');
 // authentication
-const auth = require('express-basic-auth');
+const authBasic = require('express-basic-auth');
 // utils
 const path = require('path');
 const fs = require('fs');
 const url = require('url');
 const csp = require(`helmet-csp`);
 const winston = require(`winston`);
-const AuthModule = require('../../auth/auth');
-const AdminAuth = AuthModule.module;
+
+// utils
+const AuthModule = require('../authserver/auth');
+const inMemoryConfig = require("../runtime.datastore");
+const inMemoryConfigFromInputs = require('../runtime.datastore.config');
+const runtimeOptions = new inMemoryConfig(inMemoryConfigFromInputs);
+
+// grab env/cmdline vars
+const authOptions = runtimeOptions.config.auth;
+const auth        = new AuthModule( runtimeOptions.config );
+
+// cors
+var corsOptions   = runtimeOptions.config.cors;
+// csp
+var cspOptions    = runtimeOptions.config.csp;
+
+// write proxy conf to file? (we need this for DEV mode)
+if(inMemoryConfigFromInputs.proxyServerOptions.writeToFile) {
+  runtimeOptions.writeProxyConfigToFile("../","proxy.conf.json");
+}
 
 // grab env vars
 let env = process.env;
 // server(s)
 const app = express();
 // auth module
-const authOptions = AuthModule.getOptionsFromInput();
-const adminAuth = new AdminAuth( authOptions );
+//const authOptions = AuthModule.getOptionsFromInput();
+//const adminAuth = new AdminAuth( authOptions );
 let STARTUP_MSG = '';
 
 // api config
@@ -39,19 +57,19 @@ var cfg = {
 }
 
 // security options and middleware
-if(adminAuth.useCors) {
+if(auth.useCors) {
   const corsOptions = JSON.parse( fs.readFileSync(__dirname + path.sep + 'auth'+ path.sep +'cors.conf.json', 'utf8') );
   STARTUP_MSG = STARTUP_MSG + '\n'+'-- CORS ENABLED --';
   app.options('*', cors(corsOptions)) // include before other routes
 }
-if(adminAuth.useCsp) {
+if(auth.useCsp) {
   const cspOptions = require('../../auth/csp.conf');
   STARTUP_MSG = STARTUP_MSG + '\n'+'-- CSP ENABLED --';
   app.use(csp(cspOptions)); //csp options
 }
 // cors test endpoint
 app.get('/cors/test', (req, res, next) => {
-  res.status(200).json( adminAuth.authConfig );
+  res.status(200).json( authOptions );
 });
 app.post(`/api/csp/report`, (req, res) => {
   winston.warn(`CSP header violation`, req.body[`csp-report`])
@@ -83,7 +101,7 @@ if( cfg.SENZING_WEB_SERVER_BASIC_AUTH_JSON ){
     if (fs.existsSync(_authJSONPath)) {
       //file exists
       // Basic Auth
-      app.use(auth({
+      app.use(authBasic({
         challenge: true,
         users: require( _authJSONPath )
       }));
@@ -130,18 +148,18 @@ const authRes = (req, res, next) => {
   });
 };
 
-if(adminAuth.authConfig) {
+if(authOptions) {
   app.get('/conf/auth', (req, res, next) => {
-    res.status(200).json( adminAuth.authConfig );
+    res.status(200).json( authOptions );
   });
   app.get('/conf/auth/admin', (req, res, next) => {
-    res.status(200).json( adminAuth.authConfig.admin );
+    res.status(200).json( authOptions.admin );
   });
   app.get('/conf/auth/operator', (req, res, next) => {
-    res.status(200).json( adminAuth.authConfig.operator );
+    res.status(200).json( authOptions.operator );
   });
 
-  if(adminAuth.authConfig.admin && adminAuth.authConfig.admin.mode === 'SSO' || adminAuth.authConfig.admin.mode === 'EXTERNAL') {
+  if(authOptions.admin && authOptions.admin.mode === 'SSO' || authOptions.admin.mode === 'EXTERNAL') {
     const ssoResForceTrue = (req, res, next) => {
       res.status(200).json({
         authorized: true,
@@ -163,13 +181,13 @@ if(adminAuth.authConfig) {
     STARTUP_MSG = STARTUP_MSG + '\n'+'--- Auth SETTINGS ---';
     STARTUP_MSG = STARTUP_MSG + '\n'+'';
     //STARTUP_MSG = STARTUP_MSG + '\n'+'/admin area:';
-    STARTUP_MSG = STARTUP_MSG + '\n'+ JSON.stringify(adminAuth.authConfig, null, "  ");
+    STARTUP_MSG = STARTUP_MSG + '\n'+ JSON.stringify(authOptions, null, "  ");
     STARTUP_MSG = STARTUP_MSG + '\n'+'';
     //STARTUP_MSG = STARTUP_MSG + '\n'+'/ operators:';
     //STARTUP_MSG = STARTUP_MSG + '\n'+ JSON.stringify(adminAuth.authConfig.admin, null, "  ");
     STARTUP_MSG = STARTUP_MSG + '\n'+'---------------------';
 
-  } else if(adminAuth.authConfig.admin.mode === 'JWT' || adminAuth.authConfig.admin.mode === 'BUILT-IN') {
+  } else if(authOptions.admin.mode === 'JWT' || authOptions.admin.mode === 'BUILT-IN') {
     const jwtRes = (req, res, next) => {
       const body = req.body;
       const encodedToken = (body && body.adminToken) ? body.adminToken : req.query.adminToken;
@@ -192,18 +210,18 @@ if(adminAuth.authConfig) {
     app.get('/jwt/admin/login', jwtResForceTrue);
     */
 
-    app.post('/jwt/admin/status', adminAuth.auth.bind(adminAuth), jwtRes);
-    app.post('/jwt/admin/login', adminAuth.login.bind(adminAuth));
-    app.get('/jwt/admin/status', adminAuth.auth.bind(adminAuth), jwtRes);
-    app.get('/jwt/admin/login', adminAuth.auth.bind(adminAuth), jwtRes);
+    app.post('/jwt/admin/status', auth.auth.bind(auth), jwtRes);
+    app.post('/jwt/admin/login', auth.login.bind(auth));
+    app.get('/jwt/admin/status', auth.auth.bind(auth), jwtRes);
+    app.get('/jwt/admin/login', auth.auth.bind(auth), jwtRes);
 
     /** operator endpoints */
-    if(adminAuth.authConfig.operator && adminAuth.authConfig.operator.mode === 'JWT') {
+    if(authOptions.operator && authOptions.operator.mode === 'JWT') {
       // token auth for operators
-      app.post('/jwt/status', adminAuth.auth.bind(adminAuth), jwtRes);
-      app.post('/jwt/login', adminAuth.login.bind(adminAuth));
-      app.get('/jwt/status', adminAuth.auth.bind(adminAuth), jwtRes);
-      app.get('/jwt/login', adminAuth.auth.bind(adminAuth), jwtRes);
+      app.post('/jwt/status', auth.auth.bind(adminAuth), jwtRes);
+      app.post('/jwt/login', auth.login.bind(adminAuth));
+      app.get('/jwt/status', auth.auth.bind(adminAuth), jwtRes);
+      app.get('/jwt/login', auth.auth.bind(adminAuth), jwtRes);
     } else {
       // always return true for operators
       app.post('/jwt/status', jwtResForceTrue);
@@ -218,11 +236,11 @@ if(adminAuth.authConfig) {
     STARTUP_MSG = STARTUP_MSG + '\n'+'';
     STARTUP_MSG = STARTUP_MSG + '\n'+'---------------------';
     STARTUP_MSG = STARTUP_MSG + '\n'+'';
-    STARTUP_MSG = STARTUP_MSG + '\n'+'ADMIN SECRET: '+ adminAuth.TOKEN_SECRET;
-    STARTUP_MSG = STARTUP_MSG + '\n'+'ADMIN SEED:   '+ adminAuth.ADMINTOKEN;
+    STARTUP_MSG = STARTUP_MSG + '\n'+'ADMIN SECRET: '+ auth.secret;
+    STARTUP_MSG = STARTUP_MSG + '\n'+'ADMIN SEED:   '+ auth.seed;
     STARTUP_MSG = STARTUP_MSG + '\n'+'';
     STARTUP_MSG = STARTUP_MSG + '\n'+'ADMIN TOKEN:  ';
-    STARTUP_MSG = STARTUP_MSG + '\n'+ adminAuth.token;
+    STARTUP_MSG = STARTUP_MSG + '\n'+ auth.token;
     STARTUP_MSG = STARTUP_MSG + '\n'+'';
     STARTUP_MSG = STARTUP_MSG + '\n'+'---------------------';
     STARTUP_MSG = STARTUP_MSG + '\n'+'Copy and Paste the line above when prompted for the Admin Token in the admin area.';
@@ -251,14 +269,6 @@ if(adminAuth.authConfig) {
     STARTUP_MSG = STARTUP_MSG + '\n'+'';
   }
 }
-/*
-app.post('/jwt/login', adminAuth.login.bind(adminAuth));
-app.post('/jwt/auth', adminAuth.auth.bind(adminAuth), authRes);
-app.get('/jwt/auth', adminAuth.auth.bind(adminAuth), authRes);
-app.get('/jwt/protected', adminAuth.auth.bind(adminAuth), authRes);
-app.post('/admin/auth/jwt/auth', adminAuth.auth.bind(adminAuth), authRes);
-app.get('/admin/auth/jwt/auth', adminAuth.auth.bind(adminAuth), authRes);
-*/
 
 // SPA page
 app.use('*',function(req, res) {

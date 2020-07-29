@@ -35,22 +35,7 @@ function createCorsConfigFromInput( dirToWriteTo ) {
   }
 
   // grab cmdline args
-  //let cl = process.argv;
   let corsOpts = getCommandLineArgsAsJSON();
-
-  /*if(cl && cl.forEach){
-    corsOpts = {};
-    cl.forEach( (val, ind, arr) => {
-      let retVal = val;
-      let retKey = val;
-      if(val && val.indexOf && val.indexOf('=')){
-        retKey = (val.split('='))[0];
-        retVal = (val.split('='))[1];
-      }
-      corsOpts[ retKey ] = retVal;
-    })
-  }*/
-
   if(corsOpts && corsOpts.corsAllowedOrigin) {
     retConfig = {
       "origin": corsOpts.corsAllowedOrigin,
@@ -59,38 +44,6 @@ function createCorsConfigFromInput( dirToWriteTo ) {
     };
   }
 
-  /*
-  if(corsOpts && corsOpts.corsAllowedOrigin) {
-    // compile new auth conf
-    let corsTmpl = fs.readFileSync(corsTemplate, 'utf8');
-    let corsTmplAction = compile(corsTmpl);
-
-    fs.writeFile(__dirname + path.sep + 'cors.conf.json', corsTmplAction(corsOpts), function(err){
-      if(!err) {
-          //file written on disk
-          console.log('wrote cors.conf.output.json \n',corsOpts);
-      } else {
-          console.log('could not write cors.conf.json', err);
-      }
-    });
-  } else {
-    // shrug, allow everything?
-    // delete the cors.conf.json file
-    try {
-      if(fs.existsSync(__dirname + path.sep + 'cors.conf.json')) {
-        fs.unlink(__dirname + path.sep + 'cors.conf.json', function(err) {
-          if(!err) {
-            // successfully removed file
-          } else {
-            console.log('could not remove cors.conf.json',err);
-          }
-        });
-      }
-    } catch(err){
-      console.log('no cors conf to remove..');
-    }
-  }
-  */
   return retConfig;
 }
 
@@ -195,11 +148,19 @@ function createAuthConfigFromInput() {
   }
   if(env.SENZING_WEB_SERVER_PORT) {
     retConfig = retConfig !== undefined ? retConfig : {};
-    retConfig.port = SENZING_WEB_SERVER_PORT;
+    retConfig.port = env.SENZING_WEB_SERVER_PORT;
   }
   if(env.SENZING_WEB_SERVER_HOSTNAME) {
     retConfig = retConfig !== undefined ? retConfig : {};
-    retConfig.hostname = SENZING_WEB_SERVER_HOSTNAME;
+    retConfig.hostname = env.SENZING_WEB_SERVER_HOSTNAME;
+  }
+  if(env.SENZING_WEB_SERVER_ADMIN_SECRET) {
+    retConfig = retConfig !== undefined ? retConfig : {};
+    retConfig.adminSecret = env.SENZING_WEB_SERVER_ADMIN_SECRET;
+  }
+  if(env.SENZING_WEB_SERVER_ADMIN_SEED) {
+    retConfig = retConfig !== undefined ? retConfig : {};
+    retConfig.adminToken = env.SENZING_WEB_SERVER_ADMIN_SEED;
   }
   // -------------------- end ENV vars import ------------------
   // -------------------- start CMD LINE ARGS import -----------
@@ -274,6 +235,73 @@ function createAuthConfigFromInput() {
   //console.log('Write to Directory: ', __dirname);
 
   return retConfig;
+}
+function getWebServerOptionsFromInput() {
+  let retOpts = {
+    port: 4200,
+    hostname: 'localhost',
+    apiPath: '/api',
+    authPath: 'http://localhost:8080',
+    authMode: 'JWT',
+    apiServerUrl: 'http://localhost:8080',
+    ssl: {
+      certPath: "/run/secrets/server.cert",
+      keyPath: "/run/secrets/server.key"
+    }
+  }
+  // update defaults with ENV options(if preset)
+  if(env){
+    retOpts.port          = env.SENZING_WEB_SERVER_PORT ?             env.SENZING_WEB_SERVER_PORT             : retOpts.port;
+    retOpts.hostname      = env.SENZING_WEB_SERVER_HOSTNAME ?         env.SENZING_WEB_SERVER_HOSTNAME         : retOpts.hostname;
+    retOpts.apiPath       = env.SENZING_WEB_SERVER_API_PATH ?         env.SENZING_WEB_SERVER_API_PATH         : retOpts.apiPath;
+    retOpts.authPath      = env.SENZING_WEB_SERVER_AUTH_PATH ?        env.SENZING_WEB_SERVER_AUTH_PATH        : retOpts.authPath;
+    retOpts.authMode      = env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE ?  env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE  : retOpts.authMode;
+    retOpts.apiServerUrl  = env.SENZING_API_SERVER_URL ?              env.SENZING_API_SERVER_URL              : retOpts.apiServerUrl;
+    if(env.SENZING_WEB_SERVER_SSL_CERT_PATH) {
+      retOpts.ssl.certPath = env.SENZING_WEB_SERVER_SSL_CERT_PATH;
+    }
+    if(env.SENZING_WEB_SERVER_SSL_KEY_PATH) {
+      retOpts.ssl.keyPath = env.SENZING_WEB_SERVER_SSL_KEY_PATH;
+    }
+    if(env.SENZING_WEB_SERVER_BASIC_AUTH_JSON) {
+      retOpts.authBasicJson = env.SENZING_WEB_SERVER_BASIC_AUTH_JSON;
+    }
+  }
+
+  // now get cmdline options and override any defaults or ENV options
+  let cmdLineOpts = getCommandLineArgsAsJSON();
+  if(cmdLineOpts && cmdLineOpts !== undefined) {
+    retOpts.port          = cmdLineOpts.webServerPortNumber ?   cmdLineOpts.webServerPortNumber   : retOpts.port;
+    retOpts.hostname      = cmdLineOpts.webServerHostName ?     cmdLineOpts.webServerHostName     : retOpts.hostname;
+    retOpts.apiPath       = cmdLineOpts.webServerApiPath ?      cmdLineOpts.webServerApiPath      : retOpts.apiPath;
+    retOpts.authPath      = cmdLineOpts.webServerAuthPath ?     cmdLineOpts.webServerAuthPath     : retOpts.authPath;
+    retOpts.authMode      = cmdLineOpts.webServerAuthMode ?     cmdLineOpts.webServerAuthMode     : retOpts.authMode;
+    retOpts.apiServerUrl  = cmdLineOpts.webServerApiServerUrl ? cmdLineOpts.webServerApiServerUrl : retOpts.apiServerUrl;
+    if(retOpts.sslCertPath) {
+      retOpts.ssl = retOpts.ssl ? retOpts.ssl : {};
+      retOpts.ssl.certPath  = retOpts.sslCertPath;
+    }
+    if(retOpts.sslKeyPath) {
+      retOpts.ssl = retOpts.ssl ? retOpts.ssl : {};
+      retOpts.ssl.keyPath   = retOpts.sslKeyPath;
+    }
+  }
+
+  if(retOpts.ssl && retOpts.ssl !== undefined && retOpts.ssl.certPath && retOpts.ssl.keyPath) {
+
+  } else {
+    // for SSL support we need both options
+    // remove "ssl" node when invalid
+    retOpts.ssl = undefined;
+    delete retOpts.ssl;
+  }
+
+  return retOpts;
+}
+
+function createWebServerConfigFromInput() {
+  let retOpts = getWebServerOptionsFromInput();
+  return retOpts;
 }
 
 function getProxyServerOptionsFromInput() {
@@ -469,9 +497,11 @@ function createProxyConfigFromInput() {
 }
 
 module.exports = {
+  "web": createWebServerConfigFromInput(),
   "auth": createAuthConfigFromInput(),
   "cors": createCorsConfigFromInput(),
   "csp": createCspConfigFromInput(),
   "proxy": createProxyConfigFromInput(),
-  "proxyServerOptions": getProxyServerOptionsFromInput()
+  "proxyServerOptions": getProxyServerOptionsFromInput(),
+  "webServerOptions": getWebServerOptionsFromInput()
 }
