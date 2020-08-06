@@ -5,7 +5,7 @@ import { Observable, of, from, interval, Subject } from 'rxjs';
 import { map, catchError, tap, switchMap } from 'rxjs/operators';
 import { SzConfigurationService, SzAdminService, SzServerInfo, SzBaseResponseMeta } from '@senzing/sdk-components-ng';
 import { HttpClient } from '@angular/common/http';
-import { AuthConfig } from '../common/auth-config.factory';
+import { AuthConfig, SzWebAppConfigService } from './config.service';
 
 /**
  * A service used to provide methods and services
@@ -31,6 +31,14 @@ export class AdminAuthService {
   private _authConfig: AuthConfig;
   private _configLoadedFromResource = false;
 
+  public get authConfig(): AuthConfig | undefined {
+    return this._authConfig;
+  }
+
+  public get authConfigLoaded(): boolean {
+    return (this._authConfig && this._authConfig !== undefined) ? true : false;
+  }
+
   /** whether or not a user is granted admin rights */
   private _isAuthenticated: boolean = true;
   /** interval that the service queries for session authentication check */
@@ -53,17 +61,25 @@ export class AdminAuthService {
    * when the authenticated status of the current user has changed
    */
   public onAdminAuthenticatedChange: Subject<boolean> =  new Subject<boolean>();
+  /**
+   * when the config file is updated
+   */
+  private _onAuthConfigLoaded: Subject<AuthConfig> =  new Subject<AuthConfig>();
+  public onAuthConfigLoaded = this._onAuthConfigLoaded.asObservable();
 
   constructor(
     private http: HttpClient,
     private router: Router,
     private configService: SzConfigurationService,
     private adminService: SzAdminService,
-    @Inject('authConfigProvider') private staticAuthConfig: any
+    private webappConfigService: SzWebAppConfigService
   ) {
     //console.warn('AUTH config! ', authConfig);
-    this._authConfig = staticAuthConfig && staticAuthConfig.default ? this.staticAuthConfig.default : this.staticAuthConfig;
-
+    this._authConfig = this.webappConfigService.authConfig;
+    this.webappConfigService.onAuthConfigChange.subscribe((authConf: AuthConfig) => {
+      this._authConfig = authConf;
+      this._onAuthConfigLoaded.next(authConf);
+    });
 
     // make initial requests
     this.checkServerInfo();
@@ -71,6 +87,7 @@ export class AdminAuthService {
       if(aConf) {
         this._configLoadedFromResource = true;
         this._authConfig = aConf;
+        this._onAuthConfigLoaded.next(aConf);
         console.log('got initial auth config! ', this._authConfig);
       }
     });
@@ -80,7 +97,8 @@ export class AdminAuthService {
   }
 
   updateAuthConfig(): Observable<AuthConfig> {
-    return this.http.get<AuthConfig>('/config/auth');
+    return this.webappConfigService.getRuntimeAuthConfig();
+    //return this.http.get<AuthConfig>('/config/auth');
   }
 
   getIsAuthorized(adminToken?: string) {
@@ -171,6 +189,7 @@ export class AdminAuthService {
         tap((aConf) => {
           if(aConf) {
             this._authConfig = aConf;
+            this._onAuthConfigLoaded.next(aConf);
           }
         })
     );

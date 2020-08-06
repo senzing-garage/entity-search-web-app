@@ -1,5 +1,5 @@
 
-import { apiConfig, securityConfig, environment } from '../../environments/environment';
+import { apiConfig, environment } from '../../environments/environment';
 
 export interface AuthConfig {
     admin: {
@@ -14,14 +14,4 @@ export interface AuthConfig {
       redirectOnFailure: boolean;
       loginUrl?: string;
     };
-}
-
-/**
- * create exportable config factory
- * for AOT compilation.
- *
- * @export
- */
-export function AuthConfigFactory(): AuthConfig {
-  return securityConfig;
 }
