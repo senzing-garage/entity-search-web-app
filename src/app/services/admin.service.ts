@@ -88,7 +88,7 @@ export class AdminAuthService {
         this._configLoadedFromResource = true;
         this._authConfig = aConf;
         this._onAuthConfigLoaded.next(aConf);
-        console.log('got initial auth config! ', this._authConfig);
+        //console.log('got initial auth config! ', this._authConfig);
       }
     });
     // poll for updates
