@@ -111,7 +111,7 @@ function createAuthConfigFromInput() {
     if(env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE) {
       retConfig = retConfig !== undefined ? retConfig : {};
       retConfig.admin = {};
-      if(SENZING_WEB_SERVER_ADMIN_AUTH_MODE === 'JWT'){
+      if(env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE === 'JWT'){
         retConfig.admin = {
           "mode": "JWT",
           "checkUrl": env.SENZING_WEB_SERVER_ADMIN_AUTH_STATUS ? env.SENZING_WEB_SERVER_ADMIN_AUTH_STATUS : "/admin/auth/jwt/status",
