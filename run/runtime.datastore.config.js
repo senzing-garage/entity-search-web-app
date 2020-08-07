@@ -328,10 +328,13 @@ function getProxyServerOptionsFromInput() {
     }
     if(env.SENZING_AUTH_SERVER_PORT || env.SENZING_WEB_SERVER_PORT) {
       retOpts.authServerPortNumber  = (env.SENZING_AUTH_SERVER_PORT) ? env.SENZING_AUTH_SERVER_PORT : env.SENZING_WEB_SERVER_PORT;
-      retOpts.adminAuthPath         = "http://"+ retOpts.authServerPortNumber +":"+ retOpts.authServerPortNumber;
+      retOpts.adminAuthPath         = "http://"+ retOpts.authServerHostName +":"+ retOpts.authServerPortNumber;
     }
     if(env.SENZING_WEB_SERVER_AUTH_PATH) {
       retOpts.adminAuthPath = env.SENZING_WEB_SERVER_AUTH_PATH;
+    }
+    if(env.SENZING_WEB_SERVER_ADMIN_AUTH_PATH) {
+      retOpts.adminAuthPath = env.SENZING_WEB_SERVER_ADMIN_AUTH_PATH;
     }
     if(env.SENZING_API_SERVER_URL) {
       retOpts.apiServerUrl = env.SENZING_API_SERVER_URL;
