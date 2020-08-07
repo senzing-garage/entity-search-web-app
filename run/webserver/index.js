@@ -40,21 +40,7 @@ if(inMemoryConfigFromInputs.proxyServerOptions.writeToFile) {
 // server(s)
 const app = express();
 let STARTUP_MSG = '';
-STARTUP_MSG += "\t RUNTIME OPTIONS: "+ JSON.stringify(inMemoryConfigFromInputs, undefined, 2);
-
-/*
-var cfg = {
-  SENZING_WEB_SERVER_PORT: (env.SENZING_WEB_SERVER_PORT ? env.SENZING_WEB_SERVER_PORT : 4200),
-  SENZING_WEB_SERVER_API_PATH: (env.SENZING_WEB_SERVER_API_PATH ? env.SENZING_WEB_SERVER_API_PATH : "/api"),
-  SENZING_WEB_SERVER_AUTH_PATH: (env.SENZING_WEB_SERVER_AUTH_PATH ? env.SENZING_WEB_SERVER_AUTH_PATH : "http://localhost:8080"),
-  SENZING_WEB_SERVER_ADMIN_AUTH_MODE: (env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE ? env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE : "JWT"),
-  SENZING_API_SERVER_URL: (env.SENZING_API_SERVER_URL ? env.SENZING_API_SERVER_URL : "http://localhost:8080"),
-  SENZING_WEB_SERVER_SSL_CERT_PATH: (env.SENZING_WEB_SERVER_SSL_CERT_PATH ? env.SENZING_WEB_SERVER_SSL_CERT_PATH : "/run/secrets/server.cert"),
-  SENZING_WEB_SERVER_SSL_KEY_PATH: (env.SENZING_WEB_SERVER_SSL_KEY_PATH ? env.SENZING_WEB_SERVER_SSL_KEY_PATH : "/run/secrets/server.key"),
-  SENZING_WEB_SERVER_SSL_SUPPORT: (this.SENZING_WEB_SERVER_SSL_CERT_PATH && this.SENZING_WEB_SERVER_SSL_KEY_PATH ? true : false),
-  SENZING_WEB_SERVER_BASIC_AUTH_JSON: (env.SENZING_WEB_SERVER_BASIC_AUTH_JSON ? env.SENZING_WEB_SERVER_BASIC_AUTH_JSON : false),
-  SENZING_WEB_SERVER_BASIC_AUTH: (this.SENZING_WEB_SERVER_BASIC_AUTH_JSON ? true : false),
-}*/
+//STARTUP_MSG += "\t RUNTIME OPTIONS: "+ JSON.stringify(inMemoryConfigFromInputs, undefined, 2);
 
 // security options and middleware
 if(corsOptions && corsOptions.origin) {
@@ -106,27 +92,6 @@ if( serverOptions.authBasicJson ){
     delete serverOptions.authBasicJson;
   }
 
-  //STARTUP_MSG = STARTUP_MSG + '\n'+'\tJSON DB:'+ serverOptions.authBasicJson +'\n';
-
-  /*
-  const _authJSONPath = (cfg.SENZING_WEB_SERVER_BASIC_AUTH_JSON && cfg.SENZING_WEB_SERVER_BASIC_AUTH_JSON.substr(0,1) !== '/') ? path.join(__dirname + path.sep + cfg.SENZING_WEB_SERVER_BASIC_AUTH_JSON) : cfg.SENZING_WEB_SERVER_BASIC_AUTH_JSON ;
-  try {
-    if (fs.existsSync(_authJSONPath)) {
-      //file exists
-      // Basic Auth
-      app.use(authBasic({
-        challenge: true,
-        users: require( _authJSONPath )
-      }));
-      STARTUP_MSG = STARTUP_MSG + '\n'+'-- AUTH MODULE ENABLED --';
-      STARTUP_MSG = STARTUP_MSG + '\n'+'\tJSON DB PATH:'+ _authJSONPath +'\n';
-    } else {
-      STARTUP_MSG = STARTUP_MSG + '\n'+'-- AUTH MODULE ERROR: auth JSON not found ('+ _authJSONPath +') --\n';
-    }
-  } catch(err) {
-    STARTUP_MSG = STARTUP_MSG + '\n'+'-- AUTH MODULE DISABLED : '+ err +' --\n';
-    cfg.SENZING_WEB_SERVER_BASIC_AUTH = false;
-  }*/
 } else {
   STARTUP_MSG = STARTUP_MSG + '\n'+'-- BASIC AUTH MODULE DISABLED : no basic auth json provided --';
 }
