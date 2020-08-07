@@ -40,6 +40,7 @@ if(inMemoryConfigFromInputs.proxyServerOptions.writeToFile) {
 // server(s)
 const app = express();
 let STARTUP_MSG = '';
+STARTUP_MSG += "\t RUNTIME OPTIONS: "+ JSON.stringify(inMemoryConfigFromInputs, undefined, 2);
 
 /*
 var cfg = {

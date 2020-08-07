@@ -249,7 +249,7 @@ function getWebServerOptionsFromInput() {
       keyPath: "/run/secrets/server.key"
     }
   }
-  // update defaults with ENV options(if preset)
+  // update defaults with ENV options(if present)
   if(env){
     retOpts.port          = env.SENZING_WEB_SERVER_PORT ?             env.SENZING_WEB_SERVER_PORT             : retOpts.port;
     retOpts.hostname      = env.SENZING_WEB_SERVER_HOSTNAME ?         env.SENZING_WEB_SERVER_HOSTNAME         : retOpts.hostname;
@@ -318,6 +318,46 @@ function getProxyServerOptionsFromInput() {
     writeToFile: false,
   };
 
+  // update defaults with ENV options(if present)
+  if(env){
+    if(env.SENZING_WEB_SERVER_PROXY_LOGLEVEL) {
+      retOpts.logLevel = env.SENZING_WEB_SERVER_PROXY_LOGLEVEL;
+    }
+    if(env.SENZING_AUTH_SERVER_HOSTNAME || env.SENZING_WEB_SERVER_HOSTNAME) {
+      retOpts.authServerHostName    = (env.SENZING_AUTH_SERVER_HOSTNAME) ? env.SENZING_AUTH_SERVER_HOSTNAME : env.SENZING_WEB_SERVER_HOSTNAME;
+    }
+    if(env.SENZING_AUTH_SERVER_PORT || env.SENZING_WEB_SERVER_PORT) {
+      retOpts.authServerPortNumber  = (env.SENZING_AUTH_SERVER_PORT) ? env.SENZING_AUTH_SERVER_PORT : env.SENZING_WEB_SERVER_PORT;
+      retOpts.adminAuthPath         = "http://"+ retOpts.authServerPortNumber +":"+ retOpts.authServerPortNumber;
+    }
+    if(env.SENZING_WEB_SERVER_AUTH_PATH) {
+      retOpts.adminAuthPath = env.SENZING_WEB_SERVER_AUTH_PATH;
+    }
+    if(env.SENZING_API_SERVER_URL) {
+      retOpts.apiServerUrl = env.SENZING_API_SERVER_URL;
+    }
+    /*if(env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE) {
+      retOpts.authMode = env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE;
+    }*/
+
+    if(env.SENZING_AUTH_SERVER_JWTPATH_REWRITE) {
+      retOpts.jwtPathRewrite = env.SENZING_AUTH_SERVER_JWTPATH_REWRITE;
+    }
+    if(env.SENZING_AUTH_SERVER_SSOPATH_REWRITE) {
+      retOpts.ssoPathRewrite = env.SENZING_AUTH_SERVER_SSOPATH_REWRITE;
+    }
+    if(env.SENZING_AUTH_SERVER_ADMIN_JWTPATH_REWRITE) {
+      retOpts.adminJwtPathRewrite = env.SENZING_AUTH_SERVER_ADMIN_JWTPATH_REWRITE;
+    }
+    if(env.SENZING_AUTH_SERVER_ADMIN_SSOPATH_REWRITE) {
+      retOpts.adminSsoPathRewrite = env.SENZING_AUTH_SERVER_ADMIN_SSOPATH_REWRITE;
+    }
+    if(env.SENZING_AUTH_SERVER_WRITE_CONFIG_TO_FILE === 'true' || env.SENZING_AUTH_SERVER_WRITE_CONFIG_TO_FILE === 'TRUE') {
+      retOpts.writeToFile = true;
+    }
+  }
+
+  // now get cmdline options and override any defaults or ENV options
   let cmdLineOpts = getCommandLineArgsAsJSON();
   if(cmdLineOpts && cmdLineOpts !== undefined) {
     if(cmdLineOpts.authServerPortNumber) {
