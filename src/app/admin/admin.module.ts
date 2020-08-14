@@ -35,9 +35,7 @@ export function tokenGetter() {
   return localStorage.getItem('access_token');
 }
 import { SzRestConfigurationFactory } from '../common/sdk-config.factory';
-import { AuthConfigFactory } from '../common/auth-config.factory';
-
-export const authConfigProvider = new InjectionToken('authConfig');
+import { SzWebAppConfigService } from '../services/config.service';
 
 @NgModule({
   declarations: [
@@ -79,10 +77,7 @@ export const authConfigProvider = new InjectionToken('authConfig');
        useClass: OAuthInterceptor,
        multi: true
     },
-    {
-      provide: 'authConfigProvider',
-      useFactory: AuthConfigFactory,
-    }
+    SzWebAppConfigService
   ]
 })
 export class AdminModule { }
