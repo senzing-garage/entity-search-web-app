@@ -136,7 +136,7 @@ const authRes = (req, res, next) => {
   });
 };
 
-if(authOptions) {
+if(authOptions && authOptions !== undefined) {
   app.get('/conf/auth', (req, res, next) => {
     res.status(200).json( authOptions );
   });
@@ -147,7 +147,7 @@ if(authOptions) {
     res.status(200).json( authOptions.operator );
   });
 
-  if(authOptions.admin && authOptions.admin.mode === 'SSO' || authOptions.admin.mode === 'EXTERNAL') {
+  if(authOptions.admin && authOptions.admin.mode === 'SSO' || authOptions.admin && authOptions.admin.mode === 'EXTERNAL') {
     const ssoResForceTrue = (req, res, next) => {
       res.status(200).json({
         authorized: true,
@@ -175,7 +175,7 @@ if(authOptions) {
     //STARTUP_MSG = STARTUP_MSG + '\n'+ JSON.stringify(adminAuth.authConfig.admin, null, "  ");
     STARTUP_MSG = STARTUP_MSG + '\n'+'---------------------';
 
-  } else if(authOptions.admin.mode === 'JWT' || authOptions.admin.mode === 'BUILT-IN') {
+  } else if(authOptions.admin && authOptions.admin.mode === 'JWT' || authOptions.admin && authOptions.admin.mode === 'BUILT-IN') {
     const jwtRes = (req, res, next) => {
       const body = req.body;
       const encodedToken = (body && body.adminToken) ? body.adminToken : req.query.adminToken;
