@@ -41,8 +41,6 @@ RUN npm config set loglevel warn \
 COPY ./rootfs /
 COPY . /app
 COPY --chown=1001:1001 ./proxy.conf.json /app
-COPY --chown=1001:1001 ./auth/auth.conf.json /app/auth/auth.conf.json
-COPY --chown=1001:1001 ./auth/csp.conf.js /app/auth/csp.conf.js
 
 # Build app. build as root and switch back
 USER root
