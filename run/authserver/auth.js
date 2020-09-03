@@ -2,7 +2,7 @@
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const uuidv4 = require('uuid/v4');
-const compile = require('template-literal');
+//const compile = require('template-literal');
 const path = require('path');
 
 // grab env vars
