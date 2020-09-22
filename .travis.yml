@@ -15,8 +15,9 @@ cache:
 
 install:
   - travis_wait npm install
-  - travis_wait npm install -g @angular/cli
+  - travis_wait npm install -g @angular/cli@10.0.0
 
 script:
 - npm run test:headless
 - npm run build
+# npm run e2e

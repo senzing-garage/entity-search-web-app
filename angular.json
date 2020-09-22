@@ -23,6 +23,11 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "aot": true,
+            "allowedCommonJsDependencies": [
+              "zone.js/dist/zone-error",
+              "jspdf",
+              "canvg"
+            ],
             "assets": [
               "src/favicon.ico",
               "src/assets"
@@ -164,6 +169,9 @@
           "configurations": {
             "production": {
               "devServerTarget": "entity-search-web-app:serve:production"
+            },
+            "e2e": {
+              "devServerTarget": "entity-search-web-app:serve:e2e"
             }
           }
         }
