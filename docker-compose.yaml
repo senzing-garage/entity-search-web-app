@@ -2,7 +2,7 @@ version: '3.3'
 services:
 
   senzing-api-server:
-    image: senzing/senzing-api-server:${SENZING_API_SERVER_VERSION:-2.0.0}
+    image: senzing/senzing-api-server:${SENZING_API_SERVER_VERSION:-2.0.1}
     container_name: senzing-api-server
     command:
       - -httpPort
