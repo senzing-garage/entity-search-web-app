@@ -22,8 +22,6 @@ import { AboutComponent } from './about/about.component';
 import { BlankComponent } from './common/blank/blank.component';
 
 export const routes: Routes = [
-  /*{ path: 'admin', component: AdminComponent, data: { animation: 'search-results' }},
-  { path: 'admin/datasources', component: AdminDataSourcesComponent },*/
   { path: 'debug', component: BlankComponent},
   { path: 'search', component: TipsComponent, resolve:  {entityId: CurrentEntityUnResolverService}, data: { animation: 'search-results' }},
   { path: 'search/results', component: SearchResultsComponent, resolve: { params: SearchParamsResolverService, results: SearchResultsResolverService }, data: { animation: 'search-results' } },
