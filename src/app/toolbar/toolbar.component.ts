@@ -90,28 +90,35 @@ export class ToolbarComponent implements OnInit, OnDestroy {
     this.uiService.searchExpanded = true;
   }
 
+  /** show the search form if hidden and scroll window to top */
+  public showSearchByAttributeForm() {
+    this.uiService.searchType = 'default';
+    this.showSearch();
+    this.scrollToTop();
+  }
+
   public get searchById(): boolean {
     return this.uiService.searchType === 'id';
   }
   public set searchById(value: boolean) {
     this.uiService.searchType = (value === true) ? 'id' : 'default';
-    //this.uiService.searchType = (value) ? 'id' : 'default';
-    //this.showSection.emit('searchById');
-    console.log('set searchById to: ', this.searchById, value, (value === true), this.uiService.searchType);
+    this.showSearch();
+    this.scrollToTop();
+    //console.log('set searchById to: ', this.searchById, value, (value === true), this.uiService.searchType);
   }
   public get showResultsAsList(): boolean {
     return (this.uiService.resultsViewType === 'list' || this.uiService.resultsViewType === 'default');
   }
   public set showResultsAsList(value: boolean) {
     this.uiService.resultsViewType = (value === true) ? 'list' : 'default';
-    console.log('set showResultsAsList to: ', this.searchById, value, (value === true), this.uiService.searchType);
+    //console.log('set showResultsAsList to: ', this.searchById, value, (value === true), this.uiService.searchType);
   }
   public get showResultsAsGraph(): boolean {
     return this.uiService.resultsViewType === 'graph';
   }
   public set showResultsAsGraph(value: boolean) {
     this.uiService.resultsViewType = (value === true) ? 'graph' : 'list';
-    console.log('set showResultsAsGraph to: ', this.showResultsAsGraph, value, (value === true), this.uiService);
+    //console.log('set showResultsAsGraph to: ', this.showResultsAsGraph, value, (value === true), this.uiService);
   }
 
   /** true if the search tray is expanded. false if not. */
@@ -169,6 +176,19 @@ export class ToolbarComponent implements OnInit, OnDestroy {
       }
       this.aboutInfoIsShowing = true;
     }
+  }
+
+  /** helper method for scrolling the window to top */
+  public scrollToTop() 
+  { 
+    (function smoothscroll() 
+    { var currentScroll = document.documentElement.scrollTop || document.body.scrollTop; 
+      if (currentScroll > 0) 
+      {
+        window.requestAnimationFrame(smoothscroll);
+        window.scrollTo(0, currentScroll - (currentScroll / 5));
+      }
+    })();
   }
 
   toggleSearch(evt?) {
