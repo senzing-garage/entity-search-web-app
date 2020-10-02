@@ -8,11 +8,13 @@
   <sz-powered-by cdkOverlayOrigin #poweredByOrigin="cdkOverlayOrigin" format="small" (click)="toggleAboutInfo()"></sz-powered-by>
   <mat-menu #appMenu="matMenu">
     <a (click)="goHome()" routerLink="/" routerLinkActive="active" mat-menu-item><mat-icon>home</mat-icon>Home</a>
-    <a *ngIf="!showGraphOptions" (click)="searchById = !searchById" mat-menu-item>
-      <mat-icon *ngIf="!searchById">assignment</mat-icon>
-      <mat-icon *ngIf="searchById">assignment_ind</mat-icon>
-      <span *ngIf="!searchById">Search By Id</span>
-      <span *ngIf="searchById">Search By Attribute</span>
+    <a *ngIf="!showGraphOptions" (click)="showSearchByAttributeForm()" mat-menu-item>
+      <mat-icon>assignment_ind</mat-icon>
+      Search By Attribute
+    </a>
+    <a *ngIf="!showGraphOptions && !searchById" (click)="searchById = !searchById" mat-menu-item>
+      <mat-icon>assignment</mat-icon>
+      <span>Search By Id</span>
     </a>
     <a *ngIf="showEntityOptions && !showGraphOptions" [href]="graphRouteLink" mat-menu-item>
         <mat-icon>insert_chart</mat-icon>

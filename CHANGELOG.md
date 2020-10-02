@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.1] - 2020-10-2
+
+Bugfixes for:
+- [Large graph filtering](https://github.com/Senzing/sdk-graph-components/issues/27)
+- [Large graph color highlights by datasource](https://github.com/Senzing/sdk-components-ng/issues/162)
+- [Detail Graph lifecycle issue on in-component navigation](https://github.com/Senzing/sdk-components-ng/issues/156)
+- [Graph tooltips showing null for address and phone numbers](https://github.com/Senzing/sdk-graph-components/issues/42)
+- [Enitity Id added to detail report](https://github.com/Senzing/sdk-components-ng/issues/159)
+- [Search by Attribute option pinned to menu options](https://github.com/Senzing/entity-search-web-app/issues/131)
+- [Best name logic fix](https://github.com/Senzing/sdk-components-ng/issues/156)
+
 ## [2.1.0] - 2020-9-23
 
 Compatibility release for framework upgrade to Angular 10: see [https://blog.angular.io/version-10-of-angular-now-available-78960babd41](https://blog.angular.io/version-10-of-angular-now-available-78960babd41)
