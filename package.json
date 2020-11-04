@@ -6,7 +6,7 @@
     "start": "npm run start:with:auth",
     "start:staging": "ng serve --disableHostCheck --host 0.0.0.0",
     "start:docker": "node ./run/webserver",
-    "start:auth": "node ./run/authserver -- proxyLogLevel=debug authServerPortNumber=8200 adminAuthMode=JWT apiServerUrl=\"http://americium.local:8250\"",
+    "start:auth": "node ./run/authserver -- proxyLogLevel=debug authServerPortNumber=8200 adminAuthMode=JWT apiServerUrl=\"http://localhost:8250\"",
     "start:server": "java -jar \"..\\senzing-api-server\\target\\senzing-api-server-1.7.2.jar\" -iniFile \"%LOCALAPPDATA%\\Senzing\\Workbench\\project_1\\g2.ini\" -httpPort 8080 -allowedOrigins \"*\"",
     "start:with:auth": "concurrently \"npm run start:auth\" \"ng serve\"",
     "build": "ng build",
