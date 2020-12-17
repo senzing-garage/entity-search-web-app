@@ -6,7 +6,7 @@
     "start": "npm run start:with:auth",
     "start:staging": "ng serve --disableHostCheck --host 0.0.0.0",
     "start:docker": "node ./run/webserver",
-    "start:auth": "node ./run/authserver -- proxyLogLevel=debug authServerPortNumber=8200 adminAuthMode=JWT apiServerUrl=\"http://g2server:2080\"",
+    "start:auth": "node ./run/authserver -- proxyLogLevel=debug authServerPortNumber=8200 adminAuthMode=JWT apiServerUrl=\"http://localhost:8250\"",
     "start:server": "java -jar \"..\\senzing-api-server\\target\\senzing-api-server-1.7.2.jar\" -iniFile \"%LOCALAPPDATA%\\Senzing\\Workbench\\project_1\\g2.ini\" -httpPort 8080 -allowedOrigins \"*\"",
     "start:with:auth": "concurrently \"npm run start:auth\" \"ng serve\"",
     "build": "ng build",
@@ -36,9 +36,9 @@
     "@angular/platform-browser-dynamic": "~10.0.9",
     "@angular/router": "~10.0.9",
     "@auth0/angular-jwt": "^3.0.1",
-    "@senzing/rest-api-client-ng": "^2.1.1",
-    "@senzing/sdk-components-ng": "^2.1.1",
-    "@senzing/sdk-graph-components": "^2.1.1",
+    "@senzing/rest-api-client-ng": "^2.2.0",
+    "@senzing/sdk-components-ng": "^2.1.2",
+    "@senzing/sdk-graph-components": "^2.1.2",
     "@types/d3": "^5.7.1",
     "body-parser": "^1.19.0",
     "classlist.js": "^1.1.20150312",
@@ -61,14 +61,14 @@
     "zone.js": "~0.10.3"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~0.1000.6",
+    "@angular-devkit/build-angular": "^0.1002.0",
     "@angular-devkit/build-ng-packagr": "~0.1000.6",
     "@angular/cli": "~10.0.6",
     "@angular/compiler-cli": "~10.0.9",
     "@angular/language-service": "^10.0.14",
-    "@types/node": "^12.11.1",
     "@types/jasmine": "~3.5.0",
     "@types/jasminewd2": "~2.0.3",
+    "@types/node": "^12.11.1",
     "angular-in-memory-web-api": "^0.11.0",
     "codelyzer": "^6.0.0",
     "concat": "^1.0.3",
@@ -86,10 +86,10 @@
     "ng-packagr": "^10.0.0",
     "node-sass": "^4.14.1",
     "protractor": "~7.0.0",
+    "sass-loader": "^6.0.5",
+    "scss-bundle": "^3.1.2",
     "ts-node": "~8.3.0",
     "tslint": "~6.1.0",
-    "typescript": "~3.9.5",
-    "sass-loader": "^6.0.5",
-    "scss-bundle": "^3.1.2"
+    "typescript": "~3.9.5"
   }
 }
