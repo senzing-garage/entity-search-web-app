@@ -1,11 +1,11 @@
 ARG BASE_IMAGE=node:12.2.0
 FROM ${BASE_IMAGE}
 
-ENV REFRESHED_AT=2019-10-8
+ENV REFRESHED_AT=2020-12-22
 
 LABEL Name="senzing/entity-search-web-app" \
       Maintainer="support@senzing.com" \
-      Version="2.1.1"
+      Version="2.2.0"
 
 HEALTHCHECK CMD ["/app/healthcheck.sh"]
 
@@ -35,7 +35,7 @@ ENV PATH /app/node_modules/.bin:$PATH
 COPY package.json /app/package.json
 RUN npm config set loglevel warn \
  && npm install --silent \
- && npm install --silent -g @angular/cli@10.0.0
+ && npm install --silent -g @angular/cli@10.0.9
 
 # Copy files from repository.
 COPY ./rootfs /

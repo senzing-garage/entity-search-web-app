@@ -24,16 +24,17 @@
             "tsConfig": "tsconfig.app.json",
             "aot": true,
             "allowedCommonJsDependencies": [
-              "zone.js/dist/zone-error",
+              "canvg",
+              "hammerjs",
               "jspdf",
-              "canvg"
+              "url",
+              "zone.js/dist/zone-error"
             ],
             "assets": [
               "src/favicon.ico",
               "src/assets"
             ],
             "styles": [
-              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "./node_modules/@senzing/sdk-components-ng/styles/styles.css",
               "./node_modules/@senzing/sdk-components-ng/styles/themes/senzing.css",
               "src/app/scss/styles.scss",
