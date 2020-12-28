@@ -115,6 +115,14 @@ export class EntitySearchService {
       if (this.currentSearchParameters.EMAIL_ADDRESS) {
         params.push(this.currentSearchParameters.EMAIL_ADDRESS);
       }
+    } else if(this.currentRecord && this.currentRecord !== undefined) {
+      params.push(this.currentRecord.recordId);
+      retVal = params.join(', ');
+      retVal = '(1) Result for "' + retVal + '"';
+    } else if(this.currentlySelectedEntityId) {
+      params.push(this.currentlySelectedEntityId);
+      retVal = params.join(', ');
+      retVal = '(1) Result for "' + retVal + '"';
     }
     if (params && params.length > 0) {
       retVal = params.join(', ');
@@ -251,8 +259,8 @@ export class RecordResolverService implements Resolve<SzEntityRecord> {
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<SzEntityRecord> | Observable<never> {
     this.spinner.show();
     const dsName = route.paramMap.get('datasource');
-    const recordId = parseInt( route.paramMap.get('recordId'), 10);
-    if (dsName && recordId && recordId > 0) {
+    const recordId = route.paramMap.get('recordId');
+    if (dsName && recordId && recordId !== undefined && recordId !== null) {
       return this.sdkSearchService.getEntityByRecordId(dsName, recordId).pipe(
         map(res => (res as SzEntityRecord)),
         mergeMap(recordData => {
