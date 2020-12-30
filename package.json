@@ -37,7 +37,7 @@
     "@angular/router": "~10.0.9",
     "@auth0/angular-jwt": "^3.0.1",
     "@senzing/rest-api-client-ng": "^2.2.0",
-    "@senzing/sdk-components-ng": "file:../sdk-components-ng/dist/@senzing/sdk-components-ng/senzing-sdk-components-ng-2.2.0.tgz",
+    "@senzing/sdk-components-ng": "^2.2.0-beta-1",
     "@senzing/sdk-graph-components": "^2.1.2",
     "@types/d3": "^5.7.1",
     "body-parser": "^1.19.0",
