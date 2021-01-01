@@ -35,7 +35,7 @@ ENV PATH /app/node_modules/.bin:$PATH
 COPY package.json /app/package.json
 RUN npm config set loglevel warn \
  && npm install \
- && npm install -g @angular/cli@10.0.14
+ && npm install -g @angular/cli@10.0.0
 
 # Copy files from repository.
 COPY ./rootfs /
