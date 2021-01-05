@@ -1,11 +1,11 @@
 ARG BASE_IMAGE=node:12.2.0
 FROM ${BASE_IMAGE}
 
-ENV REFRESHED_AT=2019-10-8
+ENV REFRESHED_AT=2020-12-31
 
 LABEL Name="senzing/entity-search-web-app" \
       Maintainer="support@senzing.com" \
-      Version="2.1.1"
+      Version="2.2.0"
 
 HEALTHCHECK CMD ["/app/healthcheck.sh"]
 

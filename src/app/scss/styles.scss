@@ -20,9 +20,17 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 // sdk theme overrides
 body {
+  /* default theme overrides */
   --sz-search-button-clear-background-color: transparent;
   --sz-search-label-font-size: .8em;
   --sz-search-label-color: #b3b3b3;
+  --sz-search-button-filter-background-color: #666565;
+  --sz-search-button-filter-border-color: #bfbfbf;
+  --sz-search-button-filter-width: 10px;
+  --sz-search-button-filter-height: 10px;
+  --sz-search-button-filter-font-size: 10px;
+  --sz-search-button-filter-margin-left: 2px;
+  
   &.graph-open {
     overflow: hidden;
     height: 100vh;

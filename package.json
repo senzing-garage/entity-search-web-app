@@ -20,7 +20,8 @@
     "lint": "ng lint",
     "e2e": "ng e2e --configuration=e2e --protractor-config=e2e/protractor.conf.js",
     "e2e:docker": "ng e2e --port 8080 --configuration=e2e --protractor-config=e2e/protractor.docker.conf.js",
-    "e2e:headless": "ng e2e --configuration=e2e --protractor-config=e2e/protractor.ci.conf.js"
+    "e2e:headless": "ng e2e --configuration=e2e --protractor-config=e2e/protractor.ci.conf.js",
+    "prepush": "npm run test:headless"
   },
   "private": true,
   "dependencies": {
@@ -36,7 +37,7 @@
     "@angular/router": "~10.0.9",
     "@auth0/angular-jwt": "^3.0.1",
     "@senzing/rest-api-client-ng": "^2.2.0",
-    "@senzing/sdk-components-ng": "^2.1.2",
+    "@senzing/sdk-components-ng": "^2.2.0",
     "@senzing/sdk-graph-components": "^2.1.2",
     "@types/d3": "^5.7.1",
     "body-parser": "^1.19.0",
