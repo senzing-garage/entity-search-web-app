@@ -12,7 +12,8 @@ import {
   SenzingSdkModule
  } from '@senzing/sdk-components-ng';
 import { SzRestConfigurationFactory } from '../common/sdk-config.factory';
-import { AuthConfigFactory } from '../common/auth-config.factory';
+//import { AuthConfigFactory } from '../common/auth-config.factory';
+import { SzWebAppConfigService } from '../services/config.service';
 
 import { AdminComponent } from './admin/admin.component';
 import { AdminDataSourcesComponent } from './datasources/datasources.component';
@@ -26,7 +27,6 @@ import { AdminLoginComponent } from './login/login.component';
 
 /** injection token for external redirects */
 const externalUrlProvider = new InjectionToken('externalUrlRedirectResolver');
-const authConfigProvider = new InjectionToken('authConfig');
 
 const routes: Routes = [
     {
@@ -87,10 +87,7 @@ const routes: Routes = [
           window.open(externalUrl, '_self');
       },
     },
-    {
-      provide: 'authConfigProvider',
-      useValue: AuthConfigFactory,
-    }
+    SzWebAppConfigService
   ],
   imports: [
     BrowserModule,

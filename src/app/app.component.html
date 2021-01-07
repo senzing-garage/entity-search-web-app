@@ -6,6 +6,7 @@
       <sz-preferences *ngIf="showPrefs"
         showControls="true"></sz-preferences>
       <sz-search *ngIf="!showPrefs && !showSearchById"
+      showIdentifierTypesPicker="true"
       (resultsChange)="onSearchResults($event)"
       (resultsCleared)="onSearchResultsCleared($event)"
       (parameterChange)="onSearchParameterChange($event)"

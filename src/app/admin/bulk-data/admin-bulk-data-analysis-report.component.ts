@@ -4,13 +4,11 @@ import { SzPrefsService, SzAdminService, SzBulkDataService } from '@senzing/sdk-
 import {
   SzBulkDataAnalysis,
   SzBulkLoadResult,
-  SzEntityTypeRecordAnalysis,
-  SzDataSource,
-  SzServerInfo
+  SzEntityTypeRecordAnalysis
 } from '@senzing/rest-api-client-ng';
-import { Subject, Observable, interval } from 'rxjs';
+import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { MatTableDataSource } from '@angular/material';
+//import { MatTableDataSource } from '@angular/material/table';
 
 export interface SzBulkDataComboAnalysis extends SzEntityTypeRecordAnalysis {
   entityType?: string;
@@ -27,7 +25,7 @@ export interface SzBulkDataComboAnalysis extends SzEntityTypeRecordAnalysis {
 @Component({
   selector: 'admin-bulk-data-analysis-report',
   templateUrl: './admin-bulk-data-analysis-report.component.html',
-  styleUrls: ['./admin-bulk-data-analysis-report.component.scss']
+  styleUrls: [ './admin-bulk-data-analysis-report.component.scss']
 })
 export class AdminBulkDataAnalysisReportComponent implements OnInit, OnDestroy, AfterViewInit {
   /** subscription to notify subscribers to unbind */

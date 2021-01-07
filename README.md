@@ -7,19 +7,7 @@
 
 ## Overview
 
-This is a more complex example of SDK component usage. It differs from the example web apps in the following features:
-
-- Routing (bookmarkable urls)
-- Resolvers
-- Activity Spinner
-- Angular Material
-- Direct interaction with SDK Services, not just components
-- Error feedback
-- Reverse proxy support
-- ExpressJS web server(for production deployment)
-- Open detail view in new tab
-
-It's not meant to be followed along by a developer. Rather it serves as both an example of what a more full-featured implementation looks like, as well as a ready to build and deploy docker container.
+This is an implementation of an entity search app which uses the senzing rest api server microservice to access functions of the Senzing API through a web interface.
 
 ### Related artifacts
 

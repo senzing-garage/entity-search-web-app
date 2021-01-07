@@ -1,0 +1,60 @@
+//Colors - $sz prefix so not overriding material styles
+$sz-white: #FFFFFF;
+$sz-light-background: #F8F8F8;
+$sz-orange: #C9741F;
+$sz-green: #2B7169;
+$sz-brown: #A09020;
+$sz-grey: #95989A;
+$sz-light-grey: #E5E5E5;
+$sz-dark-grey: #808285;
+$sz-highlight-grey: #555;
+$sz-blue: #0C9BF4;
+$sz-dark-blue: #0E2863;
+$sz-red: #D30B0F;
+$sz-black: #000000;
+$sz-dark1: #231F20;
+$sz-dark2: #2D2D2D;
+$sz-purple: #7c95a0;
+$sz-teal: #2a94a5;
+$sz-magenta: #a52a63;
+
+$sz-font-color-1: #5e5e5e;
+$sz-font-color-2: #e5e5e5;
+$sz-font-color-3: $sz-grey;
+$sz-input-font-color: $sz-grey;
+$sz-input-placeholder-color: #95989A;
+$sz-input-border-color: $sz-grey;
+$sz-input-active-border-color: $sz-dark-grey;
+$sz-input-background-color: $sz-white;
+
+//Navigation
+$sz-nav-parent__font-stack: Helvetica, 11px;
+$sz-nav-parent__font-color: $sz-light-grey;
+$sz-nav-child__font-stack: Helvetica, 9px;
+$sz-nav-child__font-color: $sz-light-grey;
+$sz-nav-menu-width: 178px;
+$sz-nav-menu-padding: 14px;
+$sz-selected__background-color: $sz-dark2;
+
+//Header
+$sz-project-name__font-stack: Helvetica 18px bold;
+$sz-project-name__font-color: $sz-white;
+$sz-header-color: $sz-dark2;
+$sz-header-height: 60px;
+
+//Search
+$sz-font-family: Helvetica;
+
+//Dashboard
+$sz-datasource-menu-width: 430px;
+$sz-datasource-menu-font-family: Helvetica;
+
+//Snackbar
+$sz-snack-font-family: Helvetica;
+
+//Modals
+$sz-modal-header-color: #F0F0F0;
+$sz-modal-footer-color: #F0F0F0;
+$sz-modal-header-text-color: #F0F0F0;
+$sz-modal-footer-buttons-primary-background-color: $sz-blue;
+$sz-modal-text-color: $sz-dark2;

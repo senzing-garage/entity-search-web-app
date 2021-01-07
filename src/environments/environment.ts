@@ -16,8 +16,8 @@ export const apiConfig: SzRestConfigurationParameters = {
 };
 
 /** security options for admin area */
-import * as SEC_OPTS from '../../auth/auth.conf.json';
-export const securityConfig = SEC_OPTS;
+//import * as SEC_OPTS from '../../auth/auth.conf.json';
+//export const securityConfig = SEC_OPTS;
 
 /*
  * For easier debugging in development mode, you can import the following file

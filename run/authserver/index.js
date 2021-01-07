@@ -9,31 +9,40 @@ const expressJwt = require('express-jwt');
 const fs = require('fs');
 const path = require('path');
 
+
 // utils
-const AuthModule = require('./auth/auth');
-const Auth = AuthModule.module;
+const AuthModule = require('./auth');
+const inMemoryConfig = require("../runtime.datastore");
+const inMemoryConfigFromInputs = require('../runtime.datastore.config');
+const runtimeOptions = new inMemoryConfig(inMemoryConfigFromInputs);
 
 // grab env/cmdline vars
-const authOptions = AuthModule.getOptionsFromInput();
-const auth = new Auth( authOptions );
+const authOptions = runtimeOptions.config.auth;
+//const authOptions = AuthModule.getOptionsFromInput();
+const auth = new AuthModule( runtimeOptions.config );
 
 // cors
-var corsOptions = JSON.parse( fs.readFileSync(__dirname + path.sep + 'auth'+ path.sep +'cors.conf.json', 'utf8') );
+var corsOptions = runtimeOptions.config.cors;
 // csp
-var cspOptions = require('./auth/csp.conf');
+var cspOptions = runtimeOptions.config.csp;
+
+// write proxy conf to file? (we need this for DEV mode)
+if(inMemoryConfigFromInputs.proxyServerOptions.writeToFile) {
+  runtimeOptions.writeProxyConfigToFile("../","proxy.conf.json");
+}
 
 // server(s)
 const app = express();
-if(Auth.useCors) {
+if(auth.useCors) {
   app.options('*', cors(corsOptions)) // include before other routes
 }
-if(Auth.useCsp) {
+if(auth.useCsp) {
   app.use(csp(cspOptions)); //csp options
 }
 app.use(bodyParser.json());
 
 // port to run the auth server on
-const SENZING_AUTH_SERVER_PORT = 8000;
+const SENZING_AUTH_SERVER_PORT = authOptions.port;
 let STARTUP_MSG = '';
 
 // cors test endpoint
@@ -45,18 +54,18 @@ app.post(`/api/csp/report`, (req, res) => {
   res.status(204).end()
 })
 
-if(auth.authConfig) {
+if(authOptions) {
   app.get('/conf/auth', (req, res, next) => {
-    res.status(200).json( auth.authConfig );
+    res.status(200).json( authOptions );
   });
   app.get('/conf/auth/admin', cors(corsOptions), (req, res, next) => {
-    res.status(200).json( auth.authConfig.admin );
+    res.status(200).json( authOptions.admin );
   });
   app.get('/conf/auth/operator', cors(corsOptions), (req, res, next) => {
-    res.status(200).json( auth.authConfig.operator );
+    res.status(200).json( authOptions.operator );
   });
 
-  if(auth.authConfig.admin && auth.authConfig.admin.mode === 'SSO' || auth.authConfig.admin.mode === 'EXTERNAL') {
+  if(authOptions.admin && authOptions.admin.mode === 'SSO' || authOptions.admin.mode === 'EXTERNAL') {
     const ssoResForceTrue = (req, res, next) => {
       res.status(200).json({
         authorized: true,
@@ -84,7 +93,7 @@ if(auth.authConfig) {
     //STARTUP_MSG = STARTUP_MSG + '\n'+ JSON.stringify(auth.authConfig.admin, null, "  ");
     STARTUP_MSG = STARTUP_MSG + '\n'+'---------------------';
 
-  } else if(auth.authConfig.admin.mode === 'JWT' || auth.authConfig.admin.mode === 'BUILT-IN') {
+  } else if(authOptions.admin.mode === 'JWT' || authOptions.admin.mode === 'BUILT-IN') {
     const jwtRes = (req, res, next) => {
       const body = req.body;
       const encodedToken = (body && body.adminToken) ? body.adminToken : req.query.adminToken;
@@ -125,11 +134,11 @@ if(auth.authConfig) {
     STARTUP_MSG = STARTUP_MSG + '\n'+'';
     STARTUP_MSG = STARTUP_MSG + '\n'+'---------------------';
     STARTUP_MSG = STARTUP_MSG + '\n'+'';
-    STARTUP_MSG = STARTUP_MSG + '\n'+'ADMIN SECRET: ', auth.secret;
-    STARTUP_MSG = STARTUP_MSG + '\n'+'ADMIN SEED:   ', auth.seed;
+    STARTUP_MSG = STARTUP_MSG + '\n'+'ADMIN SECRET: '+ auth.secret;
+    STARTUP_MSG = STARTUP_MSG + '\n'+'ADMIN SEED:   '+ auth.seed;
     STARTUP_MSG = STARTUP_MSG + '\n'+'';
     STARTUP_MSG = STARTUP_MSG + '\n'+'ADMIN TOKEN:  ';
-    STARTUP_MSG = STARTUP_MSG + '\n'+auth.token;
+    STARTUP_MSG = STARTUP_MSG + '\n'+ auth.token;
     STARTUP_MSG = STARTUP_MSG + '\n'+'';
     STARTUP_MSG = STARTUP_MSG + '\n'+'---------------------';
     STARTUP_MSG = STARTUP_MSG + '\n'+'Copy and Paste the line above when prompted for the Admin Token in the admin area.';
@@ -158,6 +167,11 @@ if(auth.authConfig) {
     STARTUP_MSG = STARTUP_MSG + '\n'+'';
   }
 
+} else {
+  /*
+  STARTUP_MSG = STARTUP_MSG + '\n' + authOptions;
+  STARTUP_MSG = STARTUP_MSG + '\n' + JSON.stringify(runtimeOptions.config, undefined, 2);
+  */
 }
 
 

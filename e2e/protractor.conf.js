@@ -30,6 +30,9 @@ exports.config = {
     require('ts-node').register({
       project: require('path').join(__dirname, './tsconfig.e2e.json')
     });
-    jasmine.getEnv().addReporter(new SpecReporter({ spec: { displayStacktrace: true } }));
+    jasmine.getEnv().addReporter(new SpecReporter({
+      spec: { displayStacktrace: false },
+      summary: { displayStacktrace: false },
+    }));
   }
 };

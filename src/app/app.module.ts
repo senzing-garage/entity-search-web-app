@@ -57,9 +57,10 @@ import { ErrorPageComponent } from './common/error/error.component';
 */
 import { apiConfig, environment } from './../environments/environment';
 import { SzRestConfigurationFactory } from './common/sdk-config.factory';
-import { AuthConfigFactory } from './common/auth-config.factory';
+//import { AuthConfigFactory } from './common/auth-config.factory';
 import { AuthGuardService } from './services/ag.service';
 import { AdminAuthService } from './services/admin.service';
+import { SzWebAppConfigService } from './services/config.service';
 
 @NgModule({
   declarations: [
@@ -96,10 +97,7 @@ import { AdminAuthService } from './services/admin.service';
     environment.test ? HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService, { delay: 100 }) : []
   ],
   providers: [
-    {
-      provide: 'authConfigProvider',
-      useFactory: AuthConfigFactory,
-    },
+    SzWebAppConfigService,
     EntitySearchService,
     AdminAuthService,
     AuthGuardService,

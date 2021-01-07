@@ -8,7 +8,7 @@ import { SzRestConfiguration } from '@senzing/sdk-components-ng';
 * ng build -c production
 * ng serve -c docker
 */
-import { apiConfig, securityConfig, environment } from '../../environments/environment';
+import { apiConfig, environment } from '../../environments/environment';
 
 /**
  * create exportable config factory

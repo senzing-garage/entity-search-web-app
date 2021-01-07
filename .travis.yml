@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - "10.14.1"
+  - "12.2.0"
 dist: trusty
 sudo: required
 branches:
@@ -15,8 +15,9 @@ cache:
 
 install:
   - travis_wait npm install
-  - travis_wait npm install -g @angular/cli
+  - travis_wait npm install -g @angular/cli@10.0.0
 
 script:
 - npm run test:headless
 - npm run build
+# npm run e2e
