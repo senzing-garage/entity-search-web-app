@@ -6,9 +6,13 @@
     "start": "npm run start:with:auth",
     "start:staging": "ng serve --disableHostCheck --host 0.0.0.0",
     "start:docker": "node ./run/webserver",
+
+    "start:proxy:ws": "node ./run/websocket-proxy -- wsPortNum=5255",
+    "start:ws": "node ./run/websocket-server -- wsPortNum=5255",
+
     "start:auth": "node ./run/authserver -- proxyLogLevel=debug authServerPortNumber=8200 adminAuthMode=JWT apiServerUrl=\"http://localhost:8250\"",
     "start:server": "java -jar \"..\\senzing-api-server\\target\\senzing-api-server-1.7.2.jar\" -iniFile \"%LOCALAPPDATA%\\Senzing\\Workbench\\project_1\\g2.ini\" -httpPort 8080 -allowedOrigins \"*\"",
-    "start:with:auth": "concurrently \"npm run start:auth\" \"ng serve\"",
+    "start:with:auth": "concurrently \"npm run start:auth\" \"npm run start:ws\" \"npm run start:proxy:ws\" \"ng serve\"",
     "build": "ng build",
     "build:prod": "ng build --prod",
     "build:docker": "ng build -c docker",
@@ -55,6 +59,7 @@
     "rxjs": "~6.5.5",
     "serve-static": "^1.13.2",
     "tslib": "^2.0.0",
+    "uuid": "^8.3.2",
     "wait-on": "^3.2.0",
     "web-animations-js": "^2.3.2",
     "winston": "^3.2.1",

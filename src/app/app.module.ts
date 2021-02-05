@@ -38,6 +38,8 @@ import { TipsComponent } from './common/tips/tips.component';
 import { BlankComponent } from './common/blank/blank.component';
 import { NoResultsComponent } from './errors/no-results/no-results.component';
 import { AboutComponent } from './about/about.component';
+// admin dialog components that "FREAK-OUT" for no good reason
+import { AdminStreamConnDialogComponent } from './common/stream-conn-dialog/stream-conn-dialog.component';
 
 // errors
 import { PageNotFoundComponent } from './errors/page-not-found/page-not-found.component';
@@ -78,7 +80,8 @@ import { SzWebAppConfigService } from './services/config.service';
     UnknownErrorComponent,
     BlankComponent,
     TipsComponent,
-    AboutComponent
+    AboutComponent,
+    AdminStreamConnDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -96,6 +99,7 @@ import { SzWebAppConfigService } from './services/config.service';
     SpinnerModule,
     environment.test ? HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService, { delay: 100 }) : []
   ],
+  entryComponents: [ AdminStreamConnDialogComponent ],
   providers: [
     SzWebAppConfigService,
     EntitySearchService,

@@ -1,0 +1,27 @@
+<h1 mat-dialog-title>Configure Streaming Upload(s)</h1>
+<div mat-dialog-content>
+    <div class="stream-options section-instructions">
+        Streaming connection support does file analysis and load, record by record for large datasets. Instead 
+        of waiting for the entire file to upload before processing or analyzing records, it streams record by record from the file to the stream ingestor.
+    </div>
+    <mat-form-field >
+        <mat-label for="ws-hostname">Hostname/IP:</mat-label>
+        <input type="text" [(ngModel)]="streamHost" matInput placeholder="localhost:8255">
+    </mat-form-field>
+    <mat-form-field >
+        <mat-label for="ws-analysis-sample-size">Analysis Sample Limit:</mat-label>
+        <mat-select [(ngModel)]="wsAnalysisSampleSize">
+        <mat-option *ngFor="let aSize of wsAnalysisSampleSizes" [value]="aSize">
+            {{aSize}}
+        </mat-option>
+        </mat-select>
+    </mat-form-field>
+    <div class="test-status" *ngIf="testStatus">
+        <span class="text">{{ testStatus }}</span>
+    </div>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Cancel</button>
+  <button mat-button (click)="testConnection($event)" cdkFocusInitial *ngIf="!data.connectionTest">Test Connection</button>
+  <button mat-button [mat-dialog-close]="data" cdkFocusInitial *ngIf="data.connectionTest">Use Streaming</button>
+</div>

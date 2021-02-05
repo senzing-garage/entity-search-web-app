@@ -6,6 +6,7 @@ import {
   SzBulkLoadResult,
 } from '@senzing/rest-api-client-ng';
 import { Subject } from 'rxjs';
+import { WebSocketService } from 'src/app/services/websocket.service';
 
 /**
  * Provides an interface for loading files in to a datasource.
@@ -36,6 +37,43 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
   get analysis(): SzBulkDataAnalysis {
     return this.bulkDataService.currentAnalysis;
   }
+  /** use websockets to stream file input records and results*/
+  private _useSocketStream = false;
+  @Input() public set useSocketStream(value: boolean) {
+    this._useSocketStream = value;
+  }
+  public get useSocketStream() {
+    return this._useSocketStream;
+  }
+  private _canOpenStreamSocket = false;
+  public get canOpenStreamSocket(): boolean {
+    return this._canOpenStreamSocket;
+  }
+
+  private _streamHost: string = 'localhost:8255';
+  public set streamHost(value: string) {
+    this._streamHost = value;
+  }
+  public get streamHost() {
+    return this._streamHost;
+  }
+
+  private _wsUUID: string;
+  public get wsUUID(): string {
+    return this._wsUUID;
+  }
+  public set wsUUID(value: string) {
+    this._wsUUID = value;
+  }
+
+  public wsAnalysisSampleSize = 1000;
+  public wsAnalysisSampleSizes = [
+    100,
+    1000,
+    10000,
+    100000
+  ];
+
   /** does user have admin rights */
   public get adminEnabled() {
     return this.adminService.adminEnabled;
@@ -77,6 +115,7 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
     public prefs: SzPrefsService,
     private adminService: SzAdminService,
     private bulkDataService: SzBulkDataService,
+    private webSocketService: WebSocketService,
     public viewContainerRef: ViewContainerRef) {}
 
     ngOnInit() {}
@@ -110,6 +149,22 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
     /** clear the current bulkloader focal state */
     public clear() {
       this.bulkDataService.clear();
+    }
+
+    public testStreamHostParameters(event: Event) {
+      let hostPath = this.streamHost;
+      //alert('host: '+ hostPath);
+      
+      this.webSocketService.open(hostPath).subscribe((resp) => {
+        if(resp && resp.uuid && resp.connected) {
+          console.log('Connected to ', hostPath, ' as '+ resp.uuid);
+          this.wsUUID = resp.uuid;
+        } else {
+          console.warn('invalid conn stat', resp);
+        }
+      }, (err)=> {
+        console.warn('Connection failed');
+      })
     }
 
 }

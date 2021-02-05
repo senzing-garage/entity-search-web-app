@@ -18,6 +18,7 @@ import { AdminErrorNoAdminModeComponent } from './errors/no-admin.component';
 import { AdminLoginComponent } from './login/login.component';
 import { AdminServerInfoComponent } from './server-info/server-info.component';
 import { AdminLicenseInfoComponent } from './license-info/license-info.component';
+import { WebSocketService } from '../services/websocket.service';
 
 /**
  * bulk data components. these are workaround clones.
@@ -77,7 +78,8 @@ import { SzWebAppConfigService } from '../services/config.service';
        useClass: OAuthInterceptor,
        multi: true
     },
-    SzWebAppConfigService
+    SzWebAppConfigService,
+    WebSocketService
   ]
 })
 export class AdminModule { }
