@@ -9,8 +9,6 @@
 <button mat-stroked-button color="primary" (click)="loadFileFS($event)"  *ngIf="analysis && !result && !currentError && useSocketStream">Load File via Stream</button>
 <button mat-stroked-button color="primary" (click)="chooseFileInput($event)" *ngIf="analysis && result">Analyze Another File</button>
 
-<div>showAnalysis: {{showAnalysis}}</div>
-<div>analysis: {{analysis}}</div>
 <!-- <button mat-stroked-button (click)="clear()"  *ngIf="analysis || result">Clear</button> -->
 <admin-bulk-data-analysis-summary *ngIf="showAnalysis && analysis"></admin-bulk-data-analysis-summary>
 <admin-bulk-data-load-summary *ngIf="showResults && result"></admin-bulk-data-load-summary>

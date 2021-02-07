@@ -7,6 +7,7 @@ import {
 } from '@senzing/rest-api-client-ng';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { AdminBulkDataService } from '../../services/admin.bulk-data.service';
 
 /**
  * Provides a component that analyzes a datasource characteristics and mapping.
@@ -28,7 +29,7 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy {
   private _showSummary = true;
   /** get the current analysis from service */
   get analysis(): SzBulkDataAnalysis {
-    return this.bulkDataService.currentAnalysis;
+    return this.adminBulkDataService.currentAnalysis;
   }
   /** does user have admin rights */
   public get adminEnabled() {
@@ -40,19 +41,19 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy {
   }
   /** whether or not a file is being analysed */
   public get analyzingFile(): boolean {
-    return this.bulkDataService.isAnalyzingFile;
+    return this.adminBulkDataService.isAnalyzingFile;
   }
   /** whenther or not a file is being loaded */
   public get loadingFile(): boolean {
-    return this.bulkDataService.isLoadingFile;
+    return this.adminBulkDataService.isLoadingFile;
   }
   /** set result of load operation from service */
   @Input() public set result(value: SzBulkLoadResult) {
-    if(value) { this.bulkDataService.currentLoadResult = value; }
+    if(value) { this.adminBulkDataService.currentLoadResult = value; }
   }
   /** get result of load operation from service */
   public get result(): SzBulkLoadResult {
-    return this.bulkDataService.currentLoadResult;
+    return this.adminBulkDataService.currentLoadResult;
   }
   /** @alias showSummary */
   @Input() public set showSummaries(value: boolean) {
@@ -73,7 +74,7 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy {
 
   constructor( public prefs: SzPrefsService,
     private adminService: SzAdminService,
-    private bulkDataService: SzBulkDataService,
+    private adminBulkDataService: AdminBulkDataService,
     public viewContainerRef: ViewContainerRef) {}
 
   ngOnInit() {
@@ -82,14 +83,14 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy {
     ).subscribe((info) => {
       console.log('ServerInfo obtained: ', info);
     });
-    this.bulkDataService.onError.subscribe((err) => {
+    this.adminBulkDataService.onError.subscribe((err) => {
       console.warn('SHOW ERROR MESSAGE!', err);
     });
   }
 
   /** convenience method to analyze a file. used by file setter. */
   public analyzeFile(file: File) {
-    return this.bulkDataService.analyze(file);
+    return this.adminBulkDataService.analyze(file);
   }
   /**
    * unsubscribe when component is destroyed

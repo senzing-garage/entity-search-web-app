@@ -90,9 +90,7 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
     private adminService: SzAdminService,
     //private bulkDataService: SzBulkDataService,
     private adminBulkDataService: AdminBulkDataService,
-    public viewContainerRef: ViewContainerRef) {
-
-    }
+    public viewContainerRef: ViewContainerRef) {}
 
     ngOnInit() {}
     ngAfterViewInit() {}

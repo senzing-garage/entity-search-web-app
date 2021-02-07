@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SzBulkDataService } from '@senzing/sdk-components-ng';
 import { SzBulkDataAnalysis, SzBulkLoadResult } from '@senzing/rest-api-client-ng';
 import { Subject } from 'rxjs';
+import { AdminBulkDataService } from '../../services/admin.bulk-data.service';
 
 /**
  * show tabular results for an analytics operation.
@@ -22,21 +23,21 @@ export class AdminBulkDataLoadReportComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['dataSource', 'recordCount', 'loadedRecordCount', 'failedRecordCount', 'incompleteRecordCount'];
   /** get the file reference currently loaded in the the bulk data service */
   public get file(): File {
-    if(this.bulkDataService) {
-      return this.bulkDataService.currentFile;
+    if(this.adminBulkDataService) {
+      return this.adminBulkDataService.currentFile;
     }
     return undefined;
   }
   /** result of last analysis operation */
   public get analysis(): SzBulkDataAnalysis {
-    return this.bulkDataService.currentAnalysis;
+    return this.adminBulkDataService.currentAnalysis;
   }
   /** get result of load operation from service */
   public get result(): SzBulkLoadResult {
-    return this.bulkDataService.currentLoadResult;
+    return this.adminBulkDataService.currentLoadResult;
   }
 
-  constructor(private bulkDataService: SzBulkDataService) {}
+  constructor(private adminBulkDataService: AdminBulkDataService) {}
 
   ngOnInit() {}
   /**
