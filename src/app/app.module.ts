@@ -63,6 +63,7 @@ import { SzRestConfigurationFactory } from './common/sdk-config.factory';
 import { AuthGuardService } from './services/ag.service';
 import { AdminAuthService } from './services/admin.service';
 import { SzWebAppConfigService } from './services/config.service';
+import { AdminBulkDataService } from './services/admin.bulk-data.service';
 
 @NgModule({
   declarations: [
@@ -108,6 +109,7 @@ import { SzWebAppConfigService } from './services/config.service';
     UiService,
     PrefsManagerService,
     AboutInfoService,
+    AdminBulkDataService,
     Title
   ],
   bootstrap: [ AppComponent ]

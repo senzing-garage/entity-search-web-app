@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { SzBulkDataService } from '@senzing/sdk-components-ng';
 import { SzBulkDataAnalysis, SzBulkLoadResult } from '@senzing/rest-api-client-ng';
-import { WebSocketService } from 'src/app/services/websocket.service';
 import { MatDialog } from '@angular/material/dialog';
-import { AdminStreamConnDialogComponent, AdminStreamConnProperties } from '../../common/stream-conn-dialog/stream-conn-dialog.component';
+
+import { AdminStreamConnDialogComponent } from '../../common/stream-conn-dialog/stream-conn-dialog.component';
+import { AdminBulkDataService, AdminStreamConnProperties } from '../../services/admin.bulk-data.service';
 
 @Component({
   selector: 'admin-data-loader',
@@ -12,70 +12,63 @@ import { AdminStreamConnDialogComponent, AdminStreamConnProperties } from '../..
   styleUrls: ['./load.component.scss']
 })
 export class AdminDataLoaderComponent implements OnInit {
-
-  private _useSocketStream: boolean = false;
-  public get useSocketStream() {
-    return this._useSocketStream;
-  }
+  /** after selecting switch to use stream
+   * we set the connection properties of admin streaming
+   */
   public set useSocketStream(value: boolean) {
-    this._useSocketStream = value;
+    this.adminBulkDataService.useStreamingForLoad = value;
     if(value) {
       // do we have connection properties
-      if(!this.webSocketService.connectionProperties.connected) {
+      if(!this.adminBulkDataService.streamConnectionProperties.connected) {
         // open configuration modal
         const dialogRef = this.dialog.open(AdminStreamConnDialogComponent, {
           width: '600px',
-          data: this.webSocketService.connectionProperties
+          data: this.adminBulkDataService.streamConnectionProperties
         });
 
         dialogRef.afterClosed().subscribe((result: AdminStreamConnProperties | undefined) => {
           console.log(`Dialog result: `, result);
           if(result){
-            this.webSocketService.connectionProperties = (result as AdminStreamConnProperties)
+            this.adminBulkDataService.streamConnectionProperties = (result as AdminStreamConnProperties)
           } else {
-            this._useSocketStream = false;
+            this.adminBulkDataService.useStreamingForLoad = false;
           }
-          this.webSocketService.connectionProperties.connected = false;
-          this.webSocketService.close();
+          this.adminBulkDataService.streamConnectionProperties.connected = false;
         });
       } else {
         // just run conn test
       }
     } else {
-      this.webSocketService.connectionProperties.connected = false;
+      this.adminBulkDataService.streamConnectionProperties.connected = false;
     }
   }
-  private _canOpenStreamSocket: boolean = false;
-  public get canOpenStreamSocket() {
-    return this._canOpenStreamSocket;
+  public get useSocketStream() {
+    return this.adminBulkDataService.useStreamingForLoad;
   }
-  public set canOpenStreamSocket(value: boolean) {
-    this._canOpenStreamSocket = value;
-  }
+
   /** result of last analysis operation */
   public get analysis(): SzBulkDataAnalysis {
-    return this.bulkDataService.currentAnalysis;
+    return this.adminBulkDataService.currentAnalysis;
   }
   /** get result of load operation from service */
   public get result(): SzBulkLoadResult {
-    return this.bulkDataService.currentLoadResult;
+    return this.adminBulkDataService.currentLoadResult;
   }
   /** whether or not a file is being analysed */
   public get analyzingFile(): boolean {
-    return this.bulkDataService.isAnalyzingFile;
+    return this.adminBulkDataService.isAnalyzingFile;
   }
   /** whenther or not a file is being loaded */
   public get loadingFile(): boolean {
-    return this.bulkDataService.isLoadingFile;
+    return this.adminBulkDataService.isLoadingFile;
   }
   public get currentError(): Error {
-    return this.bulkDataService.currentError;
+    return this.adminBulkDataService.currentError;
   }
 
   constructor(
     private titleService: Title,
-    public bulkDataService: SzBulkDataService,
-    private webSocketService: WebSocketService,
+    private adminBulkDataService: AdminBulkDataService,
     public dialog: MatDialog
     ) { }
 
@@ -83,8 +76,8 @@ export class AdminDataLoaderComponent implements OnInit {
     // set page title
     this.titleService.setTitle( 'Admin Area - Bulk Import' );
 
-    this.bulkDataService.onError.subscribe((err) => {
-      if(!this.bulkDataService.currentError) { this.bulkDataService.currentError = err; }
+    this.adminBulkDataService.onError.subscribe((err) => {
+      if(!this.adminBulkDataService.currentError) { this.adminBulkDataService.currentError = err; }
       console.warn('AdminDataLoaderComponent.onInit SHOW Err MSG: ', err, this.currentError);
       //this.currentError = err;
     });

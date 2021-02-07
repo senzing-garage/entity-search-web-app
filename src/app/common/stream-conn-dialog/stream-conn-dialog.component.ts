@@ -1,15 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { WebSocketService } from '../../services/websocket.service';
-
-export interface AdminStreamConnProperties {
-    connected: boolean;
-    clientId?: string;
-    hostname: string;
-    sampleSize: number;
-    port?: number;
-    connectionTest: boolean;
-  }
+import { AdminStreamConnProperties } from '../../services/admin.bulk-data.service';
 
 @Component({
     selector: 'stream-conn-dialog',

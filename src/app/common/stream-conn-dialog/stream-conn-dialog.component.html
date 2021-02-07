@@ -23,5 +23,5 @@
 <div mat-dialog-actions>
   <button mat-button (click)="onNoClick()">Cancel</button>
   <button mat-button (click)="testConnection($event)" cdkFocusInitial *ngIf="!data.connectionTest">Test Connection</button>
-  <button mat-button [mat-dialog-close]="data" cdkFocusInitial *ngIf="data.connectionTest">Use Streaming</button>
+  <button mat-stroked-button color="primary" [mat-dialog-close]="data" cdkFocusInitial *ngIf="data.connectionTest">Use Streaming</button>
 </div>

@@ -6,7 +6,7 @@ import {
   SzBulkLoadResult,
 } from '@senzing/rest-api-client-ng';
 import { Subject } from 'rxjs';
-import { WebSocketService } from 'src/app/services/websocket.service';
+import { AdminBulkDataService } from '../../services/admin.bulk-data.service';
 
 /**
  * Provides an interface for loading files in to a datasource.
@@ -35,44 +35,18 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
   private filePicker: ElementRef;
   /** get the current analysis from service */
   get analysis(): SzBulkDataAnalysis {
-    return this.bulkDataService.currentAnalysis;
+    return this.adminBulkDataService.currentAnalysis;
   }
   /** use websockets to stream file input records and results*/
-  private _useSocketStream = false;
   @Input() public set useSocketStream(value: boolean) {
-    this._useSocketStream = value;
+    this.adminBulkDataService.useStreamingForLoad = value;
   }
   public get useSocketStream() {
-    return this._useSocketStream;
+    return this.adminBulkDataService.useStreamingForLoad;
   }
-  private _canOpenStreamSocket = false;
   public get canOpenStreamSocket(): boolean {
-    return this._canOpenStreamSocket;
+    return this.adminBulkDataService.canOpenStreamSocket;
   }
-
-  private _streamHost: string = 'localhost:8255';
-  public set streamHost(value: string) {
-    this._streamHost = value;
-  }
-  public get streamHost() {
-    return this._streamHost;
-  }
-
-  private _wsUUID: string;
-  public get wsUUID(): string {
-    return this._wsUUID;
-  }
-  public set wsUUID(value: string) {
-    this._wsUUID = value;
-  }
-
-  public wsAnalysisSampleSize = 1000;
-  public wsAnalysisSampleSizes = [
-    100,
-    1000,
-    10000,
-    100000
-  ];
 
   /** does user have admin rights */
   public get adminEnabled() {
@@ -84,11 +58,11 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
   }
   /** set result of load operation from service */
   @Input() public set result(value: SzBulkLoadResult) {
-    if(value) { this.bulkDataService.currentLoadResult = value; }
+    if(value) { this.adminBulkDataService.currentLoadResult = value; }
   }
   /** get result of load operation from service */
   public get result(): SzBulkLoadResult {
-    return this.bulkDataService.currentLoadResult;
+    return this.adminBulkDataService.currentLoadResult;
   }
   /** show the analysis summary embedded in component */
   public get showAnalysis(): boolean {
@@ -108,15 +82,17 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
     this._showResults = value;
   }
   public get currentError(): Error {
-    return this.bulkDataService.currentError;
+    return this.adminBulkDataService.currentError;
   }
 
   constructor(
     public prefs: SzPrefsService,
     private adminService: SzAdminService,
-    private bulkDataService: SzBulkDataService,
-    private webSocketService: WebSocketService,
-    public viewContainerRef: ViewContainerRef) {}
+    //private bulkDataService: SzBulkDataService,
+    private adminBulkDataService: AdminBulkDataService,
+    public viewContainerRef: ViewContainerRef) {
+
+    }
 
     ngOnInit() {}
     ngAfterViewInit() {}
@@ -130,11 +106,21 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
 
     /** take the current file focus and pass to api load endpoint */
     public onFileInputChange(event: Event) {
-      this.bulkDataService.isAnalyzingFile = true;
-      this.bulkDataService.analyzingFile.next(true);
+      this.adminBulkDataService.isAnalyzingFile = true;
+      this.adminBulkDataService.analyzingFile.next(true);
       const target: HTMLInputElement = <HTMLInputElement> event.target;
       const fileList = target.files;
-      this.bulkDataService.file = fileList.item(0);
+      if(this.useSocketStream && this.canOpenStreamSocket) {
+        this.onFileInputStreamAnalysis(event);
+        return;
+      }
+      this.adminBulkDataService.file = fileList.item(0);
+    }
+    public onFileInputStreamAnalysis(event: Event) {
+      //alert('using stream parser for analysis..');
+      const target: HTMLInputElement = <HTMLInputElement> event.target;
+      const fileList = target.files;
+      this.adminBulkDataService.file = fileList.item(0);
     }
     /** upload a file for analytics */
     public chooseFileInput(event: Event) {
@@ -142,29 +128,22 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
       event.stopPropagation();
       this.filePicker.nativeElement.click();
     }
+    /** upload a file for analytics */
+    public chooseFileInputFS(event: Event) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.filePicker.nativeElement.click();
+    }
     /** take the current file focus and pass to api load endpoint */
     public loadFile(event: Event) {
-      this.bulkDataService.load();
+      this.adminBulkDataService.load();
+    }
+    /** take the current file focus and pass to api load endpoint */
+    public loadFileFS(event: Event) {
+      this.adminBulkDataService.streamLoad(this.adminBulkDataService.file);
     }
     /** clear the current bulkloader focal state */
     public clear() {
-      this.bulkDataService.clear();
+      this.adminBulkDataService.clear();
     }
-
-    public testStreamHostParameters(event: Event) {
-      let hostPath = this.streamHost;
-      //alert('host: '+ hostPath);
-      
-      this.webSocketService.open(hostPath).subscribe((resp) => {
-        if(resp && resp.uuid && resp.connected) {
-          console.log('Connected to ', hostPath, ' as '+ resp.uuid);
-          this.wsUUID = resp.uuid;
-        } else {
-          console.warn('invalid conn stat', resp);
-        }
-      }, (err)=> {
-        console.warn('Connection failed');
-      })
-    }
-
 }

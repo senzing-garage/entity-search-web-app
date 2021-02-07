@@ -3,7 +3,7 @@ import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { v4 as uuidv4 } from 'uuid';
-import { AdminStreamConnProperties } from '../common/stream-conn-dialog/stream-conn-dialog.component';
+import { AdminStreamConnProperties } from './admin.bulk-data.service';
 
 @Injectable({
   providedIn: 'root'

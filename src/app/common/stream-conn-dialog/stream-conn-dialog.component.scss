@@ -30,7 +30,15 @@
     .test-status {
         border-radius: 5px;
         border: 1px solid rgb(53, 53, 53);
+        background-color: #bababa;
         padding: 8px;
-        font-size: 1rem;
+        font-size: .7rem;
+        color: #373737;
+        -ms-user-select:none;
+        -moz-user-select:none;
+        -webkit-user-select:none;
+        -webkit-touch-callout: none;
+        -khtml-user-select: none;
+        user-select:none;
     }
 }
