@@ -266,16 +266,16 @@ export class AdminBulkDataService {
 
         if(file && dataSourceMap && analysis) {
         const newDataSources = this.currentAnalysis.analysisByDataSource.filter(a => {
-            const targetDS = this.dataSourceMap[a.dataSource];
+            const targetDS = this.dataSourceMap[((a.dataSource === null || a.dataSource === undefined) ? "" : a.dataSource)];
             return (targetDS && this._dataSources.indexOf(targetDS) < 0);
         }).map( (b) => {
-            return this.dataSourceMap[b.dataSource];
+            return this.dataSourceMap[(b.dataSource === null || b.dataSource === undefined ? "" :  b.dataSource)];
         });
         const newEntityTypes = this.currentAnalysis.analysisByEntityType.filter(a => {
-            const targetET = this.entityTypeMap[a.entityType];
+            const targetET = this.entityTypeMap[((a.entityType === null || a.entityType === undefined) ? "" : a.entityType )];
             return (targetET && this._entityTypes.indexOf(targetET) < 0);
         }).map( (b) => {
-            return this.entityTypeMap[b.entityType];
+            return this.entityTypeMap[(b.entityType === null || b.entityType === undefined ? "" : b.entityType)];
         });
 
         let promise = Promise.resolve([]);
@@ -283,13 +283,13 @@ export class AdminBulkDataService {
         const retVal: Subject<SzBulkLoadResult> =  new Subject<SzBulkLoadResult>();
         // create new datasources if needed
         if (newDataSources.length > 0) {
-            console.log('create new datasources: ', newDataSources);
+            //console.log('create new datasources: ', newDataSources);
             const pTemp = this.createDataSources(newDataSources).toPromise();
             promises.push( pTemp );
         }
         // create new entity types if needed
         if (newEntityTypes.length > 0) {
-            console.log('create new entity types: ', newEntityTypes);
+            //console.log('create new entity types: ', newEntityTypes);
             const pTemp = this.createEntityTypes(newEntityTypes).toPromise();
             promises.push( pTemp );
         }
