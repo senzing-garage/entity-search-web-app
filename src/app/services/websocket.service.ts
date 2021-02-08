@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { take, takeUntil } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { take, takeUntil, filter, map, tap } from 'rxjs/operators';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { v4 as uuidv4 } from 'uuid';
+//import { v4 as uuidv4 } from 'uuid';
 import { AdminStreamConnProperties } from './admin.bulk-data.service';
 
 @Injectable({
@@ -10,53 +10,110 @@ import { AdminStreamConnProperties } from './admin.bulk-data.service';
 })
 export class WebSocketService {
   public unsubscribe$ = new Subject<void>();
-
+  /** when an error occurs it is sent to this subject */
   private _onErrorSubject = new Subject<any>();
+  /** subscribe to this observable channel for error notification */
   public onError = this._onErrorSubject.asObservable();
-  
-  private _connected = false;
-  private get connected() {
-    return this._connected;
-  }
+  /** subject used to listen to connection status */
+  private status$: Subject<boolean> = new Subject<boolean>();
+  /** observable published to when the state of connection changes */
+  private statusChange: Observable<boolean> = this.status$.asObservable();
 
+  /** subject used for when messages sent by server */
+  private message$: Subject<any> = new Subject<any>();
+  /** observable published when server sends message */
+  private messageRecieved: Observable<any> = this.message$.asObservable();
+
+  /** messages sent while connection offline */
+  private _offlineMessageQueue = [];
+
+  /** instance of AdminStreamConnProperties used for connection instantiation and behavior */
   public connectionProperties: AdminStreamConnProperties = {
     "hostname": 'localhost:8255',
     "connected": false,
     "sampleSize": 1000,
-    "connectionTest": false
+    "connectionTest": false,
+    "reconnectOnClose": false
   };
 
-  //private ws$: WebSocketSubject<any> = new WebSocket('ws://localhost:3000');
+  /** web socket subject used for connection */
   private ws$: WebSocketSubject<any>;
 
-  public getWSListener() {
-      return this.ws$.asObservable().pipe();
-  }
-
+  /** send message to socket */
   public sendMessage(message: string) {
-      //this.ws$.next({'message': message});
-      console.log('sending message: ', message);
+    if(this.connectionProperties && !this.connectionProperties.connected) {
+      console.log('queueing message..', this._offlineMessageQueue.length);
+      this._offlineMessageQueue.push(message);
+    } else {
       this.ws$.next(message);
+    }
   }
 
-  public open(hostname: string, port?: number) {
+  constructor() {  
+    /** track the connection status of the socket */
+    this.statusChange.subscribe((res) => {
+      this.connectionProperties.connected = res;
+      console.warn('WebSocketService.statusChange 1: ', res);
+    });
+    /** when "reconnectOnClose" == true, reconnect socket */
+    this.statusChange.pipe(
+      filter( (_status) => { return this.connectionProperties.reconnectOnClose && !_status; })
+    ).subscribe( this._onDisconnectRetry );
+    /** if messages were sent while connection offline send them on reconnection */
+    this.statusChange.pipe(
+      filter( _status => _status === true)
+    ).subscribe( this._onConnectProcessOfflineMessages.bind(this) );
+  }
+  /**
+   * process any messages sent while socket not open
+   * @internal
+   */
+  private _onConnectProcessOfflineMessages(){
+    console.log('WebSocketService._onConnectProcessOfflineMessages: ', this._offlineMessageQueue);
+
+    if(this._offlineMessageQueue && this._offlineMessageQueue.length > 0) {
+      this._offlineMessageQueue = this._offlineMessageQueue.filter( (msg, _ind) => {
+        this.ws$.next(msg);
+        return false;
+      });
+    }
+  }
+  /** open connection */
+  public open(hostname?: string, port?: number): Observable<any> {
+    // set up intial connection properties if not already set up
     this.connectionProperties = this.connectionProperties ? this.connectionProperties : {
       "hostname": hostname,
       "connected": false,
       "sampleSize": 1000,
       "connectionTest": false,
+      "reconnectOnClose": true
     }
-    this.connectionProperties.hostname = hostname;
+    // set hostname if passed in
+    this.connectionProperties.hostname = hostname ? hostname : this.connectionProperties.hostname;
     if(port) { this.connectionProperties.port = port; } 
-
+    // connection string
     let _wsaddr = `ws://${this.connectionProperties.hostname}`;
     _wsaddr += port ? `:${this.connectionProperties.port}`: '';
 
-
-    if(this.connectionProperties.connected || this.ws$ !== undefined){
-      // disconnect first
-      // this.ws$.unsubscribe();
-    }
+    // when connection is opened proxy to status$
+    const openSubject = new Subject<Event>();
+    openSubject.pipe(
+      tap( s => console.log('WebSocketService.open: ', s) ),
+      map(_ => true),
+    ).subscribe(this.status$);
+    // when connection is closed proxy to status$
+    const closeSubject = new Subject<CloseEvent>();
+    closeSubject.pipe(
+      tap( s => console.log('WebSocketService.close: ', s) ),
+      map(_ => false)
+    ).subscribe(this.status$);
+    // when message is received proxy to status$
+    const messageSubject = new Subject<Event>();
+    messageSubject.pipe(
+      tap( s => console.log('WebSocketService.message: ', s) ),
+      map(_ => false)
+    ).subscribe(this.message$);
+    // initialize connection
     this.ws$ = webSocket({
       url: _wsaddr,
       deserializer: (value) => {
@@ -79,8 +136,11 @@ export class WebSocketService {
           return value.data;
         }
         return value;
-      }
+      },
+      openObserver: openSubject,
+      closeObserver: closeSubject
     });
+    // do initial subscription otherwise conn will close
     this.ws$.pipe(
       takeUntil(this.unsubscribe$)
     ).subscribe((msg) => {
@@ -90,21 +150,36 @@ export class WebSocketService {
         this.connectionProperties.connectionTest = true;
       }
     }, this._onError);
+
     // return observeable
     return this.ws$.asObservable();
   }
-  public onHeartbeatTick() {
-    this.sendMessage(JSON.stringify({"heartbeat": Date.now(), "uuid": this.connectionProperties.clientId}))
-  }
-  public close() {
 
+  public close() {
+    console.warn('WebSocketService.close: ', this.ws$);
+    /*
     if(this.ws$) {
       if(this.ws$.complete) this.ws$.complete();
       if(this.ws$.unsubscribe) this.ws$.unsubscribe();
       this.ws$ = undefined;
     }
     this.connectionProperties.connected = false;
+    */
   }
+  /** reconnect to previously closed connection */
+  public reconnect(){
+    console.log('WebSocketService.reconnect: ', this.ws$);
+    this.ws$.subscribe()
+  }
+  /**
+   * when autoreconnect set to true reconnect
+   * @param connStatus 
+   */
+  private _onDisconnectRetry(connStatus){
+    console.log('WebSocketService._onDisconnectRetry: ', connStatus);
+    this.reconnect();
+  }
+  /** on error publish to _onErrorSubject */
   private _onError(err: any) {
     console.warn('WebSocketService._onError: ', err);
     this._onErrorSubject.next( err );
@@ -117,6 +192,16 @@ export class WebSocketService {
     if(connectionProps) {
       let _wsaddr = `ws://${connectionProps.hostname}`;
       _wsaddr += connectionProps.port ? `:${connectionProps.port}`: '';
+
+      const openSubject = new Subject<Event>();
+      openSubject.pipe(
+        map(_ => true),
+      ).subscribe(this.status$);
+      
+      const closeSubject = new Subject<CloseEvent>();
+      closeSubject.pipe(
+        map(_ => false),
+      ).subscribe(this.status$);
 
       this.ws$ = webSocket({
         url: _wsaddr,
@@ -138,7 +223,9 @@ export class WebSocketService {
             return value.data;
           }
           return value;
-        }
+        },
+        openObserver: openSubject,
+        closeObserver: closeSubject
       });
       this.ws$.pipe(
         take(1),

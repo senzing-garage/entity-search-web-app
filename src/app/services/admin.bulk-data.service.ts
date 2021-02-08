@@ -36,6 +36,7 @@ export interface AdminStreamConnProperties {
     sampleSize: number;
     port?: number;
     connectionTest: boolean;
+    reconnectOnClose: boolean;
 }
 
 /**
@@ -408,6 +409,7 @@ export class AdminBulkDataService {
 
     // -------------------------------------- streaming handling --------------------------------------
     streamLoad(fileHandle: File): Observable<AdminStreamLoadSummary> {
+        console.log('SzBulkDataService.streamLoad: ', fileHandle, this.streamConnectionProperties);
         // file related
         let file = fileHandle;
         let fileSize = file && file.size ? file.size : 0;
@@ -416,6 +418,13 @@ export class AdminBulkDataService {
         // stream related
         let fsStream = file.stream();
         var reader = fsStream.getReader();
+        this.streamConnectionProperties.reconnectOnClose = true;
+        if(!this.streamConnectionProperties.connected){
+            // we need to reopen connection
+            this.webSocketService.reconnect();
+        } else {
+            console.log('websocket thinks its still connected: ', this.streamConnectionProperties);
+        }
 
         // construct summary object that we can report 
         // statistics to
@@ -434,6 +443,8 @@ export class AdminBulkDataService {
             return this.streamLoadJSONFileToWebsocketServer(fileHandle, reader, summary);
         } else if(fileType === validImportFileTypes.CSV) {
             return this.streamLoadCSVFileToWebsocketServer(fileHandle, reader, summary);
+        } else {
+            console.warn('SzBulkDataService.streamLoad: noooooooo', fileType, fileType === validImportFileTypes.CSV);
         }
     }
 
@@ -458,6 +469,8 @@ export class AdminBulkDataService {
     }
 
     streamLoadJSONFileToWebsocketServer(fileHandle: File, fileReadStream: ReadableStreamDefaultReader<any>, summary: AdminStreamLoadSummary): Observable<AdminStreamLoadSummary> {
+        console.log('SzBulkDataService.streamLoadJSONFileToWebsocketServer: ', fileHandle, fileReadStream, summary);
+
         // set up return observeable
         let retSubject  = new Subject<AdminStreamLoadSummary>();
         let retObs      = retSubject.asObservable();
