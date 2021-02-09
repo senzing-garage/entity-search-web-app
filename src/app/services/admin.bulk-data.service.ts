@@ -408,10 +408,10 @@ export class AdminBulkDataService {
     }
 
     // -------------------------------------- streaming handling --------------------------------------
-    streamLoad(fileHandle: File): Observable<AdminStreamLoadSummary> {
-        console.log('SzBulkDataService.streamLoad: ', fileHandle, this.streamConnectionProperties);
+    streamLoad(file?: File, dataSourceMap?: { [key: string]: string }, entityTypeMap?: { [key: string]: string }, analysis?: SzBulkDataAnalysis): Observable<AdminStreamLoadSummary> {
+        console.log('SzBulkDataService.streamLoad: ', file, this.streamConnectionProperties);
         // file related
-        let file = fileHandle;
+        file = file ? file : this.currentFile;
         let fileSize = file && file.size ? file.size : 0;
         let fileType = getFileTypeFromName(file);
         let fileName = (file && file.name) ? file.name : undefined;
@@ -440,9 +440,10 @@ export class AdminBulkDataService {
         }
 
         if(fileType === validImportFileTypes.JSONL || fileType === validImportFileTypes.JSON) {
-            return this.streamLoadJSONFileToWebsocketServer(fileHandle, reader, summary);
+            return this.streamLoadJSONFileToWebsocketServer(file, reader, summary);
         } else if(fileType === validImportFileTypes.CSV) {
-            return this.streamLoadCSVFileToWebsocketServer(fileHandle, reader, summary);
+            this.onError.next(new Error('CSVs are not supported by stream loading at this point in time.'));
+            return this.streamLoadCSVFileToWebsocketServer(file, reader, summary);
         } else {
             console.warn('SzBulkDataService.streamLoad: noooooooo', fileType, fileType === validImportFileTypes.CSV);
         }

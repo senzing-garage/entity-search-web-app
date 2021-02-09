@@ -1,5 +1,5 @@
 <input #filePicker (change)="onFileInputChange($event)" type="file"
-       accept=".JSON,.json,.csv,.CSV,.jsonl,.JSONL"
+       [accept]="supportedFileTypes"
        class="hidden-file-picker"
        xmlns="http://www.w3.org/1999/html">
 <button mat-stroked-button color="primary" (click)="chooseFileInput($event)" *ngIf="!analysis && (!useSocketStream || !canOpenStreamSocket)">Analyze File</button>

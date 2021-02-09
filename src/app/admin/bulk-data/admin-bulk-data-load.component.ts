@@ -40,6 +40,14 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
   /** use websockets to stream file input records and results*/
   @Input() public set useSocketStream(value: boolean) {
     this.adminBulkDataService.useStreamingForLoad = value;
+    if(this.adminBulkDataService.useStreamingForLoad) {
+      this._supportedFileTypes = [
+        '.JSON',
+        '.json',
+        '.jsonl',
+        '.JSONL'
+      ]
+    }
   }
   public get useSocketStream() {
     return this.adminBulkDataService.useStreamingForLoad;
@@ -83,6 +91,21 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
   }
   public get currentError(): Error {
     return this.adminBulkDataService.currentError;
+  }
+  /** file types allowed to select in dropdown */
+  private _supportedFileTypes = [
+    '.JSON',
+    '.json',
+    '.csv',
+    '.CSV',
+    '.jsonl',
+    '.JSONL'
+  ]
+  public get supportedFileTypes(): string {
+    return this._supportedFileTypes.join(',');
+  }
+  public set supportedFileTypes(value: string) {
+    this._supportedFileTypes = value.split(',');
   }
 
   constructor(
