@@ -4,6 +4,7 @@ const https = require('https');
 const serveStatic = require('serve-static');
 const cors = require('cors');
 const apiProxy = require('http-proxy-middleware');
+const httpProxy = require('http-proxy');
 // authentication
 const authBasic = require('express-basic-auth');
 // utils
@@ -287,6 +288,8 @@ app.get('*', (req, res) => {
 
 // set up server(s) instance(s)
 var ExpressSrvInstance;
+var WebSocketProxyInstance;
+var StartupPromises = [];
 if( serverOptions && serverOptions.ssl && serverOptions.ssl.enabled ){
   // https
   const ssl_opts = {
@@ -300,14 +303,53 @@ if( serverOptions && serverOptions.ssl && serverOptions.ssl.enabled ){
   STARTUP_MSG_POST = STARTUP_MSG_POST + '\n'+'';
   STARTUP_MSG = STARTUP_MSG_POST + STARTUP_MSG;
 } else {
+  // check if we need a websocket proxy
+  let streamServerPromise = new Promise((resolve) => {
+    if(serverOptions && serverOptions.streamServerDestUrl) {
+      var wsProxy   = httpProxy.createServer({ 
+        target: serverOptions.streamServerDestUrl,
+        ws: true 
+      });
+      wsProxy.on('error', function(e) {
+        console.log('WS Proxy Error: '+ e.message);
+      });
+      WebSocketProxyInstance = wsProxy.listen(serverOptions.streamServerPort || 8255, () => {
+        console.log('[started] WS Proxy Server on port '+ (serverOptions.streamServerPort || 8255) +'. Forwarding to "'+ serverOptions.streamServerDestUrl +'"');
+        resolve();
+      });
+      //STARTUP_MSG = 'WS Proxy Server started on port '+ (serverOptions.streamServerPort || 8255) +'. Forwarding to "'+ serverOptions.streamServerDestUrl +'"\n'+ STARTUP_MSG;
+    } else {
+      //STARTUP_MSG = STARTUP_MSG + '\n NO WS PROXY!!';
+      console.log('NO WS PROXY!!', serverOptions);
+      resolve();
+    }
+  }, (reason) => { 
+    console.log('[error] WS Proxy Server: ', reason);
+    reject(); 
+  })
+  StartupPromises.push(streamServerPromise);
+  
   // http
-  ExpressSrvInstance = app.listen(serverOptions.port);
-  STARTUP_MSG = '\n'+'Express Server started on port '+ serverOptions.port +'\n'+ STARTUP_MSG;
+  let webServerPromise = new Promise((resolve) => {
+    ExpressSrvInstance = app.listen(serverOptions.port, () => {
+      console.log('[started] Web Server on port '+ serverOptions.port);
+      resolve();
+    });
+  }, (reason) => { 
+    console.log('[error] Web Server', reason);
+    reject(); 
+  });
+  StartupPromises.push(webServerPromise);
+  //STARTUP_MSG = '\n'+'Express Server started on port '+ serverOptions.port +'\n'+ STARTUP_MSG;
 }
 
-console.log( STARTUP_MSG );
+console.log( STARTUP_MSG +'\n');
+(async() => {
+  await Promise.all(StartupPromises);
+  console.log('\n\nPress any key to exit...');
+  rl.prompt();
+})()
 
-console.log('\n\nPress any key to exit...');
 // capture keyboard input for graceful exit
 const readline = require('readline');
 const rl = readline.createInterface({
@@ -317,14 +359,31 @@ const rl = readline.createInterface({
 rl.on('line', (line) => {
   rl.question('Are you sure you want to exit? (Y/N)', (answer) => {
     if (answer.match(/^y(es)?$/i)) {
-      ExpressSrvInstance.close(function () {
-        console.log('Express Server shutdown successfully.');
+      let ShutdownPromises = [];
+
+      if(WebSocketProxyInstance) {
+        ShutdownPromises.push( new Promise((resolve) => {
+          WebSocketProxyInstance.close(function () {
+            console.log('[stopped] WS Proxy Server');
+            resolve();
+          });
+        }));
+      }
+      ShutdownPromises.push( new Promise((resolve) => {
+        ExpressSrvInstance.close(function () {
+          console.log('[stopped] Web Server');
+          resolve();
+        });
+      }));
+      (async() => {
+        await Promise.all(ShutdownPromises).catch((errors) => {
+          console.error('Could not shutdown services cleanly');
+        });
         process.exit(0);
-      });
+      })();
     } else {
       console.log('\n\nPress any key to exit...');
       rl.prompt();
     }
   });
 });
-rl.prompt();

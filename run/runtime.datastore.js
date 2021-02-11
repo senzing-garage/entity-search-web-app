@@ -11,6 +11,9 @@ class inMemoryConfig {
     authMode: 'JWT',
     webServerUrl: 'http://senzing-webapp:8080',
     apiServerUrl: 'http://senzing-api-server:8080',
+    streamServerUrl: 'ws://localhost:8255', // usually(99%) the address of the LOCAL stream server/proxy
+    streamServerPort: 8255, // port number the local stream server proxy should run on
+    streamServerDestUrl: 'ws://localhost:8256', // url that the stream proxy should forward sockets to (streamproducer, api server)
     ssl: {
       certPath: "/run/secrets/server.cert",
       keyPath: "/run/secrets/server.key"

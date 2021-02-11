@@ -105,6 +105,10 @@ function createCspConfigFromInput() {
   if(env.SENZING_WEB_SERVER_CSP_CONNECT_SRC) {
     retConfig.directives['connect-src'].push(env.SENZING_WEB_SERVER_CSP_CONNECT_SRC);
   }
+  if(env.SENZING_WEB_SERVER_HOSTNAME) {
+    retConfig.directives['connect-src'].push('ws://'+env.SENZING_WEB_SERVER_HOSTNAME+':8555');
+    retConfig.directives['connect-src'].push('wss://'+env.SENZING_WEB_SERVER_HOSTNAME+':8443');
+  }
   if(env.SENZING_WEB_SERVER_CSP_STREAM_SERVER_URL) {
     retConfig.directives['connect-src'].push(env.SENZING_WEB_SERVER_CSP_STREAM_SERVER_URL);
   }
@@ -127,6 +131,10 @@ function createCspConfigFromInput() {
     if(cmdLineOpts.webServerCspConnectSrc){
       retConfig.directives['connect-src'] = retConfigDefaults.directives['connect-src']
       retConfig.directives['connect-src'].push(cmdLineOpts.webServerCspConnectSrc);
+    }
+    if(cmdLineOpts.webServerHostName) {
+      retConfig.directives['connect-src'].push('ws://'+cmdLineOpts.webServerHostName+':8555');
+      retConfig.directives['connect-src'].push('wss://'+cmdLineOpts.webServerHostName+':8443');
     }
     if(cmdLineOpts.webServerCspStreamServerUrl){
       retConfig.directives['connect-src'].push(cmdLineOpts.webServerCspStreamServerUrl);
@@ -289,9 +297,12 @@ function getWebServerOptionsFromInput() {
     port: 4200,
     hostname: 'localhost',
     apiPath: '/api',
-    authPath: 'http://localhost:8080',
+    authPath: 'http://localhost:4200',
     authMode: 'JWT',
     apiServerUrl: 'http://localhost:8080',
+    streamServerUrl: 'ws://localhost:8255',
+    streamServerPort: '8255',
+    streamServerDestUrl: 'ws://localhost:8256',
     ssl: {
       certPath: "/run/secrets/server.cert",
       keyPath: "/run/secrets/server.key"
@@ -299,12 +310,16 @@ function getWebServerOptionsFromInput() {
   }
   // update defaults with ENV options(if present)
   if(env){
-    retOpts.port          = env.SENZING_WEB_SERVER_PORT ?             env.SENZING_WEB_SERVER_PORT             : retOpts.port;
-    retOpts.hostname      = env.SENZING_WEB_SERVER_HOSTNAME ?         env.SENZING_WEB_SERVER_HOSTNAME         : retOpts.hostname;
-    retOpts.apiPath       = env.SENZING_WEB_SERVER_API_PATH ?         env.SENZING_WEB_SERVER_API_PATH         : retOpts.apiPath;
-    retOpts.authPath      = env.SENZING_WEB_SERVER_AUTH_PATH ?        env.SENZING_WEB_SERVER_AUTH_PATH        : retOpts.authPath;
-    retOpts.authMode      = env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE ?  env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE  : retOpts.authMode;
-    retOpts.apiServerUrl  = env.SENZING_API_SERVER_URL ?              env.SENZING_API_SERVER_URL              : retOpts.apiServerUrl;
+    retOpts.port                  = env.SENZING_WEB_SERVER_PORT ?             env.SENZING_WEB_SERVER_PORT             : retOpts.port;
+    retOpts.hostname              = env.SENZING_WEB_SERVER_HOSTNAME ?         env.SENZING_WEB_SERVER_HOSTNAME         : retOpts.hostname;
+    retOpts.apiPath               = env.SENZING_WEB_SERVER_API_PATH ?         env.SENZING_WEB_SERVER_API_PATH         : retOpts.apiPath;
+    retOpts.authPath              = env.SENZING_WEB_SERVER_AUTH_PATH ?        env.SENZING_WEB_SERVER_AUTH_PATH        : retOpts.authPath;
+    retOpts.authMode              = env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE ?  env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE  : retOpts.authMode;
+    retOpts.apiServerUrl          = env.SENZING_API_SERVER_URL ?              env.SENZING_API_SERVER_URL              : retOpts.apiServerUrl;
+    retOpts.streamServerUrl       = env.SENZING_STREAM_SERVER_URL ?           env.SENZING_STREAM_SERVER_URL           : retOpts.streamServerUrl;
+    retOpts.streamServerPort      = env.SENZING_STREAM_SERVER_PORT ?          env.SENZING_STREAM_SERVER_PORT          : retOpts.streamServerPort;
+    retOpts.streamServerDestUrl   = env.SENZING_STREAM_SERVER_DEST_URL ?      env.SENZING_STREAM_SERVER_DEST_URL      : retOpts.streamServerDestUrl;
+
     if(env.SENZING_WEB_SERVER_SSL_CERT_PATH) {
       retOpts.ssl.certPath = env.SENZING_WEB_SERVER_SSL_CERT_PATH;
     }
@@ -319,12 +334,16 @@ function getWebServerOptionsFromInput() {
   // now get cmdline options and override any defaults or ENV options
   let cmdLineOpts = getCommandLineArgsAsJSON();
   if(cmdLineOpts && cmdLineOpts !== undefined) {
-    retOpts.port          = cmdLineOpts.webServerPortNumber ?   cmdLineOpts.webServerPortNumber   : retOpts.port;
-    retOpts.hostname      = cmdLineOpts.webServerHostName ?     cmdLineOpts.webServerHostName     : retOpts.hostname;
-    retOpts.apiPath       = cmdLineOpts.webServerApiPath ?      cmdLineOpts.webServerApiPath      : retOpts.apiPath;
-    retOpts.authPath      = cmdLineOpts.webServerAuthPath ?     cmdLineOpts.webServerAuthPath     : retOpts.authPath;
-    retOpts.authMode      = cmdLineOpts.webServerAuthMode ?     cmdLineOpts.webServerAuthMode     : retOpts.authMode;
-    retOpts.apiServerUrl  = cmdLineOpts.webServerApiServerUrl ? cmdLineOpts.webServerApiServerUrl : retOpts.apiServerUrl;
+    retOpts.port                  = cmdLineOpts.webServerPortNumber ?   cmdLineOpts.webServerPortNumber   : retOpts.port;
+    retOpts.hostname              = cmdLineOpts.webServerHostName ?     cmdLineOpts.webServerHostName     : retOpts.hostname;
+    retOpts.apiPath               = cmdLineOpts.webServerApiPath ?      cmdLineOpts.webServerApiPath      : retOpts.apiPath;
+    retOpts.authPath              = cmdLineOpts.webServerAuthPath ?     cmdLineOpts.webServerAuthPath     : retOpts.authPath;
+    retOpts.authMode              = cmdLineOpts.webServerAuthMode ?     cmdLineOpts.webServerAuthMode     : retOpts.authMode;
+    retOpts.apiServerUrl          = cmdLineOpts.webServerApiServerUrl ? cmdLineOpts.webServerApiServerUrl : retOpts.apiServerUrl;
+    retOpts.streamServerUrl       = cmdLineOpts.streamServerUrl ?       cmdLineOpts.streamServerUrl       : retOpts.streamServerUrl;
+    retOpts.streamServerPort      = cmdLineOpts.streamServerPort ?      cmdLineOpts.streamServerPort      : retOpts.streamServerPort;
+    retOpts.streamServerDestUrl   = cmdLineOpts.streamServerDestUrl ?   cmdLineOpts.streamServerDestUrl   : retOpts.streamServerDestUrl;
+
     if(retOpts.sslCertPath) {
       retOpts.ssl = retOpts.ssl ? retOpts.ssl : {};
       retOpts.ssl.certPath  = retOpts.sslCertPath;
