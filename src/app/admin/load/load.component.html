@@ -2,7 +2,7 @@
 <div class="stream-loading">
   <mat-slide-toggle [(ngModel)]="useSocketStream">Stream Connection</mat-slide-toggle>
 </div>
-<div class="section-notice" *ngIf="useSocketStream">
+<div class="section-notice" *ngIf="useSocketStream && !analysis && !result">
   <h3 class="col"><mat-icon aria-hidden="false" aria-label="Steaming Note">new_releases</mat-icon></h3>
   <div class="col instructions">
     <span class="notice-title">Note:</span>

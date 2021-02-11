@@ -89,10 +89,10 @@ function createCspConfigFromInput() {
   retConfig = {
     directives: {
       'default-src': [`'self'`],
-      'connect-src': [`'self'`],
+      'connect-src': [`'self'`,'wss://localhost:8443','ws://localhost:8555'],
       'script-src':  [`'self'`, `'unsafe-eval'`],
-      'style-src':   [`'self'`, `'unsafe-inline'`, 'https://fonts.googleapis.com'],
-      'font-src':    [`'self'`, `https://fonts.gstatic.com`, `https://fonts.googleapis.com`]
+      'style-src':   [`'self'`, `'unsafe-inline'`,'https://fonts.googleapis.com'],
+      'font-src':    [`'self'`, `https://fonts.gstatic.com`,`https://fonts.googleapis.com`]
     },
     reportOnly: false
   };

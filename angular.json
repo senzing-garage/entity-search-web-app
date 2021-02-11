@@ -50,6 +50,10 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
+              "index": {
+                "input": "src/index.prod.html",
+                "output": "index.pug"
+              },
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -76,6 +80,10 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.docker.ts"
+                },
+                {
+                  "replace": "src/index.html",
+                  "with": "src/index.prod.html"
                 }
               ],
               "optimization": true,

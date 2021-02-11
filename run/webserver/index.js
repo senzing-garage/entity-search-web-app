@@ -36,7 +36,6 @@ if(inMemoryConfigFromInputs.proxyServerOptions.writeToFile) {
   runtimeOptions.writeProxyConfigToFile("../","proxy.conf.json");
 }
 
-
 // server(s)
 const app = express();
 let STARTUP_MSG = '';
@@ -258,9 +257,32 @@ if(authOptions && authOptions !== undefined) {
   }
 }
 
+
 // SPA page
-app.use('*',function(req, res) {
-    res.sendFile(path.resolve(path.join(__dirname, '..'+path.sep, '..'+path.sep, 'dist/entity-search-web-app/index.html')));
+let VIEW_VARIABLES = {
+  "VIEW_PAGE_TITLE":"Entity Search",
+  "VIEW_BASEHREF":"/",
+  "VIEW_CSP_DIRECTIVES":""
+}
+if(cspOptions && cspOptions.directives) {
+  // we have to dynamically serve the html
+  // due to CSP not being smart enough about websockets
+  let cspContentStr = "";
+  let cspKeys       = Object.keys(cspOptions.directives);
+  let cspValues     = Object.values(cspOptions.directives);
+
+  for(var _inc=0; _inc < cspKeys.length; _inc++) {
+    let cspDirectiveValue = cspValues[_inc] ? cspValues[_inc] : [];
+    cspContentStr += cspKeys[_inc] +" "+ cspDirectiveValue.join(' ') +';\n';
+  }
+  cspContentStr = cspContentStr.trim();
+  VIEW_VARIABLES.VIEW_CSP_DIRECTIVES = cspContentStr;
+}
+/** dynamically render SPA page with variables */
+app.set('views', path.resolve(path.join(__dirname, '..'+path.sep, '..'+path.sep, 'dist/entity-search-web-app')));
+app.set('view engine', 'pug');
+app.get('*', (req, res) => {
+  res.render('index', VIEW_VARIABLES);
 });
 
 // set up server(s) instance(s)
