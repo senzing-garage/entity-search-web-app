@@ -86,16 +86,64 @@ function getOptionsFromInput() {
 function createCspConfigFromInput() {
   let retConfig = undefined;
 
-  retConfig = {
+  // ------------- set sane defaults
+  retConfigDefaults = {
     directives: {
       'default-src': [`'self'`],
-      'connect-src': [`'self'`,'wss://localhost:8443','ws://localhost:8555'],
+      'connect-src': [`'self'`],
       'script-src':  [`'self'`, `'unsafe-eval'`],
       'style-src':   [`'self'`, `'unsafe-inline'`,'https://fonts.googleapis.com'],
       'font-src':    [`'self'`, `https://fonts.gstatic.com`,`https://fonts.googleapis.com`]
     },
     reportOnly: false
   };
+  retConfig = Object.assign({}, retConfigDefaults);
+  // ------------- check ENV vars
+  if(env.SENZING_WEB_SERVER_CSP_DEFAULT_SRC) {
+    retConfig.directives['default-src'].push(env.SENZING_WEB_SERVER_CSP_DEFAULT_SRC);
+  }
+  if(env.SENZING_WEB_SERVER_CSP_CONNECT_SRC) {
+    retConfig.directives['connect-src'].push(env.SENZING_WEB_SERVER_CSP_CONNECT_SRC);
+  }
+  if(env.SENZING_WEB_SERVER_CSP_STREAM_SERVER_URL) {
+    retConfig.directives['connect-src'].push(env.SENZING_WEB_SERVER_CSP_STREAM_SERVER_URL);
+  }
+  if(env.SENZING_WEB_SERVER_CSP_SCRIPT_SRC) {
+    retConfig.directives['script-src'].push(env.SENZING_WEB_SERVER_CSP_SCRIPT_SRC);
+  }
+  if(env.SENZING_WEB_SERVER_CSP_STYLE_SRC) {
+    retConfig.directives['style-src'].push(env.SENZING_WEB_SERVER_CSP_STYLE_SRC);
+  }
+  if(env.SENZING_WEB_SERVER_CSP_FONT_SRC) {
+    retConfig.directives['font-src'].push(env.SENZING_WEB_SERVER_CSP_FONT_SRC);
+  }
+  // ------------- now get cmdline options and override any defaults or ENV options
+  let cmdLineOpts = getCommandLineArgsAsJSON();
+  if(cmdLineOpts && cmdLineOpts !== undefined) {
+    if(cmdLineOpts.webServerCspDefaultSrc){
+      retConfig.directives['default-src'] = retConfigDefaults.directives['default-src']
+      retConfig.directives['default-src'].push(cmdLineOpts.webServerCspDefaultSrc);
+    }
+    if(cmdLineOpts.webServerCspConnectSrc){
+      retConfig.directives['connect-src'] = retConfigDefaults.directives['connect-src']
+      retConfig.directives['connect-src'].push(cmdLineOpts.webServerCspConnectSrc);
+    }
+    if(cmdLineOpts.webServerCspStreamServerUrl){
+      retConfig.directives['connect-src'].push(cmdLineOpts.webServerCspStreamServerUrl);
+    }
+    if(cmdLineOpts.webServerCspScriptSrc){
+      retConfig.directives['script-src'] = retConfigDefaults.directives['script-src']
+      retConfig.directives['script-src'].push(cmdLineOpts.webServerCspScriptSrc);
+    }
+    if(cmdLineOpts.webServerCspStyleSrc){
+      retConfig.directives['style-src'] = retConfigDefaults.directives['style-src']
+      retConfig.directives['style-src'].push(cmdLineOpts.webServerCspStyleSrc);
+    }
+    if(cmdLineOpts.webServerCspFontSrc){
+      retConfig.directives['font-src'] = retConfigDefaults.directives['font-src']
+      retConfig.directives['font-src'].push(cmdLineOpts.webServerCspFontSrc);
+    }
+  }
 
   return retConfig;
 }
