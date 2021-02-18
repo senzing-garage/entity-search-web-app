@@ -83,4 +83,9 @@
     No Results
   </div>
 </div>
+<!-- start Stream Summary -->
+<div *ngIf="streamResult && streamResult.bytesRead > 0">
+  <h1>Stream Summary</h1>
+  {{ streamResult }}
+</div>
 <!--  end BulkDataLoadReport  -->

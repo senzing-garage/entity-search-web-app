@@ -63,3 +63,23 @@ export function getFileTypeFromName(file: File): validImportFileTypes.JSONL | va
     }
     return retVal;
 }
+
+/**
+ * Count bytes in a string's UTF-8 representation.
+ *
+ * @param   string
+ * @return  int
+ */
+export function getUtf8ByteLength(value: string): number {
+    // Force string type
+    value = String(value);
+
+    let retValue: number = 0;
+    for (var i = 0; i < value.length; i++) {
+        var c = value.charCodeAt(i);
+        retValue += (c & 0xf800) == 0xd800 ? 2 :  // Code point is half of a surrogate pair
+                   c < (1 <<  7) ? 1 :
+                   c < (1 << 11) ? 2 : 3;
+    }
+    return retValue;
+}

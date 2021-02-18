@@ -6,7 +6,7 @@ import {
   SzBulkLoadResult,
 } from '@senzing/rest-api-client-ng';
 import { Subject } from 'rxjs';
-import { AdminBulkDataService } from '../../services/admin.bulk-data.service';
+import { AdminBulkDataService, AdminStreamLoadSummary } from '../../services/admin.bulk-data.service';
 
 /**
  * Provides an interface for loading files in to a datasource.
@@ -65,11 +65,17 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
     return this.adminService.readOnly;
   }
   /** set result of load operation from service */
-  @Input() public set result(value: SzBulkLoadResult) {
-    if(value) { this.adminBulkDataService.currentLoadResult = value; }
+  @Input() public set result(value: SzBulkLoadResult | AdminStreamLoadSummary) {
+    if(value) { 
+      if((value as AdminStreamLoadSummary).bytesSent >= 0) {
+        this.adminBulkDataService.currentLoadResult = value as AdminStreamLoadSummary; 
+      } else {
+        this.adminBulkDataService.currentLoadResult = value as SzBulkLoadResult; 
+      }
+    }
   }
   /** get result of load operation from service */
-  public get result(): SzBulkLoadResult {
+  public get result(): SzBulkLoadResult | AdminStreamLoadSummary {
     return this.adminBulkDataService.currentLoadResult;
   }
   /** show the analysis summary embedded in component */
@@ -161,7 +167,13 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
     }
     /** take the current file focus and pass to api load endpoint */
     public loadFileFS(event: Event) {
-      this.adminBulkDataService.streamLoad(this.adminBulkDataService.file);
+      this.adminBulkDataService.streamLoad(this.adminBulkDataService.file)
+      //.pipe(take(1))
+      .subscribe((loadSummary: AdminStreamLoadSummary) => {
+        //console.log('[stats] streamLoad: ', loadSummary);
+        // load is done, show results
+        //alert('done loading: \n\r'+ JSON.stringify(loadSummary, undefined, 2));
+      });
     }
     /** clear the current bulkloader focal state */
     public clear() {

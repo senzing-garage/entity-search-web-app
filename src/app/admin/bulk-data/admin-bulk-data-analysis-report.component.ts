@@ -9,7 +9,7 @@ import {
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 //import { MatTableDataSource } from '@angular/material/table';
-import { AdminBulkDataService } from '../../services/admin.bulk-data.service';
+import { AdminBulkDataService, AdminStreamLoadSummary } from '../../services/admin.bulk-data.service';
 
 export interface SzBulkDataComboAnalysis extends SzEntityTypeRecordAnalysis {
   entityType?: string;
@@ -53,7 +53,11 @@ export class AdminBulkDataAnalysisReportComponent implements OnInit, OnDestroy, 
   }
   /** get result of load operation from service */
   public get result(): SzBulkLoadResult {
-    return this.adminBulkDataService.currentLoadResult;
+    return (this.adminBulkDataService.currentLoadResult as SzBulkDataAnalysis).analysisByDataSource ? this.adminBulkDataService.currentLoadResult as SzBulkDataAnalysis : undefined;
+  }
+  /** get the result of streaming load */
+  public get streamResult(): AdminStreamLoadSummary {
+    return (this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary).totalRecords >= 0 ? this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary : undefined;
   }
   public getDataSourceInputName(index: number): string {
     return 'ds-name-' + index;

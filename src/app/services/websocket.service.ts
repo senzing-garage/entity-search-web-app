@@ -1,9 +1,14 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { CompletionObserver, Observable, PartialObserver, Subject } from 'rxjs';
 import { take, takeUntil, filter, map, tap } from 'rxjs/operators';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 //import { v4 as uuidv4 } from 'uuid';
 import { AdminStreamConnProperties } from './admin.bulk-data.service';
+
+interface offlineMessage {
+  data: any,
+  onSent?: any
+}
 
 @Injectable({
   providedIn: 'root'
@@ -25,11 +30,12 @@ export class WebSocketService {
   private messageRecieved: Observable<any> = this.message$.asObservable();
 
   /** messages sent while connection offline */
-  private _offlineMessageQueue = [];
+  //private _offlineMessageQueue = [];
+  private _offlineMessageQueue: offlineMessage[] = [];
 
   /** instance of AdminStreamConnProperties used for connection instantiation and behavior */
   public connectionProperties: AdminStreamConnProperties = {
-    "hostname": 'localhost:8255',
+    "hostname": 'localhost:8555',
     "connected": false,
     "sampleSize": 1000,
     "connectionTest": false,
@@ -40,25 +46,40 @@ export class WebSocketService {
   private ws$: WebSocketSubject<any>;
 
   /** send message to socket */
-  public sendMessage(message: string) {
+  public sendMessage(message: string): Observable<boolean> {
+    let retSub = new Subject<boolean>();
+    let retObs = retSub.asObservable();
     if(this.connectionProperties && !this.connectionProperties.connected) {
-      console.log('queueing message..', this._offlineMessageQueue.length);
-      this._offlineMessageQueue.push(message);
+      //console.log('queueing message..', this._offlineMessageQueue.length);
+      this._offlineMessageQueue.push({data: message, onSent: () => {
+        //console.log('[success] sent message.. ', message);
+        retSub.next(true);
+      }});
     } else {
+      //console.log('sending message..', message);
+      this.ws$.pipe(
+        take(1)
+      ).subscribe((res) => {
+        // does message match
+        retSub.next(true); // for now just pub true
+        //retSub.unsubscribe();
+        //retSub.complete();
+      });
       this.ws$.next(message);
     }
+    return retObs;
   }
 
   constructor() {  
     /** track the connection status of the socket */
     this.statusChange.subscribe((res) => {
       this.connectionProperties.connected = res;
-      console.warn('WebSocketService.statusChange 1: ', res);
+      //console.warn('WebSocketService.statusChange 1: ', res);
     });
     /** when "reconnectOnClose" == true, reconnect socket */
     this.statusChange.pipe(
       filter( (_status) => { return this.connectionProperties.reconnectOnClose && !_status; })
-    ).subscribe( this._onDisconnectRetry );
+    ).subscribe( this._onDisconnectRetry.bind(this) );
     /** if messages were sent while connection offline send them on reconnection */
     this.statusChange.pipe(
       filter( _status => _status === true)
@@ -73,7 +94,10 @@ export class WebSocketService {
 
     if(this._offlineMessageQueue && this._offlineMessageQueue.length > 0) {
       this._offlineMessageQueue = this._offlineMessageQueue.filter( (msg, _ind) => {
-        this.ws$.next(msg);
+        this.ws$.pipe(
+          take(1)
+        ).subscribe((msg.onSent ? msg.onSent : () => {}));
+        this.ws$.next(msg.data);
         return false;
       });
     }
@@ -176,7 +200,7 @@ export class WebSocketService {
    * @param connStatus 
    */
   private _onDisconnectRetry(connStatus){
-    console.log('WebSocketService._onDisconnectRetry: ', connStatus);
+    console.log('WebSocketService._onDisconnectRetry: ', connStatus, this.connectionProperties, this);
     this.reconnect();
   }
   /** on error publish to _onErrorSubject */

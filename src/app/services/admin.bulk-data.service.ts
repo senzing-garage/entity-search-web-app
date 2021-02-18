@@ -2,7 +2,7 @@ import { Injectable, Inject } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { ActivatedRouteSnapshot } from '@angular/router';
 import { Observable, of, from, interval, Subject, BehaviorSubject } from 'rxjs';
-import { map, catchError, tap, switchMap, takeUntil } from 'rxjs/operators';
+import { map, catchError, tap, switchMap, takeUntil, take, filter } from 'rxjs/operators';
 import { SzConfigurationService, SzAdminService, SzEntityTypesService, SzServerInfo, SzBaseResponseMeta, SzPrefsService, SzBulkDataService, SzDataSourcesService } from '@senzing/sdk-components-ng';
 import { HttpClient } from '@angular/common/http';
 import { AuthConfig, SzWebAppConfigService } from './config.service';
@@ -12,11 +12,13 @@ import {
     getFileTypeFromName,
     lineEndingStyle, 
     lineEndingStyleAsEnumKey,
-    validImportFileTypes
+    validImportFileTypes,
+    getUtf8ByteLength
 } from '../common/import-utilities';
 
 import { WebSocketService } from './websocket.service';
 import { BulkDataService, SzBulkDataAnalysis, SzBulkDataAnalysisResponse, SzBulkLoadResponse, SzBulkLoadResult, SzDataSourceRecordAnalysis, SzEntityTypeRecordAnalysis } from '@senzing/rest-api-client-ng';
+import { sum } from 'd3';
 
 export interface AdminStreamLoadSummary {
     fileType: any,
@@ -24,8 +26,12 @@ export interface AdminStreamLoadSummary {
     fileSize: number,
     fileLineEndingStyle: lineEndingStyle,
     totalRecords: number,
+    sentRecords: number,
     bytesRead: number,
-    fileColumns?: string[]
+    bytesSent: number,
+    bytesQueued: number,
+    fileColumns?: string[],
+    dataSources?: string[],
     complete?: boolean
 }
 
@@ -55,7 +61,8 @@ export class AdminBulkDataService {
     /**  current result of last analysis operation */
     public currentAnalysis: SzBulkDataAnalysis;
     /** current result of last file load attempt */
-    public currentLoadResult: SzBulkLoadResult;
+    public currentLoadResult: SzBulkLoadResult | AdminStreamLoadSummary;
+
     /** map of current datasource name to new datasource names */
     public dataSourceMap: { [key: string]: string };
     /** map of current entity type name to new entity type names */
@@ -77,7 +84,7 @@ export class AdminBulkDataService {
     /** when a enity type destination changes this subject is broadcast */
     public onEntityTypeMapChange = new Subject<{ [key: string]: string }>();
     /** when the result of a load operation changes this behavior subject is broadcast */
-    public onLoadResult = new BehaviorSubject<SzBulkLoadResult>(undefined);
+    public onLoadResult = new BehaviorSubject<SzBulkLoadResult | AdminStreamLoadSummary>(undefined);
     /** when the file input changes this subject is broadcast */
     public onError = new Subject<Error>();
     /** when a file is being analyzed */
@@ -434,13 +441,39 @@ export class AdminBulkDataService {
             fileSize: fileSize,
             fileLineEndingStyle: lineEndingStyle.unknown,
             totalRecords: 0,
+            sentRecords: 0,
             bytesRead: 0,
+            bytesSent: 0,
+            bytesQueued: 0,
             fileColumns: [],
+            dataSources: [],
             complete: false
         }
-
+        this.loadingFile.next(this.isStreamLoading(summary));
         if(fileType === validImportFileTypes.JSONL || fileType === validImportFileTypes.JSON) {
-            return this.streamLoadJSONFileToWebsocketServer(file, reader, summary);
+            let retStreamSummary = this.streamLoadJSONFileToWebsocketServer(file, reader, summary);
+            retStreamSummary.pipe(
+                catchError((err: Error) => {
+                    console.warn('Handling error locally and rethrowing it...', err);
+                    this.loadingFile.next(false);
+                    this.onError.next( err );
+                    return of(undefined);
+                }),
+                filter((summary: AdminStreamLoadSummary) => {
+                    return summary && summary.complete;
+                }),
+                take(1)
+            ).subscribe((summary: AdminStreamLoadSummary) => {
+                this.currentLoadResult = summary;
+                this.onLoadResult.next( this.currentLoadResult );
+                this.loadingFile.next(this.isStreamLoading(summary));
+
+                alert('done!\n\r'+ JSON.stringify(summary, undefined, 2));
+            }, (err: Error) => {
+                this.loadingFile.next(false);
+                this.onError.next( err );
+            });
+            return retStreamSummary;
         } else if(fileType === validImportFileTypes.CSV) {
             this.onError.next(new Error('CSVs are not supported by stream loading at this point in time.'));
             return this.streamLoadCSVFileToWebsocketServer(file, reader, summary);
@@ -488,6 +521,13 @@ export class AdminBulkDataService {
         let lineEndingLength = 1;
         let isValidJSONL = false;
 
+        // check the retSubject for completion status
+        retObs.subscribe((summary: AdminStreamLoadSummary) => {
+            let isComplete = this.isStreamLoadComplete(summary);
+            //console.log('checking if stream load is done: '+ isComplete +' | '+ summary.complete);
+            return summary;
+        });
+
         // read file
         fileReadStream.read()
         .then(function processChunk({ done, value}) {
@@ -518,45 +558,53 @@ export class AdminBulkDataService {
             payloadChunk = payloadChunk.trim();
             if(value && value.length) {
               summary.bytesRead = summary.bytesRead+value.length;
+              retSubject.next(summary);
             }
             let lineEndingRegEx = (summary.fileLineEndingStyle === lineEndingStyle.Windows) ? new RegExp(/\r\n/g) : new RegExp(/\n/g);
-    
               
-              if(firstChunk) {
-                // test for validity
+            if(firstChunk) {
+            // test for validity
                 isValidJSONL = (firstChunk && payloadChunk.indexOf('[') > -1) ? false : ((firstChunk && payloadChunk.indexOf('[') >= -1 && payloadChunk.indexOf('{') > -1) ? true : false);
                 console.log('testing for valid jsonl: ', isValidJSONL, summary.fileType, payloadChunk.indexOf('['), payloadChunk.indexOf('{'));
-              }
-              if(!isValidJSONL) {
+            }
+            if(!isValidJSONL) {
                 // must be json
                 // if not jsonl strip "[" out at the beginning, and "]" at the end
                 if(firstChunk) {
-                  payloadChunk = payloadChunk.trim();
-                  payloadChunk = payloadChunk.substring(payloadChunk.indexOf('[')+1);
-                  console.log('cutting "[" out from line 1', payloadChunk);
+                    payloadChunk = payloadChunk.trim();
+                    payloadChunk = payloadChunk.substring(payloadChunk.indexOf('[')+1);
+                    console.log('cutting "[" out from line 1', payloadChunk);
                 }
-              } else if(firstChunk){
+            } else if(firstChunk){
                 console.log('isValidJSONL: '+ isValidJSONL, );
-              }
-    
-              payloadChunks.push(payloadChunk);
-              // split chunk by line endings for per-record streaming
-              let chunkLines = payloadChunk.split(summary.fileLineEndingStyle);
-              wsRecordsQueue.push(chunkLines);
-              
-              chunkLines.forEach((_record) => {
-                this.sendWebSocketMessage(_record);
-              });
-              //this.sendWebSocketMessage(payloadChunk);
-    
-              // get number of records in chunk
-              let numberOfRecordsInChunk = (payloadChunk.match( lineEndingRegEx ) || '').length + 1;
-              summary.totalRecords = summary.totalRecords + numberOfRecordsInChunk;
-              payloadChunk = '';
-              // add incomplete remainder record to next chunk
-              if(lastRecordPos < decodedValue.length) {
+            }
+
+            payloadChunks.push(payloadChunk);
+            // split chunk by line endings for per-record streaming
+            let chunkLines = payloadChunk.split(summary.fileLineEndingStyle);
+            wsRecordsQueue.push(chunkLines);
+            
+            chunkLines.forEach((_record) => {
+                summary.bytesQueued += getUtf8ByteLength(_record);
+                retSubject.next(summary);
+                this.sendWebSocketMessage(_record).subscribe((messageSent) => {
+                    summary.bytesSent = summary.bytesSent + getUtf8ByteLength(_record);
+                    summary.sentRecords += 1;
+                    retSubject.next(summary);
+                }, (error: Error) => {
+                    console.warn('sendWebSocketMessage error: ', error);
+                });
+            });
+
+            // get number of records in chunk
+            let numberOfRecordsInChunk = (payloadChunk.match( lineEndingRegEx ) || '').length + 1;
+            summary.totalRecords = summary.totalRecords + numberOfRecordsInChunk;
+            retSubject.next(summary);
+            payloadChunk = '';
+            // add incomplete remainder record to next chunk
+            if(lastRecordPos < decodedValue.length) {
                 payloadChunk = decodedValue.substring(lastRecordPos).trim();
-              }
+            }
             
           }
           return fileReadStream.read().then(processChunk.bind(this));
@@ -577,6 +625,7 @@ export class AdminBulkDataService {
                   let plChunkSplit = payloadChunk.split('}');
                   console.log("what's going on here? ", plChunkSplit);
                   summary.totalRecords = summary.totalRecords + plChunkSplit.length;
+                  retSubject.next(summary);
                 }
                 payloadChunks.push(payloadChunk);
                 // split chunk by line endings for per-record streaming
@@ -584,7 +633,15 @@ export class AdminBulkDataService {
                 wsRecordsQueue.push(chunkLines);
                 
                 chunkLines.forEach((_record) => {
-                  this.sendWebSocketMessage(_record);
+                    summary.bytesQueued += getUtf8ByteLength(_record);
+                    retSubject.next(summary);
+                    this.sendWebSocketMessage(_record).pipe(take(1)).subscribe((messageSent) => {
+                        summary.bytesSent = summary.bytesSent + getUtf8ByteLength(_record);
+                        summary.sentRecords += 1;
+                        retSubject.next(summary);
+                    }, (error: Error) => {
+                        console.warn('sendWebSocketMessage error: ', error);
+                    });
                 });
                 //this.sendWebSocketMessage(payloadChunk);
               } else {
@@ -596,24 +653,36 @@ export class AdminBulkDataService {
                   });
                   console.log("what's going on here? ", plChunkSplit);
                   summary.totalRecords = summary.totalRecords + plChunkSplit.length;
+                  retSubject.next(summary);
                 }
               }
             }
           }
         })
         .finally( () => {
-          console.log('file summary: ', summary);
-          //console.log('total chunks: ', payloadChunks.length);
-          //console.log('remainder: ', payloadChunk);
-          //console.log('chunks: ', payloadChunks);
-          resultChunks = payloadChunks;
-          console.timeEnd('streamWriteTimer');
+            console.log('file summary: ', summary);
+            resultChunks = payloadChunks;
+            retSubject.next(summary);
         });
-
+        // return observeable of stream summary info
         return retObs;
     }
-
-    public sendWebSocketMessage(message: string) {
-        this.webSocketService.sendMessage(message);
+    /** check whether or not the stream has read input bytes but has not yet sent all records */
+    private isStreamLoading(summary: AdminStreamLoadSummary): boolean {
+        return summary.fileSize > 0 && !this.isStreamLoadComplete(summary);
+    }
+    /** check whether or not the stream summary.complete property should return "true" */
+    private isStreamLoadComplete(summary: AdminStreamLoadSummary): boolean {
+        summary.complete = (
+            (summary.sentRecords == summary.totalRecords && summary.totalRecords > 0) && 
+            summary.bytesRead === summary.fileSize && 
+            summary.bytesSent >= summary.bytesQueued
+        );
+        //console.log('isStreamLoadComplete ? '+ summary.complete, (summary.sentRecords == summary.totalRecords && summary.bytesRead === summary.fileSize && summary.bytesSent >= summary.bytesQueued), summary.bytesSent >= summary.bytesQueued );
+        return summary.complete;
+    }
+    /** alias to webSocketService.sendMessage */
+    public sendWebSocketMessage(message: string): Observable<boolean> {
+        return this.webSocketService.sendMessage(message);
     }
 }

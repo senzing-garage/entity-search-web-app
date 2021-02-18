@@ -7,7 +7,7 @@ import {
 } from '@senzing/rest-api-client-ng';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { AdminBulkDataService } from '../../services/admin.bulk-data.service';
+import { AdminBulkDataService, AdminStreamLoadSummary } from '../../services/admin.bulk-data.service';
 
 /**
  * Provides a component that analyzes a datasource characteristics and mapping.
@@ -48,11 +48,11 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy {
     return this.adminBulkDataService.isLoadingFile;
   }
   /** set result of load operation from service */
-  @Input() public set result(value: SzBulkLoadResult) {
+  @Input() public set result(value: SzBulkLoadResult | AdminStreamLoadSummary) {
     if(value) { this.adminBulkDataService.currentLoadResult = value; }
   }
   /** get result of load operation from service */
-  public get result(): SzBulkLoadResult {
+  public get result(): SzBulkLoadResult | AdminStreamLoadSummary {
     return this.adminBulkDataService.currentLoadResult;
   }
   /** @alias showSummary */

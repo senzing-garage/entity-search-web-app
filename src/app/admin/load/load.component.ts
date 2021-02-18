@@ -4,7 +4,7 @@ import { SzBulkDataAnalysis, SzBulkLoadResult } from '@senzing/rest-api-client-n
 import { MatDialog } from '@angular/material/dialog';
 
 import { AdminStreamConnDialogComponent } from '../../common/stream-conn-dialog/stream-conn-dialog.component';
-import { AdminBulkDataService, AdminStreamConnProperties } from '../../services/admin.bulk-data.service';
+import { AdminBulkDataService, AdminStreamConnProperties, AdminStreamLoadSummary } from '../../services/admin.bulk-data.service';
 
 @Component({
   selector: 'admin-data-loader',
@@ -51,7 +51,7 @@ export class AdminDataLoaderComponent implements OnInit {
     return this.adminBulkDataService.currentAnalysis;
   }
   /** get result of load operation from service */
-  public get result(): SzBulkLoadResult {
+  public get result(): SzBulkLoadResult | AdminStreamLoadSummary {
     return this.adminBulkDataService.currentLoadResult;
   }
   /** whether or not a file is being analysed */

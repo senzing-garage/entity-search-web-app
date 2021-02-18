@@ -3,7 +3,7 @@ import { SzAdminService, SzBulkDataService } from '@senzing/sdk-components-ng';
 import { SzBulkDataAnalysis, SzBulkLoadResult } from '@senzing/rest-api-client-ng';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { AdminBulkDataService } from '../../services/admin.bulk-data.service';
+import { AdminBulkDataService, AdminStreamLoadSummary } from '../../services/admin.bulk-data.service';
 
 /**
  * Provides a textual summary of a analyze file operation.
@@ -49,7 +49,11 @@ export class AdminBulkDataAnalysisSummaryComponent implements OnInit, OnDestroy 
   }
   /** get result of load operation from service */
   public get result(): SzBulkLoadResult {
-    return this.adminBulkDataService.currentLoadResult;
+    return (this.adminBulkDataService.currentLoadResult as SzBulkDataAnalysis).analysisByDataSource ? this.adminBulkDataService.currentLoadResult as SzBulkDataAnalysis : undefined;
+  }
+  /** get the result of streaming load */
+  public get streamResult(): AdminStreamLoadSummary {
+    return (this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary).totalRecords >= 0 ? this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary : undefined;
   }
 
   constructor(
