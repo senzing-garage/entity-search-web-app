@@ -83,6 +83,34 @@ function getOptionsFromInput() {
   return authOpts;
 }
 
+function getStreamServerOptionsFromInput() {
+  let retConfig = undefined;
+  // ------------- set sane defaults
+  retConfigDefaults = undefined;
+  // ------------- now get cmdline options and override any defaults or ENV options
+  let cmdLineOpts = getCommandLineArgsAsJSON();
+  if(cmdLineOpts && cmdLineOpts !== undefined) {
+    
+    if(cmdLineOpts.streamServerHost){
+      retConfig = retConfig ? retConfig : {};
+      retConfig.host = cmdLineOpts.streamServerHost;
+    }
+    if(cmdLineOpts.streamServerPort){
+      retConfig = retConfig ? retConfig : {};
+      retConfig.port = cmdLineOpts.streamServerPort;
+    }
+    if(cmdLineOpts.streamServerProxyHost){
+      retConfig = retConfig ? retConfig : {};
+      retConfig.proxyHost = cmdLineOpts.streamServerProxyHost;
+    }
+    if(cmdLineOpts.streamServerProxyPort){
+      retConfig = retConfig ? retConfig : {};
+      retConfig.proxyPort = cmdLineOpts.streamServerProxyPort;
+    }
+  }
+  return retConfig;
+}
+
 function createCspConfigFromInput() {
   let retConfig = undefined;
 
@@ -612,6 +640,7 @@ module.exports = {
   "cors": createCorsConfigFromInput(),
   "csp": createCspConfigFromInput(),
   "proxy": createProxyConfigFromInput(),
+  "stream": getStreamServerOptionsFromInput(),
   "proxyServerOptions": getProxyServerOptionsFromInput(),
   "webServerOptions": getWebServerOptionsFromInput()
 }

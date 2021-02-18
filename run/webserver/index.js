@@ -10,7 +10,6 @@ const authBasic = require('express-basic-auth');
 // utils
 const path = require('path');
 const fs = require('fs');
-const url = require('url');
 const csp = require(`helmet-csp`);
 const winston = require(`winston`);
 

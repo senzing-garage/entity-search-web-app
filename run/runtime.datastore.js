@@ -52,6 +52,10 @@ class inMemoryConfig {
   // to the api server
   proxyConfiguration = undefined;
 
+  // Stream related configuration
+  // defines endpoints, proxy ports/domains etc
+  streamServerConfiguration = undefined;
+
   constructor(options) {
     if(options) {
       this.config = options;
@@ -77,6 +81,10 @@ class inMemoryConfig {
     if(this.webConfiguration && this.webConfiguration !== undefined && this.webConfiguration !== null) {
       retValue.web = this.webConfiguration;
     }
+    if(this.streamServerConfiguration && this.streamServerConfiguration !== undefined && this.streamServerConfiguration !== null) {
+      retValue.stream = this.streamServerConfiguration;
+    }
+    
     return retValue;
   }
   // set the configuration objects representing
@@ -161,6 +169,9 @@ class inMemoryConfig {
           },
           reportOnly: false
         };
+      }
+      if(value.stream) {
+        this.streamServerConfiguration = value.stream;
       }
     }
   }
