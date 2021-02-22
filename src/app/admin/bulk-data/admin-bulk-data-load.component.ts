@@ -7,6 +7,7 @@ import {
 } from '@senzing/rest-api-client-ng';
 import { Subject } from 'rxjs';
 import { AdminBulkDataService, AdminStreamLoadSummary } from '../../services/admin.bulk-data.service';
+import { filter } from 'rxjs/operators';
 
 /**
  * Provides an interface for loading files in to a datasource.
@@ -121,7 +122,18 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
     private adminBulkDataService: AdminBulkDataService,
     public viewContainerRef: ViewContainerRef) {}
 
-    ngOnInit() {}
+    ngOnInit() {
+      // if its the users first file load and they just verified stream host
+      // immediately prompt for file selection
+      this.adminBulkDataService.onUseStreamingSocketChange.pipe(
+        filter( (useStreamingForLoad: boolean) => {
+          return useStreamingForLoad && !this.adminBulkDataService.file;
+        })
+      ).subscribe( (useStreaming) => {
+        console.warn('adminBulkDataService.onUseStreamingSocketChange: '+ useStreaming);
+        this.chooseFileInput();
+      });
+    }
     ngAfterViewInit() {}
     /**
      * unsubscribe when component is destroyed
@@ -150,9 +162,9 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
       this.adminBulkDataService.file = fileList.item(0);
     }
     /** upload a file for analytics */
-    public chooseFileInput(event: Event) {
-      event.preventDefault();
-      event.stopPropagation();
+    public chooseFileInput(event?: Event) {
+      if(event && event.preventDefault) event.preventDefault();
+      if(event && event.stopPropagation) event.stopPropagation();
       this.filePicker.nativeElement.click();
     }
     /** upload a file for analytics */

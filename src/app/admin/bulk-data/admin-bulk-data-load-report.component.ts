@@ -21,6 +21,7 @@ export class AdminBulkDataLoadReportComponent implements OnInit, OnDestroy {
   /** subscription to notify subscribers to unbind */
   public unsubscribe$ = new Subject<void>();
   displayedColumns: string[] = ['dataSource', 'recordCount', 'loadedRecordCount', 'failedRecordCount', 'incompleteRecordCount'];
+  displayedColumnsForStream: string[] = ['dataSource', 'recordCount', 'sentRecordCount', 'failedRecordCount', 'unsentRecordCount'];
   /** get the file reference currently loaded in the the bulk data service */
   public get file(): File {
     if(this.adminBulkDataService) {
@@ -38,7 +39,12 @@ export class AdminBulkDataLoadReportComponent implements OnInit, OnDestroy {
   }
   /** get the result of streaming load */
   public get streamResult(): AdminStreamLoadSummary {
-    return (this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary).totalRecords >= 0 ? this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary : undefined;
+    // analysisByDataSource
+    return (this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary).recordCount >= 0 ? this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary : undefined;
+  }
+  // reformat "streamResult" as an array so we can table-ize it
+  public get streamResults() {
+    return [this.streamResult];
   }
 
   constructor(private adminBulkDataService: AdminBulkDataService) {}

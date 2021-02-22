@@ -57,7 +57,7 @@ export class AdminBulkDataAnalysisReportComponent implements OnInit, OnDestroy, 
   }
   /** get the result of streaming load */
   public get streamResult(): AdminStreamLoadSummary {
-    return (this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary).totalRecords >= 0 ? this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary : undefined;
+    return (this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary).recordCount >= 0 ? this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary : undefined;
   }
   public getDataSourceInputName(index: number): string {
     return 'ds-name-' + index;

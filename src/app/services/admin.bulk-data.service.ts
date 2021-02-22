@@ -17,7 +17,7 @@ import {
 } from '../common/import-utilities';
 
 import { WebSocketService } from './websocket.service';
-import { BulkDataService, SzBulkDataAnalysis, SzBulkDataAnalysisResponse, SzBulkLoadResponse, SzBulkLoadResult, SzDataSourceRecordAnalysis, SzEntityTypeRecordAnalysis } from '@senzing/rest-api-client-ng';
+import { BulkDataService, SzBulkDataAnalysis, SzBulkDataAnalysisResponse, SzBulkLoadResponse, SzBulkLoadResult, SzDataSourceRecordAnalysis, SzDataSourceBulkLoadResult, SzEntityTypeBulkLoadResult, SzEntityTypeRecordAnalysis } from '@senzing/rest-api-client-ng';
 import { sum } from 'd3';
 
 export interface AdminStreamLoadSummary {
@@ -25,14 +25,28 @@ export interface AdminStreamLoadSummary {
     fileName: string,
     fileSize: number,
     fileLineEndingStyle: lineEndingStyle,
-    totalRecords: number,
-    sentRecords: number,
+    fileColumns?: string[],
+    characterEncoding: any,
+    mediaType: any,
+    recordCount: number,
+    sentRecordCount: number,
+    unsentRecordCount: number,
+    failedRecordCount: number,
+    missingDataSourceCount: number,
+    missingEntityTypeCount: number
     bytesRead: number,
     bytesSent: number,
     bytesQueued: number,
-    fileColumns?: string[],
     dataSources?: string[],
     complete?: boolean
+    /**
+     * The array of `SzDataSourceBulkDataResult` elements describing the load statistics by data source.
+     */
+    resultsByDataSource?: Array<SzDataSourceBulkLoadResult>;
+    /**
+     * The array of `SzEntityTypeBulkDataResult` elements describing the load statistics by entity type.
+     */
+    resultsByEntityType?: Array<SzEntityTypeBulkLoadResult>;
 }
 
 export interface AdminStreamConnProperties {
@@ -104,7 +118,13 @@ export class AdminBulkDataService {
     public set useStreaming(value: boolean) {
         this.useStreamingForAnalysis = value;
         this.useStreamingForLoad = value;
+        // I tried doing some fancy checking etc
+        // more reliable to just always publish this on change
+        this._onUseStreamingSocketChange.next( (this.webSocketService.connectionProperties.connectionTest && this.useStreamingForLoad) );
     }
+    /** when the load behavrior changes from stream to http or vise-versa */
+    private _onUseStreamingSocketChange = new BehaviorSubject<boolean>(this.useStreamingForLoad);
+    public onUseStreamingSocketChange = this._onUseStreamingSocketChange.asObservable();
     /** is the configuration for streaming valid */
     public get canOpenStreamSocket(): boolean {
         return (this.webSocketService && this.webSocketService.connectionProperties) ? this.webSocketService.connectionProperties.connectionTest : false;
@@ -112,6 +132,9 @@ export class AdminBulkDataService {
     /** proxy to websocket service connection properties */
     public set streamConnectionProperties(value: AdminStreamConnProperties) {
         this.webSocketService.connectionProperties = value;
+        // I tried doing some fancy checking etc
+        // more reliable to just always publish this on change
+        this._onUseStreamingSocketChange.next( (this.webSocketService.connectionProperties.connectionTest && this.useStreamingForLoad) );
     }
     public get streamConnectionProperties(): AdminStreamConnProperties {
         return this.webSocketService.connectionProperties;
@@ -415,6 +438,7 @@ export class AdminBulkDataService {
     }
 
     // -------------------------------------- streaming handling --------------------------------------
+    
     streamLoad(file?: File, dataSourceMap?: { [key: string]: string }, entityTypeMap?: { [key: string]: string }, analysis?: SzBulkDataAnalysis): Observable<AdminStreamLoadSummary> {
         console.log('SzBulkDataService.streamLoad: ', file, this.streamConnectionProperties);
         // file related
@@ -437,11 +461,17 @@ export class AdminBulkDataService {
         // statistics to
         let summary: AdminStreamLoadSummary = {
             fileType: fileType,
+            mediaType: fileType,
             fileName: fileName,
             fileSize: fileSize,
             fileLineEndingStyle: lineEndingStyle.unknown,
-            totalRecords: 0,
-            sentRecords: 0,
+            characterEncoding: 'utf-8',
+            recordCount: 0,
+            sentRecordCount: 0,
+            unsentRecordCount: 0,
+            failedRecordCount: 0,
+            missingDataSourceCount: 0,
+            missingEntityTypeCount: 0,
             bytesRead: 0,
             bytesSent: 0,
             bytesQueued: 0,
@@ -487,7 +517,7 @@ export class AdminBulkDataService {
         let retSubject  = new Subject<AdminStreamLoadSummary>();
         let retObs      = retSubject.asObservable();
         // text decoding
-        let decoder = new TextDecoder('utf-8');
+        let decoder = new TextDecoder(summary.characterEncoding);
         let encoder = new TextEncoder();
         let recordCount = 0;
         // current chunk to be sent
@@ -509,7 +539,7 @@ export class AdminBulkDataService {
         let retSubject  = new Subject<AdminStreamLoadSummary>();
         let retObs      = retSubject.asObservable();
         // text decoding
-        let decoder = new TextDecoder('utf-8');
+        let decoder = new TextDecoder(summary.characterEncoding);
         let encoder = new TextEncoder();
         let recordCount = 0;
         // current chunk to be sent
@@ -589,7 +619,7 @@ export class AdminBulkDataService {
                 retSubject.next(summary);
                 this.sendWebSocketMessage(_record).subscribe((messageSent) => {
                     summary.bytesSent = summary.bytesSent + getUtf8ByteLength(_record);
-                    summary.sentRecords += 1;
+                    summary.sentRecordCount += 1;
                     retSubject.next(summary);
                 }, (error: Error) => {
                     console.warn('sendWebSocketMessage error: ', error);
@@ -598,7 +628,7 @@ export class AdminBulkDataService {
 
             // get number of records in chunk
             let numberOfRecordsInChunk = (payloadChunk.match( lineEndingRegEx ) || '').length + 1;
-            summary.totalRecords = summary.totalRecords + numberOfRecordsInChunk;
+            summary.recordCount = summary.recordCount + numberOfRecordsInChunk;
             retSubject.next(summary);
             payloadChunk = '';
             // add incomplete remainder record to next chunk
@@ -624,7 +654,7 @@ export class AdminBulkDataService {
                 if(payloadChunk.indexOf('{') > -1 && payloadChunk.indexOf('}') > -1) {
                   let plChunkSplit = payloadChunk.split('}');
                   console.log("what's going on here? ", plChunkSplit);
-                  summary.totalRecords = summary.totalRecords + plChunkSplit.length;
+                  summary.recordCount = summary.recordCount + plChunkSplit.length;
                   retSubject.next(summary);
                 }
                 payloadChunks.push(payloadChunk);
@@ -637,7 +667,7 @@ export class AdminBulkDataService {
                     retSubject.next(summary);
                     this.sendWebSocketMessage(_record).pipe(take(1)).subscribe((messageSent) => {
                         summary.bytesSent = summary.bytesSent + getUtf8ByteLength(_record);
-                        summary.sentRecords += 1;
+                        summary.sentRecordCount += 1;
                         retSubject.next(summary);
                     }, (error: Error) => {
                         console.warn('sendWebSocketMessage error: ', error);
@@ -652,7 +682,7 @@ export class AdminBulkDataService {
                     return (value && value.trim() !== '') ? true : false;
                   });
                   console.log("what's going on here? ", plChunkSplit);
-                  summary.totalRecords = summary.totalRecords + plChunkSplit.length;
+                  summary.recordCount = summary.recordCount + plChunkSplit.length;
                   retSubject.next(summary);
                 }
               }
@@ -674,7 +704,7 @@ export class AdminBulkDataService {
     /** check whether or not the stream summary.complete property should return "true" */
     private isStreamLoadComplete(summary: AdminStreamLoadSummary): boolean {
         summary.complete = (
-            (summary.sentRecords == summary.totalRecords && summary.totalRecords > 0) && 
+            (summary.sentRecordCount == summary.recordCount && summary.recordCount > 0) && 
             summary.bytesRead === summary.fileSize && 
             summary.bytesSent >= summary.bytesQueued
         );

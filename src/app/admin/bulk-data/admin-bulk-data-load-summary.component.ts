@@ -54,7 +54,7 @@ export class AdminBulkDataLoadSummaryComponent implements OnInit, OnDestroy {
   }
   /** get the result of streaming load */
   public get streamResult(): AdminStreamLoadSummary {
-    return (this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary).totalRecords >= 0 ? this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary : undefined;
+    return (this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary).recordCount >= 0 ? this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary : undefined;
   }
 
   constructor( public prefs: SzPrefsService,
