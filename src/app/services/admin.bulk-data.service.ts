@@ -6,6 +6,7 @@ import { map, catchError, tap, switchMap, takeUntil, take, filter } from 'rxjs/o
 import { SzConfigurationService, SzAdminService, SzEntityTypesService, SzServerInfo, SzBaseResponseMeta, SzPrefsService, SzBulkDataService, SzDataSourcesService } from '@senzing/sdk-components-ng';
 import { HttpClient } from '@angular/common/http';
 import { AuthConfig, SzWebAppConfigService } from './config.service';
+import { AdminStreamConnProperties } from '@senzing/sdk-components-ng';
 
 import {
     determineLineEndingStyle,
@@ -48,7 +49,7 @@ export interface AdminStreamLoadSummary {
      */
     resultsByEntityType?: Array<SzEntityTypeBulkLoadResult>;
 }
-
+/*
 export interface AdminStreamConnProperties {
     connected: boolean;
     clientId?: string;
@@ -57,7 +58,7 @@ export interface AdminStreamConnProperties {
     port?: number;
     connectionTest: boolean;
     reconnectOnClose: boolean;
-}
+}*/
 
 /**
  * A service used to provide methods and services
@@ -111,16 +112,27 @@ export class AdminBulkDataService {
     public isLoadingFile = false;
     public currentError: Error;
     /** use streaming file record importing */
-    public useStreamingForLoad = false;
+    public set useStreamingForLoad(value: boolean) {
+        this.prefs.admin.useStreamingForLoad = value;
+    }
+    public get useStreamingForLoad(): boolean {
+        return this.prefs.admin.useStreamingForLoad;
+    }
     /** use streaming file importing analysis */
-    public useStreamingForAnalysis = false;
+    public set useStreamingForAnalysis(value: boolean) {
+        this.prefs.admin.useStreamingForAnalysis = value;
+    }
+    public get useStreamingForAnalysis(): boolean {
+        return this.prefs.admin.useStreamingForAnalysis;
+    }
+    
     /** convenience setter for setting both "useStreamingForLoad" and "useStreamingForAnalysis" to the same value */
     public set useStreaming(value: boolean) {
         this.useStreamingForAnalysis = value;
         this.useStreamingForLoad = value;
         // I tried doing some fancy checking etc
         // more reliable to just always publish this on change
-        this._onUseStreamingSocketChange.next( (this.webSocketService.connectionProperties.connectionTest && this.useStreamingForLoad) );
+        //this._onUseStreamingSocketChange.next( (this.webSocketService.connectionProperties.connectionTest && this.useStreamingForLoad) );
     }
     /** when the load behavrior changes from stream to http or vise-versa */
     private _onUseStreamingSocketChange = new BehaviorSubject<boolean>(this.useStreamingForLoad);
@@ -131,10 +143,9 @@ export class AdminBulkDataService {
     }
     /** proxy to websocket service connection properties */
     public set streamConnectionProperties(value: AdminStreamConnProperties) {
-        this.webSocketService.connectionProperties = value;
-        // I tried doing some fancy checking etc
-        // more reliable to just always publish this on change
-        this._onUseStreamingSocketChange.next( (this.webSocketService.connectionProperties.connectionTest && this.useStreamingForLoad) );
+        //this.webSocketService.connectionProperties = value;
+        // update stream connection prefs
+        this.prefs.admin.streamConnectionProperties = value;
     }
     public get streamConnectionProperties(): AdminStreamConnProperties {
         return this.webSocketService.connectionProperties;
@@ -170,6 +181,27 @@ export class AdminBulkDataService {
         private entityTypesService: SzEntityTypesService,
         private webSocketService: WebSocketService,
     ) {
+        this.prefs.admin.prefsChanged.subscribe((prefs) => {
+            console.log('AdminBulkDataService.prefs.admin.prefChanged: ', prefs);
+            if(prefs && prefs && prefs.streamConnectionProperties !== undefined) {
+                let _streamConnProperties = (prefs.streamConnectionProperties) as AdminStreamConnProperties;
+                console.log('stream connection properties saved to prefs: ', JSON.stringify(_streamConnProperties) == JSON.stringify(this.streamConnectionProperties), _streamConnProperties, this.streamConnectionProperties);
+                console.log(JSON.stringify(_streamConnProperties));
+                console.log(JSON.stringify(this.streamConnectionProperties));
+                /*
+                if(JSON.stringify(_streamConnProperties) != JSON.stringify(this.streamConnectionProperties)) { 
+                    //this.streamConnectionProperties = _streamConnProperties;
+                    this.webSocketService.connectionProperties = _streamConnProperties;
+                }*/
+                this.webSocketService.connectionProperties = _streamConnProperties;
+                // I tried doing some fancy checking etc
+                // more reliable to just always publish this on change
+                this._onUseStreamingSocketChange.next( (_streamConnProperties.connectionTest && prefs.useStreamingForLoad) );
+            } else {
+                console.warn('no stream connection props in payload: ', prefs);
+            }
+        });
+
         this.onCurrentFileChange.pipe(
             takeUntil( this.unsubscribe$ )
         ).subscribe( (file: File) => {

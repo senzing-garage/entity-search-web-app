@@ -3,7 +3,7 @@ import { CompletionObserver, Observable, PartialObserver, Subject } from 'rxjs';
 import { take, takeUntil, filter, map, tap } from 'rxjs/operators';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 //import { v4 as uuidv4 } from 'uuid';
-import { AdminStreamConnProperties } from './admin.bulk-data.service';
+import { AdminStreamConnProperties } from '@senzing/sdk-components-ng';
 
 interface offlineMessage {
   data: any,
@@ -192,8 +192,15 @@ export class WebSocketService {
   }
   /** reconnect to previously closed connection */
   public reconnect(){
-    console.log('WebSocketService.reconnect: ', this.ws$);
-    this.ws$.subscribe()
+    console.log('WebSocketService.reconnect: ', this.ws$, this.connectionProperties);
+    if(this.ws$) {
+      this.ws$.subscribe()
+    } else if(this.connectionProperties && this.connectionProperties.connectionTest) {
+      this.open();
+    } else {
+      // should we try to connect something that hasnt been flagged as valid?
+      this._onErrorSubject.next('Stream Connection not set properly. please correct and try again.');
+    }
   }
   /**
    * when autoreconnect set to true reconnect

@@ -1,7 +1,8 @@
 import { Component, Inject } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { WebSocketService } from '../../services/websocket.service';
-import { AdminStreamConnProperties } from '../../services/admin.bulk-data.service';
+//import { AdminStreamConnProperties } from '../../services/admin.bulk-data.service';
+import { AdminStreamConnProperties } from '@senzing/sdk-components-ng';
 
 @Component({
     selector: 'stream-conn-dialog',

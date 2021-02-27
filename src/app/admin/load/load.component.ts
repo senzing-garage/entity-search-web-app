@@ -4,7 +4,8 @@ import { SzBulkDataAnalysis, SzBulkLoadResult } from '@senzing/rest-api-client-n
 import { MatDialog } from '@angular/material/dialog';
 
 import { AdminStreamConnDialogComponent } from '../../common/stream-conn-dialog/stream-conn-dialog.component';
-import { AdminBulkDataService, AdminStreamConnProperties, AdminStreamLoadSummary } from '../../services/admin.bulk-data.service';
+import { AdminBulkDataService, AdminStreamLoadSummary } from '../../services/admin.bulk-data.service';
+import { AdminStreamConnProperties } from '@senzing/sdk-components-ng';
 
 @Component({
   selector: 'admin-data-loader',
