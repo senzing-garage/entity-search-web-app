@@ -4,24 +4,62 @@
         Streaming connection support does file analysis and load, record by record for large datasets. Instead 
         of waiting for the entire file to upload before processing or analyzing records, it streams record by record from the file to the stream ingestor.
     </div>
-    <mat-form-field >
-        <mat-label for="ws-hostname">Hostname/IP:</mat-label>
-        <input type="text" [(ngModel)]="streamHost" matInput placeholder="localhost:8255">
-    </mat-form-field>
-    <mat-form-field >
-        <mat-label for="ws-analysis-sample-size">Analysis Sample Limit:</mat-label>
-        <mat-select [(ngModel)]="wsAnalysisSampleSize">
-        <mat-option *ngFor="let aSize of wsAnalysisSampleSizes" [value]="aSize">
-            {{aSize}}
-        </mat-option>
-        </mat-select>
-    </mat-form-field>
+    <div class="row">
+        <h3>Connection:</h3>
+        <div class="row sc-row-1">
+            <mat-form-field>
+                <mat-label for="ws-hostname">Hostname/IP:</mat-label>
+                <input type="text" [(ngModel)]="streamHost" matInput placeholder="localhost">
+            </mat-form-field>
+            <mat-form-field >
+                <mat-label for="ws-port">Port:</mat-label>
+                <input type="text" [(ngModel)]="streamPort" matInput placeholder="8255">
+            </mat-form-field>
+        </div>
+        <div class="row sc-row-2">
+            <mat-form-field>
+                <mat-label>Reconnection Attempts:</mat-label>
+                <mat-select class="ws-reconnection-attempts-field" [(ngModel)]="streamReconnectionAttempts" [disabled]="!streamReconnect" id="ws-reconnection-attempts">
+                <mat-option *ngFor="let rcOpt of wsReconnectionAttemptsOptions" [value]="rcOpt.value">
+                    {{rcOpt.text}}
+                </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-checkbox [(ngModel)]="streamReconnect" labelPosition="after">Auto Reconnect</mat-checkbox>
+        </div>
+    </div>
+    <div class="row">
+        <h3>Analyis:</h3>
+        <mat-form-field >
+            <mat-label for="ws-analysis-sample-size">Sample Size:</mat-label>
+            <mat-select [(ngModel)]="wsAnalysisSampleSize" id="ws-analysis-sample-size">
+            <mat-option *ngFor="let aSize of wsAnalysisSampleSizes" [value]="aSize">
+                {{aSize}}
+            </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div class="row">
+        <h3>Loading:</h3>
+        <div class="row sc-row-3">
+            <mat-checkbox [(ngModel)]="autoCreateMissingDataSources" labelPosition="after">Auto-create Datasources when explicitly specified in record</mat-checkbox>
+        </div>
+        <div class="row sc-row-4">
+            <mat-checkbox [(ngModel)]="mapEmptyDataSourcesToValue" labelPosition="after">Map records with no Datasource defined to:</mat-checkbox>
+            <mat-form-field>
+                <mat-label>DataSource Name:</mat-label>
+                <input matInput [disabled]="!mapEmptyDataSourcesToValue" [(ngModel)]="mapEmptyDataSourcesTo">
+            </mat-form-field>
+        </div>
+    </div>
+    
     <div class="test-status" *ngIf="testStatus">
         <span class="text">{{ testStatus }}</span>
     </div>
 </div>
 <div mat-dialog-actions>
   <button mat-button (click)="onNoClick()">Cancel</button>
-  <button mat-button (click)="testConnection($event)" cdkFocusInitial *ngIf="!wsConnectionIsValid">Test Connection</button>
+  <button mat-button (click)="testConnection($event)" cdkFocusInitial *ngIf="!wsConnectionIsValid && !isTesting">Test Connection</button>
+  <button mat-button (click)="abortTest($event)" cdkFocusInitial *ngIf="isTesting">Abort Test</button>
   <button mat-stroked-button color="primary" [mat-dialog-close]="data" cdkFocusInitial *ngIf="wsConnectionIsValid">Use Streaming</button>
 </div>

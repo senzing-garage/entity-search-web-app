@@ -27,6 +27,27 @@
         justify-content: flex-end;
     }
 
+    .row {
+        display: block;
+    }
+    .sc-row-1 {
+        mat-form-field {
+            margin-right: 30px;
+        }
+    }
+    .sc-row-2 {
+        mat-form-field {
+            width: 182px;
+            margin-right: 30px;
+            /*font-size: 13px;*/
+        }
+    }
+    .sc-row-4 {
+        mat-form-field {
+            margin-left: 30px;
+        }
+    }
+
     .test-status {
         border-radius: 5px;
         border: 1px solid rgb(53, 53, 53);
