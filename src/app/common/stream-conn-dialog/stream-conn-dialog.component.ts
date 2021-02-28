@@ -1,8 +1,10 @@
 import { Component, Inject } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { WebSocketService } from '../../services/websocket.service';
+import { AdminBulkDataService } from '../../services/admin.bulk-data.service';
+
 //import { AdminStreamConnProperties } from '../../services/admin.bulk-data.service';
-import { AdminStreamConnProperties } from '@senzing/sdk-components-ng';
+import { AdminStreamConnProperties, AdminStreamAnalysisConfig, AdminStreamLoadConfig } from '@senzing/sdk-components-ng';
 
 @Component({
     selector: 'stream-conn-dialog',
@@ -11,29 +13,34 @@ import { AdminStreamConnProperties } from '@senzing/sdk-components-ng';
   })
   export class AdminStreamConnDialogComponent {
     public set streamHost(value: string) {
-      this.data.hostname = value;
+      this.data.streamConnectionProperties.hostname = value;
     }
     public get streamHost() {
-      return this.data.hostname;
+      return this.data.streamConnectionProperties.hostname;
     }
     public get wsUUID(): string {
-      return this.data.clientId;
+      return this.data.streamConnectionProperties.clientId;
     }
     public set wsUUID(value: string) {
-      this.data.clientId = value;
+      this.data.streamConnectionProperties.clientId = value;
     }
-  
     public get wsAnalysisSampleSize() {
-        return (this.data.sampleSize) ? this.data.sampleSize : 1000;
+        return (this.data && this.data.streamAnalysisConfig && this.data.streamAnalysisConfig.sampleSize) ? this.data.streamAnalysisConfig.sampleSize : 1000;
     }
     public set wsAnalysisSampleSize(value: number) {
-        this.data.sampleSize = value;
+        this.data.streamAnalysisConfig.sampleSize = value;
+    }
+    public get wsConnectionIsValid(): boolean {
+      return (this.data && this.data.streamConnectionProperties && this.data.streamConnectionProperties.connectionTest) ?  this.data.streamConnectionProperties.connectionTest : false;
     }
 
     public wsAnalysisSampleSizes = [
       100,
       1000,
+      5000,
       10000,
+      20000,
+      50000,
       100000
     ];
 
@@ -42,9 +49,41 @@ import { AdminStreamConnProperties } from '@senzing/sdk-components-ng';
     constructor(
       public dialogRef: MatDialogRef<AdminStreamConnDialogComponent>,
       private webSocketService: WebSocketService,
-      @Inject(MAT_DIALOG_DATA) public data: AdminStreamConnProperties) {
-      if(this.data && this.data.connectionTest) {
-        this.data.connectionTest = false;
+      private adminBulkDataService: AdminBulkDataService,
+      @Inject(MAT_DIALOG_DATA) public data: {
+        streamConnectionProperties: AdminStreamConnProperties,
+        streamAnalysisConfig: AdminStreamAnalysisConfig,
+        streamLoadConfig: AdminStreamLoadConfig
+      }) {
+      console.info('AdminStreamConnDialogComponent()', this.data);
+      if(!this.data) {
+        this.data = {
+          streamConnectionProperties: this.adminBulkDataService.streamConnectionProperties,
+          streamAnalysisConfig: this.adminBulkDataService.streamAnalysisConfig,
+          streamLoadConfig: this.adminBulkDataService.streamLoadConfig,
+        }
+      } else {
+        // make sure each node has an initialized value
+        if(!this.data.streamAnalysisConfig) {
+          this.data.streamAnalysisConfig = {
+            sampleSize: 10000
+          }
+        }
+        if(!this.data.streamConnectionProperties) {
+          this.data.streamConnectionProperties = {
+            "hostname": 'localhost:8555',
+            "connected": false,
+            "connectionTest": false,
+            "reconnectOnClose": false,
+            "reconnectConsecutiveAttemptLimit": 10
+          }
+        }
+        if(!this.data.streamLoadConfig) {
+          this.data.streamLoadConfig.autoCreateMissingDataSources = false;
+        }
+      }
+      if(this.data && this.data.streamConnectionProperties && this.data.streamConnectionProperties.connectionTest) {
+        this.data.streamConnectionProperties.connectionTest = false;
       }
     }
   
@@ -54,9 +93,9 @@ import { AdminStreamConnProperties } from '@senzing/sdk-components-ng';
  
     public testConnection(event: Event) {
       this.testStatus = "Opening Connection.."
-      this.webSocketService.testConnection(this.data).subscribe((isValid: boolean) => {
+      this.webSocketService.testConnection(this.data.streamConnectionProperties).subscribe((isValid: boolean) => {
         if(isValid) {
-          this.data.connectionTest = true;
+          this.data.streamConnectionProperties.connectionTest = true;
           this.testStatus = "Connection Opened Successfully"
           setTimeout(() => {
             // hide status message
@@ -66,7 +105,7 @@ import { AdminStreamConnProperties } from '@senzing/sdk-components-ng';
             }, 2000);
           }, 10000)
         } else {
-          this.data.connectionTest = false;
+          this.data.streamConnectionProperties.connectionTest = false;
         }
       })
     }

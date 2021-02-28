@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { CompletionObserver, Observable, PartialObserver, Subject } from 'rxjs';
-import { take, takeUntil, filter, map, tap } from 'rxjs/operators';
+import { CompletionObserver, Observable, of, PartialObserver, Subject } from 'rxjs';
+import { take, takeUntil, filter, map, tap, catchError } from 'rxjs/operators';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 //import { v4 as uuidv4 } from 'uuid';
 import { AdminStreamConnProperties } from '@senzing/sdk-components-ng';
@@ -37,9 +37,9 @@ export class WebSocketService {
   public connectionProperties: AdminStreamConnProperties = {
     "hostname": 'localhost:8555',
     "connected": false,
-    "sampleSize": 1000,
     "connectionTest": false,
-    "reconnectOnClose": false
+    "reconnectOnClose": false,
+    "reconnectConsecutiveAttemptLimit": 10
   };
 
   /** web socket subject used for connection */
@@ -108,9 +108,9 @@ export class WebSocketService {
     this.connectionProperties = this.connectionProperties ? this.connectionProperties : {
       "hostname": hostname,
       "connected": false,
-      "sampleSize": 1000,
       "connectionTest": false,
-      "reconnectOnClose": true
+      "reconnectOnClose": true,
+      "reconnectConsecutiveAttemptLimit": 10
     }
     // set hostname if passed in
     this.connectionProperties.hostname = hostname ? hostname : this.connectionProperties.hostname;
@@ -131,6 +131,11 @@ export class WebSocketService {
       tap( s => console.log('WebSocketService.close: ', s) ),
       map(_ => false)
     ).subscribe(this.status$);
+    const errorSubject = new Subject<CloseEvent>();
+    errorSubject.pipe(
+      tap( s => console.log('WebSocketService.error: ', s) ),
+    ).subscribe(this._onErrorSubject);
+
     // when message is received proxy to status$
     const messageSubject = new Subject<Event>();
     messageSubject.pipe(
@@ -166,7 +171,14 @@ export class WebSocketService {
     });
     // do initial subscription otherwise conn will close
     this.ws$.pipe(
-      takeUntil(this.unsubscribe$)
+      takeUntil(this.unsubscribe$),
+      catchError( (errors: any) => {
+        if(errors && !errors.message) {
+          errors.message = "Websocket could not connect to Stream interface. Double check that host is valid and reachable.";
+        }
+        this._onError(errors);
+        return of(errors)
+      } )
     ).subscribe((msg) => {
       console.log('clientId: ', msg);
       if(msg && msg.uuid) {
@@ -194,12 +206,22 @@ export class WebSocketService {
   public reconnect(){
     console.log('WebSocketService.reconnect: ', this.ws$, this.connectionProperties);
     if(this.ws$) {
-      this.ws$.subscribe()
+      this.ws$.pipe(
+        catchError( (error: Error) => {
+          console.log('WebSocketService.reconnect: error: ', error);
+          let _connProps = this.connectionProperties ? this.connectionProperties : {};
+          if(error && !error.message) {
+            error.message = "Could not connect to Stream interface(${_connProps.}) after a disconnect. Will continue to retry connection until reconnection attempt limit(${connection}) is reached.";
+          }
+          this._onError(error);
+          return of(event)
+        } )
+      ).subscribe()
     } else if(this.connectionProperties && this.connectionProperties.connectionTest) {
       this.open();
     } else {
       // should we try to connect something that hasnt been flagged as valid?
-      this._onErrorSubject.next('Stream Connection not set properly. please correct and try again.');
+      this._onErrorSubject.next('Websocket could not connect to Stream interface after a disconnect. Will continue to retry connection until reconnection attempt limit is reached.');
     }
   }
   /**
@@ -258,8 +280,13 @@ export class WebSocketService {
         openObserver: openSubject,
         closeObserver: closeSubject
       });
-      this.ws$.pipe(
+      this.ws$
+      .pipe(
         take(1),
+        catchError( (errors: any) => {
+          this._onError(errors);
+          return of(errors)
+        } )
       ).subscribe( (res) => {
         connectionProps.connected = true;
         if(res && res.uuid) {

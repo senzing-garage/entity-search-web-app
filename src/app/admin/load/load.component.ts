@@ -1,18 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { SzBulkDataAnalysis, SzBulkLoadResult } from '@senzing/rest-api-client-ng';
 import { MatDialog } from '@angular/material/dialog';
 
 import { AdminStreamConnDialogComponent } from '../../common/stream-conn-dialog/stream-conn-dialog.component';
 import { AdminBulkDataService, AdminStreamLoadSummary } from '../../services/admin.bulk-data.service';
-import { AdminStreamConnProperties } from '@senzing/sdk-components-ng';
+import { AdminStreamAnalysisConfig, AdminStreamConnProperties, AdminStreamLoadConfig } from '@senzing/sdk-components-ng';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'admin-data-loader',
   templateUrl: './load.component.html',
   styleUrls: ['./load.component.scss']
 })
-export class AdminDataLoaderComponent implements OnInit {
+export class AdminDataLoaderComponent implements OnInit, OnDestroy {
+  /** subscription to notify subscribers to unbind */
+  public unsubscribe$ = new Subject<void>();
+  
   /** after selecting switch to use stream
    * we set the connection properties of admin streaming
    */
@@ -24,13 +29,26 @@ export class AdminDataLoaderComponent implements OnInit {
         // open configuration modal
         const dialogRef = this.dialog.open(AdminStreamConnDialogComponent, {
           width: '600px',
-          data: this.adminBulkDataService.streamConnectionProperties
+          data: {
+            streamConnectionProperties: this.adminBulkDataService.streamConnectionProperties,
+            streamAnalysisConfig: this.adminBulkDataService.streamAnalysisConfig,
+            streamLoadConfig: this.adminBulkDataService.streamLoadConfig,
+          }
         });
-
-        dialogRef.afterClosed().subscribe((result: AdminStreamConnProperties | undefined) => {
+        dialogRef.afterClosed().subscribe((result: {
+            streamConnectionProperties: AdminStreamConnProperties,
+            streamAnalysisConfig: AdminStreamAnalysisConfig,
+            streamLoadConfig: AdminStreamLoadConfig
+          } | undefined) => {
           console.log(`Dialog result: `, result);
-          if(result){
-            this.adminBulkDataService.streamConnectionProperties = (result as AdminStreamConnProperties)
+          if(result && result.streamAnalysisConfig) {
+            this.adminBulkDataService.streamAnalysisConfig = result.streamAnalysisConfig;
+          }
+          if(result && result.streamLoadConfig) {
+            this.adminBulkDataService.streamLoadConfig = result.streamLoadConfig;
+          }
+          if(result && result.streamConnectionProperties){
+            this.adminBulkDataService.streamConnectionProperties = result.streamConnectionProperties;
           } else {
             this.adminBulkDataService.useStreamingForLoad = false;
           }
@@ -77,11 +95,21 @@ export class AdminDataLoaderComponent implements OnInit {
     // set page title
     this.titleService.setTitle( 'Admin Area - Bulk Import' );
 
-    this.adminBulkDataService.onError.subscribe((err) => {
+    this.adminBulkDataService.onError.pipe(
+      takeUntil(this.unsubscribe$)
+    ).subscribe((err) => {
       if(!this.adminBulkDataService.currentError) { this.adminBulkDataService.currentError = err; }
       console.warn('AdminDataLoaderComponent.onInit SHOW Err MSG: ', err, this.currentError);
       //this.currentError = err;
     });
+  }
+
+  /**
+   * unsubscribe event streams
+   */
+  ngOnDestroy() {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
 }

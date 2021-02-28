@@ -6,7 +6,7 @@ import { map, catchError, tap, switchMap, takeUntil, take, filter } from 'rxjs/o
 import { SzConfigurationService, SzAdminService, SzEntityTypesService, SzServerInfo, SzBaseResponseMeta, SzPrefsService, SzBulkDataService, SzDataSourcesService } from '@senzing/sdk-components-ng';
 import { HttpClient } from '@angular/common/http';
 import { AuthConfig, SzWebAppConfigService } from './config.service';
-import { AdminStreamConnProperties } from '@senzing/sdk-components-ng';
+import { AdminStreamConnProperties, AdminStreamAnalysisConfig, AdminStreamLoadConfig } from '@senzing/sdk-components-ng';
 
 import {
     determineLineEndingStyle,
@@ -100,8 +100,12 @@ export class AdminBulkDataService {
     public onEntityTypeMapChange = new Subject<{ [key: string]: string }>();
     /** when the result of a load operation changes this behavior subject is broadcast */
     public onLoadResult = new BehaviorSubject<SzBulkLoadResult | AdminStreamLoadSummary>(undefined);
-    /** when the file input changes this subject is broadcast */
-    public onError = new Subject<Error>();
+    /** when an error occurs this subject is emitted 
+     * @internal
+    */
+    private _onError = new Subject<Error>();
+    /** when an error occurs this subject is emitted */
+    public onError = this._onError.asObservable();
     /** when a file is being analyzed */
     public analyzingFile = new Subject<boolean>();
     /** when a file is being analyzed */
@@ -141,6 +145,14 @@ export class AdminBulkDataService {
     public get canOpenStreamSocket(): boolean {
         return (this.webSocketService && this.webSocketService.connectionProperties) ? this.webSocketService.connectionProperties.connectionTest : false;
     }
+    /** parameters that change behavior of streaming mode analysis. eg "sampleSize", "ignoreRecordsWithNoDataSource" */
+    public get streamAnalysisConfig(): AdminStreamAnalysisConfig {
+        return this.prefs.admin.streamAnalysisConfig;
+    }
+    /** parameters that change behavior of streaming mode analysis. eg "sampleSize", "ignoreRecordsWithNoDataSource" */
+    public set streamAnalysisConfig(value: AdminStreamAnalysisConfig) {
+        this.prefs.admin.streamAnalysisConfig = value;
+    }
     /** proxy to websocket service connection properties */
     public set streamConnectionProperties(value: AdminStreamConnProperties) {
         //this.webSocketService.connectionProperties = value;
@@ -150,6 +162,14 @@ export class AdminBulkDataService {
     public get streamConnectionProperties(): AdminStreamConnProperties {
         return this.webSocketService.connectionProperties;
     }
+    /** parameters that change behavior of loading/importing records via streaming interface. eg "mapUnspecifieD", "ignoreRecordsWithNoDataSource" */
+    public get streamLoadConfig(): AdminStreamLoadConfig {
+        return this.prefs.admin.streamLoadConfig;
+    }
+    public set streamLoadConfig(value: AdminStreamLoadConfig) {
+        this.prefs.admin.streamLoadConfig = value
+    }
+    // /AdminStreamAnalysisConfig, AdminStreamLoadConfig
 
 
     /** the file to analyze, map, or load */
@@ -185,14 +205,7 @@ export class AdminBulkDataService {
             console.log('AdminBulkDataService.prefs.admin.prefChanged: ', prefs);
             if(prefs && prefs && prefs.streamConnectionProperties !== undefined) {
                 let _streamConnProperties = (prefs.streamConnectionProperties) as AdminStreamConnProperties;
-                console.log('stream connection properties saved to prefs: ', JSON.stringify(_streamConnProperties) == JSON.stringify(this.streamConnectionProperties), _streamConnProperties, this.streamConnectionProperties);
-                console.log(JSON.stringify(_streamConnProperties));
-                console.log(JSON.stringify(this.streamConnectionProperties));
-                /*
-                if(JSON.stringify(_streamConnProperties) != JSON.stringify(this.streamConnectionProperties)) { 
-                    //this.streamConnectionProperties = _streamConnProperties;
-                    this.webSocketService.connectionProperties = _streamConnProperties;
-                }*/
+                //console.log('stream connection properties saved to prefs: ', JSON.stringify(_streamConnProperties) == JSON.stringify(this.streamConnectionProperties), _streamConnProperties, this.streamConnectionProperties);
                 this.webSocketService.connectionProperties = _streamConnProperties;
                 // I tried doing some fancy checking etc
                 // more reliable to just always publish this on change
@@ -201,7 +214,10 @@ export class AdminBulkDataService {
                 console.warn('no stream connection props in payload: ', prefs);
             }
         });
-
+        this.webSocketService.onError.subscribe((error: Error) => {
+            console.warn('AdminBulkDataService.webSocketService.onError: ', error);
+            this._onError.next(error);
+        });
         this.onCurrentFileChange.pipe(
             takeUntil( this.unsubscribe$ )
         ).subscribe( (file: File) => {
@@ -300,7 +316,7 @@ export class AdminBulkDataService {
         this.analyzingFile.next(true);
         return this.bulkDataService.analyzeBulkRecords(file).pipe(
         catchError(err => {
-            this.onError.next(err);
+            this._onError.next(err);
             return of(undefined);
         }),
         tap( (result: SzBulkDataAnalysisResponse) => {
@@ -368,7 +384,7 @@ export class AdminBulkDataService {
             catchError((err: Error) => {
                 console.warn('Handling error locally and rethrowing it...', err);
                 this.loadingFile.next(false);
-                this.onError.next( err );
+                this._onError.next( err );
                 return of(undefined);
             }),
             tap((response: SzBulkLoadResponse) => {
@@ -513,12 +529,25 @@ export class AdminBulkDataService {
         }
         this.loadingFile.next(this.isStreamLoading(summary));
         if(fileType === validImportFileTypes.JSONL || fileType === validImportFileTypes.JSON) {
+            let finishedLoading = new Subject<void>();
+            this.webSocketService.onError.pipe(
+                takeUntil(this.unsubscribe$),
+                takeUntil(finishedLoading),
+                take(1)
+            ).subscribe((error) => {
+                // error occured before load was finished
+                // take first error and report
+                // stop spinner activity
+                // ----- there are probably better ways(fancy rxjs-y ways) A.W.
+                this.loadingFile.next(false);
+            })
             let retStreamSummary = this.streamLoadJSONFileToWebsocketServer(file, reader, summary);
             retStreamSummary.pipe(
                 catchError((err: Error) => {
                     console.warn('Handling error locally and rethrowing it...', err);
                     this.loadingFile.next(false);
-                    this.onError.next( err );
+                    this._onError.next( err );
+                    finishedLoading.next();
                     return of(undefined);
                 }),
                 filter((summary: AdminStreamLoadSummary) => {
@@ -529,15 +558,16 @@ export class AdminBulkDataService {
                 this.currentLoadResult = summary;
                 this.onLoadResult.next( this.currentLoadResult );
                 this.loadingFile.next(this.isStreamLoading(summary));
-
-                alert('done!\n\r'+ JSON.stringify(summary, undefined, 2));
+                finishedLoading.next();
+                //alert('done!\n\r'+ JSON.stringify(summary, undefined, 2));
             }, (err: Error) => {
                 this.loadingFile.next(false);
-                this.onError.next( err );
+                this._onError.next( err );
+                finishedLoading.next();
             });
             return retStreamSummary;
         } else if(fileType === validImportFileTypes.CSV) {
-            this.onError.next(new Error('CSVs are not supported by stream loading at this point in time.'));
+            this._onError.next(new Error('CSVs are not supported by stream loading at this point in time.'));
             return this.streamLoadCSVFileToWebsocketServer(file, reader, summary);
         } else {
             console.warn('SzBulkDataService.streamLoad: noooooooo', fileType, fileType === validImportFileTypes.CSV);

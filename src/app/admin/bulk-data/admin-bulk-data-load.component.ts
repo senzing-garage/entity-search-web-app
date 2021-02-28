@@ -122,7 +122,8 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
     private adminBulkDataService: AdminBulkDataService,
     public viewContainerRef: ViewContainerRef) {}
 
-    ngOnInit() {
+    ngOnInit() {}
+    ngAfterViewInit() {
       // if its the users first file load and they just verified stream host
       // immediately prompt for file selection
       this.adminBulkDataService.onUseStreamingSocketChange.pipe(
@@ -130,11 +131,10 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
           return useStreamingForLoad && !this.adminBulkDataService.file;
         })
       ).subscribe( (useStreaming) => {
-        console.warn('adminBulkDataService.onUseStreamingSocketChange: '+ useStreaming);
+        console.info('AdminBulkDataLoadComponent.adminBulkDataService.onUseStreamingSocketChange: '+ useStreaming);
         this.chooseFileInput();
       });
     }
-    ngAfterViewInit() {}
     /**
      * unsubscribe when component is destroyed
      */
@@ -171,7 +171,15 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
     public chooseFileInputFS(event: Event) {
       event.preventDefault();
       event.stopPropagation();
-      this.filePicker.nativeElement.click();
+      if(this.filePicker && this.filePicker.nativeElement) {
+        try {
+          this.filePicker.nativeElement.click();
+        } catch(e) {
+          console.warn('AdminBulkDataLoadComponent.filePicker.nativeElement.click error', e);
+        }
+      } else {
+        console.warn('AdminBulkDataLoadComponent.filePicker.nativeElement missing');
+      }
     }
     /** take the current file focus and pass to api load endpoint */
     public loadFile(event: Event) {
