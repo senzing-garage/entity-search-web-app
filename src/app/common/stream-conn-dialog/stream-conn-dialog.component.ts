@@ -1,4 +1,4 @@
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { WebSocketService } from '../../services/websocket.service';
 import { AdminBulkDataService } from '../../services/admin.bulk-data.service';
@@ -13,7 +13,7 @@ import { Subject } from 'rxjs';
     templateUrl: 'stream-conn-dialog.component.html',
     styleUrls: ['stream-conn-dialog.component.scss']
   })
-  export class AdminStreamConnDialogComponent implements OnInit, OnDestroy {
+  export class AdminStreamConnDialogComponent implements OnInit, OnDestroy, AfterViewInit {
     /** subscription to notify subscribers to unbind */
     public unsubscribe$ = new Subject<void>();
     
@@ -148,12 +148,18 @@ import { Subject } from 'rxjs';
       this.webSocketService.onError.pipe(
         takeUntil(this.unsubscribe$)
       ).subscribe((error: Error) => {
-        console.warn('error');
         if(this.isTesting) {
           this.isTesting  = false;
           this.testStatus = 'Test failed';
+          this.data.streamConnectionProperties.connectionTest = false;
         }
       });
+    }
+
+    ngAfterViewInit() {
+      if(this.data && this.data.streamLoadConfig && this.data.streamLoadConfig.assignMissingDataSourceRecordsToStaticTarget !== undefined) {
+        this._mapEmptyDataSourcesToValue = true;
+      }
     }
 
     /**
@@ -191,6 +197,8 @@ import { Subject } from 'rxjs';
       }, (error: Error) => {
         console.warn('error');
         this.isTesting = false;
+        this.data.streamConnectionProperties.connectionTest = false;
+
       })
     }
     public abortTest(event: Event) {

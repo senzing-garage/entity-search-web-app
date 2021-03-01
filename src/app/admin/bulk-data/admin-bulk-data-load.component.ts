@@ -99,6 +99,7 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
   public get currentError(): Error {
     return this.adminBulkDataService.currentError;
   }
+  private _filePickerOpenedAtLeastOnce = false;
   /** file types allowed to select in dropdown */
   private _supportedFileTypes = [
     '.JSON',
@@ -128,11 +129,11 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
       // immediately prompt for file selection
       this.adminBulkDataService.onUseStreamingSocketChange.pipe(
         filter( (useStreamingForLoad: boolean) => {
-          return useStreamingForLoad && !this.adminBulkDataService.file;
+          return useStreamingForLoad && !this.adminBulkDataService.file && this.adminBulkDataService.streamConnectionProperties.connectionTest;
         })
       ).subscribe( (useStreaming) => {
         console.info('AdminBulkDataLoadComponent.adminBulkDataService.onUseStreamingSocketChange: '+ useStreaming);
-        this.chooseFileInput();
+        this.chooseFileInputFS();
       });
     }
     /**
@@ -163,17 +164,20 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
     }
     /** upload a file for analytics */
     public chooseFileInput(event?: Event) {
+      
       if(event && event.preventDefault) event.preventDefault();
       if(event && event.stopPropagation) event.stopPropagation();
       this.filePicker.nativeElement.click();
+      this._filePickerOpenedAtLeastOnce = true;
     }
     /** upload a file for analytics */
-    public chooseFileInputFS(event: Event) {
-      event.preventDefault();
-      event.stopPropagation();
+    public chooseFileInputFS(event?: Event) {
+      if(event && event.preventDefault) event.preventDefault();
+      if(event && event.stopPropagation) event.stopPropagation();
       if(this.filePicker && this.filePicker.nativeElement) {
         try {
           this.filePicker.nativeElement.click();
+          this._filePickerOpenedAtLeastOnce = true;
         } catch(e) {
           console.warn('AdminBulkDataLoadComponent.filePicker.nativeElement.click error', e);
         }

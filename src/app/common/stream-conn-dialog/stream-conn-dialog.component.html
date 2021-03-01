@@ -45,7 +45,7 @@
             <mat-checkbox [(ngModel)]="autoCreateMissingDataSources" labelPosition="after">Auto-create Datasources when explicitly specified in record</mat-checkbox>
         </div>
         <div class="row sc-row-4">
-            <mat-checkbox [(ngModel)]="mapEmptyDataSourcesToValue" labelPosition="after">Map records with no Datasource defined to:</mat-checkbox>
+            <mat-checkbox [(ngModel)]="mapEmptyDataSourcesToValue" labelPosition="after">Map records with no Datasource to</mat-checkbox>
             <mat-form-field>
                 <mat-label>DataSource Name:</mat-label>
                 <input matInput [disabled]="!mapEmptyDataSourcesToValue" [(ngModel)]="mapEmptyDataSourcesTo">

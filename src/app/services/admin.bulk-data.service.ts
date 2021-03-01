@@ -106,6 +106,12 @@ export class AdminBulkDataService {
     private _onError = new Subject<Error>();
     /** when an error occurs this subject is emitted */
     public onError = this._onError.asObservable();
+    /** when the status of the websocket stream changes */
+    private _onStreamStatusChange = new Subject<CloseEvent | Event>();
+    public onStreamStatusChange = this._onStreamStatusChange.asObservable();
+    public onStreamConnectionStateChange = this._onStreamStatusChange.asObservable().pipe(
+        map( WebSocketService.statusChangeEvtToConnectionBool )
+    )
     /** when a file is being analyzed */
     public analyzingFile = new Subject<boolean>();
     /** when a file is being analyzed */
@@ -169,6 +175,13 @@ export class AdminBulkDataService {
     public set streamLoadConfig(value: AdminStreamLoadConfig) {
         this.prefs.admin.streamLoadConfig = value
     }
+    public set streamBulkPrefSet(value: boolean) {
+        if(!value && this.prefs.admin.bulkSet) {
+            // if changing from false to true, do immediate prefschange event
+            this.prefs.admin.prefsChanged.next( this.prefs.admin.toJSONObject() );
+        }
+        this.prefs.admin.bulkSet = value;
+    }
     // /AdminStreamAnalysisConfig, AdminStreamLoadConfig
 
 
@@ -215,9 +228,21 @@ export class AdminBulkDataService {
             }
         });
         this.webSocketService.onError.subscribe((error: Error) => {
-            console.warn('AdminBulkDataService.webSocketService.onError: ', error);
+            //console.warn('AdminBulkDataService.webSocketService.onError: ', error);
             this._onError.next(error);
         });
+        this.webSocketService.onStatusChange.subscribe((statusEvent: CloseEvent | Event) => {
+            console.warn('AdminBulkDataService.webSocketService.onStatusChange: ', statusEvent);
+            this._onStreamStatusChange.next(statusEvent);
+        });
+        this.webSocketService.onConnectionStateChange.pipe(
+            takeUntil(this.unsubscribe$),
+            filter( () => this.currentError !== undefined)
+          ).subscribe((status) => {
+            console.warn('AdminBulkDataService.webSocketService.onConnectionStateChange: clear current error:', this.currentError);
+            // check to see if we should clear the current error
+            this.currentError = undefined;
+          });
         this.onCurrentFileChange.pipe(
             takeUntil( this.unsubscribe$ )
         ).subscribe( (file: File) => {

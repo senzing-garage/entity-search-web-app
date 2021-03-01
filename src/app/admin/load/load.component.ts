@@ -6,7 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { AdminStreamConnDialogComponent } from '../../common/stream-conn-dialog/stream-conn-dialog.component';
 import { AdminBulkDataService, AdminStreamLoadSummary } from '../../services/admin.bulk-data.service';
 import { AdminStreamAnalysisConfig, AdminStreamConnProperties, AdminStreamLoadConfig } from '@senzing/sdk-components-ng';
-import { takeUntil } from 'rxjs/operators';
+import { filter, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 @Component({
@@ -22,10 +22,11 @@ export class AdminDataLoaderComponent implements OnInit, OnDestroy {
    * we set the connection properties of admin streaming
    */
   public set useSocketStream(value: boolean) {
-    this.adminBulkDataService.useStreamingForLoad = value;
     if(value) {
+      // run new connection test, so clear out previous value
+      this.adminBulkDataService.streamConnectionProperties.connectionTest = false;
       // do we have connection properties
-      if(!this.adminBulkDataService.streamConnectionProperties.connected) {
+      //if(!this.adminBulkDataService.streamConnectionProperties.connected) {
         // open configuration modal
         const dialogRef = this.dialog.open(AdminStreamConnDialogComponent, {
           width: '600px',
@@ -41,6 +42,7 @@ export class AdminDataLoaderComponent implements OnInit, OnDestroy {
             streamLoadConfig: AdminStreamLoadConfig
           } | undefined) => {
           console.log(`Dialog result: `, result);
+          this.adminBulkDataService.streamBulkPrefSet = true;
           if(result && result.streamAnalysisConfig) {
             this.adminBulkDataService.streamAnalysisConfig = result.streamAnalysisConfig;
           }
@@ -52,14 +54,11 @@ export class AdminDataLoaderComponent implements OnInit, OnDestroy {
           } else {
             this.adminBulkDataService.useStreamingForLoad = false;
           }
-          this.adminBulkDataService.streamConnectionProperties.connected = false;
+          this.adminBulkDataService.streamBulkPrefSet = false;
         });
-      } else {
-        // just run conn test
-      }
-    } else {
-      this.adminBulkDataService.streamConnectionProperties.connected = false;
+      //}
     }
+    this.adminBulkDataService.useStreamingForLoad = value;
   }
   public get useSocketStream() {
     return this.adminBulkDataService.useStreamingForLoad;

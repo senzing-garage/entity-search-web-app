@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { CompletionObserver, Observable, of, PartialObserver, Subject } from 'rxjs';
-import { take, takeUntil, filter, map, tap, catchError } from 'rxjs/operators';
+import { BehaviorSubject, CompletionObserver, Observable, of, PartialObserver, Subject } from 'rxjs';
+import { take, takeUntil, filter, map, tap, catchError, takeWhile } from 'rxjs/operators';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 //import { v4 as uuidv4 } from 'uuid';
 import { AdminStreamConnProperties } from '@senzing/sdk-components-ng';
@@ -20,9 +20,13 @@ export class WebSocketService {
   /** subscribe to this observable channel for error notification */
   public onError = this._onErrorSubject.asObservable();
   /** subject used to listen to connection status */
-  private status$: Subject<boolean> = new Subject<boolean>();
+  private _onStatusChange: Subject<CloseEvent | Event> = new BehaviorSubject<CloseEvent | Event>(new CloseEvent('close'));
   /** observable published to when the state of connection changes */
-  private statusChange: Observable<boolean> = this.status$.asObservable();
+  public onStatusChange: Observable<CloseEvent | Event> = this._onStatusChange.asObservable();
+  public onConnectionStateChange: Observable<boolean> = this.onStatusChange.pipe(
+    map( WebSocketService.statusChangeEvtToConnectionBool )
+  )
+  //public connected: boolean = false;
 
   /** subject used for when messages sent by server */
   private message$: Subject<any> = new Subject<any>();
@@ -32,6 +36,7 @@ export class WebSocketService {
   /** messages sent while connection offline */
   //private _offlineMessageQueue = [];
   private _offlineMessageQueue: offlineMessage[] = [];
+  private _reconnectionAttemptsIncrement = 0;
 
   /** instance of AdminStreamConnProperties used for connection instantiation and behavior */
   public connectionProperties: AdminStreamConnProperties = {
@@ -42,6 +47,29 @@ export class WebSocketService {
     "reconnectConsecutiveAttemptLimit": 10
   };
 
+  static statusChangeEvtToConnectionBool(status: CloseEvent | Event) {
+    let retVal = false;
+    if(status){
+      if((status as Event).type === 'open') {
+        retVal = true;
+      } else if((status as CloseEvent).type === 'close') {
+        retVal = false;
+      }
+    }
+    return retVal;
+  }
+
+  static getSocketUriFromConnectionObject(connProps: AdminStreamConnProperties): string {
+    let retVal = "ws://localhost:8955";
+    if(connProps) {
+      retVal  = (connProps.secure) ? "wss://" : "ws://";
+      retVal += (connProps.hostname) ? connProps.hostname : 'localhost';
+      retVal += (connProps.port) ? ':'+connProps.port : '';
+    }
+
+    return retVal;
+  }
+
   /** web socket subject used for connection */
   private ws$: WebSocketSubject<any>;
 
@@ -50,13 +78,13 @@ export class WebSocketService {
     let retSub = new Subject<boolean>();
     let retObs = retSub.asObservable();
     if(this.connectionProperties && !this.connectionProperties.connected) {
-      //console.log('queueing message..', this._offlineMessageQueue.length);
+      console.log('queueing message..', this._offlineMessageQueue.length, this.connectionProperties.connected, this.ws$.closed);
       this._offlineMessageQueue.push({data: message, onSent: () => {
         //console.log('[success] sent message.. ', message);
         retSub.next(true);
       }});
     } else {
-      //console.log('sending message..', message);
+      console.log('sending message..', message);
       this.ws$.pipe(
         take(1)
       ).subscribe((res) => {
@@ -72,16 +100,28 @@ export class WebSocketService {
 
   constructor() {  
     /** track the connection status of the socket */
-    this.statusChange.subscribe((res) => {
-      this.connectionProperties.connected = res;
-      //console.warn('WebSocketService.statusChange 1: ', res);
+    this.onConnectionStateChange.subscribe((connected) => {
+      if(!this.connectionProperties.connected && connected) {
+        // clear out any reconnect attempt increment
+        this._reconnectionAttemptsIncrement = 0;
+      }
+      this.connectionProperties.connected = connected;
+      console.warn('WebSocketService.onConnectionStateChange: ', this.connectionProperties.connected);
     });
+    
     /** when "reconnectOnClose" == true, reconnect socket */
-    this.statusChange.pipe(
+    /*
+    this.onStatusChange.pipe(
+      map( WebSocketService.statusChangeEvtToConnectionBool ),
+      filter( (_status) => { return this.connectionProperties.reconnectOnClose && this._reconnectionAttemptsIncrement <= this.connectionProperties.reconnectConsecutiveAttemptLimit && !_status; })
+    ).subscribe( this._onDisconnectRetry.bind(this) );
+    */
+    this.onStatusChange.pipe(
+      map( WebSocketService.statusChangeEvtToConnectionBool ),
       filter( (_status) => { return this.connectionProperties.reconnectOnClose && !_status; })
     ).subscribe( this._onDisconnectRetry.bind(this) );
     /** if messages were sent while connection offline send them on reconnection */
-    this.statusChange.pipe(
+    this.onConnectionStateChange.pipe(
       filter( _status => _status === true)
     ).subscribe( this._onConnectProcessOfflineMessages.bind(this) );
   }
@@ -116,21 +156,24 @@ export class WebSocketService {
     this.connectionProperties.hostname = hostname ? hostname : this.connectionProperties.hostname;
     if(port) { this.connectionProperties.port = port; } 
     // connection string
-    let _wsaddr = `ws://${this.connectionProperties.hostname}`;
-    _wsaddr += port ? `:${this.connectionProperties.port}`: '';
+    let _wsaddr = WebSocketService.getSocketUriFromConnectionObject(this.connectionProperties);
 
     // when connection is opened proxy to status$
     const openSubject = new Subject<Event>();
     openSubject.pipe(
-      tap( s => console.log('WebSocketService.open: ', s) ),
-      map(_ => true),
-    ).subscribe(this.status$);
+      tap( s => { 
+        console.log('WebSocketService.open: ', s);
+        this.connectionProperties.connected = true;
+      })
+    ).subscribe(this._onStatusChange);
     // when connection is closed proxy to status$
     const closeSubject = new Subject<CloseEvent>();
     closeSubject.pipe(
-      tap( s => console.log('WebSocketService.close: ', s) ),
-      map(_ => false)
-    ).subscribe(this.status$);
+      tap( s => {
+        console.log('WebSocketService.close: ', s);
+        this.connectionProperties.connected = false;
+      })
+    ).subscribe(this._onStatusChange);
     const errorSubject = new Subject<CloseEvent>();
     errorSubject.pipe(
       tap( s => console.log('WebSocketService.error: ', s) ),
@@ -193,14 +236,12 @@ export class WebSocketService {
 
   public close() {
     console.warn('WebSocketService.close: ', this.ws$);
-    /*
+    
     if(this.ws$) {
       if(this.ws$.complete) this.ws$.complete();
-      if(this.ws$.unsubscribe) this.ws$.unsubscribe();
-      this.ws$ = undefined;
+      //if(this.ws$.unsubscribe) this.ws$.unsubscribe();
+      //this.ws$ = undefined;
     }
-    this.connectionProperties.connected = false;
-    */
   }
   /** reconnect to previously closed connection */
   public reconnect(){
@@ -208,15 +249,23 @@ export class WebSocketService {
     if(this.ws$) {
       this.ws$.pipe(
         catchError( (error: Error) => {
-          console.log('WebSocketService.reconnect: error: ', error);
-          let _connProps = this.connectionProperties ? this.connectionProperties : {};
+          console.log('WebSocketService.reconnect: error: ', error, this.ws$.error.toString());
           if(error && !error.message) {
-            error.message = "Could not connect to Stream interface(${_connProps.}) after a disconnect. Will continue to retry connection until reconnection attempt limit(${connection}) is reached.";
+            error.message = `Could not connect to Stream interface(${this.connectionProperties.hostname}) after a disconnect. Will continue to retry connection until reconnection attempt limit(${this._reconnectionAttemptsIncrement} / ${this.connectionProperties.reconnectConsecutiveAttemptLimit}) is reached.`;
+          } else if(this.ws$ && this.ws$.hasError && this.ws$.error.toString) {
+            error.message = this.ws$.error.toString();
+          } else {
+            error.message = 'Unknown error has occurred during reconnection attempt. Check Developer console for more info.'
           }
           this._onError(error);
-          return of(event)
-        } )
-      ).subscribe()
+          return of(error)
+        } ),
+      ).subscribe((reconnected) => {
+        //this.status$.next(true);
+        this._reconnectionAttemptsIncrement = 0;
+        console.log(`successfully reconnected to "${WebSocketService.getSocketUriFromConnectionObject(this.connectionProperties)}"`);
+      })
+      
     } else if(this.connectionProperties && this.connectionProperties.connectionTest) {
       this.open();
     } else {
@@ -229,7 +278,8 @@ export class WebSocketService {
    * @param connStatus 
    */
   private _onDisconnectRetry(connStatus){
-    console.log('WebSocketService._onDisconnectRetry: ', connStatus, this.connectionProperties, this);
+    this._reconnectionAttemptsIncrement++;
+    console.log(`(${this._reconnectionAttemptsIncrement} / ${this.connectionProperties.reconnectConsecutiveAttemptLimit}) WebSocketService._onDisconnectRetry: `, connStatus, this.connectionProperties, this);
     this.reconnect();
   }
   /** on error publish to _onErrorSubject */
@@ -243,18 +293,23 @@ export class WebSocketService {
     const retVal: Observable<boolean> = retSub.asObservable();
 
     if(connectionProps) {
-      let _wsaddr = `ws://${connectionProps.hostname}`;
-      _wsaddr += connectionProps.port ? `:${connectionProps.port}`: '';
+      let _wsaddr = WebSocketService.getSocketUriFromConnectionObject(this.connectionProperties);
 
       const openSubject = new Subject<Event>();
       openSubject.pipe(
-        map(_ => true),
-      ).subscribe(this.status$);
+        tap( s => { 
+          console.log('WebSocketService.open: ', s);
+          this.connectionProperties.connected = true;
+        })
+      ).subscribe(this._onStatusChange);
       
       const closeSubject = new Subject<CloseEvent>();
       closeSubject.pipe(
-        map(_ => false),
-      ).subscribe(this.status$);
+        tap( s => {
+          console.log('WebSocketService.close: ', s);
+          this.connectionProperties.connected = false;
+        })
+      ).subscribe(this._onStatusChange);
 
       this.ws$ = webSocket({
         url: _wsaddr,
