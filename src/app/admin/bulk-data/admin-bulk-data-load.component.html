@@ -10,5 +10,10 @@
 <button mat-stroked-button color="primary" (click)="chooseFileInput($event)" *ngIf="analysis && result">Analyze Another File</button>
 
 <!-- <button mat-stroked-button (click)="clear()"  *ngIf="analysis || result">Clear</button> -->
+<ul>
+       <li><h3>showAnalysis:</h3> {{showAnalysis}}</li>
+       <li><h3>useSocketStream:</h3> {{useSocketStream}}</li>
+       <li><h3>analysis:</h3> {{analysis}}</li>
+</ul>
 <admin-bulk-data-analysis-summary *ngIf="showAnalysis && analysis"></admin-bulk-data-analysis-summary>
 <admin-bulk-data-load-summary *ngIf="showResults && result"></admin-bulk-data-load-summary>

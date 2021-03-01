@@ -4,7 +4,7 @@ import { SzBulkDataAnalysis, SzBulkLoadResult } from '@senzing/rest-api-client-n
 import { MatDialog } from '@angular/material/dialog';
 
 import { AdminStreamConnDialogComponent } from '../../common/stream-conn-dialog/stream-conn-dialog.component';
-import { AdminBulkDataService, AdminStreamLoadSummary } from '../../services/admin.bulk-data.service';
+import { AdminBulkDataService, AdminStreamAnalysisSummary, AdminStreamLoadSummary } from '../../services/admin.bulk-data.service';
 import { AdminStreamAnalysisConfig, AdminStreamConnProperties, AdminStreamLoadConfig } from '@senzing/sdk-components-ng';
 import { filter, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
@@ -65,8 +65,8 @@ export class AdminDataLoaderComponent implements OnInit, OnDestroy {
   }
 
   /** result of last analysis operation */
-  public get analysis(): SzBulkDataAnalysis {
-    return this.adminBulkDataService.currentAnalysis;
+  public get analysis(): SzBulkDataAnalysis | AdminStreamAnalysisSummary {
+    return this.adminBulkDataService.currentAnalysisResult;
   }
   /** get result of load operation from service */
   public get result(): SzBulkLoadResult | AdminStreamLoadSummary {

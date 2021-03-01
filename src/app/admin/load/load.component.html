@@ -21,7 +21,7 @@
 </div>
 
 <br/>
-<admin-bulk-data-analysis *ngIf="analysis || result"></admin-bulk-data-analysis>
+<admin-bulk-data-analysis *ngIf="analysis || result" [useSocketStream]="useSocketStream"></admin-bulk-data-analysis>
 <admin-bulk-data-load [showSummaries]="false" [useSocketStream]="useSocketStream"></admin-bulk-data-load>
 <!--<sz-bulk-data-load [showSummaries]="false"></sz-bulk-data-load>
 <sz-bulk-data-analysis></sz-bulk-data-analysis>

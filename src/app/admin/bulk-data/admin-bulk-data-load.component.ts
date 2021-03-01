@@ -6,7 +6,7 @@ import {
   SzBulkLoadResult,
 } from '@senzing/rest-api-client-ng';
 import { Subject } from 'rxjs';
-import { AdminBulkDataService, AdminStreamLoadSummary } from '../../services/admin.bulk-data.service';
+import { AdminBulkDataService, AdminStreamAnalysisSummary, AdminStreamLoadSummary } from '../../services/admin.bulk-data.service';
 import { filter } from 'rxjs/operators';
 
 /**
@@ -35,13 +35,27 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
   @ViewChild('filePicker')
   private filePicker: ElementRef;
   /** get the current analysis from service */
+  /*
   get analysis(): SzBulkDataAnalysis {
     return this.adminBulkDataService.currentAnalysis;
+  }*/
+  public get analysis(): SzBulkDataAnalysis | AdminStreamAnalysisSummary {
+    return this.adminBulkDataService.currentAnalysisResult;
   }
+  @Input() public set analysis(value: SzBulkDataAnalysis | AdminStreamAnalysisSummary) {
+    if(value) { 
+      if((value as AdminStreamAnalysisSummary).bytesSent >= 0) {
+        this.adminBulkDataService.currentAnalysisResult = value as AdminStreamAnalysisSummary; 
+      } else {
+        this.adminBulkDataService.currentAnalysisResult = value as SzBulkDataAnalysis; 
+      }
+    }
+  }
+
   /** use websockets to stream file input records and results*/
   @Input() public set useSocketStream(value: boolean) {
-    this.adminBulkDataService.useStreamingForLoad = value;
-    if(this.adminBulkDataService.useStreamingForLoad) {
+    this.adminBulkDataService.useStreaming = value;
+    if(this.adminBulkDataService.useStreaming) {
       this._supportedFileTypes = [
         '.JSON',
         '.json',
@@ -50,8 +64,9 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
       ]
     }
   }
+  /** whether or not to use streaming sockets for analysis and loading */
   public get useSocketStream() {
-    return this.adminBulkDataService.useStreamingForLoad;
+    return this.adminBulkDataService.useStreaming;
   }
   public get canOpenStreamSocket(): boolean {
     return this.adminBulkDataService.canOpenStreamSocket;
@@ -99,7 +114,6 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
   public get currentError(): Error {
     return this.adminBulkDataService.currentError;
   }
-  private _filePickerOpenedAtLeastOnce = false;
   /** file types allowed to select in dropdown */
   private _supportedFileTypes = [
     '.JSON',
@@ -146,29 +160,29 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
 
     /** take the current file focus and pass to api load endpoint */
     public onFileInputChange(event: Event) {
-      this.adminBulkDataService.isAnalyzingFile = true;
-      this.adminBulkDataService.analyzingFile.next(true);
+      //this.adminBulkDataService.isAnalyzingFile = true;
+      //this.adminBulkDataService.analyzingFile.next(true);
       const target: HTMLInputElement = <HTMLInputElement> event.target;
       const fileList = target.files;
-      if(this.useSocketStream && this.canOpenStreamSocket) {
+      /*if(this.useSocketStream && this.canOpenStreamSocket) {
         this.onFileInputStreamAnalysis(event);
         return;
-      }
+      }*/
       this.adminBulkDataService.file = fileList.item(0);
     }
+    /*
     public onFileInputStreamAnalysis(event: Event) {
       //alert('using stream parser for analysis..');
       const target: HTMLInputElement = <HTMLInputElement> event.target;
       const fileList = target.files;
       this.adminBulkDataService.file = fileList.item(0);
-    }
+    }*/
     /** upload a file for analytics */
     public chooseFileInput(event?: Event) {
       
       if(event && event.preventDefault) event.preventDefault();
       if(event && event.stopPropagation) event.stopPropagation();
       this.filePicker.nativeElement.click();
-      this._filePickerOpenedAtLeastOnce = true;
     }
     /** upload a file for analytics */
     public chooseFileInputFS(event?: Event) {
@@ -177,7 +191,6 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
       if(this.filePicker && this.filePicker.nativeElement) {
         try {
           this.filePicker.nativeElement.click();
-          this._filePickerOpenedAtLeastOnce = true;
         } catch(e) {
           console.warn('AdminBulkDataLoadComponent.filePicker.nativeElement.click error', e);
         }

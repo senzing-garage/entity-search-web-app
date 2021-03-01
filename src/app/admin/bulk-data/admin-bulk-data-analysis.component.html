@@ -3,8 +3,8 @@
 <admin-bulk-data-load-summary *ngIf="result"></admin-bulk-data-load-summary>
 <!--  end summary data  -->
 <!-- start tabular display -->
-<admin-bulk-data-analysis-report *ngIf="analysis && !result"></admin-bulk-data-analysis-report>
-<admin-bulk-data-load-report *ngIf="result"></admin-bulk-data-load-report>
+<admin-bulk-data-analysis-report *ngIf="analysis && !result && !useSocketStream"></admin-bulk-data-analysis-report>
+<admin-bulk-data-load-report *ngIf="result && !useSocketStream"></admin-bulk-data-load-report>
 <!--  end tabular display  -->
 <!-- start spinner overlay -->
 <div class="mat-background" *ngIf="analyzingFile || loadingFile">

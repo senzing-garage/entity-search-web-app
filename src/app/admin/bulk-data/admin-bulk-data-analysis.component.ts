@@ -7,7 +7,7 @@ import {
 } from '@senzing/rest-api-client-ng';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { AdminBulkDataService, AdminStreamLoadSummary } from '../../services/admin.bulk-data.service';
+import { AdminBulkDataService, AdminStreamAnalysisSummary, AdminStreamLoadSummary } from '../../services/admin.bulk-data.service';
 
 /**
  * Provides a component that analyzes a datasource characteristics and mapping.
@@ -27,9 +27,13 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy {
   public unsubscribe$ = new Subject<void>();
   /** show the textual summaries for analyze and  */
   private _showSummary = true;
+  /** set current analysis from service */
+  @Input() public set analysis(value: SzBulkDataAnalysis | AdminStreamAnalysisSummary) {
+    if(value) { this.adminBulkDataService.currentAnalysisResult = value; }
+  }
   /** get the current analysis from service */
-  get analysis(): SzBulkDataAnalysis {
-    return this.adminBulkDataService.currentAnalysis;
+  public get analysis(): SzBulkDataAnalysis | AdminStreamAnalysisSummary {
+    return this.adminBulkDataService.currentAnalysisResult;
   }
   /** does user have admin rights */
   public get adminEnabled() {
@@ -72,6 +76,14 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy {
     if(value) { this.analyzeFile(value); }
   }
 
+  /** whether or not to use streaming sockets for analysis and loading */
+  public get useSocketStream() {
+    return this.adminBulkDataService.useStreaming;
+  }
+  public get canOpenStreamSocket(): boolean {
+    return this.adminBulkDataService.canOpenStreamSocket;
+  }
+
   constructor( public prefs: SzPrefsService,
     private adminService: SzAdminService,
     private adminBulkDataService: AdminBulkDataService,
@@ -90,6 +102,8 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy {
 
   /** convenience method to analyze a file. used by file setter. */
   public analyzeFile(file: File) {
+    console.info('AdminBulkDataAnalysisComponent.analyzeFile: ', file, this.adminBulkDataService.streamAnalysisConfig, this.adminBulkDataService.streamConnectionProperties);
+    
     return this.adminBulkDataService.analyze(file);
   }
   /**
