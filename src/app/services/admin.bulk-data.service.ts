@@ -215,7 +215,7 @@ export class AdminBulkDataService {
         private webSocketService: WebSocketService,
     ) {
         this.prefs.admin.prefsChanged.subscribe((prefs) => {
-            console.log('AdminBulkDataService.prefs.admin.prefChanged: ', prefs);
+            console.log('AdminBulkDataService.prefs.admin.prefChanged: ', this.webSocketService.connected, prefs);
             if(prefs && prefs && prefs.streamConnectionProperties !== undefined) {
                 let _streamConnProperties = (prefs.streamConnectionProperties) as AdminStreamConnProperties;
                 //console.log('stream connection properties saved to prefs: ', JSON.stringify(_streamConnProperties) == JSON.stringify(this.streamConnectionProperties), _streamConnProperties, this.streamConnectionProperties);
@@ -523,11 +523,12 @@ export class AdminBulkDataService {
         let fsStream = file.stream();
         var reader = fsStream.getReader();
         this.streamConnectionProperties.reconnectOnClose = true;
-        if(!this.streamConnectionProperties.connected){
+        if(!this.webSocketService.connected){
             // we need to reopen connection
+            console.log('SzBulkDataService.streamLoad: websocket needs to be opened: ', this.webSocketService.connected, this.streamConnectionProperties);
             this.webSocketService.reconnect();
         } else {
-            console.log('websocket thinks its still connected: ', this.streamConnectionProperties);
+            console.log('SzBulkDataService.streamLoad: websocket thinks its still connected: ', this.webSocketService.connected, this.streamConnectionProperties);
         }
 
         // construct summary object that we can report 

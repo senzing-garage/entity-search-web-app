@@ -21,12 +21,12 @@ export class WebSocketService {
   public onError = this._onErrorSubject.asObservable();
   /** subject used to listen to connection status */
   private _onStatusChange: Subject<CloseEvent | Event> = new BehaviorSubject<CloseEvent | Event>(new CloseEvent('close'));
-  /** observable published to when the state of connection changes */
+  /** observable published to when the state of connection changes. Raw Observable<CloseEvent | Event> from rxJS websocket stream */
   public onStatusChange: Observable<CloseEvent | Event> = this._onStatusChange.asObservable();
+  /** when a the socket has been opened, reopened, or closed. returns true for connected, false for disconnected */
   public onConnectionStateChange: Observable<boolean> = this.onStatusChange.pipe(
     map( WebSocketService.statusChangeEvtToConnectionBool )
   )
-  //public connected: boolean = false;
 
   /** subject used for when messages sent by server */
   private message$: Subject<any> = new Subject<any>();
@@ -34,9 +34,18 @@ export class WebSocketService {
   private messageRecieved: Observable<any> = this.message$.asObservable();
 
   /** messages sent while connection offline */
-  //private _offlineMessageQueue = [];
   private _offlineMessageQueue: offlineMessage[] = [];
+  /** the amount of times to retry opening the socket connection if a disconnect happens */
   private _reconnectionAttemptsIncrement = 0;
+  /** @internal */
+  private _connected = false;
+  /** 
+   * returns true if the socket is currently open. false if disconnected 
+   * @readonly
+   **/
+  public get connected(): boolean {
+    return this._connected;
+  }
 
   /** instance of AdminStreamConnProperties used for connection instantiation and behavior */
   public connectionProperties: AdminStreamConnProperties = {
@@ -77,14 +86,14 @@ export class WebSocketService {
   public sendMessage(message: string): Observable<boolean> {
     let retSub = new Subject<boolean>();
     let retObs = retSub.asObservable();
-    if(this.connectionProperties && !this.connectionProperties.connected) {
-      console.log('queueing message..', this._offlineMessageQueue.length, this.connectionProperties.connected, this.ws$.closed);
+    if((this.connectionProperties && !this._connected) || this.ws$ === undefined) {
+      console.log('queueing message..', this._offlineMessageQueue.length, this._connected, this.ws$.closed);
       this._offlineMessageQueue.push({data: message, onSent: () => {
-        //console.log('[success] sent message.. ', message);
+        console.log('[success] sent message.. ', message);
         retSub.next(true);
       }});
-    } else {
-      console.log('sending message..', message);
+    } else if(this.ws$) {
+      console.log('sending message..', message, this._connected);
       this.ws$.pipe(
         take(1)
       ).subscribe((res) => {
@@ -94,6 +103,8 @@ export class WebSocketService {
         //retSub.complete();
       });
       this.ws$.next(message);
+    } else {
+      console.warn('catastrophic premise. no ws$ object or not enough info to create one..');
     }
     return retObs;
   }
@@ -101,12 +112,12 @@ export class WebSocketService {
   constructor() {  
     /** track the connection status of the socket */
     this.onConnectionStateChange.subscribe((connected) => {
-      if(!this.connectionProperties.connected && connected) {
+      if(!this._connected && connected) {
         // clear out any reconnect attempt increment
         this._reconnectionAttemptsIncrement = 0;
       }
-      this.connectionProperties.connected = connected;
-      console.warn('WebSocketService.onConnectionStateChange: ', this.connectionProperties.connected);
+      this._connected = connected;
+      console.warn('WebSocketService.onConnectionStateChange: ', this._connected);
     });
     
     /** when "reconnectOnClose" == true, reconnect socket */
@@ -163,7 +174,7 @@ export class WebSocketService {
     openSubject.pipe(
       tap( s => { 
         console.log('WebSocketService.open: ', s);
-        this.connectionProperties.connected = true;
+        this._connected = true;
       })
     ).subscribe(this._onStatusChange);
     // when connection is closed proxy to status$
@@ -171,7 +182,7 @@ export class WebSocketService {
     closeSubject.pipe(
       tap( s => {
         console.log('WebSocketService.close: ', s);
-        this.connectionProperties.connected = false;
+        this._connected = false;
       })
     ).subscribe(this._onStatusChange);
     const errorSubject = new Subject<CloseEvent>();
@@ -245,8 +256,8 @@ export class WebSocketService {
   }
   /** reconnect to previously closed connection */
   public reconnect(){
-    console.log('WebSocketService.reconnect: ', this.ws$, this.connectionProperties);
     if(this.ws$) {
+      console.log('WebSocketService.reconnect: ', this.connectionProperties, this.ws$);
       this.ws$.pipe(
         catchError( (error: Error) => {
           console.log('WebSocketService.reconnect: error: ', error, this.ws$.error.toString());
@@ -267,6 +278,7 @@ export class WebSocketService {
       })
       
     } else if(this.connectionProperties && this.connectionProperties.connectionTest) {
+      console.log('WebSocketService.reconnect -> WebSocketService.open', this.ws$, this.connectionProperties);
       this.open();
     } else {
       // should we try to connect something that hasnt been flagged as valid?
@@ -299,7 +311,7 @@ export class WebSocketService {
       openSubject.pipe(
         tap( s => { 
           console.log('WebSocketService.open: ', s);
-          this.connectionProperties.connected = true;
+          this._connected = true;
         })
       ).subscribe(this._onStatusChange);
       
@@ -307,7 +319,7 @@ export class WebSocketService {
       closeSubject.pipe(
         tap( s => {
           console.log('WebSocketService.close: ', s);
-          this.connectionProperties.connected = false;
+          this._connected = false;
         })
       ).subscribe(this._onStatusChange);
 
@@ -322,7 +334,6 @@ export class WebSocketService {
               return value.data;
             }
           } else {
-            //console.log('say wha? ', value);
             return value;
           }
         },
@@ -343,7 +354,7 @@ export class WebSocketService {
           return of(errors)
         } )
       ).subscribe( (res) => {
-        connectionProps.connected = true;
+        this._connected = true;
         if(res && res.uuid) {
           retSub.next(true);
           retSub.closed = true;
@@ -351,7 +362,7 @@ export class WebSocketService {
           this.ws$.complete();
         }
       }, (err)=> {
-        connectionProps.connected = false;
+        this._connected = false;
         retSub.next(false);
         retSub.closed = true;
         retSub.unsubscribe();
@@ -359,7 +370,7 @@ export class WebSocketService {
       })
 
     } else {
-      connectionProps.connected = false;
+      this._connected = false;
       retSub.next(false);
       retSub.closed = true;
       retSub.unsubscribe();
