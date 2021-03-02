@@ -232,7 +232,10 @@ export class WebSocketService {
         }
         this._onError(errors);
         return of(errors)
-      } )
+      } ),
+      filter( (msg) => {
+        return msg && msg.uuid;
+      })
     ).subscribe((msg) => {
       console.log('clientId: ', msg);
       if(msg && msg.uuid) {
