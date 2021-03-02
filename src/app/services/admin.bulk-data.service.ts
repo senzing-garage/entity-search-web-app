@@ -20,6 +20,7 @@ import {
 import { WebSocketService } from './websocket.service';
 import { BulkDataService, SzBulkDataAnalysis, SzBulkDataAnalysisResponse, SzBulkLoadResponse, SzBulkLoadResult, SzDataSourceRecordAnalysis, SzDataSourceBulkLoadResult, SzEntityTypeBulkLoadResult, SzEntityTypeRecordAnalysis } from '@senzing/rest-api-client-ng';
 import { sum } from 'd3';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 export interface AdminStreamLoadSummary {
     fileType: any,
@@ -220,6 +221,9 @@ export class AdminBulkDataService {
             this.prefs.admin.prefsChanged.next( this.prefs.admin.toJSONObject() );
         }
         this.prefs.admin.bulkSet = value;
+    }
+    public get streamConnected(): boolean {
+        return this.webSocketService.connected;
     }
     // /AdminStreamAnalysisConfig, AdminStreamLoadConfig
 
@@ -571,6 +575,23 @@ export class AdminBulkDataService {
     }
 
     // -------------------------------------- streaming handling --------------------------------------
+
+    public reconnectStream() {
+        if(!this.webSocketService.connected) {
+            // do additional check to see if it's attempting to establish connection but has 
+            // not successfully done so yet
+            this.webSocketService.reconnect();
+        } else {
+            // were already connected, ignore
+        }
+    }
+    public disconnectStream() {
+        if(this.webSocketService.connected) {
+            this.webSocketService.disconnect();
+        } else {
+            // were already disconnected, ignore
+        }
+    }
     
     /** analze a file and prep for mapping */
     public streamAnalyze(file: File): Observable<AdminStreamAnalysisSummary> {

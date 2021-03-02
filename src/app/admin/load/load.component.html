@@ -1,15 +1,28 @@
-<h2 class="section-title" *ngIf="!currentError">Import Data from a file</h2>
-<div class="stream-loading">
-  <mat-slide-toggle [(ngModel)]="useSocketStream">Stream Connection</mat-slide-toggle>
+<div class="top-columns">
+  <h2 class="section-title" *ngIf="!currentError">Import Data from a file</h2>
+  <h2 class="section-title" *ngIf="currentError">Error Encountered</h2>
+  <div class="stream-connection-idicator" *ngIf="useSocketStream">
+    <mat-icon aria-hidden="false" aria-label="stream is disconnected. click to connect." class="disconnected" 
+      matTooltip="Disconnected from stream host. Click to connect/reconnect." 
+      matTooltipClass="tooltip-red" 
+      matTooltipPosition="left" 
+      *ngIf="!streamConnected" (click)="setStreamState(true)">flash_off</mat-icon>
+    <mat-icon aria-hidden="false" aria-label="stream is connected. click to disconnect." class="connected" 
+      matTooltip="Connected to stream host. Click to disconnect."
+      matTooltipPosition="left" 
+      *ngIf="streamConnected" (click)="setStreamState(false)">flash_on</mat-icon>
+  </div>
+  <div class="stream-loading">
+    <mat-slide-toggle [(ngModel)]="useSocketStream">Stream Connection</mat-slide-toggle>
+  </div>
 </div>
-<div class="section-notice" *ngIf="useSocketStream && !analysis && !result">
+<div class="section-notice" *ngIf="useSocketStream && !analysis && !result && !currentError">
   <h3 class="col"><mat-icon aria-hidden="false" aria-label="Steaming Note">new_releases</mat-icon></h3>
   <div class="col instructions">
     <span class="notice-title">Note:</span>
     Currently streaming upload only supports JSON, or JSONL format. CSV is not supported at this time.
   </div>
 </div>
-<h2 class="section-title" *ngIf="currentError">Error Encountered</h2>
 <p class="section-instructions">
   To begin importing data please provide a file for analysis by clicking on the <b>Analyze File</b> button
   below.

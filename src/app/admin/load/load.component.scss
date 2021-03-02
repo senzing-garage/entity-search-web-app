@@ -18,12 +18,6 @@ admin-bulk-data-analysis {
   font-size: 23px;
 }
 
-
-.stream-loading {
-  display: inline-block;
-  float: right;
-}
-
 .section-instructions {
   font-size: 0.7em;
   line-height: 1.5em;
@@ -66,4 +60,42 @@ admin-bulk-data-analysis {
     font-size: 1em;
     margin-bottom: 3px;
   }
+}
+.top-columns {
+  display: flex;
+  flex-direction: row;
+
+  .section-title {
+    flex-grow: 10;
+  }
+
+  .stream-connection-idicator {
+    display: inline-block;
+    margin-right: 1.3rem;
+    mat-icon {
+      cursor: pointer;
+      font-size: 16px;
+      width: 14px;
+      height: 14px;
+      margin-top: 2px;
+      padding: 2px;
+      border: 3px solid #656565;
+      color:#656565;
+      border-radius: 50%;
+
+      &.disconnected {
+        color:#656565;
+      }
+      &.connected {
+        color: #0c9bf4;
+        border-color: #0c9bf4;
+      }
+    }
+  }
+  .stream-loading {
+    display: inline-block;
+  }
+}
+.tooltip-red {
+  background: #b71c1c;
 }

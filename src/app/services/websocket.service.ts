@@ -46,6 +46,11 @@ export class WebSocketService {
   public get connected(): boolean {
     return this._connected;
   }
+  /** 
+   * when a user manually(calls this.disconnect) this flag is set. this informs
+   * the auto-reconnect mechanism NOT to attempt reconnect
+   */
+  private manuallyDisconnected = false;
 
   /** instance of AdminStreamConnProperties used for connection instantiation and behavior */
   public connectionProperties: AdminStreamConnProperties = {
@@ -130,7 +135,11 @@ export class WebSocketService {
     */
     this.onStatusChange.pipe(
       map( WebSocketService.statusChangeEvtToConnectionBool ),
-      filter( (_status) => { return this.connectionProperties.reconnectOnClose && this._reconnectionAttemptsIncrement < this.connectionProperties.reconnectConsecutiveAttemptLimit && !_status; })
+      filter( (_status) => { 
+        return this.connectionProperties.reconnectOnClose && !this.manuallyDisconnected && 
+        this._reconnectionAttemptsIncrement < this.connectionProperties.reconnectConsecutiveAttemptLimit && 
+        !_status;
+      })
     ).subscribe( this._onDisconnectRetry.bind(this) );
     /** if messages were sent while connection offline send them on reconnection */
     this.onConnectionStateChange.pipe(
@@ -249,7 +258,7 @@ export class WebSocketService {
     return this.ws$.asObservable();
   }
 
-  public close() {
+  private close() {
     console.warn('WebSocketService.close: ', this.ws$);
     
     if(this.ws$) {
@@ -257,6 +266,14 @@ export class WebSocketService {
       //if(this.ws$.unsubscribe) this.ws$.unsubscribe();
       //this.ws$ = undefined;
     }
+  }
+  public connect(): Observable<any> {
+    this.manuallyDisconnected = false;
+    return this.open();
+  }
+  public disconnect() {
+    this.manuallyDisconnected = true;
+    this.close();
   }
   /** reconnect to previously closed connection */
   public reconnect(){

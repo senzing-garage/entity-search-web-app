@@ -84,9 +84,23 @@ export class AdminDataLoaderComponent implements OnInit, OnDestroy {
     return this.adminBulkDataService.currentError;
   }
 
+  public get streamConnected(): boolean {
+    return this.adminBulkDataService.streamConnected;
+  }
+
+  public setStreamState(connected: boolean) {
+    if(!this.adminBulkDataService.streamConnected && connected) {
+      // attempt reconnect manually
+      this.adminBulkDataService.reconnectStream();
+    } else if(this.adminBulkDataService.streamConnected && !connected) {
+      // disconnect stream manually
+      this.adminBulkDataService.disconnectStream();
+    }
+  }
+
   constructor(
     private titleService: Title,
-    private adminBulkDataService: AdminBulkDataService,
+    public adminBulkDataService: AdminBulkDataService,
     public dialog: MatDialog
     ) { }
 
