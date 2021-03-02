@@ -114,6 +114,7 @@ export class WebSocketService {
     this.onConnectionStateChange.subscribe((connected) => {
       if(!this._connected && connected) {
         // clear out any reconnect attempt increment
+        console.warn(`cleared out reconnection increment number: was(${this._reconnectionAttemptsIncrement}) now(0)`);
         this._reconnectionAttemptsIncrement = 0;
       }
       this._connected = connected;
@@ -129,7 +130,7 @@ export class WebSocketService {
     */
     this.onStatusChange.pipe(
       map( WebSocketService.statusChangeEvtToConnectionBool ),
-      filter( (_status) => { return this.connectionProperties.reconnectOnClose && !_status; })
+      filter( (_status) => { return this.connectionProperties.reconnectOnClose && this._reconnectionAttemptsIncrement < this.connectionProperties.reconnectConsecutiveAttemptLimit && !_status; })
     ).subscribe( this._onDisconnectRetry.bind(this) );
     /** if messages were sent while connection offline send them on reconnection */
     this.onConnectionStateChange.pipe(
@@ -265,7 +266,7 @@ export class WebSocketService {
         catchError( (error: Error) => {
           console.log('WebSocketService.reconnect: error: ', error, this.ws$.error.toString());
           if(error && !error.message) {
-            error.message = `Could not connect to Stream interface(${this.connectionProperties.hostname}) after a disconnect. Will continue to retry connection until reconnection attempt limit(${this._reconnectionAttemptsIncrement} / ${this.connectionProperties.reconnectConsecutiveAttemptLimit}) is reached.`;
+            error.message = `Could not connect to Stream interface(${WebSocketService.getSocketUriFromConnectionObject(this.connectionProperties)}) after a disconnect. Will continue to retry connection until reconnection attempt limit(${this._reconnectionAttemptsIncrement} / ${this.connectionProperties.reconnectConsecutiveAttemptLimit}) is reached.`;
           } else if(this.ws$ && this.ws$.hasError && this.ws$.error.toString) {
             error.message = this.ws$.error.toString();
           } else {
@@ -274,10 +275,14 @@ export class WebSocketService {
           this._onError(error);
           return of(error)
         } ),
+        map( WebSocketService.statusChangeEvtToConnectionBool ),
+        filter((status: boolean) => {
+          return status;
+        })
       ).subscribe((reconnected) => {
         //this.status$.next(true);
         this._reconnectionAttemptsIncrement = 0;
-        console.log(`successfully reconnected to "${WebSocketService.getSocketUriFromConnectionObject(this.connectionProperties)}"`);
+        console.log(`(${reconnected} | ${this._reconnectionAttemptsIncrement})!!successfully reconnected to "${WebSocketService.getSocketUriFromConnectionObject(this.connectionProperties)}"`, reconnected);
       })
       
     } else if(this.connectionProperties && this.connectionProperties.connectionTest) {
@@ -293,7 +298,7 @@ export class WebSocketService {
    * @param connStatus 
    */
   private _onDisconnectRetry(connStatus){
-    this._reconnectionAttemptsIncrement++;
+    this._reconnectionAttemptsIncrement = this._reconnectionAttemptsIncrement +1;
     console.log(`(${this._reconnectionAttemptsIncrement} / ${this.connectionProperties.reconnectConsecutiveAttemptLimit}) WebSocketService._onDisconnectRetry: `, connStatus, this.connectionProperties, this);
     this.reconnect();
   }

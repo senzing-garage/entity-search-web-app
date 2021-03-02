@@ -255,7 +255,7 @@ export class AdminBulkDataService {
         private webSocketService: WebSocketService,
     ) {
         this.prefs.admin.prefsChanged.subscribe((prefs) => {
-            console.log('AdminBulkDataService.prefs.admin.prefChanged: ', this.webSocketService.connected, prefs);
+            //console.log('AdminBulkDataService.prefs.admin.prefChanged: ', this.webSocketService.connected, prefs);
             if(prefs && prefs && prefs.streamConnectionProperties !== undefined) {
                 let _streamConnProperties = (prefs.streamConnectionProperties) as AdminStreamConnProperties;
                 //console.log('stream connection properties saved to prefs: ', JSON.stringify(_streamConnProperties) == JSON.stringify(this.streamConnectionProperties), _streamConnProperties, this.streamConnectionProperties);
@@ -272,12 +272,15 @@ export class AdminBulkDataService {
             this._onError.next(error);
         });
         this.webSocketService.onStatusChange.subscribe((statusEvent: CloseEvent | Event) => {
-            console.warn('AdminBulkDataService.webSocketService.onStatusChange: ', statusEvent);
+            //console.warn('AdminBulkDataService.webSocketService.onStatusChange: ', statusEvent);
             this._onStreamStatusChange.next(statusEvent);
         });
+        /** check if "reconnection error" is present, if connection state changes to "true" clear out error */
         this.webSocketService.onConnectionStateChange.pipe(
             takeUntil(this.unsubscribe$),
-            filter( () => this.currentError !== undefined)
+            filter( (connected) => {
+                return (this.currentError !== undefined) && connected && !this.streamConnectionProperties.connected;
+            }),
           ).subscribe((status) => {
             console.warn('AdminBulkDataService.webSocketService.onConnectionStateChange: clear current error:', this.currentError);
             // check to see if we should clear the current error
@@ -288,7 +291,7 @@ export class AdminBulkDataService {
         ).subscribe( (file: File) => {
             if(!file){ return; }
             this.analyzingFile.next(true);
-            console.info('AdminBulkDataService().onCurrentFileChange: ', file, this.streamAnalysisConfig, this.streamConnectionProperties);
+            //console.info('AdminBulkDataService().onCurrentFileChange: ', file, this.streamAnalysisConfig, this.streamConnectionProperties);
 
             if(this.useStreamingForLoad && this.canOpenStreamSocket) {
                 // open analysis stream
