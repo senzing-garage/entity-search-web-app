@@ -2,7 +2,7 @@ import { Injectable, Inject } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { ActivatedRouteSnapshot } from '@angular/router';
 import { Observable, of, from, interval, Subject, BehaviorSubject } from 'rxjs';
-import { map, catchError, tap, switchMap, takeUntil, take, filter } from 'rxjs/operators';
+import { map, catchError, tap, switchMap, takeUntil, take, filter, takeWhile } from 'rxjs/operators';
 import { SzConfigurationService, SzAdminService, SzEntityTypesService, SzServerInfo, SzBaseResponseMeta, SzPrefsService, SzBulkDataService, SzDataSourcesService } from '@senzing/sdk-components-ng';
 import { HttpClient } from '@angular/common/http';
 import { AuthConfig, SzWebAppConfigService } from './config.service';
@@ -661,15 +661,15 @@ export class AdminBulkDataService {
                     finishedAnalysis.next();
                     return of(undefined);
                 }),
-                filter((summary: AdminStreamAnalysisSummary) => {
-                    return summary && summary.complete;
-                }),
+                filter(this.isStreamAnalysisComplete.bind(this)),
+                takeUntil(finishedAnalysis),
                 take(1)
             ).subscribe((summary: AdminStreamAnalysisSummary) => {
                 this.currentAnalysisResult = summary;
                 this.onAnalysisResult.next( this.currentAnalysisResult );
                 this.analyzingFile.next(this.isStreamAnalyzing(summary));
                 finishedAnalysis.next();
+                
                 //alert('done!\n\r'+ JSON.stringify(summary, undefined, 2));
             }, (err: Error) => {
                 this.loadingFile.next(false);
@@ -898,7 +898,13 @@ export class AdminBulkDataService {
             }
             
           }
-          return fileReadStream.read().then(processChunk.bind(this));
+          if(summary.recordCount < this.streamAnalysisConfig.sampleSize) {
+            console.log(`read (${summary.recordCount} / ${this.streamAnalysisConfig.sampleSize})`);
+            return fileReadStream.read().then(processChunk.bind(this));
+          } else {
+            console.warn(`!!!! HIT SAMPLE LIMIT (${summary.recordCount} / ${this.streamAnalysisConfig.sampleSize}) !!!!`);
+            fileReadStream.cancel('sample limit reached');
+          }
         }.bind(this))
         .catch((err) => {
           console.warn('error: ', err);
@@ -1164,10 +1170,11 @@ export class AdminBulkDataService {
     }
     /** check whether or not the stream summary.complete property should return "true" */
     private isStreamAnalysisComplete(summary: AdminStreamAnalysisSummary): boolean {
-        summary.complete = (
+        summary.complete = ((
             (summary.sentRecordCount == summary.recordCount && summary.recordCount > 0) && 
-            summary.bytesRead === summary.fileSize && 
-            summary.bytesSent >= summary.bytesQueued
+            (summary.bytesRead === summary.fileSize && 
+            summary.bytesSent >= summary.bytesQueued)) || 
+            (summary.sentRecordCount >= this.streamAnalysisConfig.sampleSize && this.streamAnalysisConfig.sampleSize >= 0)
         );
         //console.log('isStreamLoadComplete ? '+ summary.complete, (summary.sentRecords == summary.totalRecords && summary.bytesRead === summary.fileSize && summary.bytesSent >= summary.bytesQueued), summary.bytesSent >= summary.bytesQueued );
         return summary.complete;

@@ -92,13 +92,13 @@ export class WebSocketService {
     let retSub = new Subject<boolean>();
     let retObs = retSub.asObservable();
     if((this.connectionProperties && !this._connected) || this.ws$ === undefined) {
-      console.log('queueing message..', this._offlineMessageQueue.length, this._connected, this.ws$.closed);
+      //console.log('queueing message..', this._offlineMessageQueue.length, this._connected, this.ws$.closed);
       this._offlineMessageQueue.push({data: message, onSent: () => {
-        console.log('[success] sent message.. ', message);
+        //console.log('[success] sent message.. ', message);
         retSub.next(true);
       }});
     } else if(this.ws$) {
-      console.log('sending message..', message, this._connected);
+      //console.log('sending message..', message, this._connected);
       this.ws$.pipe(
         take(1)
       ).subscribe((res) => {
