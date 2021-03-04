@@ -4,14 +4,15 @@ const https = require('https');
 const serveStatic = require('serve-static');
 const cors = require('cors');
 const apiProxy = require('http-proxy-middleware');
+const httpProxy = require('http-proxy');
 // authentication
 const authBasic = require('express-basic-auth');
 // utils
 const path = require('path');
 const fs = require('fs');
-const url = require('url');
 const csp = require(`helmet-csp`);
 const winston = require(`winston`);
+const sanitize = require("sanitize-filename");
 
 // utils
 const AuthModule = require('../authserver/auth');
@@ -35,7 +36,6 @@ let serverOptions = runtimeOptions.config.web;
 if(inMemoryConfigFromInputs.proxyServerOptions.writeToFile) {
   runtimeOptions.writeProxyConfigToFile("../","proxy.conf.json");
 }
-
 
 // server(s)
 const app = express();
@@ -119,6 +119,7 @@ if(proxyOptions) {
 }
 
 // static files
+let virtualDirs = [];
 let staticPath  = path.resolve(path.join(__dirname, '../../', 'dist/entity-search-web-app'));
 let webCompPath = path.resolve(path.join(__dirname, '../../', '/node_modules/@senzing/sdk-components-web/'));
 app.use('/node_modules/@senzing/sdk-components-web', express.static(webCompPath));
@@ -258,13 +259,55 @@ if(authOptions && authOptions !== undefined) {
   }
 }
 
+
 // SPA page
-app.use('*',function(req, res) {
-    res.sendFile(path.resolve(path.join(__dirname, '..'+path.sep, '..'+path.sep, 'dist/entity-search-web-app/index.html')));
+let VIEW_VARIABLES = {
+  "VIEW_PAGE_TITLE":"Entity Search",
+  "VIEW_BASEHREF":"/",
+  "VIEW_CSP_DIRECTIVES":""
+}
+if(cspOptions && cspOptions.directives) {
+  // we have to dynamically serve the html
+  // due to CSP not being smart enough about websockets
+  let cspContentStr = "";
+  let cspKeys       = Object.keys(cspOptions.directives);
+  let cspValues     = Object.values(cspOptions.directives);
+
+  for(var _inc=0; _inc < cspKeys.length; _inc++) {
+    let cspDirectiveValue = cspValues[_inc] ? cspValues[_inc] : [];
+    cspContentStr += cspKeys[_inc] +" "+ cspDirectiveValue.join(' ') +';\n';
+  }
+  cspContentStr = cspContentStr.trim();
+  VIEW_VARIABLES.VIEW_CSP_DIRECTIVES = cspContentStr;
+}
+/** dynamically render SPA page with variables */
+app.set('views', path.resolve(path.join(__dirname, '..'+path.sep, '..'+path.sep, 'dist/entity-search-web-app')));
+app.set('view engine', 'pug');
+app.get('*', (req, res) => {
+  // we only want to take the first directory in the path 
+  // to limit injection attack surface
+  let virtualPath = req.originalUrl.substr(0, req.originalUrl.indexOf('/',1));
+  virtualPath = virtualPath.trim();
+  // now sanitize string (for control chars, path traversal etc)
+  // and hardcode first '/' char
+  virtualPath = sanitize(virtualPath.trim());
+  virtualPath = virtualPath !== '' ? '/'+ virtualPath : undefined;
+  if(virtualPath){
+    VIEW_VARIABLES.VIEW_BASEHREF = virtualPath
+    if(virtualDirs && virtualDirs.indexOf && virtualDirs.indexOf(VIEW_VARIABLES.VIEW_BASEHREF) < 0) {
+      // add virtual dir to static asset mount point
+      //console.log(`Added "${virtualPath} to static assets mount paths (${virtualDirs.indexOf(VIEW_VARIABLES.VIEW_BASEHREF) < 0})"`,virtualDirs);
+      virtualDirs.push(VIEW_VARIABLES.VIEW_BASEHREF); // keep a record of these
+      app.use(VIEW_VARIABLES.VIEW_BASEHREF, express.static(staticPath));
+    };
+  }
+  res.render('index', VIEW_VARIABLES);
 });
 
 // set up server(s) instance(s)
 var ExpressSrvInstance;
+var WebSocketProxyInstance;
+var StartupPromises = [];
 if( serverOptions && serverOptions.ssl && serverOptions.ssl.enabled ){
   // https
   const ssl_opts = {
@@ -278,14 +321,53 @@ if( serverOptions && serverOptions.ssl && serverOptions.ssl.enabled ){
   STARTUP_MSG_POST = STARTUP_MSG_POST + '\n'+'';
   STARTUP_MSG = STARTUP_MSG_POST + STARTUP_MSG;
 } else {
+  // check if we need a websocket proxy
+  let streamServerPromise = new Promise((resolve) => {
+    if(serverOptions && serverOptions.streamServerDestUrl) {
+      var wsProxy   = httpProxy.createServer({ 
+        target: serverOptions.streamServerDestUrl,
+        ws: true 
+      });
+      wsProxy.on('error', function(e) {
+        console.log('WS Proxy Error: '+ e.message);
+      });
+      WebSocketProxyInstance = wsProxy.listen(serverOptions.streamServerPort || 8255, () => {
+        console.log('[started] WS Proxy Server on port '+ (serverOptions.streamServerPort || 8255) +'. Forwarding to "'+ serverOptions.streamServerDestUrl +'"');
+        resolve();
+      });
+      //STARTUP_MSG = 'WS Proxy Server started on port '+ (serverOptions.streamServerPort || 8255) +'. Forwarding to "'+ serverOptions.streamServerDestUrl +'"\n'+ STARTUP_MSG;
+    } else {
+      //STARTUP_MSG = STARTUP_MSG + '\n NO WS PROXY!!';
+      console.log('NO WS PROXY!!', serverOptions);
+      resolve();
+    }
+  }, (reason) => { 
+    console.log('[error] WS Proxy Server: ', reason);
+    reject(); 
+  })
+  StartupPromises.push(streamServerPromise);
+  
   // http
-  ExpressSrvInstance = app.listen(serverOptions.port);
-  STARTUP_MSG = '\n'+'Express Server started on port '+ serverOptions.port +'\n'+ STARTUP_MSG;
+  let webServerPromise = new Promise((resolve) => {
+    ExpressSrvInstance = app.listen(serverOptions.port, () => {
+      console.log('[started] Web Server on port '+ serverOptions.port);
+      resolve();
+    });
+  }, (reason) => { 
+    console.log('[error] Web Server', reason);
+    reject(); 
+  });
+  StartupPromises.push(webServerPromise);
+  //STARTUP_MSG = '\n'+'Express Server started on port '+ serverOptions.port +'\n'+ STARTUP_MSG;
 }
 
-console.log( STARTUP_MSG );
+console.log( STARTUP_MSG +'\n');
+(async() => {
+  await Promise.all(StartupPromises);
+  console.log('\n\nPress any key to exit...');
+  rl.prompt();
+})()
 
-console.log('\n\nPress any key to exit...');
 // capture keyboard input for graceful exit
 const readline = require('readline');
 const rl = readline.createInterface({
@@ -295,14 +377,31 @@ const rl = readline.createInterface({
 rl.on('line', (line) => {
   rl.question('Are you sure you want to exit? (Y/N)', (answer) => {
     if (answer.match(/^y(es)?$/i)) {
-      ExpressSrvInstance.close(function () {
-        console.log('Express Server shutdown successfully.');
+      let ShutdownPromises = [];
+
+      if(WebSocketProxyInstance) {
+        ShutdownPromises.push( new Promise((resolve) => {
+          WebSocketProxyInstance.close(function () {
+            console.log('[stopped] WS Proxy Server');
+            resolve();
+          });
+        }));
+      }
+      ShutdownPromises.push( new Promise((resolve) => {
+        ExpressSrvInstance.close(function () {
+          console.log('[stopped] Web Server');
+          resolve();
+        });
+      }));
+      (async() => {
+        await Promise.all(ShutdownPromises).catch((errors) => {
+          console.error('Could not shutdown services cleanly');
+        });
         process.exit(0);
-      });
+      })();
     } else {
       console.log('\n\nPress any key to exit...');
       rl.prompt();
     }
   });
 });
-rl.prompt();
