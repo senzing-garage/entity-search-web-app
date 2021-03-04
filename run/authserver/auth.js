@@ -1,7 +1,8 @@
 'use strict';
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
-const uuidv4 = require('uuid/v4');
+const { v4: uuidv4 } = require('uuid');
+
 //const compile = require('template-literal');
 const path = require('path');
 
