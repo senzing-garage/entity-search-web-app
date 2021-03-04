@@ -212,6 +212,12 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
         //alert('done loading: \n\r'+ JSON.stringify(loadSummary, undefined, 2));
       });
     }
+    public debugStreamLoad(event: Event) {
+      this.adminBulkDataService.debugStreamDepth(this.adminBulkDataService.file)
+      .subscribe((loadSummary: AdminStreamLoadSummary) => {
+        console.log('AdminBulkDataLoadComponent.debugStreamLoad() result: ', loadSummary);
+      });
+    }
     /** clear the current bulkloader focal state */
     public clear() {
       this.adminBulkDataService.clear();
