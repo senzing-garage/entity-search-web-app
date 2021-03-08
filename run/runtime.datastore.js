@@ -122,6 +122,12 @@ class inMemoryConfig {
               "redirectOnFailure": false
             }
           }
+          if(value.auth.admin.token) {
+            this.authConfiguration.admin.token = value.auth.admin.token;
+          }
+          if(value.auth.admin.secret) {
+            this.authConfiguration.admin.secret = value.auth.admin.secret;
+          }
         } else {
           this.authConfiguration.admin = undefined;
           delete this.authConfiguration.admin;
@@ -144,6 +150,12 @@ class inMemoryConfig {
               "mode": false,
               "redirectOnFailure": false
             }
+          }
+          if(value.auth.operator.token) {
+            this.authConfiguration.operator.token = value.auth.operator.token;
+          }
+          if(value.auth.operator.secret) {
+            this.authConfiguration.operator.secret = value.auth.operator.secret;
           }
         } else {
           this.authConfiguration.operator = undefined;
