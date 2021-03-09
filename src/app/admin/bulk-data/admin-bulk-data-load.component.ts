@@ -8,6 +8,7 @@ import {
 import { Subject } from 'rxjs';
 import { AdminBulkDataService, AdminStreamAnalysisSummary, AdminStreamLoadSummary } from '../../services/admin.bulk-data.service';
 import { filter } from 'rxjs/operators';
+import { SzStreamingFileReader } from '../../common/stream-reader';
 
 /**
  * Provides an interface for loading files in to a datasource.
@@ -212,11 +213,30 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
         //alert('done loading: \n\r'+ JSON.stringify(loadSummary, undefined, 2));
       });
     }
+
     public debugStreamLoad(event: Event) {
+      /*
       this.adminBulkDataService.debugStreamDepth(this.adminBulkDataService.file)
       .subscribe((loadSummary: AdminStreamLoadSummary) => {
         console.log('AdminBulkDataLoadComponent.debugStreamLoad() result: ', loadSummary);
+      });*/
+      this.doStreamRead(this.adminBulkDataService.file);
+    }
+    public get readRecordsFromStreamStatus(): string {
+      let recordsReadCount  = this._readRecordsFromStream && this._readRecordsFromStream.length ? this._readRecordsFromStream.length : 0;
+      let fileName          = this.adminBulkDataService.file ? this.adminBulkDataService.file.name : 'Unknown';
+      return `read ${recordsReadCount} records from ${fileName}`;
+    }
+    private _readRecordsFromStream: any[];
+    public get readRecordsFromStream(): any[] {
+      return this._readRecordsFromStream;
+    }
+    async doStreamRead(file: File) {
+      let streamReader = new SzStreamingFileReader(this.adminBulkDataService.file);
+      streamReader.onRecordsRead.subscribe((records: any[]) => {
+        this._readRecordsFromStream = records;
       });
+      await streamReader.read();
     }
     /** clear the current bulkloader focal state */
     public clear() {

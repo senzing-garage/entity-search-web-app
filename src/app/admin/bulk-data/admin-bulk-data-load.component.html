@@ -16,5 +16,8 @@
        <li><h3>useSocketStream:</h3> {{useSocketStream}}</li>
        <li><h3>analysis:</h3> {{analysis}}</li>
 </ul>-->
+<div>
+       Streaming File Read Status: {{readRecordsFromStreamStatus}}
+</div>
 <admin-bulk-data-analysis-summary *ngIf="showAnalysis && analysis"></admin-bulk-data-analysis-summary>
 <admin-bulk-data-load-summary *ngIf="showResults && result"></admin-bulk-data-load-summary>

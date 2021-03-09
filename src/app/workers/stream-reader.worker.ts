@@ -1,0 +1,261 @@
+/// <reference lib="webworker" />
+
+import {
+    determineLineEndingStyle,
+    getFileTypeFromName,
+    lineEndingStyle, 
+    lineEndingStyleAsEnumKey,
+    validImportFileTypes,
+    getUtf8ByteLength
+  } from '../common/import-utilities';
+import { Observable, Subject } from 'rxjs';
+
+export interface AdminStreamLoadSummary {
+    fileType: any,
+    fileName: string,
+    fileSize: number,
+    fileLineEndingStyle: lineEndingStyle,
+    fileColumns?: string[],
+    characterEncoding: any,
+    mediaType: any,
+    recordCount: number,
+    sentRecordCount: number,
+    unsentRecordCount: number,
+    failedRecordCount: number,
+    missingDataSourceCount: number,
+    missingEntityTypeCount: number
+    bytesRead: number,
+    bytesSent: number,
+    bytesQueued: number,
+    dataSources?: string[],
+    complete?: boolean
+}
+
+addEventListener('message', ({ data }) => {
+    let file: File = (data as File);
+    // file related
+    let fileSize = file && file.size ? file.size : 0;
+    let fileType = getFileTypeFromName(file);
+    let fileName = (file && file.name) ? file.name : undefined;
+    // stream related
+    let fsStream = file.stream();
+    var reader = fsStream.getReader();
+
+    // construct summary object that we can report 
+    // statistics to
+    let summary: AdminStreamLoadSummary = {
+        fileType: fileType,
+        mediaType: fileType,
+        fileName: fileName,
+        fileSize: fileSize,
+        fileLineEndingStyle: lineEndingStyle.unknown,
+        characterEncoding: 'utf-8',
+        recordCount: 0,
+        sentRecordCount: 0,
+        unsentRecordCount: 0,
+        failedRecordCount: 0,
+        missingDataSourceCount: 0,
+        missingEntityTypeCount: 0,
+        bytesRead: 0,
+        bytesSent: 0,
+        bytesQueued: 0,
+        fileColumns: [],
+        dataSources: [],
+        complete: false
+    }
+    //let _readRecords        = [];
+    if(fileType === validImportFileTypes.JSONL || fileType === validImportFileTypes.JSON) { 
+        let recordsReadFromStream = [];
+
+        console.log(`StreamReaderWorker.onMessage: reading ${fileName}`);
+        //postMessage(_readRecords);
+        
+        getRecordsFromFileStream(file, reader, summary).subscribe((records: string[]) => {
+            // records read from stream read
+            //_readRecords = records;
+            postMessage(records);
+            //summary.recordCount = _readRecords.length;
+            //this.onLoadResult.next( summary );
+            //console.log(`StreamReaderWorker.onRecordRead() read ${_readRecords.length} records`);
+        });
+
+        //return retStreamSummary;
+    } else if(fileType === validImportFileTypes.CSV) {
+        //this._onError.next(new Error('CSVs are not supported by stream loading at this point in time.'));
+        //return this.streamLoadCSVFileToWebsocketServer(file, reader, summary);
+    } else {
+        console.warn('SzBulkDataService.streamLoad: noooooooo', fileType, fileType === validImportFileTypes.CSV);
+    }
+});
+
+function getRecordsFromFileStream(fileHandle: File, fileReadStream: ReadableStreamDefaultReader<any>, summary: AdminStreamLoadSummary): Observable<string[]> {
+    // set up return observeable
+    let retSubject  = new Subject<string[]>();
+    let retObs      = retSubject.asObservable();
+    //let readRecs    = [];
+    // text decoding
+    let decoder = new TextDecoder(summary.characterEncoding);
+    let encoder = new TextEncoder();
+    let recordCount = 0;
+    // current chunk to be sent
+    let payloadChunk = '';
+    //let payloadChunks = [];
+    //let wsRecordsQueue = [];
+    let resultChunks = undefined;
+    //let fileLineEndingStyle = lineEndingStyle.default;
+    let lineEndingLength = 1;
+    let isValidJSONL = false;
+
+    // read file
+    fileReadStream.read()
+    .then(function processChunk({ done, value}) {
+        if (done) {
+        console.log('-- END OF STREAM --');
+        fileReadStream.releaseLock();
+        return;
+        } else {
+        let decodedValue  = decoder.decode(value, {stream: true});
+        let firstChunk    = (summary.bytesRead < 1) ? true : false;
+        // get default line ending style for processing
+        if(firstChunk){
+            console.log('-- BEGINNING OF STREAM --');
+            summary.fileLineEndingStyle = determineLineEndingStyle(decodedValue);
+            lineEndingLength = (summary.fileLineEndingStyle === lineEndingStyle.Windows ? 2 : 1);
+
+            console.log('file line ending style: ', lineEndingStyleAsEnumKey(summary.fileLineEndingStyle));
+            console.log('file type: ', summary.fileType);
+        } else {
+            //console.log('no column header in chunk: ', payloadChunks);
+        }
+
+        // wheres the last line ending in stream chunk
+        let lastRecordPos = decodedValue.lastIndexOf(summary.fileLineEndingStyle);    // last position of line ending in stream chunk
+        let chunk = decodedValue.substring(0, lastRecordPos);                 // part of stream read minus any incomplete record
+        // add any previous incompletes to payload
+        payloadChunk += chunk;
+        payloadChunk = payloadChunk.trim();
+        if(value && value.length) {
+            summary.bytesRead = summary.bytesRead+value.length;
+            //retSubject.next(summary);
+        }
+        let lineEndingRegEx = (summary.fileLineEndingStyle === lineEndingStyle.Windows) ? new RegExp(/\r\n/g) : new RegExp(/\n/g);
+            
+        if(firstChunk) {
+        // test for validity
+            isValidJSONL = (firstChunk && payloadChunk.indexOf('[') > -1) ? false : ((firstChunk && payloadChunk.indexOf('[') >= -1 && payloadChunk.indexOf('{') > -1) ? true : false);
+            console.log('testing for valid jsonl: ', isValidJSONL, summary.fileType, payloadChunk.indexOf('['), payloadChunk.indexOf('{'));
+        }
+        if(!isValidJSONL) {
+            // must be json
+            // if not jsonl strip "[" out at the beginning, and "]" at the end
+            if(firstChunk) {
+                payloadChunk = payloadChunk.trim();
+                payloadChunk = payloadChunk.substring(payloadChunk.indexOf('[')+1);
+                console.log('cutting "[" out from line 1', payloadChunk);
+            }
+        } else if(firstChunk){
+            console.log('isValidJSONL: '+ isValidJSONL, );
+        }
+
+        //payloadChunks.push(payloadChunk);
+        // split chunk by line endings for per-record streaming
+        let chunkLines = payloadChunk.split(summary.fileLineEndingStyle);
+        //wsRecordsQueue.push(chunkLines);
+        
+        retSubject.next(chunkLines);
+
+        //chunkLines.forEach((_record, indexInc) => {
+        //    summary.bytesQueued += getUtf8ByteLength(_record);
+            //readRecs.push(_record); 
+        //    retSubject.next(_record);
+
+            /*
+            console.log(`[${payloadChunks.length}] sending message [${indexInc}]`);
+            this.sendWebSocketMessage(_record).subscribe((messageSent) => {
+                summary.bytesSent = summary.bytesSent + getUtf8ByteLength(_record);
+                summary.sentRecordCount += 1;
+                retSubject.next(summary);
+            }, (error: Error) => {
+                console.warn('sendWebSocketMessage error: ', error);
+            });*/
+
+        //});
+
+        // get number of records in chunk
+        let numberOfRecordsInChunk = (payloadChunk.match( lineEndingRegEx ) || '').length + 1;
+        summary.recordCount = summary.recordCount + numberOfRecordsInChunk;
+        //retSubject.next(summary);
+        payloadChunk = '';
+        // add incomplete remainder record to next chunk
+        if(lastRecordPos < decodedValue.length) {
+            payloadChunk = decodedValue.substring(lastRecordPos).trim();
+        }
+        
+        }
+        return fileReadStream.read().then(processChunk.bind(this));
+    }.bind(this))
+    .catch((err) => {
+        console.warn('error: ', err);
+    })
+    .finally(() => {
+        // sometimes there is a last "hanging chunk"
+        console.log('checking for hanging chunk.. ', payloadChunk);
+        if(payloadChunk && payloadChunk.length > 0) {
+        if(summary.fileType === validImportFileTypes.JSONL || summary.fileType === validImportFileTypes.JSON) {
+            let payloadChunkHasEndBracket = payloadChunk.lastIndexOf(']') > payloadChunk.indexOf('}');
+            if(payloadChunkHasEndBracket) {
+            // was "json" not "jsonl", correct it
+            payloadChunk = payloadChunk.replace(']','').trim();
+            if(payloadChunk.indexOf('{') > -1 && payloadChunk.indexOf('}') > -1) {
+                let plChunkSplit = payloadChunk.split('}');
+                console.log("what's going on here? ", plChunkSplit);
+                summary.recordCount = summary.recordCount + plChunkSplit.length;
+                //retSubject.next(summary);
+            }
+            //payloadChunks.push(payloadChunk);
+            // split chunk by line endings for per-record streaming
+            let chunkLines = payloadChunk.split(summary.fileLineEndingStyle);
+            //wsRecordsQueue.push(chunkLines);
+
+            retSubject.next(chunkLines);
+            
+            //chunkLines.forEach((_record) => {
+            //    summary.bytesQueued += getUtf8ByteLength(_record);
+                //readRecs.push(_record);
+            //    retSubject.next(_record);
+                /*
+                retSubject.next(summary);
+                this.sendWebSocketMessage(_record).pipe(take(1)).subscribe((messageSent) => {
+                    summary.bytesSent = summary.bytesSent + getUtf8ByteLength(_record);
+                    summary.sentRecordCount += 1;
+                    retSubject.next(summary);
+                }, (error: Error) => {
+                    console.warn('sendWebSocketMessage error: ', error);
+                });*/
+
+            //});
+            //this.sendWebSocketMessage(payloadChunk);
+            } else {
+                console.log('no reason to strip out ', payloadChunk);
+                if(payloadChunk.indexOf('{') > -1 && payloadChunk.indexOf('}') > -1) {
+                    payloadChunk = payloadChunk.trim();
+                    let plChunkSplit = payloadChunk.split('}').filter( (value) => {
+                        return (value && value.trim() !== '') ? true : false;
+                    });
+                    console.log("what's going on here? ", plChunkSplit);
+                    summary.recordCount = summary.recordCount + plChunkSplit.length;
+                    //retSubject.next(summary);
+                }
+            }
+        }
+        }
+    })
+    .finally( () => {
+        //console.log('file summary: ', summary);
+        //resultChunks = payloadChunks;
+        //retSubject.next(summary);
+    });
+
+    // return observeable of stream summary info
+    return retObs;
+}
