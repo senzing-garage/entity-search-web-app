@@ -8,7 +8,7 @@ import {
 import { Subject } from 'rxjs';
 import { AdminBulkDataService, AdminStreamAnalysisSummary, AdminStreamLoadSummary } from '../../services/admin.bulk-data.service';
 import { filter } from 'rxjs/operators';
-import { SzStreamingFileReader } from '../../common/stream-reader';
+import { SzStreamingFileRecordParser } from '../../common/streaming-file-record-parser';
 
 /**
  * Provides an interface for loading files in to a datasource.
@@ -203,15 +203,20 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
     public loadFile(event: Event) {
       this.adminBulkDataService.load();
     }
+
     /** take the current file focus and pass to api load endpoint */
     public loadFileFS(event: Event) {
       this.adminBulkDataService.streamLoad(this.adminBulkDataService.file)
       //.pipe(take(1))
       .subscribe((loadSummary: AdminStreamLoadSummary) => {
-        //console.log('[stats] streamLoad: ', loadSummary);
-        // load is done, show results
-        //alert('done loading: \n\r'+ JSON.stringify(loadSummary, undefined, 2));
+        //console.log('[stats] streamLoad: ', loadSummary.recordCount);
+        this._currentStreamLoadStats = loadSummary;
       });
+    }
+
+    private _currentStreamLoadStats: AdminStreamLoadSummary;
+    public get currentStreamLoadStats(): AdminStreamLoadSummary {
+      return this._currentStreamLoadStats;
     }
 
     public debugStreamLoad(event: Event) {
@@ -220,10 +225,13 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
       .subscribe((loadSummary: AdminStreamLoadSummary) => {
         console.log('AdminBulkDataLoadComponent.debugStreamLoad() result: ', loadSummary);
       });*/
-      this.doStreamRead(this.adminBulkDataService.file);
+      //this.doStreamRead(this.adminBulkDataService.file);
+      this.adminBulkDataService.streamLoad(this.adminBulkDataService.file);
     }
+
     public get readRecordsFromStreamStatus(): string {
-      let recordsReadCount  = this._readRecordsFromStream && this._readRecordsFromStream.length ? this._readRecordsFromStream.length : 0;
+      //let recordsReadCount  = this._readRecordsFromStream && this._readRecordsFromStream.length ? this._readRecordsFromStream.length : 0;
+      let recordsReadCount  = this._currentStreamLoadStats && this._currentStreamLoadStats.recordCount ? this._currentStreamLoadStats.recordCount : 0;
       let fileName          = this.adminBulkDataService.file ? this.adminBulkDataService.file.name : 'Unknown';
       return `read ${recordsReadCount} records from ${fileName}`;
     }
@@ -232,7 +240,7 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
       return this._readRecordsFromStream;
     }
     async doStreamRead(file: File) {
-      let streamReader = new SzStreamingFileReader(this.adminBulkDataService.file);
+      let streamReader = new SzStreamingFileRecordParser(this.adminBulkDataService.file);
       streamReader.onRecordsRead.subscribe((records: any[]) => {
         this._readRecordsFromStream = records;
       });
