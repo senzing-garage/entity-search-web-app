@@ -199,7 +199,9 @@ function getRecordsFromFileStream(fileHandle: File, fileReadStream: ReadableStre
     })
     .finally(() => {
         // sometimes there is a last "hanging chunk"
-        console.log('checking for hanging chunk.. ', payloadChunk);
+        payloadChunk = payloadChunk.trim();
+        console.log('checking for hanging chunk.."', payloadChunk, '"');
+
         if(payloadChunk && payloadChunk.length > 0) {
         if(summary.fileType === validImportFileTypes.JSONL || summary.fileType === validImportFileTypes.JSON) {
             let payloadChunkHasEndBracket = payloadChunk.lastIndexOf(']') > payloadChunk.indexOf('}');

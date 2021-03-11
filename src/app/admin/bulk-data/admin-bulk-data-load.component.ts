@@ -150,6 +150,36 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
         console.info('AdminBulkDataLoadComponent.adminBulkDataService.onUseStreamingSocketChange: '+ useStreaming);
         this.chooseFileInputFS();
       });
+      // all phase 1
+      this.adminBulkDataService.onStreamReadStarted
+      .pipe(filter( (value) => { return value !== undefined; }))
+      .subscribe((state) => { this.streamImportPhase = 1; });
+
+      this.adminBulkDataService.onStreamReadProgress
+      .pipe(filter( (value) => { return value !== undefined; }))
+      .subscribe((summary) => { 
+        this.streamImportPhase = 1; 
+        this._currentStreamLoadStats = summary;
+        //console.log('onStreamReadProgress: ', summary);
+      });
+
+      this.adminBulkDataService.onStreamReadComplete
+      .pipe(filter( (value) => { return value !== undefined; }))
+      .subscribe((state) => { this.streamImportPhase = 2; });
+
+      // load phases
+      this.adminBulkDataService.onStreamLoadStarted.pipe(filter( (value) => { return value !== undefined; })).subscribe((state) => { this.streamImportPhase = 2; });
+      this.adminBulkDataService.onStreamLoadProgress
+      .pipe(filter( (value) => { return value !== undefined; }))
+      .subscribe((summary) => { 
+        this.streamImportPhase = 2; 
+        this._currentStreamLoadStats = summary;
+        //console.log('onStreamLoadProgress: ', summary);
+      });
+      this.adminBulkDataService.onStreamLoadComplete.pipe(filter( (value) => { return value !== undefined; })).subscribe((state) => { 
+        this.streamImportPhase = 3;
+        this._streamImportComplete = true;
+      });
     }
     /**
      * unsubscribe when component is destroyed
@@ -208,24 +238,113 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
     public loadFileFS(event: Event) {
       this.adminBulkDataService.streamLoad(this.adminBulkDataService.file)
       //.pipe(take(1))
-      .subscribe((loadSummary: AdminStreamLoadSummary) => {
+      //.subscribe((loadSummary: AdminStreamLoadSummary) => {
         //console.log('[stats] streamLoad: ', loadSummary.recordCount);
-        this._currentStreamLoadStats = loadSummary;
-      });
+      //  this._currentStreamLoadStats = loadSummary;
+      //});
+    }
+    private _streamImportInProgress = false;
+    private _streamImportComplete   = false;
+    /**
+     * 0 = not loading
+     * 1 = reading file
+     * 2 = sending records
+     * 3 = complete (all records sent)
+     * @todo convert to dict enum value
+     */
+    private _streamImportPhase      = 0;
+
+    public get streamImportInProgress(): boolean {
+      return this._streamImportInProgress;
+    }
+    public set streamImportInProgress(value: boolean) {
+      this._streamImportInProgress = value;
+    }
+    public get streamImportComplete(): boolean {
+      return this._streamImportComplete;
+    }
+    public set streamImportComplete(value: boolean) {
+      this._streamImportComplete = value;
+    }
+    public set streamImportPhase(value: number) {
+      this._streamImportPhase = value;
+      switch(value) {
+        case 0:
+          this._streamImportInProgress  = false;
+          this._streamImportComplete    = false;
+          break;
+        case 1:
+          this._streamImportInProgress  = true;
+          break;
+        case 2: 
+          this._streamImportInProgress  = true;
+          break;
+        case 3:
+          this._streamImportInProgress  = false;
+          this._streamImportComplete    = false;
+          break;
+      }
+    }
+    public get streamImportPhase(): number {
+      return this._streamImportPhase;
     }
 
+    public streamImportPhaseIs(phase: string | number) {
+      let retValue = false;
+      if((phase as number) && (phase as number).toPrecision && [0,1,2,3].indexOf((phase as number))) {
+        // phase value is integer
+        return (this._streamImportPhase === phase);
+      } else if((phase as string) && (phase as string).substr) {
+        //console.log('streamImportPhaseIs('+ phase +'): '+ (phase as string).toLowerCase());
+        // assume string
+        switch((phase as string).toLowerCase()) {
+          case 'loading':
+            return this._streamImportPhase === 0;
+            break;
+          case 'reading':
+            return (this._streamImportPhase === 1);
+            break;
+          case 'sending': 
+            return this._streamImportPhase === 2;
+            break;
+          case 'complete':
+            return this._streamImportPhase === 3;
+            break;
+        }
+      }
+      return retValue;
+    }
+
+    public testPhaseIsReading(): void{
+      let phase = 'reading';
+      let isPhase = false;
+      switch((phase as string).toLowerCase()) {
+        case 'loading':
+          isPhase = this._streamImportPhase === 0;
+          break;
+        case 'reading':
+          isPhase = (this._streamImportPhase === 1);
+          break;
+        case 'sending': 
+          isPhase = this._streamImportPhase === 2;
+          break;
+        case 'complete':
+          isPhase = this._streamImportPhase === 3;
+          break;
+      }
+      alert((this._streamImportPhase === 1)+'|'+this.streamImportPhaseIs('reading') + '|' + isPhase);
+    }
+    public testPhaseIsSending(): void{
+      alert(this._streamImportPhase === 2);
+    }
+    public testPhaseIsComplete(): void{
+      alert(this._streamImportPhase === 3);
+    }
     private _currentStreamLoadStats: AdminStreamLoadSummary;
     public get currentStreamLoadStats(): AdminStreamLoadSummary {
       return this._currentStreamLoadStats;
     }
-
     public debugStreamLoad(event: Event) {
-      /*
-      this.adminBulkDataService.debugStreamDepth(this.adminBulkDataService.file)
-      .subscribe((loadSummary: AdminStreamLoadSummary) => {
-        console.log('AdminBulkDataLoadComponent.debugStreamLoad() result: ', loadSummary);
-      });*/
-      //this.doStreamRead(this.adminBulkDataService.file);
       this.adminBulkDataService.streamLoad(this.adminBulkDataService.file);
     }
 
@@ -238,13 +357,6 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
     private _readRecordsFromStream: any[];
     public get readRecordsFromStream(): any[] {
       return this._readRecordsFromStream;
-    }
-    async doStreamRead(file: File) {
-      let streamReader = new SzStreamingFileRecordParser(this.adminBulkDataService.file);
-      streamReader.onRecordsRead.subscribe((records: any[]) => {
-        this._readRecordsFromStream = records;
-      });
-      await streamReader.read();
     }
     /** clear the current bulkloader focal state */
     public clear() {

@@ -1,3 +1,12 @@
+<div *ngIf="streamImportInProgress || streamImportComplete">
+       <div *ngIf="streamImportPhaseIs('reading')">
+              reading records from file ({{readRecordsFromStreamStatus}})..
+       </div>
+       <div *ngIf="streamImportPhaseIs('sending')">
+              sending records ({{sentRecordsFromStreamStatus}})..
+       </div>
+</div>
+
 <input #filePicker (change)="onFileInputChange($event)" type="file"
        [accept]="supportedFileTypes"
        class="hidden-file-picker"
@@ -16,6 +25,18 @@
        <li><h3>useSocketStream:</h3> {{useSocketStream}}</li>
        <li><h3>analysis:</h3> {{analysis}}</li>
 </ul>-->
+<div>
+       Importing: {{streamImportInProgress}}
+</div>
+<div>
+       Phase: {{streamImportPhase}}
+</div>
+<div>
+       is reading ? {{streamImportPhaseIs('reading')}} <button mat-stroked-button (click)="testPhaseIsReading()">Test</button>
+</div>
+<div>
+       is loading ? {{streamImportPhaseIs('sending')}} <button mat-stroked-button (click)="testPhaseIsSending()">Test</button>
+</div>
 <div>
        Streaming File Read Status: {{readRecordsFromStreamStatus}}
 </div>

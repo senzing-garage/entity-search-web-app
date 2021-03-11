@@ -140,6 +140,23 @@ export class AdminBulkDataService {
     public onEntityTypeMapChange = new Subject<{ [key: string]: string }>();
     /** when the result of a load operation changes this behavior subject is broadcast */
     public onLoadResult = new BehaviorSubject<SzBulkLoadResult | AdminStreamLoadSummary>(undefined);
+    
+    // ------------------- stream loading -------------------
+    private _onStreamLoadStarted    = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
+    private _onStreamLoadProgress   = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
+    private _onStreamLoadComplete   = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
+    private _onStreamReadStarted    = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
+    private _onStreamReadProgress   = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
+    private _onStreamReadComplete   = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
+
+    // --- public interfaces
+    public onStreamLoadStarted      = this._onStreamLoadStarted.asObservable();
+    public onStreamLoadProgress     = this._onStreamLoadProgress.asObservable();
+    public onStreamLoadComplete     = this._onStreamLoadComplete.asObservable();
+    public onStreamReadStarted      = this._onStreamReadStarted.asObservable();
+    public onStreamReadProgress     = this._onStreamReadProgress.asObservable();
+    public onStreamReadComplete     = this._onStreamReadComplete.asObservable();
+
     /** when the result of a load operation changes this behavior subject is broadcast */
     public onAnalysisResult = new BehaviorSubject<SzBulkDataAnalysis | AdminStreamAnalysisSummary>(undefined);
     /** when an error occurs this subject is emitted 
@@ -702,7 +719,11 @@ export class AdminBulkDataService {
         streamReader.read();
         return retObs;
     }
-
+    /** perform streaming import of records over websocket interface 
+     * takes a file as argument, stream reads file, parses records,
+     * then batch chunks to websocket connection. 
+     * @returns Observeable<AdminStreamLoadSummary>
+    */
     streamLoad(file?: File, dataSourceMap?: { [key: string]: string }, entityTypeMap?: { [key: string]: string }, analysis?: SzBulkDataAnalysis): Observable<AdminStreamLoadSummary> {
         console.log('SzBulkDataService.streamLoad: ', file, this.streamConnectionProperties);
         // event streams
@@ -748,24 +769,44 @@ export class AdminBulkDataService {
             dataSources: [],
             complete: false
         }
+        // initialize behavior subjects with base info
+        this._onStreamLoadStarted.next(summary); // singleton
+        this._onStreamReadStarted.next(summary); // singleton
+        retSubject.next(summary); // local
+
         // read file contents as stream
         // parse to array of records
         this.parseRecordsFromFile(file, (streamStatus) => {
             // on stream complete, do thing
             summary.complete = true;
             console.warn('SzBulkDataService.streamLoad: file stream read complete.');
-            retSubject.next(summary);
+            this._onStreamReadComplete.next(summary);
+            retSubject.next(summary); // local
         }).subscribe(
             (records) => {
+                // do count inc before we add to summary otherwise well double
+                summary.recordCount = summary.recordCount + records.length;
+                // now concat
                 readRecords = readRecords.concat(records);
-                summary.recordCount = readRecords.length;
-                console.log(`SzBulkDataService.streamLoad: read ${summary.recordCount} records`);
-                retSubject.next(summary);
+                //console.log(`SzBulkDataService.streamLoad: read ${summary.recordCount} records`);
+                this._onStreamLoadProgress.next(summary);
+                this._onStreamReadProgress.next(summary);
+                retSubject.next(summary); // local
             }
         );
         // periodically scan through records
         // and send to socket queue
-        
+        this._onStreamReadProgress.subscribe(() => {
+            // we read some stuff send some records..
+            if(readRecords && readRecords.length > 0) {
+                // pull records out of read array
+                // push them in to websocket (as quick as we read them - so cool)
+                let currQueuePush = readRecords;
+                readRecords       = [];
+                this.webSocketService.sendMessages(currQueuePush);
+            }
+        });
+        // monitor status of queue..
         return retObs;
     }
 
