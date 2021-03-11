@@ -354,6 +354,23 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
       let fileName          = this.adminBulkDataService.file ? this.adminBulkDataService.file.name : 'Unknown';
       return `read ${recordsReadCount} records from ${fileName}`;
     }
+    public get sentRecordsFromStreamStatus(): string {
+      //let recordsReadCount  = this._readRecordsFromStream && this._readRecordsFromStream.length ? this._readRecordsFromStream.length : 0;
+      let recordsSentCount  = this._currentStreamLoadStats && this._currentStreamLoadStats.sentRecordCount ? this._currentStreamLoadStats.sentRecordCount : 0;
+      let fileName          = this.adminBulkDataService.file ? this.adminBulkDataService.file.name : 'Unknown';
+      return `sent ${recordsSentCount} records`;
+    }
+    public get streamStatusMessage(): string {
+      let retStr = 'Initializing...';
+      if(this._currentStreamLoadStats) {
+        if(this._currentStreamLoadStats.complete) {
+          retStr = 'Complete';
+        } else {
+          retStr = `${this._currentStreamLoadStats.sentRecordCount}/${this._currentStreamLoadStats.recordCount}`;
+        }
+      }
+      return retStr;
+    }
     private _readRecordsFromStream: any[];
     public get readRecordsFromStream(): any[] {
       return this._readRecordsFromStream;

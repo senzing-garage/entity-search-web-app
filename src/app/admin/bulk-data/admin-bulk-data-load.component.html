@@ -1,9 +1,6 @@
-<div *ngIf="streamImportInProgress || streamImportComplete">
-       <div *ngIf="streamImportPhaseIs('reading')">
-              reading records from file ({{readRecordsFromStreamStatus}})..
-       </div>
-       <div *ngIf="streamImportPhaseIs('sending')">
-              sending records ({{sentRecordsFromStreamStatus}})..
+<div *ngIf="streamImportInProgress || streamImportComplete" class="streamJobStatus">
+       <div>
+              {{streamStatusMessage}}
        </div>
 </div>
 
@@ -25,6 +22,7 @@
        <li><h3>useSocketStream:</h3> {{useSocketStream}}</li>
        <li><h3>analysis:</h3> {{analysis}}</li>
 </ul>-->
+<!--
 <div>
        Importing: {{streamImportInProgress}}
 </div>
@@ -40,5 +38,6 @@
 <div>
        Streaming File Read Status: {{readRecordsFromStreamStatus}}
 </div>
+-->
 <admin-bulk-data-analysis-summary *ngIf="showAnalysis && analysis"></admin-bulk-data-analysis-summary>
 <admin-bulk-data-load-summary *ngIf="showResults && result"></admin-bulk-data-load-summary>

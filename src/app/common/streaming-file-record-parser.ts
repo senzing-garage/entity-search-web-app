@@ -23,11 +23,7 @@ export class SzStreamingFileRecordParser {
      * returns an array of records as json as they were read from stream.
      **/
     public onStreamChunkParsed  = this.onStreamChunkRead.asObservable().pipe(
-        map( (streamChunkLines: string[]) => {
-            return streamChunkLines.map( (streamChunkLine) => {
-                return JSON.parse(streamChunkLine);
-            })
-        })
+        map( this.mapStreamChunkToJSON )
     )
     /** published every time 1+ record is read.
       * returns the total aggregate collection of records.
@@ -61,15 +57,7 @@ export class SzStreamingFileRecordParser {
         console.log('SzStreamingFileRecordParser()');
 
         this.onStreamChunkRead.asObservable().pipe(
-            map( (streamChunkLines: string[]) => {
-                return streamChunkLines.map( (streamChunkLine) => {
-                    try{
-                        return JSON.parse(streamChunkLine);
-                    }catch(err){
-                        console.warn('the fuckery???', streamChunkLine);
-                    }
-                })
-            })
+            map( this.mapStreamChunkToJSON )
         ).subscribe( (records: any[] ) => {
             this.readStreamReadRecords = this._readStreamReadRecords.concat(records);
             //console.log('onStreamChunkRead: ', records, this._readStreamReadRecords);
@@ -77,6 +65,42 @@ export class SzStreamingFileRecordParser {
         this.onStreamClosed.subscribe((status) => {
             console.warn('SzStreamingFileRecordParser.closed()');
         });
+    }
+    private mapStreamChunkToJSON(streamChunkLines: string[]): any[] {
+        // double check if any lines are doubled up
+        let hasDouble   = streamChunkLines.some((streamChunkLine) => {
+            return streamChunkLine.split('}').length >= 3;
+        })
+        if(!hasDouble) {
+            return streamChunkLines.map( (streamChunkLine) => {
+                try{
+                    return JSON.parse(streamChunkLine);
+                }catch(err){
+                    console.warn('SzStreamingFileRecordParser.onStreamChunkRead: Parse Error 1', streamChunkLine);
+                }
+            })
+        } else {
+            // split double entries
+            let newChunkLines = [];
+            streamChunkLines.forEach((streamChunkLine) => {
+                if(streamChunkLine.split('}').length >= 3) {
+                    // split line and add each item
+                    let lineSplit   = streamChunkLine.split('}').map((strLine) => { return (strLine.indexOf('}') > -1) ? strLine : (strLine + '}'); });
+                    lineSplit.forEach((splitItemStr) => {
+                        try{
+                            newChunkLines.push(JSON.parse(splitItemStr));
+                        }catch(err){
+                            // just ignore
+                            console.warn('SzStreamingFileRecordParser.onStreamChunkRead: Parse Error 2 "'+ splitItemStr +'"', err);
+                        }
+                    });
+                } else {
+                    newChunkLines.push(JSON.parse(streamChunkLine));
+                }
+            });
+            return newChunkLines
+        }
+        return [];
     }
     /** on destroy close all subscribers */
     destroy() {
@@ -97,7 +121,9 @@ export class SzStreamingFileRecordParser {
         if (typeof Worker !== 'undefined') {
             const worker = new Worker('../workers/stream-reader.worker', { type: 'module' });
             worker.onmessage = ({ data }) => {
+                data = (data && data.trim) ? data.trim() : data;
                 //console.log('\tread: ', data);
+                
 
                 if(data || data === '0' || data === 0){
                     if(data === '0' || data === 0){
@@ -114,6 +140,7 @@ export class SzStreamingFileRecordParser {
             };
             // open up file read
             worker.postMessage(file);
+            
         }
     }
 }

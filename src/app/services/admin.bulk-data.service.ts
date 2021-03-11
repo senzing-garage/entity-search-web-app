@@ -714,8 +714,12 @@ export class AdminBulkDataService {
             retSubject.next(records);
         });
         if(onComplete){
+            console.warn('SzBulkDataService.parseRecordsFromFile: onComplete handler passed to fn');
             streamReader.onStreamClosed.subscribe(onComplete);
         }
+        streamReader.onStreamClosed.subscribe((state) => {
+            console.warn('SzBulkDataService.parseRecordsFromFile: stream closed.', state);
+        });
         streamReader.read();
         return retObs;
     }
@@ -738,6 +742,7 @@ export class AdminBulkDataService {
         // record queues
         let readRecords                 = [];
         let recordsSendToSocketQueue    = [];
+        let readStreamComplete          = false;
         // socket related
         if(!this.webSocketService.connected){
             // we need to reopen connection
@@ -778,16 +783,18 @@ export class AdminBulkDataService {
         // parse to array of records
         this.parseRecordsFromFile(file, (streamStatus) => {
             // on stream complete, do thing
-            summary.complete = true;
             console.warn('SzBulkDataService.streamLoad: file stream read complete.');
+            readStreamComplete = true;
+            this._onStreamLoadProgress.next(summary);
             this._onStreamReadComplete.next(summary);
             retSubject.next(summary); // local
         }).subscribe(
             (records) => {
                 // do count inc before we add to summary otherwise well double
-                summary.recordCount = summary.recordCount + records.length;
+                summary.recordCount         = summary.recordCount + records.length;
                 // now concat
-                readRecords = readRecords.concat(records);
+                readRecords                 = readRecords.concat(records);
+                summary.unsentRecordCount   = readRecords.length;
                 //console.log(`SzBulkDataService.streamLoad: read ${summary.recordCount} records`);
                 this._onStreamLoadProgress.next(summary);
                 this._onStreamReadProgress.next(summary);
@@ -804,9 +811,36 @@ export class AdminBulkDataService {
                 let currQueuePush = readRecords;
                 readRecords       = [];
                 this.webSocketService.sendMessages(currQueuePush);
+                summary.sentRecordCount     = summary.sentRecordCount + currQueuePush.length;
+                summary.unsentRecordCount   = readRecords.length;
+                if(summary.sentRecordCount >= 1000000) {
+                    // temp debug
+                    console.log('are we done? ', readStreamComplete, summary.unsentRecordCount, summary.sentRecordCount === summary.recordCount);
+                }
+                if(readStreamComplete && summary.sentRecordCount === summary.recordCount) {
+                    // all messages sent
+                    summary.complete = true;
+                    this._onStreamLoadComplete.next(summary);
+                } else {
+                    retSubject.next(summary); // local
+                    this._onStreamLoadProgress.next(summary);
+                }
             }
         });
+
         // monitor status of queue..
+        retObs.subscribe((summary: AdminStreamLoadSummary) => {
+            this.currentLoadResult = summary;
+        });
+        // on end of read double-check if whole thing is complete
+        this._onStreamReadComplete.subscribe((summary: AdminStreamLoadSummary) => {
+            if(readStreamComplete && summary.sentRecordCount === summary.recordCount) {
+                summary.complete = true;
+                this._onStreamLoadComplete.next(summary);
+            }
+        });
+
+
         return retObs;
     }
 
