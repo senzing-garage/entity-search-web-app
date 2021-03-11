@@ -1,8 +1,8 @@
 import { Injectable, Inject } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { ActivatedRouteSnapshot } from '@angular/router';
-import { Observable, of, from, interval, Subject, BehaviorSubject } from 'rxjs';
-import { map, catchError, tap, switchMap, takeUntil, take, filter, takeWhile } from 'rxjs/operators';
+import { Observable, of, from, interval, Subject, BehaviorSubject, timer } from 'rxjs';
+import { map, catchError, tap, switchMap, takeUntil, take, filter, takeWhile, delay } from 'rxjs/operators';
 import { SzConfigurationService, SzAdminService, SzEntityTypesService, SzServerInfo, SzBaseResponseMeta, SzPrefsService, SzBulkDataService, SzDataSourcesService } from '@senzing/sdk-components-ng';
 import { HttpClient } from '@angular/common/http';
 import { AuthConfig, SzWebAppConfigService } from './config.service';
@@ -20,6 +20,7 @@ import {
 import { WebSocketService } from './websocket.service';
 import { SzStreamingFileRecordParser } from '../common/streaming-file-record-parser';
 import { BulkDataService, SzBulkDataAnalysis, SzBulkDataAnalysisResponse, SzBulkLoadResponse, SzBulkLoadResult, SzDataSourceRecordAnalysis, SzDataSourceBulkLoadResult, SzEntityTypeBulkLoadResult, SzEntityTypeRecordAnalysis } from '@senzing/rest-api-client-ng';
+import { sum } from 'd3';
 
 export interface AdminStreamLoadSummary {
     fileType: any,
@@ -741,7 +742,6 @@ export class AdminBulkDataService {
         let fileName = (file && file.name) ? file.name : undefined;
         // record queues
         let readRecords                 = [];
-        let recordsSendToSocketQueue    = [];
         let readStreamComplete          = false;
         // socket related
         if(!this.webSocketService.connected){
@@ -801,9 +801,15 @@ export class AdminBulkDataService {
                 retSubject.next(summary); // local
             }
         );
-        // periodically scan through records
-        // and send to socket queue
-        this._onStreamReadProgress.subscribe(() => {
+
+        // immediately send all records as fast as they can be read
+        // good for debugging, bad for prod
+        /*
+        this._onStreamReadProgress.pipe(
+            takeWhile( (summary: AdminStreamLoadSummary) => {
+                return (summary && !summary.complete) ? true : false;
+            })
+        ).subscribe(() => {
             // we read some stuff send some records..
             if(readRecords && readRecords.length > 0) {
                 // pull records out of read array
@@ -826,21 +832,93 @@ export class AdminBulkDataService {
                     this._onStreamLoadProgress.next(summary);
                 }
             }
-        });
+        });*/
 
-        // monitor status of queue..
+        // ------------ monitor status of queue, batch send records to socket ------------
+        // how many records to send per 100 milliseconds
+        let bulkRecordSendRate = 3000;
+
+        // set up an interval that expires once all records read have been sent
+        let streamSendMon = timer(100, 100);
+        streamSendMon.pipe(
+            map(() => {
+                return summary;
+            }),
+            takeWhile( (summary: AdminStreamLoadSummary) => {
+                return (summary && !summary.complete) ? true : false;
+            }),
+            filter((summary: AdminStreamLoadSummary) => {
+                return summary && summary.recordCount > 0;
+            })
+        ).subscribe(() => {
+            // we read some stuff send some records..
+            if(readRecords && readRecords.length > 0) {
+                //console.log('check for batching records..', readRecords.length, summary.sentRecordCount);
+
+                // slice off a batch of records to send
+                let currQueuePush   = readRecords && readRecords.length < bulkRecordSendRate ? readRecords : readRecords.slice(0, bulkRecordSendRate);
+                readRecords         = readRecords.slice(currQueuePush.length);
+
+                // push them in to websocket (as quick as we read them - so cool)
+                this.webSocketService.sendMessages(currQueuePush);
+
+                // update metadata
+                summary.sentRecordCount     = summary.sentRecordCount + currQueuePush.length;
+                summary.unsentRecordCount   = readRecords.length;
+
+                // check if everything has been sent
+                if(readStreamComplete && summary.sentRecordCount === summary.recordCount && summary.recordCount > 0) {
+                    // all messages sent
+                    //console.warn('stream load complete 1', summary);
+                    summary.complete = true;
+                    this._onStreamLoadComplete.next(summary);
+                } else {
+                    retSubject.next(summary); // local
+                    this._onStreamLoadProgress.next(summary);
+                }
+            } else if(readRecords && readRecords.length <= 0) {
+                // according to this we sent all the records, what went wrong
+                // console.log('batch should be over. why is it still going?', readStreamComplete, summary.complete);
+            }
+        });
+        // when ANYTHING changes, update the singleton "currentLoadResult" var so components can read status
         retObs.subscribe((summary: AdminStreamLoadSummary) => {
             this.currentLoadResult = summary;
         });
+
+        // ---------------------------- on complete evt handlers ----------------------------
         // on end of read double-check if whole thing is complete
-        this._onStreamReadComplete.subscribe((summary: AdminStreamLoadSummary) => {
-            if(readStreamComplete && summary.sentRecordCount === summary.recordCount) {
+        this._onStreamReadComplete.pipe(
+            filter((summary: AdminStreamLoadSummary) => { return summary !== undefined;}),
+            take(1),
+            delay(5000)
+        ).subscribe((summary: AdminStreamLoadSummary) => {
+            /*
+            if(readStreamComplete && summary && summary.sentRecordCount === summary.recordCount) {
+                // set this to true to end batching loop Observeable
                 summary.complete = true;
                 this._onStreamLoadComplete.next(summary);
+            }*/
+            console.log('_onStreamReadComplete: ',readStreamComplete, summary);
+        });
+        // on end of records queue double-check if whole thing is complete
+        this._onStreamLoadComplete.pipe(
+            filter((summary: AdminStreamLoadSummary) => { return summary !== undefined;}),
+            take(1),
+            /*takeWhile( (summary: AdminStreamLoadSummary) => {
+                return (summary && !summary.complete) ? true : false;
+            }),
+            delay(5000)*/
+        ).subscribe((summary: AdminStreamLoadSummary) => {
+            if(readStreamComplete && summary && summary.sentRecordCount === summary.recordCount) {
+                // set this to true to end batching loop Observeable
+                //console.warn('stream load complete 2', summary);
+                summary.complete = true;
+                //this._onStreamLoadComplete.next(summary);
+            } else {
+                console.warn('stream load complete 2', readStreamComplete, summary);
             }
         });
-
-
         return retObs;
     }
 
