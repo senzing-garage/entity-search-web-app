@@ -2,6 +2,14 @@
 <admin-bulk-data-analysis-summary *ngIf="analysis && !result"></admin-bulk-data-analysis-summary>
 <admin-bulk-data-load-summary *ngIf="result"></admin-bulk-data-load-summary>
 <!--  end summary data  -->
+<!-- start streaming interface -->
+<div *ngIf="streamImportInProgress || streamImportComplete" class="streamJobStatus">
+  <sz-progress-bar 
+         [mode]="streamImportProgressBarMode" 
+         [value]="streamImportProgressBarValue"
+         [text]="streamStatusMessage"></sz-progress-bar>
+</div>
+<!-- end streaming interface -->
 <!-- start tabular display -->
 <admin-bulk-data-analysis-report *ngIf="analysis && !result && !useSocketStream"></admin-bulk-data-analysis-report>
 <admin-bulk-data-load-report *ngIf="result && !useSocketStream"></admin-bulk-data-load-report>

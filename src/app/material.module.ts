@@ -14,13 +14,14 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @NgModule({
   declarations: [],
-  imports: [ MatDialogModule, MatBadgeModule, MatFormFieldModule, MatInputModule, MatTableModule, MatPaginatorModule, MatSortModule, MatSidenavModule, MatButtonModule, MatCheckboxModule, MatToolbarModule, MatTooltipModule, MatMenuModule, MatIconModule, MatGridListModule, MatSelectModule, MatSlideToggleModule],
-  exports: [ MatDialogModule, MatBadgeModule, MatFormFieldModule, MatInputModule, MatTableModule, MatPaginatorModule, MatSortModule, MatSidenavModule, MatButtonModule, MatCheckboxModule, MatToolbarModule, MatTooltipModule, MatMenuModule, MatIconModule, MatGridListModule, MatSelectModule, MatSlideToggleModule],
+  imports: [ MatDialogModule, MatBadgeModule, MatFormFieldModule, MatInputModule, MatTableModule, MatPaginatorModule, MatProgressBarModule, MatSortModule, MatSidenavModule, MatButtonModule, MatCheckboxModule, MatToolbarModule, MatTooltipModule, MatMenuModule, MatIconModule, MatGridListModule, MatSelectModule, MatSlideToggleModule],
+  exports: [ MatDialogModule, MatBadgeModule, MatFormFieldModule, MatInputModule, MatTableModule, MatPaginatorModule, MatProgressBarModule, MatSortModule, MatSidenavModule, MatButtonModule, MatCheckboxModule, MatToolbarModule, MatTooltipModule, MatMenuModule, MatIconModule, MatGridListModule, MatSelectModule, MatSlideToggleModule],
 })
 export class MaterialModule { }

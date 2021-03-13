@@ -1,9 +1,3 @@
-<div *ngIf="streamImportInProgress || streamImportComplete" class="streamJobStatus">
-       <div>
-              {{streamStatusMessage}}
-       </div>
-</div>
-
 <input #filePicker (change)="onFileInputChange($event)" type="file"
        [accept]="supportedFileTypes"
        class="hidden-file-picker"

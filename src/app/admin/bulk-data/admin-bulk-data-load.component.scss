@@ -2,7 +2,7 @@
 @import '../../scss/_admin.scss';
 
 :host {
-  display: inline-block;
+  display: block;
 
   .hidden-file-picker {
     visibility: hidden;
@@ -20,16 +20,6 @@
   .summary {
     margin-bottom: 20px;
   }
-}
-
-.streamJobStatus {
-  background-color: #333;
-  color: #fff;
-  padding: 4px 8px;
-  border-radius: 6px;
-  border: 1px solid;
-  font-size: 14px;
-  margin: 10px 0;
 }
 
 .header {

@@ -22,6 +22,11 @@
   admin-bulk-data-load-summary, .summary {
     margin-bottom: 20px;
   }
+
+  /* for streaming progress bar */
+  sz-progress-bar {
+    height: 20px;
+  }
 }
 
 .header {
