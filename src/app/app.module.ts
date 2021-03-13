@@ -35,7 +35,6 @@ import { TipsComponent } from './common/tips/tips.component';
 import { BlankComponent } from './common/blank/blank.component';
 import { NoResultsComponent } from './errors/no-results/no-results.component';
 import { AboutComponent } from './about/about.component';
-import { SzProgressBarComponent } from './common/progress-bar/progress-bar.component';
 // admin dialog components that "FREAK-OUT" for no good reason
 import { AdminStreamConnDialogComponent } from './common/stream-conn-dialog/stream-conn-dialog.component';
 
