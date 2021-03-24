@@ -4,7 +4,7 @@ import { WebSocketService } from '../../services/websocket.service';
 import { AdminBulkDataService } from '../../services/admin.bulk-data.service';
 
 //import { AdminStreamConnProperties } from '../../services/admin.bulk-data.service';
-import { AdminStreamConnProperties, AdminStreamAnalysisConfig, AdminStreamLoadConfig } from '@senzing/sdk-components-ng';
+import { AdminStreamConnProperties, AdminStreamAnalysisConfig, AdminStreamLoadConfig, AdminStreamUploadRates } from '@senzing/sdk-components-ng';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
@@ -53,6 +53,12 @@ import { Subject } from 'rxjs';
     public set wsAnalysisSampleSize(value: number) {
         this.data.streamAnalysisConfig.sampleSize = value;
     }
+    public get wsLoadUploadRate() {
+      return (this.data && this.data.streamLoadConfig && this.data.streamLoadConfig.uploadRate) ? this.data.streamLoadConfig.uploadRate : -1;
+    }
+    public set wsLoadUploadRate(value: number) {
+        this.data.streamLoadConfig.uploadRate = value;
+    }
     public get wsConnectionIsValid(): boolean {
       return (this.data && this.data.streamConnectionProperties && this.data.streamConnectionProperties.connectionTest) ?  this.data.streamConnectionProperties.connectionTest : false;
     }
@@ -98,6 +104,19 @@ import { Subject } from 'rxjs';
       {value: 20, text: '20'}
     ]
 
+    /** available upload rates */
+    private _wsLoadUploadRates = [];
+    public get wsLoadUploadRates(): {key: string, value: number}[] {
+      let retValues = this._wsLoadUploadRates;
+      if(retValues && retValues.length <= 0) {
+        for(let key in AdminStreamUploadRates) {
+          this._wsLoadUploadRates.push( { 'key': key, 'value': AdminStreamUploadRates[key] } );
+        }
+        retValues = this._wsLoadUploadRates;
+      }
+      return retValues;
+    }
+
     public testStatus = "";
     public isTesting  = false;
 
@@ -121,7 +140,8 @@ import { Subject } from 'rxjs';
         // make sure each node has an initialized value
         if(!this.data.streamAnalysisConfig) {
           this.data.streamAnalysisConfig = {
-            sampleSize: 10000
+            sampleSize: 10000,
+            uploadRate: -1
           }
         }
         if(!this.data.streamConnectionProperties) {
@@ -134,7 +154,10 @@ import { Subject } from 'rxjs';
           }
         }
         if(!this.data.streamLoadConfig) {
-          this.data.streamLoadConfig.autoCreateMissingDataSources = false;
+          this.data.streamLoadConfig = {
+            autoCreateMissingDataSources: false,
+            uploadRate: -1
+          }
         }
       }
       if(this.data && this.data.streamConnectionProperties && this.data.streamConnectionProperties.connectionTest) {

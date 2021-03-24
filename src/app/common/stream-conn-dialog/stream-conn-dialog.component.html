@@ -42,9 +42,20 @@
     <div class="row">
         <h3>Loading:</h3>
         <div class="row sc-row-3">
-            <mat-checkbox [(ngModel)]="autoCreateMissingDataSources" labelPosition="after">Auto-create Datasources when explicitly specified in record</mat-checkbox>
+            <mat-form-field >
+                <mat-label for="ws-analysis-sample-size">Upload Rate:</mat-label>
+                <mat-select [(ngModel)]="wsLoadUploadRate" id="ws-load-upload-rate">
+                <mat-option *ngFor="let aSize of wsLoadUploadRates" [value]="aSize.value">
+                    {{aSize.key}}
+                </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-label>Records Per-Second</mat-label>
         </div>
         <div class="row sc-row-4">
+            <mat-checkbox [(ngModel)]="autoCreateMissingDataSources" labelPosition="after">Auto-create Datasources when explicitly specified in record</mat-checkbox>
+        </div>
+        <div class="row sc-row-5">
             <mat-checkbox [(ngModel)]="mapEmptyDataSourcesToValue" labelPosition="after">Map records with no Datasource to</mat-checkbox>
             <mat-form-field>
                 <mat-label>DataSource Name:</mat-label>

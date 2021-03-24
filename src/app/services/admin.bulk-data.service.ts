@@ -740,6 +740,9 @@ export class AdminBulkDataService {
         let fileSize = file && file.size ? file.size : 0;
         let fileType = getFileTypeFromName(file);
         let fileName = (file && file.name) ? file.name : undefined;
+        // how many records to send per 200 milliseconds
+        // config value is per 1000ms, but .2s are better for UI draw
+        let bulkRecordSendRate          = this.streamLoadConfig.uploadRate ? Math.floor(this.streamLoadConfig.uploadRate / 5) : -1;
         // record queues
         let readRecords                 = [];
         let readStreamComplete          = false;
@@ -802,56 +805,7 @@ export class AdminBulkDataService {
             }
         );
 
-        // immediately send all records as fast as they can be read
-        // good for debugging, bad for prod
-        /*
-        this._onStreamReadProgress.pipe(
-            takeWhile( (summary: AdminStreamLoadSummary) => {
-                return (summary && !summary.complete) ? true : false;
-            })
-        ).subscribe(() => {
-            // we read some stuff send some records..
-            if(readRecords && readRecords.length > 0) {
-                // pull records out of read array
-                // push them in to websocket (as quick as we read them - so cool)
-                let currQueuePush = readRecords;
-                readRecords       = [];
-                this.webSocketService.sendMessages(currQueuePush);
-                summary.sentRecordCount     = summary.sentRecordCount + currQueuePush.length;
-                summary.unsentRecordCount   = readRecords.length;
-                if(summary.sentRecordCount >= 1000000) {
-                    // temp debug
-                    console.log('are we done? ', readStreamComplete, summary.unsentRecordCount, summary.sentRecordCount === summary.recordCount);
-                }
-                if(readStreamComplete && summary.sentRecordCount === summary.recordCount) {
-                    // all messages sent
-                    summary.complete = true;
-                    this._onStreamLoadComplete.next(summary);
-                } else {
-                    retSubject.next(summary); // local
-                    this._onStreamLoadProgress.next(summary);
-                }
-            }
-        });*/
-
-        // ------------ monitor status of queue, batch send records to socket ------------
-        // how many records to send per 100 milliseconds
-        let bulkRecordSendRate = 3000;
-
-        // set up an interval that expires once all records read have been sent
-        let streamSendMon = timer(100, 100);
-        streamSendMon.pipe(
-            map(() => {
-                return summary;
-            }),
-            takeWhile( (summary: AdminStreamLoadSummary) => {
-                return (summary && !summary.complete) ? true : false;
-            }),
-            filter((summary: AdminStreamLoadSummary) => {
-                return summary && summary.recordCount > 0;
-            })
-        ).subscribe(() => {
-            // we read some stuff send some records..
+        let sendQueuedRecords = (records?: any) => {
             if(readRecords && readRecords.length > 0) {
                 //console.log('check for batching records..', readRecords.length, summary.sentRecordCount);
 
@@ -880,7 +834,34 @@ export class AdminBulkDataService {
                 // according to this we sent all the records, what went wrong
                 // console.log('batch should be over. why is it still going?', readStreamComplete, summary.complete);
             }
-        });
+        }
+
+        // ------------ monitor status of queue, batch send records to socket ------------
+        if(bulkRecordSendRate > 0) {
+            // set up an interval that expires once all records read have been sent
+            let streamSendMon = timer(100, 200);
+            streamSendMon.pipe(
+                map(() => {
+                    return summary;
+                }),
+                takeWhile( (summary: AdminStreamLoadSummary) => {
+                    return (summary && !summary.complete) ? true : false;
+                }),
+                filter((summary: AdminStreamLoadSummary) => {
+                    return summary && summary.recordCount > 0;
+                })
+            ).subscribe( sendQueuedRecords );
+        } else {
+            // unlimited send rate... probably a terrible idea but lets give it a try
+            // immediately send all records as fast as they can be read
+            // good for debugging, bad for prod
+            this._onStreamReadProgress.pipe(
+                takeWhile( (summary: AdminStreamLoadSummary) => {
+                    return (summary && !summary.complete) ? true : false;
+                })
+            ).subscribe( sendQueuedRecords );
+        }
+        
         // when ANYTHING changes, update the singleton "currentLoadResult" var so components can read status
         retObs.subscribe((summary: AdminStreamLoadSummary) => {
             this.currentLoadResult = summary;
