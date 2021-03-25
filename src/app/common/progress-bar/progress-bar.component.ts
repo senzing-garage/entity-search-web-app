@@ -42,7 +42,7 @@ export class SzProgressBarComponent implements OnInit, OnDestroy {
   }
 
   public get percRightAdjust(): string {
-    let retValue = (this.value < 10 ? (this.value < 2 ? "-20px" : "-55px") : "-55px");
+    let retValue = (this.value < 6 ? (this.value < 2 ? "-20px" : "-40px") : "-55px");
     return retValue;
   }
 
