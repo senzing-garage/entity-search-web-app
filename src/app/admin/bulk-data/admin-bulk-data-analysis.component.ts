@@ -134,13 +134,19 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
     return this._streamImportPhase;
   }
 
+  private _streamStatusMessageSpecialOperation = undefined;
+
   public get streamStatusMessage(): string {
+    if(this._streamStatusMessageSpecialOperation && this._streamStatusMessageSpecialOperation !== undefined) {
+      // special operation message overrides default logic
+      return this._streamStatusMessageSpecialOperation;
+    }
     let retStr = 'Initializing...';
     if(this._currentStreamLoadStats) {
       if(this._currentStreamLoadStats.complete) {
         retStr = 'Complete';
       } else {
-        retStr = `${this._currentStreamLoadStats.sentRecordCount}/${this._currentStreamLoadStats.recordCount}`;
+        retStr = `Loading: ${this._currentStreamLoadStats.sentRecordCount}/${this._currentStreamLoadStats.recordCount}`;
       }
     }
     return retStr;
@@ -214,6 +220,16 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
     this.adminBulkDataService.onStreamLoadComplete.pipe(filter( (value) => { return value !== undefined; })).subscribe((state) => { 
       this.streamImportPhase = 3;
       this._streamImportComplete = true;
+    });
+
+    this.adminBulkDataService.onAutoCreatingDataSources.pipe(
+      takeUntil(this.unsubscribe$)
+    ).subscribe( (dataSources) => {
+      if(dataSources && dataSources.length > 0 && this._streamStatusMessageSpecialOperation === undefined) {
+        this._streamStatusMessageSpecialOperation = 'Auto-creating missing datasource(s): '+ (dataSources && dataSources.join ? dataSources.join(', ') : dataSources) +'..';
+      } else {
+        this._streamStatusMessageSpecialOperation = undefined;
+      }
     });
   }
 
