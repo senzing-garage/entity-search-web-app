@@ -37,6 +37,19 @@ export class SzProgressBarComponent implements OnInit, OnDestroy {
       return this._text;
   }
 
+  public get percent(): string {
+    return (this.value+'%') + (this.value < 10 ? '&nbsp;':'');
+  }
+
+  public get percRightAdjust(): string {
+    let retValue = (this.value < 10 ? (this.value < 2 ? "-20px" : "-55px") : "-55px");
+    return retValue;
+  }
+
+  public get isComplete(): boolean {
+    return this._value >= 100 ?  true : false; // enforce
+  }
+
   constructor() {
     
   }

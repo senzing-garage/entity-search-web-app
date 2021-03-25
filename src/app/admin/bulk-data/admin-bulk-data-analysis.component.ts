@@ -146,6 +146,7 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
       if(this._currentStreamLoadStats.complete) {
         retStr = 'Complete';
       } else {
+        //retStr = undefined;
         retStr = `Loading: ${this._currentStreamLoadStats.sentRecordCount}/${this._currentStreamLoadStats.recordCount}`;
       }
     }
@@ -226,7 +227,7 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
       takeUntil(this.unsubscribe$)
     ).subscribe( (dataSources) => {
       if(dataSources && dataSources.length > 0 && this._streamStatusMessageSpecialOperation === undefined) {
-        this._streamStatusMessageSpecialOperation = 'Auto-creating missing datasource(s): '+ (dataSources && dataSources.join ? dataSources.join(', ') : dataSources) +'..';
+        this._streamStatusMessageSpecialOperation = 'creating datasource'+ (dataSources && dataSources.length > 1 ? 's' : '') +': '+ (dataSources && dataSources.join ? dataSources.join(', ') : dataSources);
       } else {
         this._streamStatusMessageSpecialOperation = undefined;
       }
