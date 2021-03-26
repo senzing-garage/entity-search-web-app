@@ -5,7 +5,7 @@ ENV REFRESHED_AT=2021-1-28
 
 LABEL Name="senzing/entity-search-web-app" \
       Maintainer="support@senzing.com" \
-      Version="2.2.1"
+      Version="2.2.2"
 
 HEALTHCHECK CMD ["/app/healthcheck.sh"]
 
@@ -33,6 +33,7 @@ ENV PATH /app/node_modules/.bin:$PATH
 # Install and cache app dependencies.
 
 COPY package.json /app/package.json
+COPY package-lock.json /app/package-lock.json
 RUN npm config set loglevel warn \
  && npm install --silent \
  && npm install --silent -g @angular/cli@10.0.0
@@ -48,6 +49,9 @@ RUN npm run build:docker
 
 RUN rm /usr/lib/python2.7/urllib.py \
  && rm /usr/lib/python2.7/lib2to3/pgen2/parse.py
+
+# Remove src tree after build
+RUN rm -fR /app/src
 
 USER 1001
 
