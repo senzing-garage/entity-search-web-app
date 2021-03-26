@@ -51,7 +51,7 @@ RUN rm /usr/lib/python2.7/urllib.py \
  && rm /usr/lib/python2.7/lib2to3/pgen2/parse.py
 
 # Remove src tree after build
-RUN rm /app/src
+RUN rm -fR /app/src
 
 USER 1001
 
