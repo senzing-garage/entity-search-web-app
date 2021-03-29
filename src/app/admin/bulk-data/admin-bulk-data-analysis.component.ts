@@ -93,6 +93,7 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
    */
   private _streamImportPhase      = 0;
   private _streamImportInProgress = false;
+  private _streamImportPaused     = false;
   private _streamImportComplete   = false;
   private _currentStreamLoadStats: AdminStreamLoadSummary;
 
@@ -105,6 +106,13 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
   public set streamImportInProgress(value: boolean) {
     this._streamImportInProgress = value;
   }
+  public get streamImportPaused(): boolean {
+    return this._streamImportPaused;
+  }
+  public set streamImportPaused(value: boolean) {
+    this._streamImportPaused = value;
+  }
+  
   public get streamImportComplete(): boolean {
     return this._streamImportComplete;
   }
@@ -145,6 +153,8 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
     if(this._currentStreamLoadStats) {
       if(this._currentStreamLoadStats.complete) {
         retStr = 'Complete';
+      } else if(this._streamImportPaused) {
+        retStr = `Paused: ${this._currentStreamLoadStats.sentRecordCount}/${this._currentStreamLoadStats.recordCount}`;
       } else {
         //retStr = undefined;
         retStr = `Loading: ${this._currentStreamLoadStats.sentRecordCount}/${this._currentStreamLoadStats.recordCount}`;
@@ -218,6 +228,11 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
       this._currentStreamLoadStats = summary;
       //console.log('onStreamLoadProgress: ', summary);
     });
+    this.adminBulkDataService.onStreamLoadPaused
+    .subscribe((pausedState: boolean) => { 
+      this._streamImportPaused = pausedState; 
+      //console.log('onStreamLoadProgress: ', summary);
+    });
     this.adminBulkDataService.onStreamLoadComplete.pipe(filter( (value) => { return value !== undefined; })).subscribe((state) => { 
       this.streamImportPhase = 3;
       this._streamImportComplete = true;
@@ -239,6 +254,14 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
     console.info('AdminBulkDataAnalysisComponent.analyzeFile: ', file, this.adminBulkDataService.streamAnalysisConfig, this.adminBulkDataService.streamConnectionProperties);
     
     return this.adminBulkDataService.analyze(file);
+  }
+  /** pause stream load */
+  public pauseStreamImport() {
+    this.adminBulkDataService.pauseStreamLoad();
+  }
+  /** resume stream load */
+  public resumeStreamImport() {
+    this.adminBulkDataService.resumeStreamLoad();
   }
 
   public streamImportPhaseIs(phase: string | number) {

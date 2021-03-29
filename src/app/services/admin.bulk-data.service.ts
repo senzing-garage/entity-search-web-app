@@ -143,12 +143,14 @@ export class AdminBulkDataService {
     public onLoadResult = new BehaviorSubject<SzBulkLoadResult | AdminStreamLoadSummary>(undefined);
     
     private _onAutoCreatingDataSource   = false;
+    private _streamLoadPaused           = false;
     private _onAutoCreatingDataSources  = new Subject<string[]>();
     public onAutoCreatingDataSources    = this._onAutoCreatingDataSources.asObservable();
 
     // ------------------- stream loading -------------------
     private _onStreamLoadStarted    = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
     private _onStreamLoadProgress   = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
+    private _onStreamLoadPaused     = new BehaviorSubject<boolean>(this._streamLoadPaused);
     private _onStreamLoadComplete   = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
     private _onStreamReadStarted    = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
     private _onStreamReadProgress   = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
@@ -157,6 +159,7 @@ export class AdminBulkDataService {
     // --- public interfaces
     public onStreamLoadStarted      = this._onStreamLoadStarted.asObservable();
     public onStreamLoadProgress     = this._onStreamLoadProgress.asObservable();
+    public onStreamLoadPaused       = this._onStreamLoadPaused.asObservable();
     public onStreamLoadComplete     = this._onStreamLoadComplete.asObservable();
     public onStreamReadStarted      = this._onStreamReadStarted.asObservable();
     public onStreamReadProgress     = this._onStreamReadProgress.asObservable();
@@ -176,6 +179,14 @@ export class AdminBulkDataService {
     public onStreamConnectionStateChange = this._onStreamStatusChange.asObservable().pipe(
         map( WebSocketService.statusChangeEvtToConnectionBool )
     )
+    /** if a stream import is in progress, pause and data sending */
+    public pauseStreamLoad() {
+        this._onStreamLoadPaused.next(true);
+    }
+    /** if a stream import is in progress and been paused, but has not completed yet, resume data sending */
+    public resumeStreamLoad() {
+        this._onStreamLoadPaused.next(false);
+    }
     /** when a file is being analyzed */
     public analyzingFile = new Subject<boolean>();
     /** when a file is being analyzed */
@@ -375,6 +386,9 @@ export class AdminBulkDataService {
         });
         this.onAutoCreatingDataSources.subscribe( (dataSources: string[] | undefined) => {
             this._onAutoCreatingDataSource = (dataSources && dataSources.length > 0) ? true : false;
+        });
+        this.onStreamLoadPaused.subscribe( (isPaused: boolean) => {
+            this._streamLoadPaused = isPaused;
         });
         this.adminService.onServerInfo.pipe(
             takeUntil( this.unsubscribe$ )
@@ -918,7 +932,8 @@ export class AdminBulkDataService {
                     return summary && summary.recordCount > 0;
                 }),
                 tap( checkQueuedRecordsForDataSouces ),
-                filter( waitUntilDataSourcesAreValid ) 
+                filter( waitUntilDataSourcesAreValid ),
+                filter( () => { return !this._streamLoadPaused; })
             ).subscribe( sendQueuedRecords );
         } else {
             // unlimited send rate... probably a terrible idea but lets give it a try
@@ -927,7 +942,8 @@ export class AdminBulkDataService {
             this._onStreamReadProgress.pipe(
                 takeWhile( (summary: AdminStreamLoadSummary) => {
                     return (summary && !summary.complete) ? true : false;
-                })
+                }),
+                filter( () => { return !this._streamLoadPaused; })
             ).subscribe( sendQueuedRecords );
         }
         
