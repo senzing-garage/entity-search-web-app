@@ -10,6 +10,7 @@ class inMemoryConfig {
     authPath: 'http://senzing-webapp:8080',
     authMode: 'JWT',
     webServerUrl: 'http://senzing-webapp:8080',
+    webServerRootPath: '/',
     apiServerUrl: 'http://senzing-api-server:8080',
     ssl: {
       certPath: "/run/secrets/server.cert",

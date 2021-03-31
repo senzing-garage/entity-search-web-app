@@ -282,6 +282,7 @@ function getWebServerOptionsFromInput() {
   let retOpts = {
     port: 4200,
     hostname: 'localhost',
+    path: '/',
     apiPath: '/api',
     authPath: 'http://localhost:8080',
     authMode: 'JWT',
@@ -299,6 +300,7 @@ function getWebServerOptionsFromInput() {
     retOpts.authPath      = env.SENZING_WEB_SERVER_AUTH_PATH ?        env.SENZING_WEB_SERVER_AUTH_PATH        : retOpts.authPath;
     retOpts.authMode      = env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE ?  env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE  : retOpts.authMode;
     retOpts.apiServerUrl  = env.SENZING_API_SERVER_URL ?              env.SENZING_API_SERVER_URL              : retOpts.apiServerUrl;
+    retOpts.path          = env.SENZING_WEB_SERVER_VIRTUAL_PATH ?     env.SENZING_WEB_SERVER_VIRTUAL_PATH     : retOpts.path;
     if(env.SENZING_WEB_SERVER_SSL_CERT_PATH) {
       retOpts.ssl.certPath = env.SENZING_WEB_SERVER_SSL_CERT_PATH;
     }
@@ -319,6 +321,7 @@ function getWebServerOptionsFromInput() {
     retOpts.authPath      = cmdLineOpts.webServerAuthPath ?     cmdLineOpts.webServerAuthPath     : retOpts.authPath;
     retOpts.authMode      = cmdLineOpts.webServerAuthMode ?     cmdLineOpts.webServerAuthMode     : retOpts.authMode;
     retOpts.apiServerUrl  = cmdLineOpts.webServerApiServerUrl ? cmdLineOpts.webServerApiServerUrl : retOpts.apiServerUrl;
+    retOpts.path          = cmdLineOpts.virtualPath ?           cmdLineOpts.virtualPath           : retOpts.path;
     if(retOpts.sslCertPath) {
       retOpts.ssl = retOpts.ssl ? retOpts.ssl : {};
       retOpts.ssl.certPath  = retOpts.sslCertPath;

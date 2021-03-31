@@ -123,7 +123,9 @@ let virtualDirs = [];
 let staticPath  = path.resolve(path.join(__dirname, '../../', 'dist/entity-search-web-app'));
 let webCompPath = path.resolve(path.join(__dirname, '../../', '/node_modules/@senzing/sdk-components-web/'));
 app.use('/node_modules/@senzing/sdk-components-web', express.static(webCompPath));
-app.use(express.static(staticPath));
+app.use('/', express.static(staticPath));
+app.use(runtimeOptions.config.web.path, express.static(staticPath));
+
 //console.log('\n\n STATIC PATH: '+staticPath,'\n');
 
 // admin auth tokens
@@ -263,7 +265,7 @@ if(authOptions && authOptions !== undefined) {
 // SPA page
 let VIEW_VARIABLES = {
   "VIEW_PAGE_TITLE":"Entity Search",
-  "VIEW_BASEHREF":"/",
+  "VIEW_BASEHREF": runtimeOptions.config.web.path,
   "VIEW_CSP_DIRECTIVES":""
 }
 if(cspOptions && cspOptions.directives) {
@@ -293,14 +295,18 @@ app.get('*', (req, res) => {
   virtualPath = sanitize(virtualPath.trim());
   virtualPath = virtualPath !== '' ? '/'+ virtualPath : undefined;
   if(virtualPath){
-    VIEW_VARIABLES.VIEW_BASEHREF = virtualPath
-    if(virtualDirs && virtualDirs.indexOf && virtualDirs.indexOf(VIEW_VARIABLES.VIEW_BASEHREF) < 0) {
+    VIEW_VARIABLES.VIEW_BASEHREF = virtualPath && virtualPath.substring && virtualPath.substring(virtualPath.length-1) !== '/' ? (virtualPath +'/') : virtualPath;
+    /*
+    //VIEW_VARIABLES.VIEW_BASEHREF = virtualPath;
+    if(virtualDirs && virtualDirs.indexOf && virtualDirs.indexOf(virtualPath) < 0) {
       // add virtual dir to static asset mount point
-      //console.log(`Added "${virtualPath} to static assets mount paths (${virtualDirs.indexOf(VIEW_VARIABLES.VIEW_BASEHREF) < 0})"`,virtualDirs);
-      virtualDirs.push(VIEW_VARIABLES.VIEW_BASEHREF); // keep a record of these
-      app.use(VIEW_VARIABLES.VIEW_BASEHREF, express.static(staticPath));
-    };
+      virtualDirs.push(virtualPath); // keep a record of these
+      console.log(`Added "${virtualPath} to static assets mount paths (${virtualDirs.indexOf(VIEW_VARIABLES.VIEW_BASEHREF) < 0})"`, virtualDirs, staticPath);
+      //app.use(virtualPath, express.static(staticPath));
+      app.use('/app', express.static(staticPath));
+    };*/
   }
+
   res.render('index', VIEW_VARIABLES);
 });
 
@@ -338,7 +344,7 @@ if( serverOptions && serverOptions.ssl && serverOptions.ssl.enabled ){
       //STARTUP_MSG = 'WS Proxy Server started on port '+ (serverOptions.streamServerPort || 8255) +'. Forwarding to "'+ serverOptions.streamServerDestUrl +'"\n'+ STARTUP_MSG;
     } else {
       //STARTUP_MSG = STARTUP_MSG + '\n NO WS PROXY!!';
-      console.log('NO WS PROXY!!', serverOptions);
+      //console.log('NO WS PROXY!!', serverOptions);
       resolve();
     }
   }, (reason) => { 
