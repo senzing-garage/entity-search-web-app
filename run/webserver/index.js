@@ -123,7 +123,7 @@ let virtualDirs = [];
 let staticPath  = path.resolve(path.join(__dirname, '../../', 'dist/entity-search-web-app'));
 let webCompPath = path.resolve(path.join(__dirname, '../../', '/node_modules/@senzing/sdk-components-web/'));
 app.use('/node_modules/@senzing/sdk-components-web', express.static(webCompPath));
-app.use('/', express.static(staticPath));
+// app.use('/', express.static(staticPath));
 app.use(runtimeOptions.config.web.path, express.static(staticPath));
 
 //console.log('\n\n STATIC PATH: '+staticPath,'\n');
@@ -265,7 +265,7 @@ if(authOptions && authOptions !== undefined) {
 // SPA page
 let VIEW_VARIABLES = {
   "VIEW_PAGE_TITLE":"Entity Search",
-  "VIEW_BASEHREF": runtimeOptions.config.web.path,
+  "VIEW_BASEHREF": (runtimeOptions.config.web.path && runtimeOptions.config.web.path.substring((runtimeOptions.config.web.path.length - 1)) !== '/') ? (runtimeOptions.config.web.path + '/') : runtimeOptions.config.web.path,
   "VIEW_CSP_DIRECTIVES":""
 }
 if(cspOptions && cspOptions.directives) {
@@ -295,7 +295,7 @@ app.get('*', (req, res) => {
   virtualPath = sanitize(virtualPath.trim());
   virtualPath = virtualPath !== '' ? '/'+ virtualPath : undefined;
   if(virtualPath){
-    VIEW_VARIABLES.VIEW_BASEHREF = virtualPath && virtualPath.substring && virtualPath.substring(virtualPath.length-1) !== '/' ? (virtualPath +'/') : virtualPath;
+    //VIEW_VARIABLES.VIEW_BASEHREF = virtualPath && virtualPath.substring && virtualPath.substring(virtualPath.length-1) !== '/' ? (virtualPath +'/') : virtualPath;
     /*
     //VIEW_VARIABLES.VIEW_BASEHREF = virtualPath;
     if(virtualDirs && virtualDirs.indexOf && virtualDirs.indexOf(virtualPath) < 0) {
