@@ -146,26 +146,31 @@ function createCspConfigFromInput() {
 function createAuthConfigFromInput() {
   // return value
   let retConfig = undefined;
+  // grab env vars
+  let env = process.env;
+
+  // check for virtual directory
+  let cmdLineOpts = getCommandLineArgsAsJSON();
+  let _virtualDir = (env.SENZING_WEB_SERVER_VIRTUAL_PATH) ? env.SENZING_WEB_SERVER_VIRTUAL_PATH : '';
+  _virtualDir     = (cmdLineOpts && cmdLineOpts.virtualPath) ? cmdLineOpts.virtualPath : _virtualDir;
 
   // -------------------- start ENV vars import ------------------
-    // grab env vars
-    let env = process.env;
     if(env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE) {
       retConfig = retConfig !== undefined ? retConfig : {};
       retConfig.admin = {};
       if(env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE === 'JWT'){
         retConfig.admin = {
           "mode": "JWT",
-          "checkUrl": env.SENZING_WEB_SERVER_ADMIN_AUTH_STATUS ? env.SENZING_WEB_SERVER_ADMIN_AUTH_STATUS : "/admin/auth/jwt/status",
+          "checkUrl": env.SENZING_WEB_SERVER_ADMIN_AUTH_STATUS ? env.SENZING_WEB_SERVER_ADMIN_AUTH_STATUS : _virtualDir+"/admin/auth/jwt/status",
           "redirectOnFailure": true,
-          "loginUrl": env.SENZING_WEB_SERVER_ADMIN_AUTH_REDIRECT ? env.SENZING_WEB_SERVER_ADMIN_AUTH_REDIRECT : "/admin/login"
+          "loginUrl": env.SENZING_WEB_SERVER_ADMIN_AUTH_REDIRECT ? env.SENZING_WEB_SERVER_ADMIN_AUTH_REDIRECT : _virtualDir+"/admin/login"
         }
       } else if(env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE === 'SSO') {
         retConfig.admin = {
           "mode": "SSO",
-          "checkUrl": env.SENZING_WEB_SERVER_ADMIN_AUTH_STATUS ? env.SENZING_WEB_SERVER_ADMIN_AUTH_STATUS : "/admin/auth/sso/status",
+          "checkUrl": env.SENZING_WEB_SERVER_ADMIN_AUTH_STATUS ? env.SENZING_WEB_SERVER_ADMIN_AUTH_STATUS : _virtualDir+"/admin/auth/sso/status",
           "redirectOnFailure": true,
-          "loginUrl": env.SENZING_WEB_SERVER_ADMIN_AUTH_REDIRECT ? env.SENZING_WEB_SERVER_ADMIN_AUTH_REDIRECT : "/admin/login"
+          "loginUrl": env.SENZING_WEB_SERVER_ADMIN_AUTH_REDIRECT ? env.SENZING_WEB_SERVER_ADMIN_AUTH_REDIRECT : _virtualDir+"/admin/login"
         }
       }
     }
@@ -175,16 +180,16 @@ function createAuthConfigFromInput() {
       if(SENZING_WEB_SERVER_OPERATOR_AUTH_MODE === 'JWT'){
         retConfig.operator = {
           "mode": "JWT",
-          "checkUrl": env.SENZING_WEB_SERVER_OPERATOR_AUTH_STATUS ? env.SENZING_WEB_SERVER_OPERATOR_AUTH_STATUS : "/auth/jwt/status",
+          "checkUrl": env.SENZING_WEB_SERVER_OPERATOR_AUTH_STATUS ? env.SENZING_WEB_SERVER_OPERATOR_AUTH_STATUS : _virtualDir+"/auth/jwt/status",
           "redirectOnFailure": true,
-          "loginUrl": env.SENZING_WEB_SERVER_OPERATOR_AUTH_REDIRECT ? env.SENZING_WEB_SERVER_OPERATOR_AUTH_REDIRECT : "/login"
+          "loginUrl": env.SENZING_WEB_SERVER_OPERATOR_AUTH_REDIRECT ? env.SENZING_WEB_SERVER_OPERATOR_AUTH_REDIRECT : _virtualDir+"/login"
         }
       } else if(env.SENZING_WEB_SERVER_OPERATOR_AUTH_MODE === 'SSO') {
         retConfig.operator = {
           "mode": "SSO",
-          "checkUrl": env.SENZING_WEB_SERVER_OPERATOR_AUTH_STATUS ? env.SENZING_WEB_SERVER_OPERATOR_AUTH_STATUS : "/auth/sso/status",
+          "checkUrl": env.SENZING_WEB_SERVER_OPERATOR_AUTH_STATUS ? env.SENZING_WEB_SERVER_OPERATOR_AUTH_STATUS : _virtualDir+"/auth/sso/status",
           "redirectOnFailure": true,
-          "loginUrl": env.SENZING_WEB_SERVER_OPERATOR_AUTH_REDIRECT ? env.SENZING_WEB_SERVER_OPERATOR_AUTH_REDIRECT : "/login"
+          "loginUrl": env.SENZING_WEB_SERVER_OPERATOR_AUTH_REDIRECT ? env.SENZING_WEB_SERVER_OPERATOR_AUTH_REDIRECT : _virtualDir+"/login"
         }
       }
   }
@@ -230,16 +235,16 @@ function createAuthConfigFromInput() {
       if(authOpts.adminAuthMode === 'JWT') {
         retConfig.admin = {
           "mode": "JWT",
-          "checkUrl": authOpts.adminAuthStatusUrl ? authOpts.adminAuthStatusUrl : "/admin/auth/jwt/status",
+          "checkUrl": authOpts.adminAuthStatusUrl ? authOpts.adminAuthStatusUrl : _virtualDir+"/admin/auth/jwt/status",
           "redirectOnFailure": true,
-          "loginUrl": authOpts.adminAuthRedirectUrl ? authOpts.adminAuthRedirectUrl : "/admin/login"
+          "loginUrl": authOpts.adminAuthRedirectUrl ? authOpts.adminAuthRedirectUrl : _virtualDir+"/admin/login"
         }
       } else if (authOpts.adminAuthMode === 'SSO') {
         retConfig.admin = {
           "mode": "SSO",
-          "checkUrl": authOpts.adminAuthStatusUrl ? authOpts.adminAuthStatusUrl : "/admin/auth/sso/status",
+          "checkUrl": authOpts.adminAuthStatusUrl ? authOpts.adminAuthStatusUrl : _virtualDir+"/admin/auth/sso/status",
           "redirectOnFailure": authOpts.adminAuthRedirectOnFailure ? authOpts.adminAuthRedirectOnFailure : true,
-          "loginUrl": authOpts.adminAuthRedirectUrl ? authOpts.adminAuthRedirectUrl : "/admin/login"
+          "loginUrl": authOpts.adminAuthRedirectUrl ? authOpts.adminAuthRedirectUrl : _virtualDir+"/admin/login"
         }
       }
     }
@@ -249,23 +254,25 @@ function createAuthConfigFromInput() {
       if(authOpts.operatorAuthMode === 'JWT') {
         retConfig.operator = {
           "mode": "JWT",
-          "checkUrl": authOpts.operatorAuthStatusUrl ? authOpts.operatorAuthStatusUrl : "/auth/jwt/status",
+          "checkUrl": authOpts.operatorAuthStatusUrl ? authOpts.operatorAuthStatusUrl : _virtualDir+"/auth/jwt/status",
           "redirectOnFailure": true,
-          "loginUrl": authOpts.operatorAuthRedirectUrl ? authOpts.operatorAuthRedirectUrl : "/login"
+          "loginUrl": authOpts.operatorAuthRedirectUrl ? authOpts.operatorAuthRedirectUrl : _virtualDir+"/login"
         }
       } else if (authOpts.adminAuthMode === 'SSO') {
         retConfig.operator = {
           "mode": "SSO",
-          "checkUrl": authOpts.operatorAuthStatusUrl ? authOpts.operatorAuthStatusUrl : "/auth/sso/status",
+          "checkUrl": authOpts.operatorAuthStatusUrl ? authOpts.operatorAuthStatusUrl : _virtualDir+"/auth/sso/status",
           "redirectOnFailure": true,
-          "loginUrl": authOpts.operatorAuthRedirectUrl ? authOpts.operatorAuthRedirectUrl : "/login"
+          "loginUrl": authOpts.operatorAuthRedirectUrl ? authOpts.operatorAuthRedirectUrl : _virtualDir+"/login"
         }
       }
     }
     if(authOpts && authOpts !== undefined && authOpts.authServerPortNumber && authOpts.authServerPortNumber !== undefined) {
+      retConfig = retConfig !== undefined ? retConfig : {};
       retConfig.port = authOpts.authServerPortNumber;
     }
     if(authOpts && authOpts !== undefined && authOpts.authServerHostName && authOpts.authServerHostName !== undefined) {
+      retConfig = retConfig !== undefined ? retConfig : {};
       retConfig.hostname = authOpts.authServerHostName;
     }
 
@@ -353,7 +360,7 @@ function getProxyServerOptionsFromInput() {
   let retOpts = {
     authServerHostName: "localhost",
     authServerPortNumber: 8080,
-    logLevel: "error",
+    logLevel: "debug",
     apiServerUrl: "",
     adminAuthPath: "http://localhost:8080",
     jwtPathRewrite: "/jwt",
@@ -441,8 +448,10 @@ function getProxyServerOptionsFromInput() {
 }
 
 function createProxyConfigFromInput() {
-  let retConfig = undefined;
-  let proxyOpts = getProxyServerOptionsFromInput();
+  let retConfig     = undefined;
+  let proxyOpts     = getProxyServerOptionsFromInput();
+  let cmdLineOpts   = getCommandLineArgsAsJSON();
+
 
   if(env.SENZING_API_SERVER_URL) {
     retConfig = retConfig !== undefined ? retConfig : {};
@@ -456,9 +465,44 @@ function createProxyConfigFromInput() {
     }
   }
 
+  let _virtualDir = (env.SENZING_WEB_SERVER_VIRTUAL_PATH) ? env.SENZING_WEB_SERVER_VIRTUAL_PATH : '/';
+  _virtualDir     = (cmdLineOpts && cmdLineOpts.virtualPath) ? cmdLineOpts.virtualPath : _virtualDir;
+
+  let appendBasePathToKeys = (obj) => {
+    if(_virtualDir !== '/') {
+      // re-key object
+      let _retObj = {};
+      for(let pathKey in obj) {
+        let newKey = !pathKey.startsWith('/api') ? (_virtualDir + pathKey) : pathKey;
+        let newVal = obj[pathKey];
+        if(newVal && newVal.pathRewrite) {
+          // check pathRewrite for vdir pathing
+          let _pathRewriteObj = {};
+          console.log('');
+          for(let rewriteKey in newVal.pathRewrite) {
+            if(rewriteKey && rewriteKey.substring && rewriteKey.indexOf('^/') === 0) {
+              // append virtual dir to rewrite
+              _pathRewriteObj[ ('^'+ _virtualDir + rewriteKey.substring(1) ) ] = newVal.pathRewrite[ rewriteKey ];
+            } else {
+              // just return same value
+              _pathRewriteObj[ rewriteKey ] = newVal.pathRewrite[ rewriteKey ];
+            }
+          }
+          // update rewrite with any modifications
+          newVal.pathRewrite = _pathRewriteObj;
+        }
+        _retObj[newKey] = newVal;
+      }
+      return _retObj;
+    } else {
+      // just return object
+      return obj;
+    }
+  }
+
   if(env.SENZING_WEB_SERVER_ADMIN_AUTH_PATH) {
     retConfig = retConfig !== undefined ? retConfig : {};
-    let mergeObj = {
+    let mergeObj = appendBasePathToKeys({
       "/admin/auth/jwt/*": {
         "target": env.SENZING_WEB_SERVER_ADMIN_AUTH_PATH,
         "secure": true,
@@ -508,7 +552,7 @@ function createProxyConfigFromInput() {
           "^/cors/test": ""
         }
       }
-    }
+    });
     retConfig = Object.assign(retConfig, mergeObj);
   }
   // -------------------- start CMD LINE ARGS import -----------
@@ -526,7 +570,7 @@ function createProxyConfigFromInput() {
     }
     if(proxyOpts.adminAuthPath && proxyOpts.adminAuthPath !== undefined) {
       retConfig = retConfig !== undefined ? retConfig : {};
-      let mergeObj = {
+      let mergeObj = appendBasePathToKeys({
         "/admin/auth/jwt/*": {
           "target": proxyOpts.adminAuthPath,
           "secure": true,
@@ -576,7 +620,7 @@ function createProxyConfigFromInput() {
             "^/cors/test": ""
           }
         }
-      }
+      });
       retConfig = Object.assign(retConfig, mergeObj);
     }
   // -------------------- end CMD LINE ARGS import -----------

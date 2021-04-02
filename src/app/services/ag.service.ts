@@ -145,7 +145,7 @@ export class AuthGuardService implements CanActivate {
         } else {
           return this.adminAuth.checkServerInfo().pipe(
             tap((resi: boolean) => {
-              //console.warn('has admin enabled? ', resi);
+              console.warn('has admin enabled? ', resi);
               responseMap.adminEnabled = resi;
               //responses.push(resi);
             })
@@ -153,7 +153,7 @@ export class AuthGuardService implements CanActivate {
         }
       }),
       tap( (results: boolean) => {
-        //console.warn('!!RESULT!! ', responseMap, results);
+        console.warn('!!AUTH RESULT!! ', responseMap, results);
         if(!responseMap.adminEnabled) {
           this.router.navigate( ['admin', 'error', 'admin-mode-disabled'] );
         } else if(!responseMap.noAuth && !responseMap.sso && !responseMap.jwt) {

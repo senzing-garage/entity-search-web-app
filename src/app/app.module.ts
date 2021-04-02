@@ -1,6 +1,7 @@
 /** core angular, material, and senzing modules */
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { NgModule, InjectionToken } from '@angular/core';
+import { APP_BASE_HREF } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material.module';
@@ -104,7 +105,11 @@ import { SzWebAppConfigService } from './services/config.service';
     UiService,
     PrefsManagerService,
     AboutInfoService,
-    Title
+    Title,
+    {
+      provide: APP_BASE_HREF,
+      useValue: '/' + (window.location.pathname.split('/')[1] || '')
+    }
   ],
   bootstrap: [ AppComponent ]
 })

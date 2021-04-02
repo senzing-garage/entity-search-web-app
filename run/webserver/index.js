@@ -29,6 +29,7 @@ var corsOptions   = runtimeOptions.config.cors;
 var cspOptions    = runtimeOptions.config.csp;
 // proxy config
 var proxyOptions  = runtimeOptions.config.proxy;
+
 // web server config
 let serverOptions = runtimeOptions.config.web;
 
@@ -110,8 +111,9 @@ if(proxyOptions) {
       res.end('proxy encountered an error.');
     }
     proxyTargetOptions.onError = onError;
-    //console.log('Proxy CFG: '+ proxyPath);
-    //console.log(proxyTargetOptions);
+    console.log('Proxy CFG: '+ proxyPath);
+    console.log(proxyTargetOptions);
+    console.log('');
     app.use(proxyPath, apiProxy(proxyTargetOptions));
   }
 } else {
@@ -123,8 +125,16 @@ let virtualDirs = [];
 let staticPath  = path.resolve(path.join(__dirname, '../../', 'dist/entity-search-web-app'));
 let webCompPath = path.resolve(path.join(__dirname, '../../', '/node_modules/@senzing/sdk-components-web/'));
 app.use('/node_modules/@senzing/sdk-components-web', express.static(webCompPath));
-// app.use('/', express.static(staticPath));
-app.use(runtimeOptions.config.web.path, express.static(staticPath));
+app.use('/', express.static(staticPath));
+// serve static files from virtual directory if specified
+if(runtimeOptions.config && 
+  runtimeOptions.config.web && 
+  runtimeOptions.config.web.path) {
+    app.use(runtimeOptions.config.web.path, express.static(staticPath));
+    console.log('virtual directory', runtimeOptions.config.web.path);
+} else {
+  console.log('no virtual directory', runtimeOptions.config.web);
+}
 
 //console.log('\n\n STATIC PATH: '+staticPath,'\n');
 
@@ -140,13 +150,19 @@ const authRes = (req, res, next) => {
 };
 
 if(authOptions && authOptions !== undefined) {
-  app.get('/conf/auth', (req, res, next) => {
+  let _authBasePath = '';
+  if(runtimeOptions.config && 
+    runtimeOptions.config.web && 
+    runtimeOptions.config.web.path && runtimeOptions.config.web.path !== '/') {
+      _authBasePath = runtimeOptions.config.web.path;
+  }
+  app.get(_authBasePath+'/conf/auth', (req, res, next) => {
     res.status(200).json( authOptions );
   });
-  app.get('/conf/auth/admin', (req, res, next) => {
+  app.get(_authBasePath+'/conf/auth/admin', (req, res, next) => {
     res.status(200).json( authOptions.admin );
   });
-  app.get('/conf/auth/operator', (req, res, next) => {
+  app.get(_authBasePath+'/conf/auth/operator', (req, res, next) => {
     res.status(200).json( authOptions.operator );
   });
 
@@ -163,8 +179,8 @@ if(authOptions && authOptions !== undefined) {
     };
     // dunno if this should be a reverse proxy req or not
     // especially if the SSO uses cookies etc
-    app.get('/sso/admin/status', ssoResForceTrue);
-    app.get('/sso/admin/login', (req, res, next) => {
+    app.get(_authBasePath+'/sso/admin/status', ssoResForceTrue);
+    app.get(_authBasePath+'/sso/admin/login', (req, res, next) => {
       res.sendFile(path.resolve(path.join(__dirname,'../../', '/auth/sso-login.html')));
     });
     //STARTUP_MSG = STARTUP_MSG + '\n'+'';
@@ -201,24 +217,24 @@ if(authOptions && authOptions !== undefined) {
     app.get('/jwt/admin/login', jwtResForceTrue);
     */
 
-    app.post('/jwt/admin/status', auth.auth.bind(auth), jwtRes);
-    app.post('/jwt/admin/login', auth.login.bind(auth));
-    app.get('/jwt/admin/status', auth.auth.bind(auth), jwtRes);
-    app.get('/jwt/admin/login', auth.auth.bind(auth), jwtRes);
+    app.post(_authBasePath+'/jwt/admin/status', auth.auth.bind(auth), jwtRes);
+    app.post(_authBasePath+'/jwt/admin/login', auth.login.bind(auth));
+    app.get(_authBasePath+'/jwt/admin/status', auth.auth.bind(auth), jwtRes);
+    app.get(_authBasePath+'/jwt/admin/login', auth.auth.bind(auth), jwtRes);
 
     /** operator endpoints */
     if(authOptions.operator && authOptions.operator.mode === 'JWT') {
       // token auth for operators
-      app.post('/jwt/status', auth.auth.bind(adminAuth), jwtRes);
-      app.post('/jwt/login', auth.login.bind(adminAuth));
-      app.get('/jwt/status', auth.auth.bind(adminAuth), jwtRes);
-      app.get('/jwt/login', auth.auth.bind(adminAuth), jwtRes);
+      app.post(_authBasePath+'/jwt/status', auth.auth.bind(adminAuth), jwtRes);
+      app.post(_authBasePath+'/jwt/login', auth.login.bind(adminAuth));
+      app.get(_authBasePath+'/jwt/status', auth.auth.bind(adminAuth), jwtRes);
+      app.get(_authBasePath+'/jwt/login', auth.auth.bind(adminAuth), jwtRes);
     } else {
       // always return true for operators
-      app.post('/jwt/status', jwtResForceTrue);
-      app.post('/jwt/login', jwtResForceTrue);
-      app.get('/jwt/status', jwtResForceTrue);
-      app.get('/jwt/login', jwtResForceTrue);
+      app.post(_authBasePath+'/jwt/status', jwtResForceTrue);
+      app.post(_authBasePath+'/jwt/login', jwtResForceTrue);
+      app.get(_authBasePath+'/jwt/status', jwtResForceTrue);
+      app.get(_authBasePath+'/jwt/login', jwtResForceTrue);
     }
 
     STARTUP_MSG = STARTUP_MSG + '\n'+'';
@@ -265,7 +281,12 @@ if(authOptions && authOptions !== undefined) {
 // SPA page
 let VIEW_VARIABLES = {
   "VIEW_PAGE_TITLE":"Entity Search",
-  "VIEW_BASEHREF": (runtimeOptions.config.web.path && runtimeOptions.config.web.path.substring((runtimeOptions.config.web.path.length - 1)) !== '/') ? (runtimeOptions.config.web.path + '/') : runtimeOptions.config.web.path,
+  "VIEW_BASEHREF": (
+    runtimeOptions.config && 
+    runtimeOptions.config.web && 
+    runtimeOptions.config.web.path && 
+    runtimeOptions.config.web.path.substring((runtimeOptions.config.web.path.length - 1)) !== '/'
+  ) ? (runtimeOptions.config.web.path + '/') : runtimeOptions.config.web.path,
   "VIEW_CSP_DIRECTIVES":""
 }
 if(cspOptions && cspOptions.directives) {
@@ -286,27 +307,6 @@ if(cspOptions && cspOptions.directives) {
 app.set('views', path.resolve(path.join(__dirname, '..'+path.sep, '..'+path.sep, 'dist/entity-search-web-app')));
 app.set('view engine', 'pug');
 app.get('*', (req, res) => {
-  // we only want to take the first directory in the path 
-  // to limit injection attack surface
-  let virtualPath = req.originalUrl.substr(0, req.originalUrl.indexOf('/',1));
-  virtualPath = virtualPath.trim();
-  // now sanitize string (for control chars, path traversal etc)
-  // and hardcode first '/' char
-  virtualPath = sanitize(virtualPath.trim());
-  virtualPath = virtualPath !== '' ? '/'+ virtualPath : undefined;
-  if(virtualPath){
-    //VIEW_VARIABLES.VIEW_BASEHREF = virtualPath && virtualPath.substring && virtualPath.substring(virtualPath.length-1) !== '/' ? (virtualPath +'/') : virtualPath;
-    /*
-    //VIEW_VARIABLES.VIEW_BASEHREF = virtualPath;
-    if(virtualDirs && virtualDirs.indexOf && virtualDirs.indexOf(virtualPath) < 0) {
-      // add virtual dir to static asset mount point
-      virtualDirs.push(virtualPath); // keep a record of these
-      console.log(`Added "${virtualPath} to static assets mount paths (${virtualDirs.indexOf(VIEW_VARIABLES.VIEW_BASEHREF) < 0})"`, virtualDirs, staticPath);
-      //app.use(virtualPath, express.static(staticPath));
-      app.use('/app', express.static(staticPath));
-    };*/
-  }
-
   res.render('index', VIEW_VARIABLES);
 });
 
