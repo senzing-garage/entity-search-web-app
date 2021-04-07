@@ -207,7 +207,7 @@ export class AdminAuthService {
       tap( (resp: boolean) => {
         const _isChanged = (this.adminService.adminEnabled !== resp);
         this.adminService.adminEnabled = resp;
-        //console.info('AdminAuthService.pollForIsAdminEnabled: ', this.isAdminModeEnabled);
+        //console.info('AdminAuthService.checkServerInfo: ', this.isAdminModeEnabled, _isChanged);
         if( _isChanged ) { this.onAdminModeChange.next( this.adminService.adminEnabled ); }
       })
     );

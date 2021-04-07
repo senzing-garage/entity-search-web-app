@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { CanActivate, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { ActivatedRouteSnapshot } from '@angular/router';
 import { Observable, of, Subject } from 'rxjs';
 import { map, catchError, tap, concatMap } from 'rxjs/operators';
@@ -63,7 +63,7 @@ export class AuthGuardService implements CanActivate {
   }
 
   /** route guard check to see if user can access a route */
-  canActivate(route: ActivatedRouteSnapshot): Observable<boolean> {
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean|UrlTree> | Promise<boolean|UrlTree> | boolean | UrlTree {
     // subject to emit once the auth config is available
     const onConfigLoaded = new Subject<AuthConfig>();
 
@@ -95,8 +95,9 @@ export class AuthGuardService implements CanActivate {
         if (!(authConf.admin && authConf.admin.mode)) {
           // no auth check. WWWWHHHHYYYY!!!
           // hope you know what you're doing
-          console.warn('NO AUTH CHECK!!! EXTREMELY DANGEROUS!');
+          // console.warn('NO AUTH CHECK!!! EXTREMELY DANGEROUS!');
           responseMap.noAuth = true;
+          //responseMap.adminEnabled = true;
           retReq = of(true);
           return of(true);
         } else {
@@ -155,7 +156,7 @@ export class AuthGuardService implements CanActivate {
         if (!(responseMap.config.admin && responseMap.config.admin.mode)) {
           // no auth check. WWWWHHHHYYYY!!!
           // hope you know what you're doing
-          console.warn('NO AUTH CHECK!!! EXTREMELY DANGEROUS!');
+          // console.warn('2 NO AUTH CHECK!!! EXTREMELY DANGEROUS!');
           responseMap.noAuth = true;
           return of(true);
         } else {
@@ -169,7 +170,7 @@ export class AuthGuardService implements CanActivate {
       }),
       tap( (results: boolean) => {
         console.warn('!!AUTH RESULT!! ', responseMap, results);
-        if(!responseMap.adminEnabled) {
+        if(!responseMap.adminEnabled && !responseMap.noAuth) {
           this.router.navigate( ['admin', 'error', 'admin-mode-disabled'] );
         } else if(!responseMap.noAuth && !responseMap.sso && !responseMap.jwt) {
           console.warn('redirecting to login: ', responseMap);
@@ -191,8 +192,12 @@ export class AuthGuardService implements CanActivate {
     // actual return observable of canActivateResult on result
     authStream.subscribe(
       (canActivate: boolean) => {
-        //console.warn('AuthGuardService.canActivate Complete: ', canActivate);
-        _canActivateResult.next(canActivate);
+        // console.warn('AuthGuardService.canActivate Complete: ', canActivate, canActivate === true);
+        // there is some kind of race condition happening here
+        // and between the canActivate sub
+        setTimeout(() => {
+          _canActivateResult.next( canActivate );
+        }, 500);
       }
     );
     // kick off the authStream by emitting on "onConfigLoaded" either
@@ -200,6 +205,7 @@ export class AuthGuardService implements CanActivate {
     if( this.adminAuth.authConfigLoaded ) {
       onConfigLoaded.next( this.adminAuth.authConfig );
     } else {
+      //onConfigLoaded.next( this.adminAuth.authConfig );
       this.adminAuth.onAuthConfigLoaded.subscribe((res: AuthConfig) => {
         onConfigLoaded.next( res );
       });
