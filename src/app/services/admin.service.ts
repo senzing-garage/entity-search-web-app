@@ -38,6 +38,12 @@ export class AdminAuthService {
   public get authConfigLoaded(): boolean {
     return (this._authConfig && this._authConfig !== undefined) ? true : false;
   }
+  public get isOnVirtualPath(): boolean {
+    return this.virtualPath && this.virtualPath !== undefined ? true : false;
+  }
+  public get virtualPath(): string | undefined {
+    return this._authConfig && this._authConfig.virtualPath && this._authConfig.virtualPath !== '' && this._authConfig.virtualPath !== '/' && this._authConfig.virtualPath !== undefined ? this._authConfig.virtualPath : undefined;
+  }
 
   /** whether or not a user is granted admin rights */
   private _isAuthenticated: boolean = true;

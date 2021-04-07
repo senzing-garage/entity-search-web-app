@@ -94,6 +94,9 @@ class inMemoryConfig {
         if(value.auth.port && value.auth.port !== undefined) {
           this.authConfiguration.port = value.auth.port;
         }
+        if(value.auth.virtualPath && value.auth.virtualPath !== undefined) {
+          this.authConfiguration.virtualPath = value.auth.virtualPath;
+        }
         if(value.auth.admin) {
           this.authConfiguration.admin = {};
           if(value.auth.admin.mode === 'JWT') {

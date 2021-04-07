@@ -111,9 +111,9 @@ if(proxyOptions) {
       res.end('proxy encountered an error.');
     }
     proxyTargetOptions.onError = onError;
-    console.log('Proxy CFG: '+ proxyPath);
-    console.log(proxyTargetOptions);
-    console.log('');
+    //console.log('Proxy CFG: '+ proxyPath);
+    //console.log(proxyTargetOptions);
+    //console.log('');
     app.use(proxyPath, apiProxy(proxyTargetOptions));
   }
 } else {
@@ -131,9 +131,9 @@ if(runtimeOptions.config &&
   runtimeOptions.config.web && 
   runtimeOptions.config.web.path) {
     app.use(runtimeOptions.config.web.path, express.static(staticPath));
-    console.log('virtual directory', runtimeOptions.config.web.path);
+    STARTUP_MSG = STARTUP_MSG + '\n'+`-- VIRTUAL DIRECTORY : ${runtimeOptions.config.web.path} --`;
 } else {
-  console.log('no virtual directory', runtimeOptions.config.web);
+  //console.log('no virtual directory', runtimeOptions.config.web);
 }
 
 //console.log('\n\n STATIC PATH: '+staticPath,'\n');
@@ -157,6 +157,12 @@ if(authOptions && authOptions !== undefined) {
       _authBasePath = runtimeOptions.config.web.path;
   }
   app.get(_authBasePath+'/conf/auth', (req, res, next) => {
+    res.status(200).json( authOptions );
+  });
+  // we need a wildcarded version due to 
+  // queries from virtual directory hosted apps
+  // and any number of SPA routes on top of that
+  app.get('*/conf/auth', (req, res, next) => {
     res.status(200).json( authOptions );
   });
   app.get(_authBasePath+'/conf/auth/admin', (req, res, next) => {

@@ -28,7 +28,15 @@ export class AuthGuardService implements CanActivate {
       if( this.isUrlExternal(this.adminAuth.loginUrl) ) {
         this.router.navigate(['/admin/externalRedirect', { externalUrl: this.adminAuth.loginUrl }]);
       } else {
-        this.router.navigateByUrl(this.adminAuth.loginUrl);
+        let redirectUrl = this.adminAuth.loginUrl;
+        if(this.adminAuth && this.adminAuth.isOnVirtualPath && this.adminAuth.virtualPath) {
+          // strip virtual path from redirect url
+          // otherwise the angular router will "double-dip" on 
+          // the base-href and you will get two base-hrefs in the path
+          redirectUrl = redirectUrl.replace(this.adminAuth.virtualPath, '');
+        }
+        this.router.navigateByUrl(redirectUrl);
+        //this.router.navigateByUrl(this.adminAuth.loginUrl);
       }
     } else if(this.adminAuth.redirectOnFailure) {
       console.warn('REDIRECTING TO JWT LOGIN: ', this.adminAuth.loginUrl, this.isUrlExternal(this.adminAuth.loginUrl));
@@ -100,7 +108,15 @@ export class AuthGuardService implements CanActivate {
               if( this.isUrlExternal(authConf.admin.loginUrl) ) {
                 this.router.navigate(['/admin/externalRedirect', { externalUrl: this.adminAuth.loginUrl }]);
               } else {
-                this.router.navigateByUrl( authConf.admin.loginUrl );
+                // check to see if we need to strip base href
+                let redirectUrl = authConf.admin.loginUrl;
+                if(authConf && authConf.virtualPath && authConf.virtualPath !== '' && authConf.virtualPath !== '/') {
+                  // strip virtual path from redirect url
+                  // otherwise the angular router will "double-dip" on 
+                  // the base-href and you will get two base-hrefs in the path
+                  redirectUrl = redirectUrl.replace(authConf.virtualPath, '');
+                }
+                this.router.navigateByUrl( redirectUrl );
               }
               retReq = of(false);
             } else {
@@ -145,7 +161,6 @@ export class AuthGuardService implements CanActivate {
         } else {
           return this.adminAuth.checkServerInfo().pipe(
             tap((resi: boolean) => {
-              console.warn('has admin enabled? ', resi);
               responseMap.adminEnabled = resi;
               //responses.push(resi);
             })

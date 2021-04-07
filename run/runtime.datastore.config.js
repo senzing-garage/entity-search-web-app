@@ -275,7 +275,12 @@ function createAuthConfigFromInput() {
       retConfig = retConfig !== undefined ? retConfig : {};
       retConfig.hostname = authOpts.authServerHostName;
     }
-
+  // _virtualDir is assigned at the very beginning
+  // and is both env and cmd
+  if(_virtualDir && _virtualDir !== '' && _virtualDir !== '/') {
+    retConfig = retConfig !== undefined ? retConfig : {};
+    retConfig.virtualPath = _virtualDir;
+  }
   // -------------------- end CMD LINE ARGS import -----------
 
   //console.log('AUTH TEMPLATE: ', authTemplate, fs.existsSync(authTemplate));
@@ -360,7 +365,7 @@ function getProxyServerOptionsFromInput() {
   let retOpts = {
     authServerHostName: "localhost",
     authServerPortNumber: 8080,
-    logLevel: "debug",
+    logLevel: "error",
     apiServerUrl: "",
     adminAuthPath: "http://localhost:8080",
     jwtPathRewrite: "/jwt",
