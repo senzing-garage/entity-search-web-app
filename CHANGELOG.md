@@ -6,12 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.2.2,2.2.3] - 2021-04-07
+## [2.2.2,2.2.3] - 2021-04-08
 
 - support for virtual directories
-- support for AWS Cloud Formation. 
+- support for AWS Cloud Formation 
+- webfonts now referenced locally
 
-relevant tickets: #147
+relevant tickets: #147 #154
 
 ## [2.2.1] - 2021-02-01
 

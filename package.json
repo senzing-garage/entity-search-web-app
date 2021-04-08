@@ -36,6 +36,8 @@
     "@angular/platform-browser-dynamic": "~10.0.9",
     "@angular/router": "~10.0.9",
     "@auth0/angular-jwt": "^3.0.1",
+    "@fontsource/material-icons": "^4.2.4",
+    "@fontsource/roboto": "^4.2.2",
     "@senzing/rest-api-client-ng": "^2.2.0",
     "@senzing/sdk-components-ng": "^2.2.1",
     "@senzing/sdk-graph-components": "^2.1.3",
