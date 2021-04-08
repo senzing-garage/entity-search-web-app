@@ -92,6 +92,7 @@ function createCspConfigFromInput() {
       'default-src': [`'self'`],
       'connect-src': [`'self'`],
       'script-src':  [`'self'`, `'unsafe-eval'`],
+      'img-src':     [`'self'`, `data:`],
       'style-src':   [`'self'`, `'unsafe-inline'`,'https://fonts.googleapis.com'],
       'font-src':    [`'self'`, `https://fonts.gstatic.com`,`https://fonts.googleapis.com`]
     },
@@ -107,6 +108,9 @@ function createCspConfigFromInput() {
   }
   if(env.SENZING_WEB_SERVER_CSP_SCRIPT_SRC) {
     retConfig.directives['script-src'].push(env.SENZING_WEB_SERVER_CSP_SCRIPT_SRC);
+  }
+  if(env.SENZING_WEB_SERVER_CSP_IMG_SRC) {
+    retConfig.directives['img-src'].push(env.SENZING_WEB_SERVER_CSP_IMG_SRC);
   }
   if(env.SENZING_WEB_SERVER_CSP_STYLE_SRC) {
     retConfig.directives['style-src'].push(env.SENZING_WEB_SERVER_CSP_STYLE_SRC);
@@ -128,6 +132,10 @@ function createCspConfigFromInput() {
     if(cmdLineOpts.webServerCspScriptSrc){
       retConfig.directives['script-src'] = retConfigDefaults.directives['script-src']
       retConfig.directives['script-src'].push(cmdLineOpts.webServerCspScriptSrc);
+    }
+    if(cmdLineOpts.webServerCspImgSrc){
+      retConfig.directives['img-src'] = retConfigDefaults.directives['img-src']
+      retConfig.directives['img-src'].push(cmdLineOpts.webServerCspImgSrc);
     }
     if(cmdLineOpts.webServerCspStyleSrc){
       retConfig.directives['style-src'] = retConfigDefaults.directives['style-src']

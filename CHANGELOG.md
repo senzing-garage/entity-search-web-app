@@ -11,8 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - support for virtual directories
 - support for AWS Cloud Formation 
 - webfonts now referenced locally
+- dependency security updates
+- bugfix for download as pdf functionality
 
-relevant tickets: #147 #154
+relevant tickets: #147 #154, #156, #157
 
 ## [2.2.1] - 2021-02-01
 
