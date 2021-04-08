@@ -6,6 +6,7 @@ class inMemoryConfig {
   webConfiguration = {
     port: 8080,
     hostname: 'senzing-webapp',
+    path: '/',
     apiPath: '/api',
     authPath: 'http://senzing-webapp:8080',
     authMode: 'JWT',
@@ -92,6 +93,9 @@ class inMemoryConfig {
         }
         if(value.auth.port && value.auth.port !== undefined) {
           this.authConfiguration.port = value.auth.port;
+        }
+        if(value.auth.virtualPath && value.auth.virtualPath !== undefined) {
+          this.authConfiguration.virtualPath = value.auth.virtualPath;
         }
         if(value.auth.admin) {
           this.authConfiguration.admin = {};

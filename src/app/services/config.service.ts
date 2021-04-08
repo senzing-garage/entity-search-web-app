@@ -9,6 +9,7 @@ import { HttpClient } from '@angular/common/http';
 export interface AuthConfig {
   hostname?: string;
   port?: number;
+  virtualPath?: string;
   admin: {
     mode: string | boolean;
     checkUrl?: string;
@@ -53,6 +54,6 @@ export class SzWebAppConfigService {
     // config. we cant do this with static files
     // directly since container is immutable and
     // dont write to file system.
-    return this.http.get<AuthConfig>('/config/auth');
+    return this.http.get<AuthConfig>('./config/auth');
   }
 }
