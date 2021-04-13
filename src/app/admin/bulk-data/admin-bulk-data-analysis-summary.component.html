@@ -16,18 +16,25 @@
 <div class="general-stats-reflow" *ngIf="streamAnalysis">
   <table class="stats-col">
     <tr><th>Total Number of Records:</th><td>{{ streamAnalysis.recordCount }}</td></tr>
-    <tr><th>Number of Sent Records:</th><td>{{ streamAnalysis.sentRecordCount }}</td></tr>
-    <tr><th>Number of Queued Records:</th><td>{{ streamAnalysis.failedRecordCount }}</td></tr>
-    <tr><th>Number of Records Missing Data Sources:</th><td>{{ streamAnalysis.missingDataSourceCount }}</td></tr>
+    <!--<tr><th>Number of Sent Records:</th><td>{{ streamAnalysis.sentRecordCount }}</td></tr>-->
+    <!--<tr><th>Number of Queued Records:</th><td>{{ streamAnalysis.failedRecordCount }}</td></tr>-->
+    <tr><th>Number of Records Missing Data Source:</th><td>{{ streamAnalysis.missingDataSourceCount }}</td></tr>
+    <tr><th>Number of Records with Record ID:</th><td>{{ streamAnalysis.recordCount - streamAnalysis.missingRecordIdCount }}</td></tr>
     <tr><th>Number of Records Missing Entity Types:</th><td>{{ streamAnalysis.missingEntityTypeCount }}</td></tr>
+    <tr>
+      <th>Data Sources:</th>
+      <td>
+        <div>{{ streamAnalysis.dataSources.join(', ') }}</div>
+      </td>
+    </tr>
   </table>
   <table class="stats-col">
     <tr><th *ngIf="file && file.name">File Name:</th><td>{{ file.name }}</td></tr>
     <tr><th *ngIf="file && file.size">File Size:</th><td>{{ getFileSize(file.size) }}</td></tr>
     <tr><th>Character Encoding:</th><td>{{ streamAnalysis.characterEncoding | uppercase }}</td></tr>
     <tr><th>Media Type:</th><td>{{ streamAnalysis.mediaType }}</td></tr>
-    <tr><th>Bytes Read:</th><td>{{ getFileSize(streamAnalysis.bytesRead) }}</td></tr>
-    <tr><th>Bytes Sent:</th><td>{{ getFileSize(streamAnalysis.bytesSent) }}</td></tr>
+    <!--<tr><th>Bytes Read:</th><td>{{ getFileSize(streamAnalysis.bytesRead) }}</td></tr>-->
+    <!--<tr><th>Bytes Sent:</th><td>{{ getFileSize(streamAnalysis.bytesSent) }}</td></tr>-->
     <!--<tr><th>Bytes not yet sent:</th><td>{{ getFileSize(streamAnalysis.bytesQueued) }}</td></tr>-->
   </table>
 </div>

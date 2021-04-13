@@ -64,7 +64,8 @@ export interface AdminStreamAnalysisSummary {
     unsentRecordCount: number,
     failedRecordCount: number,
     missingDataSourceCount: number,
-    missingEntityTypeCount: number
+    missingEntityTypeCount: number,
+    missingRecordIdCount: number,
     bytesRead: number,
     bytesSent: number,
     bytesQueued: number,
@@ -144,26 +145,35 @@ export class AdminBulkDataService {
     
     private _onAutoCreatingDataSource   = false;
     private _streamLoadPaused           = false;
+    private _streamAnalysisPaused       = false;
     private _onAutoCreatingDataSources  = new Subject<string[]>();
     public onAutoCreatingDataSources    = this._onAutoCreatingDataSources.asObservable();
 
     // ------------------- stream loading -------------------
-    private _onStreamLoadStarted    = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
-    private _onStreamLoadProgress   = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
-    private _onStreamLoadPaused     = new BehaviorSubject<boolean>(this._streamLoadPaused);
-    private _onStreamLoadComplete   = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
-    private _onStreamReadStarted    = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
-    private _onStreamReadProgress   = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
-    private _onStreamReadComplete   = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
+    private _onStreamAnalysisStarted    = new BehaviorSubject<AdminStreamAnalysisSummary>(undefined);
+    private _onStreamAnalysisProgress   = new BehaviorSubject<AdminStreamAnalysisSummary>(undefined);
+    private _onStreamAnalysisPaused     = new BehaviorSubject<boolean>(this._streamAnalysisPaused);
+    private _onStreamAnalysisComplete   = new BehaviorSubject<AdminStreamAnalysisSummary>(undefined);
+    private _onStreamLoadStarted        = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
+    private _onStreamLoadProgress       = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
+    private _onStreamLoadPaused         = new BehaviorSubject<boolean>(this._streamLoadPaused);
+    private _onStreamLoadComplete       = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
+    private _onStreamReadStarted        = new BehaviorSubject<AdminStreamLoadSummary | AdminStreamAnalysisSummary>(undefined);
+    private _onStreamReadProgress       = new BehaviorSubject<AdminStreamLoadSummary | AdminStreamAnalysisSummary>(undefined);
+    private _onStreamReadComplete       = new BehaviorSubject<AdminStreamLoadSummary | AdminStreamAnalysisSummary>(undefined);
 
     // --- public interfaces
-    public onStreamLoadStarted      = this._onStreamLoadStarted.asObservable();
-    public onStreamLoadProgress     = this._onStreamLoadProgress.asObservable();
-    public onStreamLoadPaused       = this._onStreamLoadPaused.asObservable();
-    public onStreamLoadComplete     = this._onStreamLoadComplete.asObservable();
-    public onStreamReadStarted      = this._onStreamReadStarted.asObservable();
-    public onStreamReadProgress     = this._onStreamReadProgress.asObservable();
-    public onStreamReadComplete     = this._onStreamReadComplete.asObservable();
+    public onStreamAnalysisStarted      = this._onStreamAnalysisStarted.asObservable();
+    public onStreamAnalysisProgress     = this._onStreamAnalysisProgress.asObservable();
+    public onStreamAnalysisPaused       = this._onStreamAnalysisPaused.asObservable();
+    public onStreamAnalysisComplete     = this._onStreamAnalysisComplete.asObservable();
+    public onStreamLoadStarted          = this._onStreamLoadStarted.asObservable();
+    public onStreamLoadProgress         = this._onStreamLoadProgress.asObservable();
+    public onStreamLoadPaused           = this._onStreamLoadPaused.asObservable();
+    public onStreamLoadComplete         = this._onStreamLoadComplete.asObservable();
+    public onStreamReadStarted          = this._onStreamReadStarted.asObservable();
+    public onStreamReadProgress         = this._onStreamReadProgress.asObservable();
+    public onStreamReadComplete         = this._onStreamReadComplete.asObservable();
 
     /** when the result of a load operation changes this behavior subject is broadcast */
     public onAnalysisResult = new BehaviorSubject<SzBulkDataAnalysis | AdminStreamAnalysisSummary>(undefined);
@@ -330,12 +340,11 @@ export class AdminBulkDataService {
             takeUntil( this.unsubscribe$ )
         ).subscribe( (file: File) => {
             if(!file){ return; }
-            this.analyzingFile.next(true);
+            
             //console.info('AdminBulkDataService().onCurrentFileChange: ', file, this.streamAnalysisConfig, this.streamConnectionProperties);
 
             if(this.useStreamingForLoad && this.canOpenStreamSocket) {
                 // open analysis stream
-
                 this.streamAnalyze(file).pipe(
                     takeUntil(this.unsubscribe$),
                     take(1)
@@ -347,6 +356,7 @@ export class AdminBulkDataService {
                     console.warn('AdminBulkDataService().onCurrentFileChange.streamAnalyze: error', error)
                 })
             } else {
+                this.analyzingFile.next(true);
                 // standard serialized payload
                 this.analyze(file).toPromise().then( (analysisResp: SzBulkDataAnalysisResponse) => {
                     //console.log('autowire analysis resp on file change: ', analysisResp, this.currentAnalysis);
@@ -389,6 +399,9 @@ export class AdminBulkDataService {
         });
         this.onStreamLoadPaused.subscribe( (isPaused: boolean) => {
             this._streamLoadPaused = isPaused;
+        });
+        this.onStreamAnalysisPaused.subscribe( (isPaused: boolean) => {
+            this._streamAnalysisPaused = isPaused;
         });
         this.adminService.onServerInfo.pipe(
             takeUntil( this.unsubscribe$ )
@@ -638,17 +651,19 @@ export class AdminBulkDataService {
     /** analze a file and prep for mapping */
     public streamAnalyze(file: File): Observable<AdminStreamAnalysisSummary> {
         console.log('SzBulkDataService.streamAnalyze: ', file);
-        this.currentError = undefined;
+        // event streams
+        let retSubject  = new Subject<AdminStreamAnalysisSummary>();
+        let retObs      = retSubject.asObservable();
 
         // file related
         file = file ? file : this.currentFile;
         let fileSize = file && file.size ? file.size : 0;
         let fileType = getFileTypeFromName(file);
         let fileName = (file && file.name) ? file.name : undefined;
-        // stream related
-        let fsStream = file.stream();
-        var reader = fsStream.getReader();
-        this.streamConnectionProperties.reconnectOnClose = true;
+        // record queues
+        let readRecords                 = [];
+        let readStreamComplete          = false;
+        // socket related
         if(!this.webSocketService.connected){
             // we need to reopen connection
             console.log('SzBulkDataService.streamAnalyze: websocket needs to be opened: ', this.webSocketService.connected, this.streamConnectionProperties);
@@ -672,6 +687,7 @@ export class AdminBulkDataService {
             failedRecordCount: 0,
             missingDataSourceCount: 0,
             missingEntityTypeCount: 0,
+            missingRecordIdCount: 0,
             bytesRead: 0,
             bytesSent: 0,
             bytesQueued: 0,
@@ -679,50 +695,99 @@ export class AdminBulkDataService {
             dataSources: [],
             complete: false
         }
+        // initialize behavior subjects with base info
+        this._onStreamAnalysisStarted.next(summary); // singleton
+        this._onStreamReadStarted.next(summary); // singleton
+        retSubject.next(summary); // local
 
-        this.analyzingFile.next(this.isStreamAnalyzing(summary));
-        if(fileType === validImportFileTypes.JSONL || fileType === validImportFileTypes.JSON) {
-            let finishedAnalysis = new Subject<void>();
-            this.webSocketService.onError.pipe(
-                takeUntil(this.unsubscribe$),
-                takeUntil(finishedAnalysis),
-                take(1)
-            ).subscribe((error) => {
-                // error occured before load was finished
-                // take first error and report
-                // stop spinner activity
-                // ----- there are probably better ways(fancy rxjs-y ways) A.W.
-                this.analyzingFile.next(false);
-            })
-            let retStreamSummary = this.streamAnalyzeJSONFileToWebsocketServer(file, reader, summary);
-            retStreamSummary.pipe(
-                catchError((err: Error) => {
-                    console.warn('Handling error locally and rethrowing it...', err);
-                    this.loadingFile.next(false);
-                    this._onError.next( err );
-                    finishedAnalysis.next();
-                    return of(undefined);
-                }),
-                filter(this.isStreamAnalysisComplete.bind(this)),
-                takeUntil(finishedAnalysis),
-                take(1)
-            ).subscribe((summary: AdminStreamAnalysisSummary) => {
-                this.currentAnalysisResult = summary;
-                this.onAnalysisResult.next( this.currentAnalysisResult );
-                this.analyzingFile.next(this.isStreamAnalyzing(summary));
-                finishedAnalysis.next();                
-            }, (err: Error) => {
-                this.loadingFile.next(false);
-                this._onError.next( err );
-                finishedAnalysis.next();
-            });
-            return retStreamSummary;
-        } else if(fileType === validImportFileTypes.CSV) {
-            this._onError.next(new Error('CSVs are not supported by stream loading at this point in time.'));
-            return this.streamAnalyzeCSVFileToWebsocketServer(file, reader, summary);
-        } else {
-            console.warn('SzBulkDataService.streamLoad: noooooooo', fileType, fileType === validImportFileTypes.CSV);
-        }
+        // read file contents as stream
+        // parse to array of records
+        this.parseRecordsFromFile(file, (streamStatus) => {
+            // on stream complete, do thing
+            console.warn('SzBulkDataService.streamAnalyze: file stream read complete.');
+            readStreamComplete = true;
+            this._onStreamAnalysisProgress.next(summary);
+            this._onStreamReadComplete.next(summary);
+            retSubject.next(summary); // local
+        }).subscribe(
+            (records) => {
+                updateStatsFromRecords(records);
+                // do count inc before we add to summary otherwise well double
+                summary.recordCount         = summary.recordCount + records.length;
+                // now concat
+                readRecords                 = readRecords.concat(records);
+                summary.unsentRecordCount   = readRecords.length;
+                //console.log(`SzBulkDataService.streamAnalyze: read ${summary.recordCount} records`);
+                this._onStreamAnalysisProgress.next(summary);
+                this._onStreamReadProgress.next(summary);
+                retSubject.next(summary); // local
+            }
+        );
+
+        let updateStatsFromRecords = (records?: any[]) => {
+            /*
+            if(summary && summary.recordCount < 10000){
+                console.log('updateStatsFromRecords: ', records);
+            }*/
+            if(records && records.length > 0) {
+                let missingDataSources  = 0;
+                let missingEntityTypes  = 0;
+                let missingRecordIds    = 0;
+                let dataSources         = [];
+                let recordsArray            = (records as any[]);
+                // more efficient to do this as a single loop
+                recordsArray.forEach((record: any) => {
+                    if(record && (!record.DATA_SOURCE || record.DATA_SOURCE === undefined)) {
+                        missingDataSources++;
+                    }
+                    if(record && (!record.ENTITY_TYPE || record.ENTITY_TYPE === undefined)) {
+                        missingEntityTypes++;
+                    }
+                    if(record && (!record.RECORD_ID || record.RECORD_ID === undefined)) {
+                        missingRecordIds++;
+                    }
+                });
+                summary.missingDataSourceCount  = summary.missingDataSourceCount + missingDataSources;
+                summary.missingEntityTypeCount  = summary.missingEntityTypeCount + missingEntityTypes;
+                summary.missingRecordIdCount    = summary.missingRecordIdCount + missingRecordIds;
+                dataSources                     = this.getDataSourcesFromRecords(recordsArray);
+                if(dataSources && dataSources.length > 0) {
+                    summary.dataSources      = summary.dataSources.concat(dataSources).filter((dataSource, index, self) => {
+                        return self.indexOf(dataSource) === index;
+                    });
+                }
+            }
+        }        
+        
+        // when ANYTHING changes, update the singleton "currentAnalysisResult" var so components can read status
+        retObs.subscribe((summary: AdminStreamAnalysisSummary) => {
+            this.currentAnalysisResult = summary;
+        });
+
+        // ---------------------------- on complete evt handlers ----------------------------
+        // proxy "onStreamReadComplete" to "onStreamAnalysisComplete"
+        // since this is the only phase of this function
+        this.onStreamReadComplete.pipe(
+            filter((summary: AdminStreamAnalysisSummary) => { return summary !== undefined;}),
+            take(1),
+            delay(2000)
+        ).subscribe((summary: AdminStreamAnalysisSummary) => {
+            this._onStreamAnalysisComplete.next(summary);
+        });
+        // on end of records queue double-check if whole thing is complete
+        this.onStreamAnalysisComplete.pipe(
+            filter((summary: AdminStreamAnalysisSummary) => { return summary !== undefined;}),
+            take(1)
+        ).subscribe((summary: AdminStreamAnalysisSummary) => {
+            if(readStreamComplete && summary) {
+                // set this to true to end batching loop Observeable
+                //console.warn('stream load complete 2', summary);
+                summary.complete = true;
+            } else {
+                //console.warn('stream analysis complete 2', readStreamComplete, summary);
+            }
+        });
+        return retObs;
     }
 
     parseRecordsFromFile(file: File, onComplete?: StreamReaderComplete): Observable<any[]> {

@@ -91,11 +91,39 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
    * 3 = complete (all records sent)
    * @todo convert to dict enum value
    */
-  private _streamImportPhase      = 0;
-  private _streamImportInProgress = false;
-  private _streamImportPaused     = false;
-  private _streamImportComplete   = false;
+  private _streamImportPhase        = 0;
+  private _streamImportInProgress   = false;
+  private _streamImportPaused       = false;
+  private _streamImportComplete     = false;
   private _currentStreamLoadStats: AdminStreamLoadSummary;
+
+  private _streamAnalysisInProgress = false;
+  private _streamAnalysiPaused      = false;
+  private _streamAnalysisComplete   = false;
+  private _currentStreamAnalysisStats: AdminStreamAnalysisSummary;
+
+  public get currentAnalysisLoadStats(): AdminStreamLoadSummary {
+    return this._currentStreamAnalysisStats;
+  }
+  public get streamAnalysisInProgress(): boolean {
+    return this._streamAnalysisInProgress;
+  }
+  public set streamAnalysisInProgress(value: boolean) {
+    this._streamAnalysisInProgress = value;
+  }
+  public get streamAnalysisPaused(): boolean {
+    return this._streamAnalysiPaused;
+  }
+  public set streamAnalysisPaused(value: boolean) {
+    this._streamAnalysiPaused = value;
+  }
+  
+  public get streamAnalysisComplete(): boolean {
+    return this._streamAnalysisComplete;
+  }
+  public set streamAnalysisComplete(value: boolean) {
+    this._streamAnalysisComplete = value;
+  }
 
   public get currentStreamLoadStats(): AdminStreamLoadSummary {
     return this._currentStreamLoadStats;
@@ -203,24 +231,46 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
   }
   ngAfterViewInit() {
     // all phase 1
+    // analyze and load share the same streamReadStarted/streamReadComplete eventing
     this.adminBulkDataService.onStreamReadStarted
     .pipe(filter( (value) => { return value !== undefined; }))
-    .subscribe((state) => { this.streamImportPhase = 1; });
+    .subscribe((state) => { 
+      if(this._streamImportInProgress){
+        this.streamImportPhase = 1; 
+      }
+    });
 
     this.adminBulkDataService.onStreamReadProgress
     .pipe(filter( (value) => { return value !== undefined; }))
-    .subscribe((summary) => { 
-      this.streamImportPhase = 1; 
-      this._currentStreamLoadStats = summary;
+    .subscribe((summary: AdminStreamAnalysisSummary | AdminStreamLoadSummary ) => { 
+      if(this._streamImportInProgress){
+        this.streamImportPhase = 1; 
+        this._currentStreamLoadStats = (summary as AdminStreamLoadSummary);
+      } else if(this._streamAnalysisInProgress) {
+        this._currentStreamAnalysisStats = (summary as AdminStreamAnalysisSummary);
+      }
       //console.log('onStreamReadProgress: ', summary);
     });
 
     this.adminBulkDataService.onStreamReadComplete
-    .pipe(filter( (value) => { return value !== undefined; }))
+    .pipe(filter( (value) => { return value !== undefined && this._streamImportInProgress; }))
     .subscribe((state) => { this.streamImportPhase = 2; });
 
+    // analysis phases
+    this.adminBulkDataService.onStreamAnalysisStarted.pipe(filter( (value) => { return value !== undefined; })).subscribe((state) => { 
+      this.streamAnalysisInProgress = true;
+      console.warn('onStreamAnalysisStarted!!!'); 
+    });
+    this.adminBulkDataService.onStreamAnalysisComplete.pipe(filter( (value) => { return value !== undefined; })).subscribe((state) => { 
+      this.streamAnalysisComplete = true;
+      console.warn('onStreamAnalysisComplete!!!');
+    });
+
     // load phases
-    this.adminBulkDataService.onStreamLoadStarted.pipe(filter( (value) => { return value !== undefined; })).subscribe((state) => { this.streamImportPhase = 2; });
+    this.adminBulkDataService.onStreamLoadStarted.pipe(filter( (value) => { return value !== undefined; })).subscribe((state) => { 
+      this.streamImportInProgress = true;
+      this.streamImportPhase = 2; 
+    });
     this.adminBulkDataService.onStreamLoadProgress
     .pipe(filter( (value) => { return value !== undefined; }))
     .subscribe((summary) => { 

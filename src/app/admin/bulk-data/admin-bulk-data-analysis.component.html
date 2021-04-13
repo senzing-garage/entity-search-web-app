@@ -13,6 +13,10 @@
          [value]="streamImportProgressBarValue"
          [text]="streamStatusMessage"></sz-progress-bar>
 </div>
+<!--<div>
+  <li>streamAnalysisInProgress: {{streamAnalysisInProgress}}</li>
+  <li>streamImportInProgress: {{streamImportInProgress}}</li>
+</div>-->
 <!-- end streaming interface -->
 <!-- start tabular display -->
 <admin-bulk-data-analysis-report *ngIf="analysis && !result && !useSocketStream"></admin-bulk-data-analysis-report>
