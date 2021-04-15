@@ -50,7 +50,7 @@ export class AdminBulkDataAnalysisSummaryComponent implements OnInit, OnDestroy 
   }
   /** get the result of streaming analysis */
   public get streamAnalysis(): AdminStreamAnalysisSummary {
-    return (this.adminBulkDataService.currentAnalysisResult as AdminStreamAnalysisSummary).recordCount >= 0 ? this.adminBulkDataService.currentAnalysisResult as AdminStreamAnalysisSummary : undefined;
+    return (this.adminBulkDataService.currentAnalysisResult as AdminStreamAnalysisSummary) && (this.adminBulkDataService.currentAnalysisResult as AdminStreamAnalysisSummary).recordCount >= 0 ? this.adminBulkDataService.currentAnalysisResult as AdminStreamAnalysisSummary : undefined;
   }
   /** get result of load operation from service */
   public get result(): SzBulkLoadResult {
@@ -58,7 +58,7 @@ export class AdminBulkDataAnalysisSummaryComponent implements OnInit, OnDestroy 
   }
   /** get the result of streaming load */
   public get streamResult(): AdminStreamLoadSummary {
-    return (this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary).recordCount >= 0 ? this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary : undefined;
+    return (this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary) && (this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary).recordCount >= 0 ? this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary : undefined;
   }
 
   constructor(

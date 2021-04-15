@@ -1,0 +1,30 @@
+@import '../../scss/_admin.scss';
+
+:host {
+  display: block;
+  width: 100%;
+
+  /* angular material data table */
+  .mat-table-full-width {
+    width: 100%;
+  }
+  .mat-badge {
+    display: inline-block;
+    width: 25px;
+
+    .mat-badge-content {
+      width: 21px;
+      height: 20px;
+      line-height: 19px;
+      font-size: 8px !important;
+      border: 1px outset #0b88d6;
+      letter-spacing: 1px;
+      color: #ffffff;
+      text-shadow: 1px 1px 3px #000;
+      box-shadow: inset -2px -2px 5px 0px #a7cee6;
+    }
+    .mat-badge-active {
+      /*border: 2px dotted red;*/
+    }
+  }
+}

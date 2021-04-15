@@ -63,6 +63,9 @@ export interface AdminStreamAnalysisSummary {
     sentRecordCount: number,
     unsentRecordCount: number,
     failedRecordCount: number,
+    recordsWithRecordIdCount: number,
+    recordsWithDataSourceCount?: number;
+    recordsWithEntityTypeCount?: number;
     missingDataSourceCount: number,
     missingEntityTypeCount: number,
     missingRecordIdCount: number,
@@ -70,7 +73,10 @@ export interface AdminStreamAnalysisSummary {
     bytesSent: number,
     bytesQueued: number,
     dataSources?: string[],
-    complete?: boolean
+    entityTypes?: string[],
+    analysisByDataSource?: Array<SzDataSourceRecordAnalysis>;
+    analysisByEntityType?: Array<SzEntityTypeRecordAnalysis>;
+    complete?: boolean;
     /**
      * The array of `SzDataSourceBulkDataResult` elements describing the load statistics by data source.
      */
@@ -682,6 +688,9 @@ export class AdminBulkDataService {
             fileLineEndingStyle: lineEndingStyle.unknown,
             characterEncoding: 'utf-8',
             recordCount: 0,
+            recordsWithRecordIdCount: 0,
+            recordsWithDataSourceCount: 0,
+            recordsWithEntityTypeCount: 0,
             sentRecordCount: 0,
             unsentRecordCount: 0,
             failedRecordCount: 0,
@@ -693,6 +702,7 @@ export class AdminBulkDataService {
             bytesQueued: 0,
             fileColumns: [],
             dataSources: [],
+            entityTypes: [],
             complete: false
         }
         // initialize behavior subjects with base info
@@ -724,36 +734,129 @@ export class AdminBulkDataService {
             }
         );
 
+        let analysisByDataSouceHasSource = (dataset: Array<SzDataSourceRecordAnalysis>, dataSource: string): boolean => {
+            let retValue = false;
+            if(dataset && dataset.length) {
+                retValue = dataset.some((analysisRow: SzDataSourceRecordAnalysis) => {
+                    return (analysisRow.dataSource && analysisRow.dataSource === dataSource) ? true : false;
+                });
+            }
+            return retValue;
+        }
+        let analysisByEntityTypeHasEntityType = (dataset: Array<SzEntityTypeRecordAnalysis>, entityType: string): boolean => {
+            let retValue = false;
+            if(dataset && dataset.length) {
+                retValue = dataset.some((analysisRow: SzEntityTypeRecordAnalysis) => {
+                    return (analysisRow.entityType && analysisRow.entityType === entityType) ? true : false;
+                });
+            }
+            return retValue;
+        }
+
         let updateStatsFromRecords = (records?: any[]) => {
             /*
             if(summary && summary.recordCount < 10000){
                 console.log('updateStatsFromRecords: ', records);
             }*/
             if(records && records.length > 0) {
-                let missingDataSources  = 0;
-                let missingEntityTypes  = 0;
-                let missingRecordIds    = 0;
-                let dataSources         = [];
+                let missingDataSources          = 0;
+                let missingEntityTypes          = 0;
+                let missingRecordIds            = 0;
+                let recordsWithRecordIdCount    = 0;
+                let recordsWithDataSourceCount  = 0;
+                let recordsWithEntityTypeCount  = 0;
+                //let analysisByDataSource: Array<SzDataSourceRecordAnalysis>;
+                //let analysisByEntityType: Array<SzEntityTypeRecordAnalysis>;
+                let dataSources                 = [];
+                let entityTypes                 = [];
                 let recordsArray            = (records as any[]);
                 // more efficient to do this as a single loop
                 recordsArray.forEach((record: any) => {
+                    if(record && record.DATA_SOURCE) {
+                        // first append to count
+                        recordsWithDataSourceCount++;
+                        
+                        if(summary.analysisByDataSource && analysisByDataSouceHasSource(summary.analysisByDataSource, record.DATA_SOURCE)) {
+                            // just append
+                            let sourceIndex = summary.analysisByDataSource.findIndex((analysisRow: SzDataSourceRecordAnalysis) => {
+                                return (analysisRow.dataSource && analysisRow.dataSource === record.DATA_SOURCE) ? true : false;
+                            })
+                            // add record to count
+                            summary.analysisByDataSource[ sourceIndex ].recordCount++; 
+                            // if record has id, increment per-DS count
+                            if(record && record.RECORD_ID) {
+                                summary.analysisByDataSource[ sourceIndex ].recordsWithRecordIdCount++;
+                            }
+                            // if record has entity type increment per-DS count
+                            if(record && record.ENTITY_TYPE) {
+                                summary.analysisByDataSource[ sourceIndex ].recordsWithEntityTypeCount++;
+                            }
+                        } else {
+                            // create                            
+                            summary.analysisByDataSource = summary.analysisByDataSource ? summary.analysisByDataSource : [];
+                            summary.analysisByDataSource.push({
+                                dataSource: record.DATA_SOURCE,
+                                recordCount: 1,
+                                recordsWithRecordIdCount: (record && record.RECORD_ID) ? 1 : 0,
+                                recordsWithEntityTypeCount: (record && record.ENTITY_TYPE) ? 1 : 0
+                            });
+                        }
+                    }
                     if(record && (!record.DATA_SOURCE || record.DATA_SOURCE === undefined)) {
                         missingDataSources++;
                     }
                     if(record && (!record.ENTITY_TYPE || record.ENTITY_TYPE === undefined)) {
                         missingEntityTypes++;
                     }
+                    if(record && record.ENTITY_TYPE) {
+                        recordsWithEntityTypeCount++;
+                        if(summary.analysisByEntityType && analysisByEntityTypeHasEntityType(summary.analysisByEntityType, record.ENTITY_TYPE)) {
+                            // just append
+                            let sourceIndex = summary.analysisByEntityType.findIndex((analysisRow: SzEntityTypeRecordAnalysis) => {
+                                return (analysisRow.entityType && analysisRow.entityType === record.ENTITY_TYPE) ? true : false;
+                            })
+                            // add record to count
+                            summary.analysisByEntityType[ sourceIndex ].recordCount++; 
+                            // if record has id, increment per-DS count
+                            if(record && record.RECORD_ID) {
+                                summary.analysisByEntityType[ sourceIndex ].recordsWithRecordIdCount++;
+                            }
+                            // if record has entity type increment per-DS count
+                            if(record && record.DATA_SOURCE) {
+                                summary.analysisByEntityType[ sourceIndex ].recordsWithDataSourceCount++;
+                            }
+                        } else {
+                            // create
+                            summary.analysisByEntityType = summary.analysisByEntityType ? summary.analysisByEntityType : [];
+                            summary.analysisByEntityType.push({
+                                entityType: record.ENTITY_TYPE,
+                                recordCount: 1,
+                                recordsWithRecordIdCount: (record && record.RECORD_ID) ? 1 : 0,
+                                recordsWithDataSourceCount: (record && record.DATA_SOURCE) ? 1 : 0
+                            });
+                        }
+                    }
                     if(record && (!record.RECORD_ID || record.RECORD_ID === undefined)) {
                         missingRecordIds++;
                     }
+                    if(record && record.RECORD_ID) {
+                        recordsWithRecordIdCount++;
+                    }
                 });
+
                 summary.missingDataSourceCount  = summary.missingDataSourceCount + missingDataSources;
                 summary.missingEntityTypeCount  = summary.missingEntityTypeCount + missingEntityTypes;
                 summary.missingRecordIdCount    = summary.missingRecordIdCount + missingRecordIds;
                 dataSources                     = this.getDataSourcesFromRecords(recordsArray);
+                entityTypes                     = this.getEntityTypesFromRecords(recordsArray);
                 if(dataSources && dataSources.length > 0) {
                     summary.dataSources      = summary.dataSources.concat(dataSources).filter((dataSource, index, self) => {
                         return self.indexOf(dataSource) === index;
+                    });
+                }
+                if(entityTypes && entityTypes.length > 0) {
+                    summary.entityTypes      = summary.entityTypes.concat(entityTypes).filter((entityType, index, self) => {
+                        return self.indexOf(entityType) === index;
                     });
                 }
             }
@@ -828,6 +931,24 @@ export class AdminBulkDataService {
         }
         return retVal;
     }
+    getEntityTypesFromRecords(records: any[] | undefined): any[] | undefined {
+        let retVal = undefined;
+        if(records && (records as any[]).length > 0) {
+            let recordsArray            = (records as any[]);
+            let entityTypesInRecords    = recordsArray.filter((record) => {
+                return record && record.ENTITY_TYPE && record.ENTITY_TYPE !== undefined;
+            }).map((record) => {
+                return record && record.ENTITY_TYPE ? record.ENTITY_TYPE : undefined;
+            }).filter( (entityType, index, self) => {
+                return self.indexOf(entityType) === index;
+            });
+            if(entityTypesInRecords && entityTypesInRecords.length > 0) {
+                retVal  = entityTypesInRecords;
+            }
+        }
+        return retVal;
+    }
+    
 
     /** perform streaming import of records over websocket interface 
      * takes a file as argument, stream reads file, parses records,

@@ -26,6 +26,7 @@ import { WebSocketService } from '../services/websocket.service';
  */
 import { AdminBulkDataAnalysisComponent } from './bulk-data/admin-bulk-data-analysis.component';
 import { AdminBulkDataAnalysisReportComponent } from './bulk-data/admin-bulk-data-analysis-report.component';
+import { AdminBulkDataStreamAnalysisReportComponent } from './bulk-data/admin-bulk-data-stream-analysis-report.component';
 import { AdminBulkDataAnalysisSummaryComponent } from './bulk-data/admin-bulk-data-analysis-summary.component';
 import { AdminBulkDataLoadComponent } from './bulk-data/admin-bulk-data-load.component';
 import { AdminBulkDataLoadReportComponent } from './bulk-data/admin-bulk-data-load-report.component';
@@ -50,6 +51,7 @@ import { SzWebAppConfigService } from '../services/config.service';
     AdminBulkDataLoadComponent,
     AdminBulkDataLoadReportComponent,
     AdminBulkDataLoadSummaryComponent,
+    AdminBulkDataStreamAnalysisReportComponent,
     AdminOAuthTokensComponent,
     AdminErrorNoAdminModeComponent,
     AdminLicenseInfoComponent,

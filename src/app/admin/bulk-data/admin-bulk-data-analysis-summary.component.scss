@@ -32,4 +32,11 @@
       }
     }
   }
+  .datasources-overflow {
+    width: 100%;
+    max-height: 56px;
+    text-overflow: ellipsis;
+    overflow-y: hidden;
+    cursor: pointer;
+  }
 }

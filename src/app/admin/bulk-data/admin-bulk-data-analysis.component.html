@@ -19,6 +19,7 @@
 </div>-->
 <!-- end streaming interface -->
 <!-- start tabular display -->
+<admin-bulk-data-stream-analysis-report *ngIf="analysis && streamAnalysisComplete && !result && useSocketStream"></admin-bulk-data-stream-analysis-report>
 <admin-bulk-data-analysis-report *ngIf="analysis && !result && !useSocketStream"></admin-bulk-data-analysis-report>
 <admin-bulk-data-load-report *ngIf="result && !useSocketStream"></admin-bulk-data-load-report>
 <!--  end tabular display  -->

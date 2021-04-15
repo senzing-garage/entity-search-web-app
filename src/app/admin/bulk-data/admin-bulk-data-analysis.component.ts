@@ -261,9 +261,11 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
       this.streamAnalysisInProgress = true;
       console.warn('onStreamAnalysisStarted!!!'); 
     });
-    this.adminBulkDataService.onStreamAnalysisComplete.pipe(filter( (value) => { return value !== undefined; })).subscribe((state) => { 
+    this.adminBulkDataService.onStreamAnalysisComplete.pipe(
+      filter( (value) => { return value !== undefined; }))
+    .subscribe((summary) => { 
       this.streamAnalysisComplete = true;
-      console.warn('onStreamAnalysisComplete!!!');
+      console.warn('onStreamAnalysisComplete!!!', summary);
     });
 
     // load phases
