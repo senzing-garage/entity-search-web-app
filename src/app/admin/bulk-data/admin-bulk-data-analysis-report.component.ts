@@ -123,7 +123,7 @@ export class AdminBulkDataAnalysisReportComponent implements OnInit, OnDestroy, 
       this.adminBulkDataService.onDataSourcesChange.pipe(
         takeUntil( this.unsubscribe$ )
       ).subscribe((datasources: string[]) => {
-        console.warn('UPDATE DATASOURCES! ', datasources, this.adminBulkDataService._dataSources);
+        //console.warn('UPDATE DATASOURCES! ', datasources, this.adminBulkDataService._dataSources);
       });
       this.adminBulkDataService.onError.subscribe((err) => {
         console.warn('AdminBulkDataAnalysisReportComponent.onError SHOW Err MSG: ', err);

@@ -102,7 +102,7 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
   private _streamAnalysisComplete   = false;
   private _currentStreamAnalysisStats: AdminStreamAnalysisSummary;
 
-  public get currentAnalysisLoadStats(): AdminStreamLoadSummary {
+  public get currentAnalysisLoadStats(): AdminStreamAnalysisSummary {
     return this._currentStreamAnalysisStats;
   }
   public get streamAnalysisInProgress(): boolean {
@@ -259,13 +259,11 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
     // analysis phases
     this.adminBulkDataService.onStreamAnalysisStarted.pipe(filter( (value) => { return value !== undefined; })).subscribe((state) => { 
       this.streamAnalysisInProgress = true;
-      console.warn('onStreamAnalysisStarted!!!'); 
     });
     this.adminBulkDataService.onStreamAnalysisComplete.pipe(
       filter( (value) => { return value !== undefined; }))
     .subscribe((summary) => { 
       this.streamAnalysisComplete = true;
-      console.warn('onStreamAnalysisComplete!!!', summary);
     });
 
     // load phases
@@ -302,9 +300,7 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
   }
 
   /** convenience method to analyze a file. used by file setter. */
-  public analyzeFile(file: File) {
-    console.info('AdminBulkDataAnalysisComponent.analyzeFile: ', file, this.adminBulkDataService.streamAnalysisConfig, this.adminBulkDataService.streamConnectionProperties);
-    
+  public analyzeFile(file: File) {    
     return this.adminBulkDataService.analyze(file);
   }
   /** pause stream load */

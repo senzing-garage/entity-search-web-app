@@ -22,7 +22,7 @@ import { SzStreamingFileRecordParser } from '../common/streaming-file-record-par
 import { BulkDataService, SzBulkDataAnalysis, SzBulkDataAnalysisResponse, SzBulkLoadResponse, SzBulkLoadResult, SzDataSourceRecordAnalysis, SzDataSourceBulkLoadResult, SzEntityTypeBulkLoadResult, SzEntityTypeRecordAnalysis } from '@senzing/rest-api-client-ng';
 import { sum } from 'd3';
 
-export interface AdminStreamLoadSummary {
+export interface AdminStreamSummaryBase {
     fileType: any,
     fileName: string,
     fileSize: number,
@@ -31,41 +31,9 @@ export interface AdminStreamLoadSummary {
     characterEncoding: any,
     mediaType: any,
     recordCount: number,
-    sentRecordCount: number,
-    unsentRecordCount: number,
-    failedRecordCount: number,
-    missingDataSourceCount: number,
-    missingEntityTypeCount: number
-    bytesRead: number,
-    bytesSent: number,
-    bytesQueued: number,
-    dataSources?: string[],
-    complete?: boolean
-    /**
-     * The array of `SzDataSourceBulkDataResult` elements describing the load statistics by data source.
-     */
-    resultsByDataSource?: Array<SzDataSourceBulkLoadResult>;
-    /**
-     * The array of `SzEntityTypeBulkDataResult` elements describing the load statistics by entity type.
-     */
-    resultsByEntityType?: Array<SzEntityTypeBulkLoadResult>;
-}
-
-export interface AdminStreamAnalysisSummary {
-    fileType: any,
-    fileName: string,
-    fileSize: number,
-    fileLineEndingStyle: lineEndingStyle,
-    fileColumns?: string[],
-    characterEncoding: any,
-    mediaType: any,
-    recordCount: number,
-    sentRecordCount: number,
-    unsentRecordCount: number,
-    failedRecordCount: number,
     recordsWithRecordIdCount: number,
-    recordsWithDataSourceCount?: number;
-    recordsWithEntityTypeCount?: number;
+    recordsWithDataSourceCount?: number,
+    recordsWithEntityTypeCount?: number,
     missingDataSourceCount: number,
     missingEntityTypeCount: number,
     missingRecordIdCount: number,
@@ -74,17 +42,20 @@ export interface AdminStreamAnalysisSummary {
     bytesQueued: number,
     dataSources?: string[],
     entityTypes?: string[],
+    complete?: boolean
+}
+
+export interface AdminStreamLoadSummary extends AdminStreamSummaryBase {
+    failedRecordCount: number,
+    sentRecordCount: number,
+    unsentRecordCount: number,
+    resultsByDataSource?: Array<SzDataSourceBulkLoadResult>;
+    resultsByEntityType?: Array<SzEntityTypeBulkLoadResult>;
+}
+
+export interface AdminStreamAnalysisSummary extends AdminStreamSummaryBase {
     analysisByDataSource?: Array<SzDataSourceRecordAnalysis>;
     analysisByEntityType?: Array<SzEntityTypeRecordAnalysis>;
-    complete?: boolean;
-    /**
-     * The array of `SzDataSourceBulkDataResult` elements describing the load statistics by data source.
-     */
-    resultsByDataSource?: Array<SzDataSourceBulkLoadResult>;
-    /**
-     * The array of `SzEntityTypeBulkDataResult` elements describing the load statistics by entity type.
-     */
-    resultsByEntityType?: Array<SzEntityTypeBulkLoadResult>;
 }
 
 export interface StreamReaderComplete {
@@ -568,15 +539,16 @@ export class AdminBulkDataService {
     public getDataSourceMapFromAnalysis(analysisArray: SzDataSourceRecordAnalysis[]): { [key: string]: string } {
         const _dsMap: { [key: string]: string } = {};
         if(analysisArray && analysisArray.forEach) {
-        analysisArray.forEach(a => {
-            if (this._dataSources.indexOf(a.dataSource) >= 0) {
-            _dsMap[a.dataSource] = a.dataSource;
-            } else if(a.dataSource !== null) {
-            // this will automatically get mapped to specified datasource
-            _dsMap[a.dataSource] = a.dataSource;
-            }
-        });
+            analysisArray.forEach(a => {
+                if (this._dataSources.indexOf(a.dataSource) >= 0) {
+                _dsMap[a.dataSource] = a.dataSource;
+                } else if(a.dataSource !== null) {
+                // this will automatically get mapped to specified datasource
+                _dsMap[a.dataSource] = a.dataSource;
+                }
+            });
         }
+
         return _dsMap;
     }
     /**
@@ -620,9 +592,12 @@ export class AdminBulkDataService {
     }
     /** clear any file and associated data. removes file focus context */
     public clear(): void {
-        this.currentAnalysis = undefined;
-        this.currentLoadResult = undefined;
-        this.currentFile = undefined;
+        this.currentAnalysis        = undefined;
+        this.currentLoadResult      = undefined;
+        this.currentAnalysisResult  = undefined;
+        this.currentFile            = undefined;
+        this.dataSourceMap          = undefined;
+        this.entityTypeMap          = undefined;
         this.onAnalysisChange.next( this.currentAnalysis );
         this.onLoadResult.next( this.currentLoadResult );
         this.onCurrentFileChange.next( this.currentFile );
@@ -691,9 +666,6 @@ export class AdminBulkDataService {
             recordsWithRecordIdCount: 0,
             recordsWithDataSourceCount: 0,
             recordsWithEntityTypeCount: 0,
-            sentRecordCount: 0,
-            unsentRecordCount: 0,
-            failedRecordCount: 0,
             missingDataSourceCount: 0,
             missingEntityTypeCount: 0,
             missingRecordIdCount: 0,
@@ -714,153 +686,24 @@ export class AdminBulkDataService {
         // parse to array of records
         this.parseRecordsFromFile(file, (streamStatus) => {
             // on stream complete, do thing
-            console.warn('SzBulkDataService.streamAnalyze: file stream read complete.');
+            //console.warn('SzBulkDataService.streamAnalyze: file stream read complete.');
             readStreamComplete = true;
             this._onStreamAnalysisProgress.next(summary);
-            this._onStreamReadComplete.next(summary);
             retSubject.next(summary); // local
+            this._onStreamReadComplete.next(summary);
         }).subscribe(
             (records) => {
-                updateStatsFromRecords(records);
+                this.updateStatsFromRecords(summary, records);
                 // do count inc before we add to summary otherwise well double
                 summary.recordCount         = summary.recordCount + records.length;
                 // now concat
                 readRecords                 = readRecords.concat(records);
-                summary.unsentRecordCount   = readRecords.length;
                 //console.log(`SzBulkDataService.streamAnalyze: read ${summary.recordCount} records`);
                 this._onStreamAnalysisProgress.next(summary);
                 this._onStreamReadProgress.next(summary);
                 retSubject.next(summary); // local
             }
-        );
-
-        let analysisByDataSouceHasSource = (dataset: Array<SzDataSourceRecordAnalysis>, dataSource: string): boolean => {
-            let retValue = false;
-            if(dataset && dataset.length) {
-                retValue = dataset.some((analysisRow: SzDataSourceRecordAnalysis) => {
-                    return (analysisRow.dataSource && analysisRow.dataSource === dataSource) ? true : false;
-                });
-            }
-            return retValue;
-        }
-        let analysisByEntityTypeHasEntityType = (dataset: Array<SzEntityTypeRecordAnalysis>, entityType: string): boolean => {
-            let retValue = false;
-            if(dataset && dataset.length) {
-                retValue = dataset.some((analysisRow: SzEntityTypeRecordAnalysis) => {
-                    return (analysisRow.entityType && analysisRow.entityType === entityType) ? true : false;
-                });
-            }
-            return retValue;
-        }
-
-        let updateStatsFromRecords = (records?: any[]) => {
-            /*
-            if(summary && summary.recordCount < 10000){
-                console.log('updateStatsFromRecords: ', records);
-            }*/
-            if(records && records.length > 0) {
-                let missingDataSources          = 0;
-                let missingEntityTypes          = 0;
-                let missingRecordIds            = 0;
-                let recordsWithRecordIdCount    = 0;
-                let recordsWithDataSourceCount  = 0;
-                let recordsWithEntityTypeCount  = 0;
-                //let analysisByDataSource: Array<SzDataSourceRecordAnalysis>;
-                //let analysisByEntityType: Array<SzEntityTypeRecordAnalysis>;
-                let dataSources                 = [];
-                let entityTypes                 = [];
-                let recordsArray            = (records as any[]);
-                // more efficient to do this as a single loop
-                recordsArray.forEach((record: any) => {
-                    if(record && record.DATA_SOURCE) {
-                        // first append to count
-                        recordsWithDataSourceCount++;
-                        
-                        if(summary.analysisByDataSource && analysisByDataSouceHasSource(summary.analysisByDataSource, record.DATA_SOURCE)) {
-                            // just append
-                            let sourceIndex = summary.analysisByDataSource.findIndex((analysisRow: SzDataSourceRecordAnalysis) => {
-                                return (analysisRow.dataSource && analysisRow.dataSource === record.DATA_SOURCE) ? true : false;
-                            })
-                            // add record to count
-                            summary.analysisByDataSource[ sourceIndex ].recordCount++; 
-                            // if record has id, increment per-DS count
-                            if(record && record.RECORD_ID) {
-                                summary.analysisByDataSource[ sourceIndex ].recordsWithRecordIdCount++;
-                            }
-                            // if record has entity type increment per-DS count
-                            if(record && record.ENTITY_TYPE) {
-                                summary.analysisByDataSource[ sourceIndex ].recordsWithEntityTypeCount++;
-                            }
-                        } else {
-                            // create                            
-                            summary.analysisByDataSource = summary.analysisByDataSource ? summary.analysisByDataSource : [];
-                            summary.analysisByDataSource.push({
-                                dataSource: record.DATA_SOURCE,
-                                recordCount: 1,
-                                recordsWithRecordIdCount: (record && record.RECORD_ID) ? 1 : 0,
-                                recordsWithEntityTypeCount: (record && record.ENTITY_TYPE) ? 1 : 0
-                            });
-                        }
-                    }
-                    if(record && (!record.DATA_SOURCE || record.DATA_SOURCE === undefined)) {
-                        missingDataSources++;
-                    }
-                    if(record && (!record.ENTITY_TYPE || record.ENTITY_TYPE === undefined)) {
-                        missingEntityTypes++;
-                    }
-                    if(record && record.ENTITY_TYPE) {
-                        recordsWithEntityTypeCount++;
-                        if(summary.analysisByEntityType && analysisByEntityTypeHasEntityType(summary.analysisByEntityType, record.ENTITY_TYPE)) {
-                            // just append
-                            let sourceIndex = summary.analysisByEntityType.findIndex((analysisRow: SzEntityTypeRecordAnalysis) => {
-                                return (analysisRow.entityType && analysisRow.entityType === record.ENTITY_TYPE) ? true : false;
-                            })
-                            // add record to count
-                            summary.analysisByEntityType[ sourceIndex ].recordCount++; 
-                            // if record has id, increment per-DS count
-                            if(record && record.RECORD_ID) {
-                                summary.analysisByEntityType[ sourceIndex ].recordsWithRecordIdCount++;
-                            }
-                            // if record has entity type increment per-DS count
-                            if(record && record.DATA_SOURCE) {
-                                summary.analysisByEntityType[ sourceIndex ].recordsWithDataSourceCount++;
-                            }
-                        } else {
-                            // create
-                            summary.analysisByEntityType = summary.analysisByEntityType ? summary.analysisByEntityType : [];
-                            summary.analysisByEntityType.push({
-                                entityType: record.ENTITY_TYPE,
-                                recordCount: 1,
-                                recordsWithRecordIdCount: (record && record.RECORD_ID) ? 1 : 0,
-                                recordsWithDataSourceCount: (record && record.DATA_SOURCE) ? 1 : 0
-                            });
-                        }
-                    }
-                    if(record && (!record.RECORD_ID || record.RECORD_ID === undefined)) {
-                        missingRecordIds++;
-                    }
-                    if(record && record.RECORD_ID) {
-                        recordsWithRecordIdCount++;
-                    }
-                });
-
-                summary.missingDataSourceCount  = summary.missingDataSourceCount + missingDataSources;
-                summary.missingEntityTypeCount  = summary.missingEntityTypeCount + missingEntityTypes;
-                summary.missingRecordIdCount    = summary.missingRecordIdCount + missingRecordIds;
-                dataSources                     = this.getDataSourcesFromRecords(recordsArray);
-                entityTypes                     = this.getEntityTypesFromRecords(recordsArray);
-                if(dataSources && dataSources.length > 0) {
-                    summary.dataSources      = summary.dataSources.concat(dataSources).filter((dataSource, index, self) => {
-                        return self.indexOf(dataSource) === index;
-                    });
-                }
-                if(entityTypes && entityTypes.length > 0) {
-                    summary.entityTypes      = summary.entityTypes.concat(entityTypes).filter((entityType, index, self) => {
-                        return self.indexOf(entityType) === index;
-                    });
-                }
-            }
-        }        
+        );               
         
         // when ANYTHING changes, update the singleton "currentAnalysisResult" var so components can read status
         retObs.subscribe((summary: AdminStreamAnalysisSummary) => {
@@ -875,12 +718,22 @@ export class AdminBulkDataService {
             take(1),
             delay(2000)
         ).subscribe((summary: AdminStreamAnalysisSummary) => {
+            summary.complete = true;
             this._onStreamAnalysisComplete.next(summary);
         });
+
         // on end of records queue double-check if whole thing is complete
         this.onStreamAnalysisComplete.pipe(
             filter((summary: AdminStreamAnalysisSummary) => { return summary !== undefined;}),
-            take(1)
+            take(1),
+            tap( (summary: AdminStreamAnalysisSummary) => {
+                this.analyzingFile.next(false);
+                this.dataSourceMap = this.getDataSourceMapFromAnalysis( summary.analysisByDataSource );
+                this.entityTypeMap = this.getEntityTypeMapFromAnalysis( summary.analysisByEntityType );
+                this.onDataSourceMapChange.next( this.dataSourceMap );
+                this.onEntityTypeMapChange.next( this.entityTypeMap );
+                //this.onAnalysisChange.next( this.currentAnalysisResult );
+            })
         ).subscribe((summary: AdminStreamAnalysisSummary) => {
             if(readStreamComplete && summary) {
                 // set this to true to end batching loop Observeable
@@ -904,17 +757,17 @@ export class AdminBulkDataService {
             retSubject.next(records);
         });
         if(onComplete){
-            console.warn('SzBulkDataService.parseRecordsFromFile: onComplete handler passed to fn');
+            //console.warn('SzBulkDataService.parseRecordsFromFile: onComplete handler passed to fn');
             streamReader.onStreamClosed.subscribe(onComplete);
         }
         streamReader.onStreamClosed.subscribe((state) => {
-            console.warn('SzBulkDataService.parseRecordsFromFile: stream closed.', state);
+            //console.warn('SzBulkDataService.parseRecordsFromFile: stream closed.', state);
         });
         streamReader.read();
         return retObs;
     }
 
-    getDataSourcesFromRecords(records: any[] | undefined): any[] | undefined {
+    private getDataSourcesFromRecords(records: any[] | undefined): any[] | undefined {
         let retVal = undefined;
         if(records && (records as any[]).length > 0) {
             let recordsArray            = (records as any[]);
@@ -931,7 +784,7 @@ export class AdminBulkDataService {
         }
         return retVal;
     }
-    getEntityTypesFromRecords(records: any[] | undefined): any[] | undefined {
+    private getEntityTypesFromRecords(records: any[] | undefined): any[] | undefined {
         let retVal = undefined;
         if(records && (records as any[]).length > 0) {
             let recordsArray            = (records as any[]);
@@ -948,7 +801,216 @@ export class AdminBulkDataService {
         }
         return retVal;
     }
+
+    private analysisByDataSouceHasSource(dataset: Array<SzDataSourceRecordAnalysis>, dataSource: string): boolean {
+        let retValue = false;
+        if(dataset && dataset.length) {
+            retValue = dataset.some((analysisRow: SzDataSourceRecordAnalysis) => {
+                return (analysisRow.dataSource && analysisRow.dataSource === dataSource) ? true : false;
+            });
+        }
+        return retValue;
+    }
+    private analysisByEntityTypeHasEntityType(dataset: Array<SzEntityTypeRecordAnalysis>, entityType: string): boolean {
+        let retValue = false;
+        if(dataset && dataset.length) {
+            retValue = dataset.some((analysisRow: SzEntityTypeRecordAnalysis) => {
+                return (analysisRow.entityType && analysisRow.entityType === entityType) ? true : false;
+            });
+        }
+        return retValue;
+    }
+
+    private updateStatsFromRecords(summary: AdminStreamAnalysisSummary | AdminStreamLoadSummary, records?: any[]) {
+        /*
+        if(summary && summary.recordCount < 10000){
+            console.log('updateStatsFromRecords: ', records);
+        }*/
+        if(records && records.length > 0) {
+            let missingDataSources          = 0;
+            let missingEntityTypes          = 0;
+            let missingRecordIds            = 0;
+            let recordsWithRecordIdCount    = 0;
+            let recordsWithDataSourceCount  = 0;
+            let recordsWithEntityTypeCount  = 0;
+            //let analysisByDataSource: Array<SzDataSourceRecordAnalysis>;
+            //let analysisByEntityType: Array<SzEntityTypeRecordAnalysis>;
+            let dataSources                 = [];
+            let entityTypes                 = [];
+            let recordsArray                = (records as any[]);
+            let isAnalysisSummary   = (summary as AdminStreamLoadSummary).sentRecordCount !== undefined ? false : true; // only "AdminStreamLoadSummary" has "sentRecordCount"
+            let summaryDsKey        = isAnalysisSummary ? 'analysisByDataSource' : 'resultsByDataSource';
+            let summaryEtKey        = isAnalysisSummary ? 'analysisByEntityType' : 'resultsByEntityType';
+
+            // more efficient to do this as a single loop
+            recordsArray.forEach((record: any) => {
+                if(record && record.DATA_SOURCE) {
+                    // first append to count
+                    recordsWithDataSourceCount++;
+                    if(summary[summaryDsKey] && this.analysisByDataSouceHasSource(summary[summaryDsKey], record.DATA_SOURCE)) {
+
+                        // just append
+                        let sourceIndex = summary[summaryDsKey].findIndex((analysisRow: SzDataSourceRecordAnalysis) => {
+                            return (analysisRow.dataSource && analysisRow.dataSource === record.DATA_SOURCE) ? true : false;
+                        })
+                        // add record to count
+                        summary[summaryDsKey][ sourceIndex ].recordCount++; 
+                        // if record has id, increment per-DS count
+                        if(record && record.RECORD_ID) {
+                            summary[summaryDsKey][ sourceIndex ].recordsWithRecordIdCount++;
+                        }
+                        // if record has entity type increment per-DS count
+                        if(record && record.ENTITY_TYPE) {
+                            summary[summaryDsKey][ sourceIndex ].recordsWithEntityTypeCount++;
+                        }
+                    } else {
+                        // create                            
+                        summary[summaryDsKey] = summary[summaryDsKey] ? summary[summaryDsKey] : [];
+                        summary[summaryDsKey].push({
+                            dataSource: record.DATA_SOURCE,
+                            recordCount: 1,
+                            recordsWithRecordIdCount: (record && record.RECORD_ID) ? 1 : 0,
+                            recordsWithEntityTypeCount: (record && record.ENTITY_TYPE) ? 1 : 0
+                        });
+                    }
+                }
+                if(record && (!record.DATA_SOURCE || record.DATA_SOURCE === undefined)) {
+                    missingDataSources++;
+                }
+                if(record && (!record.ENTITY_TYPE || record.ENTITY_TYPE === undefined)) {
+                    missingEntityTypes++;
+                }
+                if(record && record.ENTITY_TYPE) {
+                    recordsWithEntityTypeCount++;
+                    if(summary[summaryEtKey] && this.analysisByEntityTypeHasEntityType(summary[summaryEtKey], record.ENTITY_TYPE)) {
+                        // just append
+                        let sourceIndex = summary[summaryEtKey].findIndex((analysisRow: SzEntityTypeRecordAnalysis) => {
+                            return (analysisRow.entityType && analysisRow.entityType === record.ENTITY_TYPE) ? true : false;
+                        })
+                        // add record to count
+                        summary[summaryEtKey][ sourceIndex ].recordCount++; 
+                        // if record has id, increment per-DS count
+                        if(record && record.RECORD_ID) {
+                            summary[summaryEtKey][ sourceIndex ].recordsWithRecordIdCount++;
+                        }
+                        // if record has entity type increment per-DS count
+                        if(record && record.DATA_SOURCE) {
+                            summary[summaryEtKey][ sourceIndex ].recordsWithDataSourceCount++;
+                        }
+                    } else {
+                        // create
+                        summary[summaryEtKey] = summary[summaryEtKey] ? summary[summaryEtKey] : [];
+                        summary[summaryEtKey].push({
+                            entityType: record.ENTITY_TYPE,
+                            recordCount: 1,
+                            recordsWithRecordIdCount: (record && record.RECORD_ID) ? 1 : 0,
+                            recordsWithDataSourceCount: (record && record.DATA_SOURCE) ? 1 : 0
+                        });
+                    }
+                }
+                if(record && (!record.RECORD_ID || record.RECORD_ID === undefined)) {
+                    missingRecordIds++;
+                }
+                if(record && record.RECORD_ID) {
+                    recordsWithRecordIdCount++;
+                }
+            });
+
+            summary.missingDataSourceCount  = summary.missingDataSourceCount + missingDataSources;
+            summary.missingEntityTypeCount  = summary.missingEntityTypeCount + missingEntityTypes;
+            summary.missingRecordIdCount    = summary.missingRecordIdCount + missingRecordIds;
+            dataSources                     = this.getDataSourcesFromRecords(recordsArray);
+            entityTypes                     = this.getEntityTypesFromRecords(recordsArray);
+            
+            if(dataSources && dataSources.length > 0) {
+                summary.dataSources      = summary.dataSources.concat(dataSources).filter((dataSource, index, self) => {
+                    return self.indexOf(dataSource) === index;
+                });
+            }
+            if(entityTypes && entityTypes.length > 0) {
+                summary.entityTypes      = summary.entityTypes.concat(entityTypes).filter((entityType, index, self) => {
+                    return self.indexOf(entityType) === index;
+                });
+            }
+        }
+    }
+
+    private createNewEntityTypesFromMap(entityTypeMap?: { [key: string]: string }, analysis?: AdminStreamAnalysisSummary | SzBulkDataAnalysis): Observable<string[] | Error> {
+        let _retVal     = new Subject<string[] | Error>();
+        let retVal      = _retVal.asObservable();
+        analysis        = analysis ?      analysis      : this.currentAnalysisResult;
+        entityTypeMap   = entityTypeMap ? entityTypeMap : this.entityTypeMap;
+        let promises    = [];
+        const newEntityTypes = analysis.analysisByEntityType.filter(a => {
+            const targetET = this.entityTypeMap[((a.entityType === null || a.entityType === undefined) ? "" : a.entityType )];
+            return (targetET && this._entityTypes.indexOf(targetET) < 0);
+        }).map( (b) => {
+            return this.entityTypeMap[(b.entityType === null || b.entityType === undefined ? "" : b.entityType)];
+        }).filter((entityType, index, self) => {
+            return self.indexOf(entityType) === index;
+        });
+        if (newEntityTypes.length > 0) {
+            console.log('create new entity types: ', newEntityTypes);
+            let simResp = false;
+            //const pTemp = this.createEntityTypes(newDataSources).toPromise();
+            const pTemp   = new Promise((resolve, reject) =>{
+                setTimeout(() => {
+                    console.log('resolving entity creation promise for: ', newEntityTypes );
+                    resolve(newEntityTypes);
+                }, 3000);
+            });
+            promises.push( pTemp );
+        }
+        let promise = Promise.resolve([]);
+        promise     = Promise.all(promises);
+        promise.then((entityTypes: string[]) => {
+            console.log('all entity types created', entityTypes);
+            _retVal.next(entityTypes);
+        }).catch((err => {
+            // return false
+            console.log('entity creation error', err);
+            _retVal.next(err);
+        }));
+        return retVal;
+    }
     
+    private createNewDataSourcesFromMap(dataSourceMap?: { [key: string]: string }, analysis?: AdminStreamAnalysisSummary | SzBulkDataAnalysis): Observable<string[] | Error> {
+        let _retVal     = new Subject<string[] | Error>();
+        let retVal      = _retVal.asObservable();
+        analysis        = analysis ?      analysis      : this.currentAnalysisResult;
+        dataSourceMap   = dataSourceMap ? dataSourceMap : this.dataSourceMap;
+        let promises    = [];
+        const newDataSources = analysis.analysisByDataSource.filter(a => {
+            const targetDS = this.dataSourceMap[((a.dataSource === null || a.dataSource === undefined) ? "" : a.dataSource)];
+            return (targetDS && this._dataSources.indexOf(targetDS) < 0);
+        }).map( (b) => {
+            return this.dataSourceMap[(b.dataSource === null || b.dataSource === undefined ? "" :  b.dataSource)];
+        }).filter((dataSource, index, self) => {
+            return self.indexOf(dataSource) === index;
+        });
+        if (newDataSources.length > 0) {
+            console.log('create new datasources: ', newDataSources);
+            let simResp = false;
+            //const pTemp = this.createDataSources(newDataSources).toPromise();
+            const pTemp   = new Promise((resolve, reject) =>{
+                setTimeout(() => {
+                    console.log('resolving ds creation promise for: ', newDataSources );
+                    resolve(newDataSources);
+                }, 3000);
+            })
+            promises.push( pTemp );
+        }
+        let promise = Promise.resolve([]);
+        promise     = Promise.all(promises);
+        promise.then((datasources: string[]) => {
+            console.log('all datasources created', datasources);
+            _retVal.next(datasources);
+        }).catch((err => {
+            console.log('NOT all datasources created', err);
+            _retVal.next(err);
+        }));
+        return retVal;
+    }
 
     /** perform streaming import of records over websocket interface 
      * takes a file as argument, stream reads file, parses records,
@@ -991,11 +1053,15 @@ export class AdminBulkDataService {
             fileLineEndingStyle: lineEndingStyle.unknown,
             characterEncoding: 'utf-8',
             recordCount: 0,
+            recordsWithRecordIdCount: 0,
+            recordsWithDataSourceCount: 0,
+            recordsWithEntityTypeCount: 0,
             sentRecordCount: 0,
             unsentRecordCount: 0,
             failedRecordCount: 0,
             missingDataSourceCount: 0,
             missingEntityTypeCount: 0,
+            missingRecordIdCount: 0,
             bytesRead: 0,
             bytesSent: 0,
             bytesQueued: 0,
@@ -1007,6 +1073,36 @@ export class AdminBulkDataService {
         this._onStreamLoadStarted.next(summary); // singleton
         this._onStreamReadStarted.next(summary); // singleton
         retSubject.next(summary); // local
+
+        // first create missing datasources and entity types
+        let dataSourcesCreated      = false;
+        let entityTypesCreated      = false;
+        let onAllDataSourcesAndEntityTypesCreated   = new Subject<boolean>();
+        let afterDataSourcesCreated = this.createNewDataSourcesFromMap(this.dataSourceMap);
+        let afterEntityTypesCreated = this.createNewEntityTypesFromMap(this.entityTypeMap);
+        // now create entity types
+        afterDataSourcesCreated.pipe(
+            take(1)
+        ).subscribe((result: string[] | Error) => {
+            if((result as string[]).length) {
+                dataSourcesCreated = true;
+                console.log('SzBulkDataService.streamLoad: all data sources created', dataSourcesCreated);
+                if(dataSourcesCreated && entityTypesCreated) {
+                    onAllDataSourcesAndEntityTypesCreated.next(true);
+                }
+            }
+        });
+        afterEntityTypesCreated.pipe(
+            take(1)
+        ).subscribe((result) => {
+            if((result as string[]).length) {
+                entityTypesCreated = true;
+                console.log('SzBulkDataService.streamLoad: all entity types created', entityTypesCreated);
+                if(dataSourcesCreated && entityTypesCreated) {
+                    onAllDataSourcesAndEntityTypesCreated.next(true);
+                }
+            }
+        });
 
         // read file contents as stream
         // parse to array of records
@@ -1033,10 +1129,8 @@ export class AdminBulkDataService {
 
         let sendQueuedRecords = (records?: any) => {
             if(readRecords && readRecords.length > 0) {
-                //console.log('check for batching records..', readRecords.length, summary.sentRecordCount);
-
                 // slice off a batch of records to send
-                let currQueuePush   = readRecords && readRecords.length < bulkRecordSendRate ? readRecords : readRecords.slice(0, bulkRecordSendRate);
+                let currQueuePush   = readRecords && readRecords.length < bulkRecordSendRate || bulkRecordSendRate < 0 ? readRecords : readRecords.slice(0, bulkRecordSendRate);
                 readRecords         = readRecords.slice(currQueuePush.length);
 
                 // push them in to websocket (as quick as we read them - so cool)
@@ -1062,49 +1156,14 @@ export class AdminBulkDataService {
             }
         }
         let waitUntilDataSourcesAreValid = (): boolean => {
-            let retVal = this._onAutoCreatingDataSource ? false : true;
-            if(summary && summary.dataSources && summary.dataSources.length > 0) {
-                // check that datasource exists in datasources list
-                retVal = false;
-                if(this._dataSources && this._dataSources.length > 0) {
-                    retVal = summary.dataSources.every( (dataSource) => {
-                        return this._dataSources.indexOf(dataSource) > -1;
-                    });
-                }
-            }
-            if(!this._onAutoCreatingDataSource && !retVal) {
-                // mimic request for now..
-                let missingDataSources  = summary.dataSources.filter( (dataSource) => {
-                    return this._dataSources.indexOf(dataSource) < 0;
-                });
-                this._onAutoCreatingDataSources.next( missingDataSources );
-                setTimeout(() => {
-                    this._dataSources = this._dataSources.concat(summary.dataSources).filter((dataSource, index, self) => {
-                        return self.indexOf(dataSource) === index;
-                    });
-                    this._onAutoCreatingDataSources.next( undefined );
-                },5000);
-            }
-            return retVal;
+            return dataSourcesCreated;
         }
-
-        let checkQueuedRecordsForDataSouces = (records?: any) => {
-            if(readRecords && readRecords.length > 0) {
-                // update metadata
-                let _nextQueuedRecordSet = readRecords && readRecords.length < bulkRecordSendRate ? readRecords : readRecords.slice(0, bulkRecordSendRate);
-                let _dsInRecords         = this.getDataSourcesFromRecords(_nextQueuedRecordSet);
-                if(_dsInRecords && _dsInRecords.length > 0) {
-                    summary.dataSources      = summary.dataSources.concat(_dsInRecords).filter((dataSource, index, self) => {
-                        return self.indexOf(dataSource) === index;
-                    });
-                }
-            } else {
-                // no 
-            }
+        let waitUntilEntityTypesCreated = (): boolean => {
+            return entityTypesCreated;
         }
 
         // ------------ monitor status of queue, batch send records to socket ------------
-        if(bulkRecordSendRate > 0) {
+        //if(bulkRecordSendRate > 0) {
             // set up an interval that expires once all records read have been sent
             let streamSendMon = timer(100, 200);
             streamSendMon.pipe(
@@ -1117,21 +1176,9 @@ export class AdminBulkDataService {
                 filter((summary: AdminStreamLoadSummary) => {
                     return summary && summary.recordCount > 0;
                 }),
-                tap( checkQueuedRecordsForDataSouces ),
-                filter( waitUntilDataSourcesAreValid ),
                 filter( () => { return !this._streamLoadPaused; })
             ).subscribe( sendQueuedRecords );
-        } else {
-            // unlimited send rate... probably a terrible idea but lets give it a try
-            // immediately send all records as fast as they can be read
-            // good for debugging, bad for prod
-            this._onStreamReadProgress.pipe(
-                takeWhile( (summary: AdminStreamLoadSummary) => {
-                    return (summary && !summary.complete) ? true : false;
-                }),
-                filter( () => { return !this._streamLoadPaused; })
-            ).subscribe( sendQueuedRecords );
-        }
+        //}
         
         // when ANYTHING changes, update the singleton "currentLoadResult" var so components can read status
         retObs.subscribe((summary: AdminStreamLoadSummary) => {
@@ -1174,198 +1221,6 @@ export class AdminBulkDataService {
         return retObs;
     }
 
-    streamAnalyzeCSVFileToWebsocketServer(fileHandle: File, fileReadStream: ReadableStreamDefaultReader<any>, summary: AdminStreamAnalysisSummary): Observable<AdminStreamAnalysisSummary> {
-        // set up return observeable
-        let retSubject  = new Subject<AdminStreamAnalysisSummary>();
-        let retObs      = retSubject.asObservable();
-        // text decoding
-        let decoder = new TextDecoder(summary.characterEncoding);
-        let encoder = new TextEncoder();
-        let recordCount = 0;
-        // current chunk to be sent
-        let payloadChunk = '';
-        let payloadChunks = [];
-        let wsRecordsQueue = [];
-        let resultChunks = undefined;
-        //let fileLineEndingStyle = lineEndingStyle.default;
-        let lineEndingLength = 1;
-        let isValidJSONL = false;
-
-        return retObs;
-    }
-
-    streamAnalyzeJSONFileToWebsocketServer(fileHandle: File, fileReadStream: ReadableStreamDefaultReader<any>, summary: AdminStreamAnalysisSummary): Observable<AdminStreamAnalysisSummary> {
-        console.log('SzBulkDataService.streamAnalyzeJSONFileToWebsocketServer: ', fileHandle, fileReadStream, summary);
-
-        // set up return observeable
-        let retSubject  = new Subject<AdminStreamAnalysisSummary>();
-        let retObs      = retSubject.asObservable();
-        // text decoding
-        let decoder = new TextDecoder(summary.characterEncoding);
-        let encoder = new TextEncoder();
-        let recordCount = 0;
-        // current chunk to be sent
-        let payloadChunk = '';
-        let payloadChunks = [];
-        let wsRecordsQueue = [];
-        let resultChunks = undefined;
-        //let fileLineEndingStyle = lineEndingStyle.default;
-        let lineEndingLength = 1;
-        let isValidJSONL = false;
-
-        // check the retSubject for completion status
-        retObs.subscribe((summary: AdminStreamAnalysisSummary) => {
-            let isComplete = this.isStreamLoadComplete(summary);
-            //console.log('checking if stream load is done: '+ isComplete +' | '+ summary.complete);
-            return summary;
-        });
-
-        // read file
-        fileReadStream.read()
-        .then(function processChunk({ done, value}) {
-          if (done) {
-            console.log('-- END OF STREAM --');
-            fileReadStream.releaseLock();
-            return;
-          } else {
-            let decodedValue  = decoder.decode(value, {stream: true});
-            let firstChunk    = (summary.bytesRead < 1) ? true : false;
-            // get default line ending style for processing
-            if(firstChunk){
-              console.log('-- BEGINNING OF STREAM --');
-              summary.fileLineEndingStyle = determineLineEndingStyle(decodedValue);
-              lineEndingLength = (summary.fileLineEndingStyle === lineEndingStyle.Windows ? 2 : 1);
-    
-              console.log('file line ending style: ', lineEndingStyleAsEnumKey(summary.fileLineEndingStyle));
-              console.log('file type: ', summary.fileType);
-            } else {
-              //console.log('no column header in chunk: ', payloadChunks);
-            }
-    
-            // wheres the last line ending in stream chunk
-            let lastRecordPos = decodedValue.lastIndexOf(summary.fileLineEndingStyle);    // last position of line ending in stream chunk
-            let chunk = decodedValue.substring(0, lastRecordPos);                 // part of stream read minus any incomplete record
-            // add any previous incompletes to payload
-            payloadChunk += chunk;
-            payloadChunk = payloadChunk.trim();
-            if(value && value.length) {
-              summary.bytesRead = summary.bytesRead+value.length;
-              retSubject.next(summary);
-            }
-            let lineEndingRegEx = (summary.fileLineEndingStyle === lineEndingStyle.Windows) ? new RegExp(/\r\n/g) : new RegExp(/\n/g);
-              
-            if(firstChunk) {
-            // test for validity
-                isValidJSONL = (firstChunk && payloadChunk.indexOf('[') > -1) ? false : ((firstChunk && payloadChunk.indexOf('[') >= -1 && payloadChunk.indexOf('{') > -1) ? true : false);
-                console.log('testing for valid jsonl: ', isValidJSONL, summary.fileType, payloadChunk.indexOf('['), payloadChunk.indexOf('{'));
-            }
-            if(!isValidJSONL) {
-                // must be json
-                // if not jsonl strip "[" out at the beginning, and "]" at the end
-                if(firstChunk) {
-                    payloadChunk = payloadChunk.trim();
-                    payloadChunk = payloadChunk.substring(payloadChunk.indexOf('[')+1);
-                    console.log('cutting "[" out from line 1', payloadChunk);
-                }
-            } else if(firstChunk){
-                console.log('isValidJSONL: '+ isValidJSONL, );
-            }
-
-            payloadChunks.push(payloadChunk);
-            // split chunk by line endings for per-record streaming
-            let chunkLines = payloadChunk.split(summary.fileLineEndingStyle);
-            wsRecordsQueue.push(chunkLines);
-            
-            chunkLines.forEach((_record) => {
-                summary.bytesQueued += getUtf8ByteLength(_record);
-                retSubject.next(summary);
-                this.sendWebSocketMessage(_record).subscribe((messageSent) => {
-                    summary.bytesSent = summary.bytesSent + getUtf8ByteLength(_record);
-                    summary.sentRecordCount += 1;
-                    retSubject.next(summary);
-                }, (error: Error) => {
-                    console.warn('sendWebSocketMessage error: ', error);
-                });
-            });
-
-            // get number of records in chunk
-            let numberOfRecordsInChunk = (payloadChunk.match( lineEndingRegEx ) || '').length + 1;
-            summary.recordCount = summary.recordCount + numberOfRecordsInChunk;
-            retSubject.next(summary);
-            payloadChunk = '';
-            // add incomplete remainder record to next chunk
-            if(lastRecordPos < decodedValue.length) {
-                payloadChunk = decodedValue.substring(lastRecordPos).trim();
-            }
-            
-          }
-          if(summary.recordCount < this.streamAnalysisConfig.sampleSize) {
-            console.log(`read (${summary.recordCount} / ${this.streamAnalysisConfig.sampleSize})`);
-            return fileReadStream.read().then(processChunk.bind(this));
-          } else {
-            console.warn(`!!!! HIT SAMPLE LIMIT (${summary.recordCount} / ${this.streamAnalysisConfig.sampleSize}) !!!!`);
-            fileReadStream.cancel('sample limit reached');
-          }
-        }.bind(this))
-        .catch((err) => {
-          console.warn('error: ', err);
-        })
-        .finally(() => {
-          // sometimes there is a last "hanging chunk"
-          console.log('checking for hanging chunk.. ', payloadChunk);
-          if(payloadChunk && payloadChunk.length > 0) {
-            if(summary.fileType === validImportFileTypes.JSONL || summary.fileType === validImportFileTypes.JSON) {
-              let payloadChunkHasEndBracket = payloadChunk.lastIndexOf(']') > payloadChunk.indexOf('}');
-              if(payloadChunkHasEndBracket) {
-                // was "json" not "jsonl", correct it
-                payloadChunk = payloadChunk.replace(']','').trim();
-                if(payloadChunk.indexOf('{') > -1 && payloadChunk.indexOf('}') > -1) {
-                  let plChunkSplit = payloadChunk.split('}');
-                  console.log("what's going on here? ", plChunkSplit);
-                  summary.recordCount = summary.recordCount + plChunkSplit.length;
-                  retSubject.next(summary);
-                }
-                payloadChunks.push(payloadChunk);
-                // split chunk by line endings for per-record streaming
-                let chunkLines = payloadChunk.split(summary.fileLineEndingStyle);
-                wsRecordsQueue.push(chunkLines);
-                
-                chunkLines.forEach((_record) => {
-                    summary.bytesQueued += getUtf8ByteLength(_record);
-                    retSubject.next(summary);
-                    this.sendWebSocketMessage(_record).pipe(take(1)).subscribe((messageSent) => {
-                        summary.bytesSent = summary.bytesSent + getUtf8ByteLength(_record);
-                        summary.sentRecordCount += 1;
-                        retSubject.next(summary);
-                    }, (error: Error) => {
-                        console.warn('sendWebSocketMessage error: ', error);
-                    });
-                });
-                //this.sendWebSocketMessage(payloadChunk);
-              } else {
-                console.log('no reason to strip out ', payloadChunk);
-                if(payloadChunk.indexOf('{') > -1 && payloadChunk.indexOf('}') > -1) {
-                  payloadChunk = payloadChunk.trim();
-                  let plChunkSplit = payloadChunk.split('}').filter( (value) => {
-                    return (value && value.trim() !== '') ? true : false;
-                  });
-                  console.log("what's going on here? ", plChunkSplit);
-                  summary.recordCount = summary.recordCount + plChunkSplit.length;
-                  retSubject.next(summary);
-                }
-              }
-            }
-          }
-        })
-        .finally( () => {
-            console.log('file summary: ', summary);
-            resultChunks = payloadChunks;
-            retSubject.next(summary);
-        });
-        // return observeable of stream summary info
-        return retObs;
-    }
-
     streamLoadCSVFileToWebsocketServer(fileHandle: File, fileReadStream: ReadableStreamDefaultReader<any>, summary: AdminStreamLoadSummary): Observable<AdminStreamLoadSummary> {
         // set up return observeable
         let retSubject  = new Subject<AdminStreamLoadSummary>();
@@ -1390,9 +1245,10 @@ export class AdminBulkDataService {
     private isStreamLoading(summary: AdminStreamLoadSummary): boolean {
         return summary.fileSize > 0 && !this.isStreamLoadComplete(summary);
     }
+    /*
     private isStreamAnalyzing(summary: AdminStreamAnalysisSummary): boolean {
         return summary.fileSize > 0 && !this.isStreamAnalysisComplete(summary);
-    }
+    }*/
     
     /** check whether or not the stream summary.complete property should return "true" */
     private isStreamLoadComplete(summary: AdminStreamLoadSummary): boolean {
@@ -1405,6 +1261,7 @@ export class AdminBulkDataService {
         return summary.complete;
     }
     /** check whether or not the stream summary.complete property should return "true" */
+    /*
     private isStreamAnalysisComplete(summary: AdminStreamAnalysisSummary): boolean {
         summary.complete = ((
             (summary.sentRecordCount == summary.recordCount && summary.recordCount > 0) && 
@@ -1415,6 +1272,7 @@ export class AdminBulkDataService {
         //console.log('isStreamLoadComplete ? '+ summary.complete, (summary.sentRecords == summary.totalRecords && summary.bytesRead === summary.fileSize && summary.bytesSent >= summary.bytesQueued), summary.bytesSent >= summary.bytesQueued );
         return summary.complete;
     }
+    */
     /** alias to webSocketService.sendMessage */
     public sendWebSocketMessage(message: string): Observable<boolean> {
         return this.webSocketService.sendMessage(message);

@@ -29,17 +29,6 @@
         </div>
     </div>
     <div class="row">
-        <h3>Analyis:</h3>
-        <mat-form-field >
-            <mat-label for="ws-analysis-sample-size">Sample Size:</mat-label>
-            <mat-select [(ngModel)]="wsAnalysisSampleSize" id="ws-analysis-sample-size">
-            <mat-option *ngFor="let aSize of wsAnalysisSampleSizes" [value]="aSize">
-                {{aSize}}
-            </mat-option>
-            </mat-select>
-        </mat-form-field>
-    </div>
-    <div class="row">
         <h3>Loading:</h3>
         <div class="row sc-row-3">
             <mat-form-field >
@@ -51,16 +40,6 @@
                 </mat-select>
             </mat-form-field>
             <mat-label>Records Per-Second</mat-label>
-        </div>
-        <div class="row sc-row-4">
-            <mat-checkbox [(ngModel)]="autoCreateMissingDataSources" labelPosition="after">Auto-create Datasources when explicitly specified in record</mat-checkbox>
-        </div>
-        <div class="row sc-row-5">
-            <mat-checkbox [(ngModel)]="mapEmptyDataSourcesToValue" labelPosition="after">Map records with no Datasource to</mat-checkbox>
-            <mat-form-field>
-                <mat-label>DataSource Name:</mat-label>
-                <input matInput [disabled]="!mapEmptyDataSourcesToValue" [(ngModel)]="mapEmptyDataSourcesTo">
-            </mat-form-field>
         </div>
     </div>
     

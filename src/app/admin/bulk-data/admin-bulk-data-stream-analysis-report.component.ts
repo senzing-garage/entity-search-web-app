@@ -139,6 +139,9 @@ export class AdminBulkDataStreamAnalysisReportComponent implements OnInit, OnDes
       this.adminBulkDataService.onError.subscribe((err) => {
         console.warn('AdminBulkDataAnalysisReportComponent.onError SHOW Err MSG: ', err);
       });
+      this.adminBulkDataService.onStreamAnalysisComplete.subscribe((summary: AdminStreamAnalysisSummary) => {
+        console.warn('AdminBulkDataAnalysisReportComponent.onStreamAnalysisComplete', this.adminBulkDataService.currentAnalysisResult);
+      });
     }
 
     /**

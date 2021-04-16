@@ -7,7 +7,7 @@ import {
 } from '@senzing/rest-api-client-ng';
 import { Subject } from 'rxjs';
 import { AdminBulkDataService, AdminStreamAnalysisSummary, AdminStreamLoadSummary } from '../../services/admin.bulk-data.service';
-import { filter } from 'rxjs/operators';
+import { filter, takeUntil } from 'rxjs/operators';
 import { SzStreamingFileRecordParser } from '../../common/streaming-file-record-parser';
 
 /**
@@ -71,6 +71,10 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
   }
   public get canOpenStreamSocket(): boolean {
     return this.adminBulkDataService.canOpenStreamSocket;
+  }
+  private _streamAnalysisComplete = false;
+  public get isStreamAnalysisComplete(): boolean {
+    return this._streamAnalysisComplete;
   }
 
   /** does user have admin rights */
@@ -143,12 +147,18 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
       // if its the users first file load and they just verified stream host
       // immediately prompt for file selection
       this.adminBulkDataService.onUseStreamingSocketChange.pipe(
+        takeUntil(this.unsubscribe$),
         filter( (useStreamingForLoad: boolean) => {
           return useStreamingForLoad && !this.adminBulkDataService.file && this.adminBulkDataService.streamConnectionProperties.connectionTest;
         })
       ).subscribe( (useStreaming) => {
         console.info('AdminBulkDataLoadComponent.adminBulkDataService.onUseStreamingSocketChange: '+ useStreaming);
         this.chooseFileInputFS();
+      });
+      this.adminBulkDataService.onStreamAnalysisComplete.pipe( 
+        takeUntil(this.unsubscribe$) 
+      ).subscribe((summary: AdminStreamAnalysisSummary) => {
+        this._streamAnalysisComplete = summary ? summary.complete : false;
       });
     }
     /**
@@ -217,5 +227,8 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
     /** clear the current bulkloader focal state */
     public clear() {
       this.adminBulkDataService.clear();
+      if(this.filePicker && this.filePicker.nativeElement){
+        this.filePicker.nativeElement.value = undefined;
+      }
     }
 }

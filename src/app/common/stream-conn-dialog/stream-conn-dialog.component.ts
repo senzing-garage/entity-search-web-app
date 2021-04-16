@@ -47,12 +47,6 @@ import { Subject } from 'rxjs';
     public set wsUUID(value: string) {
       this.data.streamConnectionProperties.clientId = value;
     }
-    public get wsAnalysisSampleSize() {
-        return (this.data && this.data.streamAnalysisConfig && this.data.streamAnalysisConfig.sampleSize) ? this.data.streamAnalysisConfig.sampleSize : 1000;
-    }
-    public set wsAnalysisSampleSize(value: number) {
-        this.data.streamAnalysisConfig.sampleSize = value;
-    }
     public get wsLoadUploadRate() {
       return (this.data && this.data.streamLoadConfig && this.data.streamLoadConfig.uploadRate) ? this.data.streamLoadConfig.uploadRate : -1;
     }
@@ -63,36 +57,6 @@ import { Subject } from 'rxjs';
       return (this.data && this.data.streamConnectionProperties && this.data.streamConnectionProperties.connectionTest) ?  this.data.streamConnectionProperties.connectionTest : false;
     }
 
-    public get autoCreateMissingDataSources(): boolean {
-      return (this.data && this.data.streamLoadConfig && this.data.streamLoadConfig.autoCreateMissingDataSources) ? true : false;
-    }
-    public set autoCreateMissingDataSources(value: boolean) {
-      this.data.streamLoadConfig.autoCreateMissingDataSources = value;
-    }
-    public get mapEmptyDataSourcesTo(): string {
-      return (this.data && this.data.streamLoadConfig && this.data.streamLoadConfig.assignMissingDataSourceRecordsToStaticTarget) ? (this.data.streamLoadConfig.assignMissingDataSourceRecordsToStaticTarget as string) : "";
-    }
-    public set mapEmptyDataSourcesTo(value: string) {
-      this.data.streamLoadConfig.assignMissingDataSourceRecordsToStaticTarget = value;
-    }
-    private _mapEmptyDataSourcesToValue = false;
-    public get mapEmptyDataSourcesToValue(): boolean {
-      return this._mapEmptyDataSourcesToValue;
-    }
-    public set mapEmptyDataSourcesToValue(value: boolean) {
-      this._mapEmptyDataSourcesToValue = value;
-    }
-
-    public wsAnalysisSampleSizes = [
-      100,
-      500,
-      1000,
-      5000,
-      10000,
-      20000,
-      50000,
-      100000
-    ];
     public wsReconnectionAttemptsOptions = [
       {value: -2, text: 'unlimited'},
       {value: -1, text: 'none'},
@@ -110,7 +74,9 @@ import { Subject } from 'rxjs';
       let retValues = this._wsLoadUploadRates;
       if(retValues && retValues.length <= 0) {
         for(let key in AdminStreamUploadRates) {
-          this._wsLoadUploadRates.push( { 'key': key, 'value': AdminStreamUploadRates[key] } );
+          if(key !== 'unlimited'){
+            this._wsLoadUploadRates.push( { 'key': key, 'value': AdminStreamUploadRates[key] } );
+          }
         }
         retValues = this._wsLoadUploadRates;
       }
@@ -138,12 +104,6 @@ import { Subject } from 'rxjs';
         }
       } else {
         // make sure each node has an initialized value
-        if(!this.data.streamAnalysisConfig) {
-          this.data.streamAnalysisConfig = {
-            sampleSize: 10000,
-            uploadRate: -1
-          }
-        }
         if(!this.data.streamConnectionProperties) {
           this.data.streamConnectionProperties = {
             "hostname": 'localhost:8555',
@@ -156,7 +116,7 @@ import { Subject } from 'rxjs';
         if(!this.data.streamLoadConfig) {
           this.data.streamLoadConfig = {
             autoCreateMissingDataSources: false,
-            uploadRate: -1
+            uploadRate: 10000
           }
         }
       }
@@ -179,11 +139,7 @@ import { Subject } from 'rxjs';
       });
     }
 
-    ngAfterViewInit() {
-      if(this.data && this.data.streamLoadConfig && this.data.streamLoadConfig.assignMissingDataSourceRecordsToStaticTarget !== undefined) {
-        this._mapEmptyDataSourcesToValue = true;
-      }
-    }
+    ngAfterViewInit() {}
 
     /**
      * unsubscribe event streams
