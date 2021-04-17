@@ -130,7 +130,6 @@ export class AdminBulkDataStreamAnalysisReportComponent implements OnInit, OnDes
       ).subscribe((info) => {
         //console.log('SzBulkDataAnalysisReportComponent.ServerInfo obtained: ', info);
       });
-
       this.adminBulkDataService.onDataSourcesChange.pipe(
         takeUntil( this.unsubscribe$ )
       ).subscribe((datasources: string[]) => {

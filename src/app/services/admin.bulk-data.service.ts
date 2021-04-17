@@ -117,6 +117,9 @@ export class AdminBulkDataService {
     private _streamAnalysisPaused       = false;
     private _onAutoCreatingDataSources  = new Subject<string[]>();
     public onAutoCreatingDataSources    = this._onAutoCreatingDataSources.asObservable();
+    /** subjects used for aborting in-progress stream processing */
+    public streamAnalysisAbort$: Subject<void>;
+    public streamLoadAbort$: Subject<void>;
 
     // ------------------- stream loading -------------------
     private _onStreamAnalysisStarted    = new BehaviorSubject<AdminStreamAnalysisSummary>(undefined);
@@ -582,6 +585,22 @@ export class AdminBulkDataService {
         this.entityTypeMap = this.entityTypeMap;
         this.entityTypeMap[fromEntityType] = toEntityType;
     }
+    /** subscription to notify subscribers to unbind */
+    public abort(): void {
+        if(this.streamAnalysisAbort$) {
+            this.streamAnalysisAbort$.next();
+            this.streamAnalysisAbort$.complete();
+            this.streamAnalysisAbort$ = undefined;
+            delete this.streamAnalysisAbort$;
+        }
+        if(this.streamLoadAbort$) {
+            this.streamLoadAbort$.next();
+            this.streamLoadAbort$.complete();
+            this.streamLoadAbort$ = undefined;
+            delete this.streamLoadAbort$;
+        }
+        console.log('AdminBulkDataService.abort()', this.streamAnalysisAbort$, this.streamLoadAbort$);
+    }
     /** clear any file and associated data. removes file focus context */
     public clear(): void {
         this.currentAnalysis        = undefined;
@@ -641,6 +660,10 @@ export class AdminBulkDataService {
         // event streams
         let retSubject  = new Subject<AdminStreamAnalysisSummary>();
         let retObs      = retSubject.asObservable();
+        // set up subject used for aborting in progress subscriptions
+        if(!this.streamAnalysisAbort$ || this.streamAnalysisAbort$ === undefined || (this.streamAnalysisAbort$ && this.streamAnalysisAbort$.closed)){
+            this.streamAnalysisAbort$ = new Subject();
+        }
 
         // file related
         file = file ? file : this.currentFile;
@@ -697,7 +720,9 @@ export class AdminBulkDataService {
             this._onStreamAnalysisProgress.next(summary);
             retSubject.next(summary); // local
             this._onStreamReadComplete.next(summary);
-        }).subscribe(
+        }).pipe(
+            takeUntil(this.streamAnalysisAbort$)
+        ).subscribe(
             (records) => {
                 this.updateStatsFromRecords(summary, records);
                 // do count inc before we add to summary otherwise well double
@@ -720,6 +745,7 @@ export class AdminBulkDataService {
         // proxy "onStreamReadComplete" to "onStreamAnalysisComplete"
         // since this is the only phase of this function
         this.onStreamReadComplete.pipe(
+            takeUntil(this.streamAnalysisAbort$),
             filter((summary: AdminStreamAnalysisSummary) => { return summary !== undefined;}),
             take(1),
             delay(2000)
@@ -730,6 +756,7 @@ export class AdminBulkDataService {
 
         // on end of records queue double-check if whole thing is complete
         this.onStreamAnalysisComplete.pipe(
+            takeUntil(this.streamAnalysisAbort$),
             filter((summary: AdminStreamAnalysisSummary) => { return summary !== undefined;}),
             take(1),
             tap( (summary: AdminStreamAnalysisSummary) => {
@@ -761,6 +788,10 @@ export class AdminBulkDataService {
         // event streams
         let retSubject  = new Subject<AdminStreamLoadSummary>();
         let retObs      = retSubject.asObservable();
+        // set up subject used for aborting in progress subscriptions
+        if(!this.streamLoadAbort$ || this.streamLoadAbort$ === undefined || (this.streamLoadAbort$ && this.streamLoadAbort$.closed)){
+            this.streamLoadAbort$ = new Subject();
+        }
 
         // file related
         file = file ? file : this.currentFile;
@@ -821,6 +852,7 @@ export class AdminBulkDataService {
         let afterEntityTypesCreated = this.createNewEntityTypesFromMap(this.entityTypeMap);
         // now create entity types
         afterDataSourcesCreated.pipe(
+            takeUntil(this.streamLoadAbort$),
             take(1)
         ).subscribe((result: string[] | Error) => {
             if((result as string[]).length) {
@@ -832,6 +864,7 @@ export class AdminBulkDataService {
             }
         });
         afterEntityTypesCreated.pipe(
+            takeUntil(this.streamLoadAbort$),
             take(1)
         ).subscribe((result) => {
             if((result as string[]).length) {
@@ -852,7 +885,9 @@ export class AdminBulkDataService {
             this._onStreamLoadProgress.next(summary);
             this._onStreamReadComplete.next(summary);
             retSubject.next(summary); // local
-        }).subscribe(
+        }).pipe(
+            takeUntil(this.streamLoadAbort$)
+        ).subscribe(
             (records) => {
                 // do count inc before we add to summary otherwise well double
                 summary.recordCount         = summary.recordCount + records.length;
@@ -906,6 +941,7 @@ export class AdminBulkDataService {
             // set up an interval that expires once all records read have been sent
             let streamSendMon = timer(100, 200);
             streamSendMon.pipe(
+                takeUntil(this.streamLoadAbort$),
                 map(() => {
                     return summary;
                 }),
@@ -929,6 +965,7 @@ export class AdminBulkDataService {
         // ---------------------------- on complete evt handlers ----------------------------
         // on end of read double-check if whole thing is complete
         this._onStreamReadComplete.pipe(
+            takeUntil(this.streamLoadAbort$),
             filter((summary: AdminStreamLoadSummary) => { return summary !== undefined;}),
             take(1),
             delay(5000)
@@ -943,6 +980,7 @@ export class AdminBulkDataService {
         });
         // on end of records queue double-check if whole thing is complete
         this._onStreamLoadComplete.pipe(
+            takeUntil(this.streamLoadAbort$),
             filter((summary: AdminStreamLoadSummary) => { return summary !== undefined;}),
             take(1),
             /*takeWhile( (summary: AdminStreamLoadSummary) => {
@@ -1067,6 +1105,16 @@ export class AdminBulkDataService {
             let isAnalysisSummary   = (summary as AdminStreamLoadSummary).sentRecordCount !== undefined ? false : true; // only "AdminStreamLoadSummary" has "sentRecordCount"
             let summaryDsKey        = isAnalysisSummary ? 'analysisByDataSource' : 'resultsByDataSource';
             let summaryEtKey        = isAnalysisSummary ? 'analysisByEntityType' : 'resultsByEntityType';
+
+            /**
+             * This is what an "analysisByDataSource" node for records with no DS's defined looks like
+             * @TODO add this functionality at index[0]
+             * 
+              dataSource: null
+              recordCount: 3597
+              recordsWithEntityTypeCount: 0
+              recordsWithRecordIdCount: 3597
+             */
 
             // more efficient to do this as a single loop
             recordsArray.forEach((record: any) => {
