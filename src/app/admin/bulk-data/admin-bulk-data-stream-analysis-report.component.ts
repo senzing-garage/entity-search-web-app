@@ -136,10 +136,14 @@ export class AdminBulkDataStreamAnalysisReportComponent implements OnInit, OnDes
       ).subscribe((datasources: string[]) => {
         console.warn('UPDATE DATASOURCES! ', datasources, this.adminBulkDataService._dataSources);
       });
-      this.adminBulkDataService.onError.subscribe((err) => {
+      this.adminBulkDataService.onError.pipe(
+        takeUntil(this.unsubscribe$)
+      ).subscribe((err) => {
         console.warn('AdminBulkDataAnalysisReportComponent.onError SHOW Err MSG: ', err);
       });
-      this.adminBulkDataService.onStreamAnalysisComplete.subscribe((summary: AdminStreamAnalysisSummary) => {
+      this.adminBulkDataService.onStreamAnalysisComplete.pipe(
+        takeUntil(this.unsubscribe$)
+      ).subscribe((summary: AdminStreamAnalysisSummary) => {
         console.warn('AdminBulkDataAnalysisReportComponent.onStreamAnalysisComplete', this.adminBulkDataService.currentAnalysisResult);
       });
     }

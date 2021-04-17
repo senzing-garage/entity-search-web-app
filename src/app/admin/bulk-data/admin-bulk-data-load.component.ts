@@ -9,6 +9,7 @@ import { Subject } from 'rxjs';
 import { AdminBulkDataService, AdminStreamAnalysisSummary, AdminStreamLoadSummary } from '../../services/admin.bulk-data.service';
 import { filter, takeUntil } from 'rxjs/operators';
 import { SzStreamingFileRecordParser } from '../../common/streaming-file-record-parser';
+import { NgForm } from '@angular/forms';
 
 /**
  * Provides an interface for loading files in to a datasource.
@@ -35,11 +36,11 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
   /** file picker element */
   @ViewChild('filePicker')
   private filePicker: ElementRef;
+  /** file picker form (needed to reset) */
+  @ViewChild('szAdminFileSelectForm')
+  private filePickerForm: NgForm;
+
   /** get the current analysis from service */
-  /*
-  get analysis(): SzBulkDataAnalysis {
-    return this.adminBulkDataService.currentAnalysis;
-  }*/
   public get analysis(): SzBulkDataAnalysis | AdminStreamAnalysisSummary {
     return this.adminBulkDataService.currentAnalysisResult;
   }
@@ -153,7 +154,7 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
         })
       ).subscribe( (useStreaming) => {
         console.info('AdminBulkDataLoadComponent.adminBulkDataService.onUseStreamingSocketChange: '+ useStreaming);
-        this.chooseFileInputFS();
+        this.chooseFileInput();
       });
       this.adminBulkDataService.onStreamAnalysisComplete.pipe( 
         takeUntil(this.unsubscribe$) 
@@ -171,6 +172,7 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
 
     /** take the current file focus and pass to api load endpoint */
     public onFileInputChange(event: Event) {
+      console.log('onFileInputChange: ', event);
       //this.adminBulkDataService.isAnalyzingFile = true;
       //this.adminBulkDataService.analyzingFile.next(true);
       const target: HTMLInputElement = <HTMLInputElement> event.target;
@@ -181,22 +183,8 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
       }*/
       this.adminBulkDataService.file = fileList.item(0);
     }
-    /*
-    public onFileInputStreamAnalysis(event: Event) {
-      //alert('using stream parser for analysis..');
-      const target: HTMLInputElement = <HTMLInputElement> event.target;
-      const fileList = target.files;
-      this.adminBulkDataService.file = fileList.item(0);
-    }*/
     /** upload a file for analytics */
     public chooseFileInput(event?: Event) {
-      
-      if(event && event.preventDefault) event.preventDefault();
-      if(event && event.stopPropagation) event.stopPropagation();
-      this.filePicker.nativeElement.click();
-    }
-    /** upload a file for analytics */
-    public chooseFileInputFS(event?: Event) {
       if(event && event.preventDefault) event.preventDefault();
       if(event && event.stopPropagation) event.stopPropagation();
       if(this.filePicker && this.filePicker.nativeElement) {
@@ -209,6 +197,19 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
         console.warn('AdminBulkDataLoadComponent.filePicker.nativeElement missing');
       }
     }
+    /** upload a file for analytics */
+    public clearAndChooseFileInput(event?: Event) {
+      if(event && event.preventDefault) event.preventDefault();
+      if(event && event.stopPropagation) event.stopPropagation();
+      // @TODO check to see if analysis or load is in progress
+      let isProcessInProgress = false;
+      if(isProcessInProgress) {
+        // emit modal confirmation first
+      } else {
+        this.clear();
+        this.chooseFileInput(event);
+      }
+    }
     /** take the current file focus and pass to api load endpoint */
     public loadFile(event: Event) {
       this.adminBulkDataService.load();
@@ -217,18 +218,16 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
     /** take the current file focus and pass to api load endpoint */
     public loadFileFS(event: Event) {
       this.adminBulkDataService.streamLoad(this.adminBulkDataService.file)
-      //.pipe(take(1))
-      //.subscribe((loadSummary: AdminStreamLoadSummary) => {
-        //console.log('[stats] streamLoad: ', loadSummary.recordCount);
-      //  this._currentStreamLoadStats = loadSummary;
-      //});
     }
 
     /** clear the current bulkloader focal state */
     public clear() {
       this.adminBulkDataService.clear();
+      this.filePickerForm.resetForm();
+      this.filePickerForm.reset();
+      this._streamAnalysisComplete = false;
       if(this.filePicker && this.filePicker.nativeElement){
-        this.filePicker.nativeElement.value = undefined;
+        this.filePicker.nativeElement.value = "";
       }
     }
 }

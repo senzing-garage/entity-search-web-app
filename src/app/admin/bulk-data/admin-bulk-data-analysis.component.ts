@@ -98,7 +98,7 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
   private _currentStreamLoadStats: AdminStreamLoadSummary;
 
   private _streamAnalysisInProgress = false;
-  private _streamAnalysiPaused      = false;
+  private _streamAnalysisPaused     = false;
   private _streamAnalysisComplete   = false;
   private _currentStreamAnalysisStats: AdminStreamAnalysisSummary;
 
@@ -112,10 +112,10 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
     this._streamAnalysisInProgress = value;
   }
   public get streamAnalysisPaused(): boolean {
-    return this._streamAnalysiPaused;
+    return this._streamAnalysisPaused;
   }
   public set streamAnalysisPaused(value: boolean) {
-    this._streamAnalysiPaused = value;
+    this._streamAnalysisPaused = value;
   }
   
   public get streamAnalysisComplete(): boolean {
@@ -225,7 +225,9 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
     ).subscribe((info) => {
       console.log('ServerInfo obtained: ', info);
     });
-    this.adminBulkDataService.onError.subscribe((err) => {
+    this.adminBulkDataService.onError.pipe(
+      takeUntil(this.unsubscribe$)
+    ).subscribe((err) => {
       console.warn('SHOW ERROR MESSAGE!', err);
     });
   }
@@ -233,16 +235,20 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
     // all phase 1
     // analyze and load share the same streamReadStarted/streamReadComplete eventing
     this.adminBulkDataService.onStreamReadStarted
-    .pipe(filter( (value) => { return value !== undefined; }))
-    .subscribe((state) => { 
+    .pipe(
+      takeUntil(this.unsubscribe$),
+      filter( (value) => { return value !== undefined; })
+    ).subscribe((state) => { 
       if(this._streamImportInProgress){
         this.streamImportPhase = 1; 
       }
     });
 
     this.adminBulkDataService.onStreamReadProgress
-    .pipe(filter( (value) => { return value !== undefined; }))
-    .subscribe((summary: AdminStreamAnalysisSummary | AdminStreamLoadSummary ) => { 
+    .pipe(
+      takeUntil(this.unsubscribe$),
+      filter( (value) => { return value !== undefined; })
+    ).subscribe((summary: AdminStreamAnalysisSummary | AdminStreamLoadSummary ) => { 
       if(this._streamImportInProgress){
         this.streamImportPhase = 1; 
         this._currentStreamLoadStats = (summary as AdminStreamLoadSummary);
@@ -253,37 +259,53 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
     });
 
     this.adminBulkDataService.onStreamReadComplete
-    .pipe(filter( (value) => { return value !== undefined && this._streamImportInProgress; }))
-    .subscribe((state) => { this.streamImportPhase = 2; });
+    .pipe(
+      takeUntil(this.unsubscribe$),
+      filter( (value) => { return value !== undefined && this._streamImportInProgress; })
+    ).subscribe((state) => { this.streamImportPhase = 2; });
 
     // analysis phases
-    this.adminBulkDataService.onStreamAnalysisStarted.pipe(filter( (value) => { return value !== undefined; })).subscribe((state) => { 
+    this.adminBulkDataService.onStreamAnalysisStarted.pipe(
+      takeUntil(this.unsubscribe$),
+      filter( (value) => { return value !== undefined; })
+    ).subscribe((state) => { 
       this.streamAnalysisInProgress = true;
     });
     this.adminBulkDataService.onStreamAnalysisComplete.pipe(
+      takeUntil(this.unsubscribe$),
       filter( (value) => { return value !== undefined; }))
     .subscribe((summary) => { 
+      console.warn('AdminBulkDataAnalysisComponent.onStreamAnalysisComplete: ', summary);
       this.streamAnalysisComplete = true;
     });
 
     // load phases
-    this.adminBulkDataService.onStreamLoadStarted.pipe(filter( (value) => { return value !== undefined; })).subscribe((state) => { 
+    this.adminBulkDataService.onStreamLoadStarted.pipe(
+      takeUntil(this.unsubscribe$),
+      filter( (value) => { return value !== undefined; })
+    ).subscribe((state) => { 
       this.streamImportInProgress = true;
       this.streamImportPhase = 2; 
     });
     this.adminBulkDataService.onStreamLoadProgress
-    .pipe(filter( (value) => { return value !== undefined; }))
-    .subscribe((summary) => { 
+    .pipe(
+      takeUntil(this.unsubscribe$),
+      filter( (value) => { return value !== undefined; })
+    ).subscribe((summary) => { 
       this.streamImportPhase = 2; 
       this._currentStreamLoadStats = summary;
       //console.log('onStreamLoadProgress: ', summary);
     });
-    this.adminBulkDataService.onStreamLoadPaused
-    .subscribe((pausedState: boolean) => { 
+    this.adminBulkDataService.onStreamLoadPaused.pipe(
+      takeUntil(this.unsubscribe$)
+    ).subscribe((pausedState: boolean) => { 
       this._streamImportPaused = pausedState; 
       //console.log('onStreamLoadProgress: ', summary);
     });
-    this.adminBulkDataService.onStreamLoadComplete.pipe(filter( (value) => { return value !== undefined; })).subscribe((state) => { 
+    this.adminBulkDataService.onStreamLoadComplete.pipe(
+      takeUntil(this.unsubscribe$),
+      filter( (value) => { return value !== undefined; })
+    ).subscribe((state) => { 
       this.streamImportPhase = 3;
       this._streamImportComplete = true;
     });
@@ -296,6 +318,14 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
       } else {
         this._streamStatusMessageSpecialOperation = undefined;
       }
+    });
+    this.adminBulkDataService.onAnalysisCleared.pipe(
+      takeUntil(this.unsubscribe$)
+    ).subscribe( (cleared) => {
+      this._streamAnalysisComplete  = false;
+      this._streamImportPhase       = 0;
+      this._streamImportInProgress  = false;
+      console.info('cleared _streamAnalysisComplete: ', this._streamAnalysisComplete);
     });
   }
 
