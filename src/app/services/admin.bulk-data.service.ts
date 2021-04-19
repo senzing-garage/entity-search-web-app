@@ -1063,11 +1063,15 @@ export class AdminBulkDataService {
     /** helper method to determine if the "analysisByDataSource" collection in a stream summary
      * has a particular datasource.
      */
-    private analysisByDataSouceHasSource(dataset: Array<SzDataSourceRecordAnalysis>, dataSource: string): boolean {
+    private analysisByDataSouceHasSource(dataset: Array<SzDataSourceRecordAnalysis>, dataSource: string | null): boolean {
         let retValue = false;
         if(dataset && dataset.length) {
             retValue = dataset.some((analysisRow: SzDataSourceRecordAnalysis) => {
-                return (analysisRow.dataSource && analysisRow.dataSource === dataSource) ? true : false;
+                if(analysisRow && analysisRow.dataSource === null && dataSource === null) {
+                    return true;
+                } else {
+                    return (analysisRow.dataSource && analysisRow.dataSource === dataSource) ? true : false;
+                }
             });
         }
         return retValue;
@@ -1147,6 +1151,35 @@ export class AdminBulkDataService {
                             recordsWithEntityTypeCount: (record && record.ENTITY_TYPE) ? 1 : 0
                         });
                     }
+                } else if(record){
+                    summary[summaryDsKey] = summary[summaryDsKey] ? summary[summaryDsKey] : [];
+                    let sourceIndex = summary[summaryDsKey].findIndex((analysisRow: SzDataSourceRecordAnalysis) => {
+                        return (analysisRow.dataSource === null) ? true : false;
+                    });
+                    // no datasource, put it in the {dataSource: null} entry
+                    if(summary[summaryDsKey] && summary[summaryDsKey][sourceIndex]) {
+                        // just append
+                        //console.warn('NO DS for record. adding to "null" ', summary[summaryDsKey][sourceIndex]);
+                        // add record to count
+                        summary[summaryDsKey][ sourceIndex ].recordCount++; 
+                        // if record has id, increment per-DS count
+                        if(record && record.RECORD_ID) {
+                            summary[summaryDsKey][ sourceIndex ].recordsWithRecordIdCount++;
+                        }
+                        // if record has entity type increment per-DS count
+                        if(record && record.ENTITY_TYPE) {
+                            summary[summaryDsKey][ sourceIndex ].recordsWithEntityTypeCount++;
+                        }
+                    } else {
+                        // create null datasource
+                        summary[summaryDsKey].push({
+                            dataSource: null,
+                            recordCount: 1,
+                            recordsWithRecordIdCount: (record && record.RECORD_ID) ? 1 : 0,
+                            recordsWithEntityTypeCount: (record && record.ENTITY_TYPE) ? 1 : 0
+                        })
+                        //console.warn('NO DS for record. created "null" ', summary[summaryDsKey].length, summary[summaryDsKey][0]);
+                    }
                 }
                 if(record && (!record.DATA_SOURCE || record.DATA_SOURCE === undefined)) {
                     missingDataSources++;
@@ -1167,7 +1200,7 @@ export class AdminBulkDataService {
                         if(record && record.RECORD_ID) {
                             summary[summaryEtKey][ sourceIndex ].recordsWithRecordIdCount++;
                         }
-                        // if record has entity type increment per-DS count
+                        // if record has datasource increment per-DS count
                         if(record && record.DATA_SOURCE) {
                             summary[summaryEtKey][ sourceIndex ].recordsWithDataSourceCount++;
                         }
@@ -1180,6 +1213,35 @@ export class AdminBulkDataService {
                             recordsWithRecordIdCount: (record && record.RECORD_ID) ? 1 : 0,
                             recordsWithDataSourceCount: (record && record.DATA_SOURCE) ? 1 : 0
                         });
+                    }
+                } else if(record){
+                    summary[summaryEtKey] = summary[summaryEtKey] ? summary[summaryEtKey] : [];
+                    let sourceIndex = summary[summaryEtKey].findIndex((analysisRow: SzEntityTypeRecordAnalysis) => {
+                        return (analysisRow.entityType === null) ? true : false;
+                    });
+                    // no entityType, put it in the {entityType: null} entry
+                    if(summary[summaryEtKey] && summary[summaryEtKey][sourceIndex]) {
+                        // just append
+                        //console.warn('NO EntityType for record. adding to "null" ', summary[summaryEtKey][sourceIndex]);
+                        // add record to count
+                        summary[summaryEtKey][ sourceIndex ].recordCount++; 
+                        // if record has id, increment per-DS count
+                        if(record && record.RECORD_ID) {
+                            summary[summaryEtKey][ sourceIndex ].recordsWithRecordIdCount++;
+                        }
+                        // if record has datasource increment per-DS count
+                        if(record && record.DATA_SOURCE) {
+                            summary[summaryEtKey][ sourceIndex ].recordsWithDataSourceCount++;
+                        }
+                    } else {
+                        // create null entityType
+                        summary[summaryEtKey].push({
+                            entityType: null,
+                            recordCount: 1,
+                            recordsWithRecordIdCount: (record && record.RECORD_ID) ? 1 : 0,
+                            recordsWithDataSourceCount: (record && record.DATA_SOURCE) ? 1 : 0
+                        })
+                        //console.warn('NO EntityType for record. created "null" ', summary[summaryEtKey].length, summary[summaryEtKey][0]);
                     }
                 }
                 if(record && (!record.RECORD_ID || record.RECORD_ID === undefined)) {
