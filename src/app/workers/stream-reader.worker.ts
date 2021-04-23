@@ -243,6 +243,13 @@ function getRecordsFromFileStream(fileHandle: File, fileReadStream: ReadableStre
                         payloadChunk = payloadChunk.trim();
                         let plChunkSplit = payloadChunk.split('}').filter( (value) => {
                             return (value && value.trim() !== '') ? true : false;
+                        }).map((jsonChunk) => {
+                            let retVal = jsonChunk;
+                            if(retVal.lastIndexOf('}') < 0) {
+                                // we need to add '}' back in where we split
+                                retVal  = retVal + '}';
+                            }
+                            return retVal
                         });
                         console.log("what's going on here? ", plChunkSplit);
                         summary.recordCount = summary.recordCount + plChunkSplit.length;

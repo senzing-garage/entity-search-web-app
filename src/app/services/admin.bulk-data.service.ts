@@ -855,7 +855,7 @@ export class AdminBulkDataService {
             takeUntil(this.streamLoadAbort$),
             take(1)
         ).subscribe((result: string[] | Error) => {
-            if((result as string[]).length) {
+            if((result as string[]).length >= 0) {
                 dataSourcesCreated = true;
                 console.log('SzBulkDataService.streamLoad: all data sources created', dataSourcesCreated);
                 if(dataSourcesCreated && entityTypesCreated) {
@@ -867,7 +867,7 @@ export class AdminBulkDataService {
             takeUntil(this.streamLoadAbort$),
             take(1)
         ).subscribe((result) => {
-            if((result as string[]).length) {
+            if((result as string[]).length >= 0) {
                 entityTypesCreated = true;
                 console.log('SzBulkDataService.streamLoad: all entity types created', entityTypesCreated);
                 if(dataSourcesCreated && entityTypesCreated) {
@@ -902,6 +902,7 @@ export class AdminBulkDataService {
         );
 
         let sendQueuedRecords = (records?: any) => {
+            //console.warn('sendQueuedRecords: ', records, readRecords);
             if(readRecords && readRecords.length > 0) {
                 // slice off a batch of records to send
                 let currQueuePush   = readRecords && readRecords.length < bulkRecordSendRate || bulkRecordSendRate < 0 ? readRecords : readRecords.slice(0, bulkRecordSendRate);
