@@ -446,12 +446,18 @@ function createProxyConfigFromInput() {
     retConfig = retConfig !== undefined ? retConfig : {};
     let _pathRewriteObj = {};
     let _apiVDir        = _virtualDir && _virtualDir !== '/' ? _virtualDir : '';
-    
-    webSrvrOpts.apiPath = webSrvrOpts && webSrvrOpts.apiPath ? webSrvrOpts.apiPath : '/api';
-    _pathRewriteObj["^"+ (_apiVDir + (webSrvrOpts.apiPath ? webSrvrOpts.apiPath : '/api')).replace("//","/") ]   = "";
-    //console.log('-- API SERVER PATH: '+ webSrvrOpts.apiPath +' --');
-    //console.log(_pathRewriteObj)
-    retConfig[ (_apiVDir + webSrvrOpts.apiPath +"/*").replace("//","/") ] = {
+    let _apiFullPath    = webSrvrOpts && webSrvrOpts.apiPath ? webSrvrOpts.apiPath : '/api';
+
+    // if apiPath unspecified AND virtualDir specified
+    // serve api requests from under virtual dir path
+    if(_apiFullPath === '/api' && _apiVDir !== '') {
+      _apiFullPath    = (_apiVDir + (_apiFullPath ? _apiFullPath : '/api')).replace("//","/");
+    } else {
+      _apiFullPath    = (_apiFullPath ? _apiFullPath : '/api').replace("//","/");
+    }
+    _pathRewriteObj["^"+ _apiFullPath ]   = "";
+
+    retConfig[ _apiFullPath ] = {
       "target": proxyOpts.apiServerUrl,
       "secure": true,
       "logLevel": proxyOpts.logLevel,

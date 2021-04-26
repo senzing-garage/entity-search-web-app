@@ -144,7 +144,9 @@ app.get('*/config/api', (req, res, next) => {
     if(runtimeOptions.config.web.apiPath) {
       _retObj.basePath  = runtimeOptions.config.web.apiPath;
     }
-    if(runtimeOptions.config.web.path && runtimeOptions.config.web.path !== '/') {
+    // if "apiPath" set to default "/api" AND virtual dir specified
+    // serve "apiPath" under virtual dir instread of root level
+    if(runtimeOptions.config.web.path && runtimeOptions.config.web.path !== '/' && runtimeOptions.config.web.apiPath === '/api') {
       _retObj.basePath  = runtimeOptions.config.web.path + _retObj.basePath;
       _retObj.basePath  = _retObj.basePath.replace("//","/");
     }
