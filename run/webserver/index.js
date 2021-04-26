@@ -135,6 +135,22 @@ if(runtimeOptions.config &&
 } else {
   //console.log('no virtual directory', runtimeOptions.config.web);
 }
+// we need a wildcarded version due to 
+// queries from virtual directory hosted apps
+// and any number of SPA routes on top of that
+app.get('*/config/api', (req, res, next) => {
+  let _retObj = {};
+  if(runtimeOptions.config.web) {
+    if(runtimeOptions.config.web.apiPath) {
+      _retObj.basePath  = runtimeOptions.config.web.apiPath;
+    }
+    if(runtimeOptions.config.web.path && runtimeOptions.config.web.path !== '/') {
+      _retObj.basePath  = runtimeOptions.config.web.path + _retObj.basePath;
+      _retObj.basePath  = _retObj.basePath.replace("//","/");
+    }
+  }
+  res.status(200).json( _retObj );
+});
 
 //console.log('\n\n STATIC PATH: '+staticPath,'\n');
 

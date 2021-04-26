@@ -52,19 +52,6 @@ function getOptionsFromInput() {
   // grab env vars
   let env = process.env;
   let authOpts = getCommandLineArgsAsJSON();
-  /*
-  if(cl && cl.forEach){
-    authOpts = {};
-    cl.forEach( (val, ind, arr) => {
-      let retVal = val;
-      let retKey = val;
-      if(val && val.indexOf && val.indexOf('=')){
-        retKey = (val.split('='))[0];
-        retVal = (val.split('='))[1];
-      }
-      authOpts[ retKey ] = retVal;
-    })
-  }*/
   if(env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE) {
     authOpts = authOpts && authOpts !== undefined ? authOpts : {
       adminAuthMode: env.SENZING_WEB_SERVER_ADMIN_SECRET
@@ -222,20 +209,6 @@ function createAuthConfigFromInput() {
     // grab cmdline args
     let cl = process.argv;
     let authOpts = getCommandLineArgsAsJSON();
-    /*
-    // import args in to "cl" JSON style object
-    if(cl && cl.forEach){
-      authOpts = {};
-      cl.forEach( (val, ind, arr) => {
-        let retVal = val;
-        let retKey = val;
-        if(val && val.indexOf && val.indexOf('=')){
-          retKey = (val.split('='))[0];
-          retVal = (val.split('='))[1];
-        }
-        authOpts[ retKey ] = retVal;
-      })
-    }*/
     // now check our imported cmdline args
     if(authOpts && authOpts !== undefined && authOpts.adminAuthMode && authOpts.adminAuthMode !== undefined) {
       retConfig = retConfig !== undefined ? retConfig : {};
@@ -464,30 +437,36 @@ function createProxyConfigFromInput() {
   let retConfig     = undefined;
   let proxyOpts     = getProxyServerOptionsFromInput();
   let cmdLineOpts   = getCommandLineArgsAsJSON();
+  let webSrvrOpts   = getWebServerOptionsFromInput();
 
+  let _virtualDir   = (env.SENZING_WEB_SERVER_VIRTUAL_PATH) ? env.SENZING_WEB_SERVER_VIRTUAL_PATH : '/';
+  _virtualDir       = (cmdLineOpts && cmdLineOpts.virtualPath) ? cmdLineOpts.virtualPath : _virtualDir;
 
-  if(env.SENZING_API_SERVER_URL) {
+  if(proxyOpts.apiServerUrl && proxyOpts.apiServerUrl !== undefined) {
     retConfig = retConfig !== undefined ? retConfig : {};
-    retConfig["/api/*"] = {
-      "target": env.SENZING_API_SERVER_URL,
+    let _pathRewriteObj = {};
+    let _apiVDir        = _virtualDir && _virtualDir !== '/' ? _virtualDir : '';
+    
+    webSrvrOpts.apiPath = webSrvrOpts && webSrvrOpts.apiPath ? webSrvrOpts.apiPath : '/api';
+    _pathRewriteObj["^"+ (_apiVDir + (webSrvrOpts.apiPath ? webSrvrOpts.apiPath : '/api')).replace("//","/") ]   = "";
+    //console.log('-- API SERVER PATH: '+ webSrvrOpts.apiPath +' --');
+    //console.log(_pathRewriteObj)
+    retConfig[ (_apiVDir + webSrvrOpts.apiPath +"/*").replace("//","/") ] = {
+      "target": proxyOpts.apiServerUrl,
       "secure": true,
       "logLevel": proxyOpts.logLevel,
-      "pathRewrite": {
-        "^/api": ""
-      }
+      "pathRewrite": _pathRewriteObj
     }
   }
-
-  let _virtualDir = (env.SENZING_WEB_SERVER_VIRTUAL_PATH) ? env.SENZING_WEB_SERVER_VIRTUAL_PATH : '/';
-  _virtualDir     = (cmdLineOpts && cmdLineOpts.virtualPath) ? cmdLineOpts.virtualPath : _virtualDir;
 
   let appendBasePathToKeys = (obj) => {
     if(_virtualDir !== '/') {
       // re-key object
       let _retObj = {};
       for(let pathKey in obj) {
-        let newKey = !pathKey.startsWith('/api') ? (_virtualDir + pathKey) : pathKey;
-        let newVal = obj[pathKey];
+        let newKey  = !pathKey.startsWith('/api') ? (_virtualDir + pathKey) : pathKey;
+        newKey      = newKey.replace("//","/");
+        let newVal  = obj[pathKey];
         if(newVal && newVal.pathRewrite) {
           // check pathRewrite for vdir pathing
           let _pathRewriteObj = {};
@@ -495,7 +474,7 @@ function createProxyConfigFromInput() {
           for(let rewriteKey in newVal.pathRewrite) {
             if(rewriteKey && rewriteKey.substring && rewriteKey.indexOf('^/') === 0) {
               // append virtual dir to rewrite
-              _pathRewriteObj[ ('^'+ _virtualDir + rewriteKey.substring(1) ) ] = newVal.pathRewrite[ rewriteKey ];
+              _pathRewriteObj[ ('^'+ (_virtualDir + rewriteKey.substring(1)).replace("//","/") ) ] = newVal.pathRewrite[ rewriteKey ];
             } else {
               // just return same value
               _pathRewriteObj[ rewriteKey ] = newVal.pathRewrite[ rewriteKey ];
@@ -570,17 +549,6 @@ function createProxyConfigFromInput() {
   }
   // -------------------- start CMD LINE ARGS import -----------
     // now check our imported cmdline args
-    if(proxyOpts.apiServerUrl && proxyOpts.apiServerUrl !== undefined) {
-      retConfig = retConfig !== undefined ? retConfig : {};
-      retConfig["/api/*"] = {
-        "target": proxyOpts.apiServerUrl,
-        "secure": true,
-        "logLevel": proxyOpts.logLevel,
-        "pathRewrite": {
-          "^/api": ""
-        }
-      }
-    }
     if(proxyOpts.adminAuthPath && proxyOpts.adminAuthPath !== undefined) {
       retConfig = retConfig !== undefined ? retConfig : {};
       let mergeObj = appendBasePathToKeys({
