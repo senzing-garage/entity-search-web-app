@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.4] - TBD
+
+- support for runtime configuration of API path that client connects to through env vars and cmdline switches. 
+
+relevant tickets: #163
+
 ## [2.2.2,2.2.3] - 2021-04-08
 
 - support for virtual directories
