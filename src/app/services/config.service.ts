@@ -1,8 +1,6 @@
 import { Injectable, Inject } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
-import { ActivatedRouteSnapshot } from '@angular/router';
-import { Observable, of, from, interval, Subject } from 'rxjs';
-import { map, catchError, tap, switchMap, take } from 'rxjs/operators';
+import { Observable, of, Subject } from 'rxjs';
+import { catchError, take } from 'rxjs/operators';
 import { SzRestConfigurationParameters, SzConfigurationService, SzAdminService, SzServerInfo, SzBaseResponseMeta } from '@senzing/sdk-components-ng';
 import { HttpClient } from '@angular/common/http';
 
@@ -84,6 +82,13 @@ export class SzWebAppConfigService {
     // config. we cant do this with static files
     // directly since container is immutable and
     // doesnt write to file system.
-    return this.http.get<SzRestConfigurationParameters>('./config/api');
+    return this.http.get<SzRestConfigurationParameters>('./config/api').pipe(
+      catchError((err) => {
+        // return default payload for local developement when "/config/api" not available
+        return of({
+          basePath: "/api"
+        })
+      })
+    );
   }
 }
