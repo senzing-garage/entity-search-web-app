@@ -642,5 +642,6 @@ module.exports = {
   "proxy": createProxyConfigFromInput(),
   "stream": getStreamServerOptionsFromInput(),
   "proxyServerOptions": getProxyServerOptionsFromInput(),
-  "webServerOptions": getWebServerOptionsFromInput()
+  "webServerOptions": getWebServerOptionsFromInput(),
+  "getCommandLineArgsAsJSON": getCommandLineArgsAsJSON
 }

@@ -73,12 +73,15 @@ export class WebSocketService {
     return retVal;
   }
 
-  static getSocketUriFromConnectionObject(connProps: AdminStreamConnProperties): string {
+  static getSocketUriFromConnectionObject(connProps: AdminStreamConnProperties, test: boolean = false): string {
     let retVal = "ws://localhost:8955";
     if(connProps) {
       retVal  = (connProps.secure) ? "wss://" : "ws://";
       retVal += (connProps.hostname) ? connProps.hostname : 'localhost';
       retVal += (connProps.port) ? ':'+connProps.port : '';
+      if(test){
+        retVal += '/load-queue/bulk-data/records'
+      }
     }
 
     return retVal;
@@ -330,13 +333,22 @@ export class WebSocketService {
     const retVal: Observable<boolean> = retSub.asObservable();
 
     if(connectionProps) {
-      let _wsaddr = WebSocketService.getSocketUriFromConnectionObject(this.connectionProperties);
+      let _wsaddr = WebSocketService.getSocketUriFromConnectionObject(this.connectionProperties, true);
 
       const openSubject = new Subject<Event>();
       openSubject.pipe(
         tap( s => { 
           console.log('WebSocketService.open: ', s);
           this._connected = true;
+          if(this.ws$ && this.close){
+            this.close();
+          } else {
+            // no way to close, ensure response forwards
+            retSub.next(this._connected);
+            retSub.closed = true;
+            retSub.unsubscribe();
+            this._connected = false;
+          }
         })
       ).subscribe(this._onStatusChange);
       
@@ -344,7 +356,16 @@ export class WebSocketService {
       closeSubject.pipe(
         tap( s => {
           console.log('WebSocketService.close: ', s);
+          
+          // conn opened then closed successfully
+          retSub.next(this._connected);
+          retSub.closed = true;
+          retSub.unsubscribe();
           this._connected = false;
+
+          if(this.ws$ && this.ws$.complete) {
+            this.ws$.complete();
+          }
         })
       ).subscribe(this._onStatusChange);
 
@@ -375,18 +396,14 @@ export class WebSocketService {
       .pipe(
         take(1),
         catchError( (errors: any) => {
+          console.warn('WS error: ', errors);
           this._onError(errors);
           return of(errors)
         } )
       ).subscribe( (res) => {
         this._connected = true;
-        if(res && res.uuid) {
-          retSub.next(true);
-          retSub.closed = true;
-          retSub.unsubscribe();
-          this.ws$.complete();
-        }
       }, (err)=> {
+        console.warn('WS error: ', err);
         this._connected = false;
         retSub.next(false);
         retSub.closed = true;
