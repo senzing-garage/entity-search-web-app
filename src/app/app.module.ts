@@ -12,9 +12,6 @@ import { InMemoryDataService } from '../../e2e/data/services/in-memory-data.serv
 import { OverlayModule } from '@angular/cdk/overlay';
 import { LayoutModule } from '@angular/cdk/layout';
 
-// third party components and modules
-import { StorageServiceModule } from 'ngx-webstorage-service';
-
 // local components and modules
 import { AppRoutingModule } from './app-routing.module';
 // import { AdminModule } from './admin/admin.module';
@@ -40,6 +37,7 @@ import { NoResultsComponent } from './errors/no-results/no-results.component';
 import { AboutComponent } from './about/about.component';
 // admin dialog components that "FREAK-OUT" for no good reason
 import { AdminStreamConnDialogComponent } from './common/stream-conn-dialog/stream-conn-dialog.component';
+import { AdminStreamAbortDialogComponent } from './common/stream-abort-dialog/stream-abort-dialog.component';
 
 // errors
 import { PageNotFoundComponent } from './errors/page-not-found/page-not-found.component';
@@ -82,7 +80,8 @@ import { AdminBulkDataService } from './services/admin.bulk-data.service';
     BlankComponent,
     TipsComponent,
     AboutComponent,
-    AdminStreamConnDialogComponent
+    AdminStreamConnDialogComponent,
+    AdminStreamAbortDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -93,14 +92,13 @@ import { AdminBulkDataService } from './services/admin.bulk-data.service';
     AdminModule,
     AppRoutingModule,
     LayoutModule,
-    StorageServiceModule,
     SenzingSdkModule.forRoot( SzRestConfigurationFactory ),
     SenzingSdkGraphModule.forRoot( SzRestConfigurationFactory ),
     SenzingDataServiceModule.forRoot( SzRestConfigurationFactory ),
     SpinnerModule,
     environment.test ? HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService, { delay: 100 }) : []
   ],
-  entryComponents: [ AdminStreamConnDialogComponent ],
+  entryComponents: [ AdminStreamConnDialogComponent, AdminStreamAbortDialogComponent ],
   providers: [
     SzWebAppConfigService,
     EntitySearchService,

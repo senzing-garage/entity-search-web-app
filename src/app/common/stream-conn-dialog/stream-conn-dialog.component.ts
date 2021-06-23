@@ -4,7 +4,7 @@ import { WebSocketService } from '../../services/websocket.service';
 import { AdminBulkDataService } from '../../services/admin.bulk-data.service';
 
 //import { AdminStreamConnProperties } from '../../services/admin.bulk-data.service';
-import { AdminStreamConnProperties, AdminStreamAnalysisConfig, AdminStreamLoadConfig } from '@senzing/sdk-components-ng';
+import { AdminStreamConnProperties, AdminStreamAnalysisConfig, AdminStreamLoadConfig, AdminStreamUploadRates } from '@senzing/sdk-components-ng';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
@@ -47,46 +47,16 @@ import { Subject } from 'rxjs';
     public set wsUUID(value: string) {
       this.data.streamConnectionProperties.clientId = value;
     }
-    public get wsAnalysisSampleSize() {
-        return (this.data && this.data.streamAnalysisConfig && this.data.streamAnalysisConfig.sampleSize) ? this.data.streamAnalysisConfig.sampleSize : 1000;
+    public get wsLoadUploadRate() {
+      return (this.data && this.data.streamLoadConfig && this.data.streamLoadConfig.uploadRate) ? this.data.streamLoadConfig.uploadRate : -1;
     }
-    public set wsAnalysisSampleSize(value: number) {
-        this.data.streamAnalysisConfig.sampleSize = value;
+    public set wsLoadUploadRate(value: number) {
+        this.data.streamLoadConfig.uploadRate = value;
     }
     public get wsConnectionIsValid(): boolean {
       return (this.data && this.data.streamConnectionProperties && this.data.streamConnectionProperties.connectionTest) ?  this.data.streamConnectionProperties.connectionTest : false;
     }
 
-    public get autoCreateMissingDataSources(): boolean {
-      return (this.data && this.data.streamLoadConfig && this.data.streamLoadConfig.autoCreateMissingDataSources) ? true : false;
-    }
-    public set autoCreateMissingDataSources(value: boolean) {
-      this.data.streamLoadConfig.autoCreateMissingDataSources = value;
-    }
-    public get mapEmptyDataSourcesTo(): string {
-      return (this.data && this.data.streamLoadConfig && this.data.streamLoadConfig.assignMissingDataSourceRecordsToStaticTarget) ? (this.data.streamLoadConfig.assignMissingDataSourceRecordsToStaticTarget as string) : "";
-    }
-    public set mapEmptyDataSourcesTo(value: string) {
-      this.data.streamLoadConfig.assignMissingDataSourceRecordsToStaticTarget = value;
-    }
-    private _mapEmptyDataSourcesToValue = false;
-    public get mapEmptyDataSourcesToValue(): boolean {
-      return this._mapEmptyDataSourcesToValue;
-    }
-    public set mapEmptyDataSourcesToValue(value: boolean) {
-      this._mapEmptyDataSourcesToValue = value;
-    }
-
-    public wsAnalysisSampleSizes = [
-      100,
-      500,
-      1000,
-      5000,
-      10000,
-      20000,
-      50000,
-      100000
-    ];
     public wsReconnectionAttemptsOptions = [
       {value: -2, text: 'unlimited'},
       {value: -1, text: 'none'},
@@ -97,6 +67,21 @@ import { Subject } from 'rxjs';
       {value: 10, text: '10'},
       {value: 20, text: '20'}
     ]
+
+    /** available upload rates */
+    private _wsLoadUploadRates = [];
+    public get wsLoadUploadRates(): {key: string, value: number}[] {
+      let retValues = this._wsLoadUploadRates;
+      if(retValues && retValues.length <= 0) {
+        for(let key in AdminStreamUploadRates) {
+          if(key !== 'unlimited'){
+            this._wsLoadUploadRates.push( { 'key': key, 'value': AdminStreamUploadRates[key] } );
+          }
+        }
+        retValues = this._wsLoadUploadRates;
+      }
+      return retValues;
+    }
 
     public testStatus = "";
     public isTesting  = false;
@@ -119,11 +104,6 @@ import { Subject } from 'rxjs';
         }
       } else {
         // make sure each node has an initialized value
-        if(!this.data.streamAnalysisConfig) {
-          this.data.streamAnalysisConfig = {
-            sampleSize: 10000
-          }
-        }
         if(!this.data.streamConnectionProperties) {
           this.data.streamConnectionProperties = {
             "hostname": 'localhost:8555',
@@ -134,7 +114,10 @@ import { Subject } from 'rxjs';
           }
         }
         if(!this.data.streamLoadConfig) {
-          this.data.streamLoadConfig.autoCreateMissingDataSources = false;
+          this.data.streamLoadConfig = {
+            autoCreateMissingDataSources: false,
+            uploadRate: 10000
+          }
         }
       }
       if(this.data && this.data.streamConnectionProperties && this.data.streamConnectionProperties.connectionTest) {
@@ -156,11 +139,7 @@ import { Subject } from 'rxjs';
       });
     }
 
-    ngAfterViewInit() {
-      if(this.data && this.data.streamLoadConfig && this.data.streamLoadConfig.assignMissingDataSourceRecordsToStaticTarget !== undefined) {
-        this._mapEmptyDataSourcesToValue = true;
-      }
-    }
+    ngAfterViewInit() {}
 
     /**
      * unsubscribe event streams

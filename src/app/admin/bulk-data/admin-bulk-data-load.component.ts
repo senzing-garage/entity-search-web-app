@@ -7,7 +7,11 @@ import {
 } from '@senzing/rest-api-client-ng';
 import { Subject } from 'rxjs';
 import { AdminBulkDataService, AdminStreamAnalysisSummary, AdminStreamLoadSummary } from '../../services/admin.bulk-data.service';
-import { filter } from 'rxjs/operators';
+import { filter, take, takeUntil } from 'rxjs/operators';
+import { SzStreamingFileRecordParser } from '../../common/streaming-file-record-parser';
+import { NgForm } from '@angular/forms';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { AdminStreamAbortDialogComponent } from 'src/app/common/stream-abort-dialog/stream-abort-dialog.component';
 
 /**
  * Provides an interface for loading files in to a datasource.
@@ -34,11 +38,11 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
   /** file picker element */
   @ViewChild('filePicker')
   private filePicker: ElementRef;
+  /** file picker form (needed to reset) */
+  @ViewChild('szAdminFileSelectForm')
+  private filePickerForm: NgForm;
+
   /** get the current analysis from service */
-  /*
-  get analysis(): SzBulkDataAnalysis {
-    return this.adminBulkDataService.currentAnalysis;
-  }*/
   public get analysis(): SzBulkDataAnalysis | AdminStreamAnalysisSummary {
     return this.adminBulkDataService.currentAnalysisResult;
   }
@@ -71,6 +75,14 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
   public get canOpenStreamSocket(): boolean {
     return this.adminBulkDataService.canOpenStreamSocket;
   }
+  private _streamAnalysisComplete = false;
+  public get isStreamAnalysisComplete(): boolean {
+    return this._streamAnalysisComplete;
+  }
+  private _isStreamingAnalysisInProgress  = false;
+  private _isStreamingLoadInProgress      = false;
+  public get isStreamingAnalysisInProgress(): boolean { return this._isStreamingAnalysisInProgress; }
+  public get isStreamingLoadInProgress(): boolean { return this._isStreamingAnalysisInProgress; }
 
   /** does user have admin rights */
   public get adminEnabled() {
@@ -134,6 +146,7 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
     public prefs: SzPrefsService,
     private adminService: SzAdminService,
     //private bulkDataService: SzBulkDataService,
+    public dialog: MatDialog,
     private adminBulkDataService: AdminBulkDataService,
     public viewContainerRef: ViewContainerRef) {}
 
@@ -142,12 +155,35 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
       // if its the users first file load and they just verified stream host
       // immediately prompt for file selection
       this.adminBulkDataService.onUseStreamingSocketChange.pipe(
+        takeUntil(this.unsubscribe$),
         filter( (useStreamingForLoad: boolean) => {
           return useStreamingForLoad && !this.adminBulkDataService.file && this.adminBulkDataService.streamConnectionProperties.connectionTest;
         })
       ).subscribe( (useStreaming) => {
         console.info('AdminBulkDataLoadComponent.adminBulkDataService.onUseStreamingSocketChange: '+ useStreaming);
-        this.chooseFileInputFS();
+        this.chooseFileInput();
+      });
+
+      this.adminBulkDataService.onStreamAnalysisProgress.pipe(
+        takeUntil(this.unsubscribe$)
+      ).subscribe((summary) =>{
+        this._isStreamingAnalysisInProgress = true;
+      });
+      this.adminBulkDataService.onStreamLoadProgress.pipe(
+        takeUntil(this.unsubscribe$)
+      ).subscribe((summary) =>{
+        this._isStreamingLoadInProgress = true;
+      });
+      this.adminBulkDataService.onStreamAnalysisComplete.pipe( 
+        takeUntil(this.unsubscribe$) 
+      ).subscribe((summary: AdminStreamAnalysisSummary) => {
+        this._streamAnalysisComplete = summary ? summary.complete : false;
+        this._isStreamingAnalysisInProgress = summary ? !summary.complete : true;
+      });
+      this.adminBulkDataService.onStreamLoadComplete.pipe(
+        takeUntil(this.unsubscribe$)
+      ).subscribe((summary: AdminStreamLoadSummary) =>{
+        this._isStreamingLoadInProgress = summary ? !summary.complete : false;
       });
     }
     /**
@@ -160,6 +196,7 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
 
     /** take the current file focus and pass to api load endpoint */
     public onFileInputChange(event: Event) {
+      console.log('onFileInputChange: ', event);
       //this.adminBulkDataService.isAnalyzingFile = true;
       //this.adminBulkDataService.analyzingFile.next(true);
       const target: HTMLInputElement = <HTMLInputElement> event.target;
@@ -170,22 +207,8 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
       }*/
       this.adminBulkDataService.file = fileList.item(0);
     }
-    /*
-    public onFileInputStreamAnalysis(event: Event) {
-      //alert('using stream parser for analysis..');
-      const target: HTMLInputElement = <HTMLInputElement> event.target;
-      const fileList = target.files;
-      this.adminBulkDataService.file = fileList.item(0);
-    }*/
     /** upload a file for analytics */
     public chooseFileInput(event?: Event) {
-      
-      if(event && event.preventDefault) event.preventDefault();
-      if(event && event.stopPropagation) event.stopPropagation();
-      this.filePicker.nativeElement.click();
-    }
-    /** upload a file for analytics */
-    public chooseFileInputFS(event?: Event) {
       if(event && event.preventDefault) event.preventDefault();
       if(event && event.stopPropagation) event.stopPropagation();
       if(this.filePicker && this.filePicker.nativeElement) {
@@ -198,22 +221,57 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
         console.warn('AdminBulkDataLoadComponent.filePicker.nativeElement missing');
       }
     }
+    private _abortDialogRef: MatDialogRef<AdminStreamAbortDialogComponent>;
+
+    /** upload a file for analytics */
+    public clearAndChooseFileInput(event?: Event) {
+      if(event && event.preventDefault) event.preventDefault();
+      if(event && event.stopPropagation) event.stopPropagation();
+      // @TODO check to see if analysis or load is in progress
+      let isProcessInProgress = this._isStreamingAnalysisInProgress || this._isStreamingLoadInProgress;
+      if(isProcessInProgress) {
+        // emit modal confirmation first
+        this._abortDialogRef = this.dialog.open(AdminStreamAbortDialogComponent, {
+          width: '600px',
+          data: {
+            streamConnectionProperties: this.adminBulkDataService.streamConnectionProperties,
+            streamAnalysisConfig: this.adminBulkDataService.streamAnalysisConfig,
+            streamLoadConfig: this.adminBulkDataService.streamLoadConfig,
+          }
+        });
+        this._abortDialogRef.afterClosed().subscribe((result: boolean | undefined) => {
+          console.log(`Dialog result: `, result);
+          this._abortDialogRef = undefined;
+          if(result === true){
+            // @TODO stop current process
+            this.adminBulkDataService.abort();
+            // clear state
+            this.clear();
+          }
+        });
+      } else {
+        this.clear();
+        this.chooseFileInput(event);
+      }
+    }
     /** take the current file focus and pass to api load endpoint */
     public loadFile(event: Event) {
       this.adminBulkDataService.load();
     }
+
     /** take the current file focus and pass to api load endpoint */
     public loadFileFS(event: Event) {
       this.adminBulkDataService.streamLoad(this.adminBulkDataService.file)
-      //.pipe(take(1))
-      .subscribe((loadSummary: AdminStreamLoadSummary) => {
-        //console.log('[stats] streamLoad: ', loadSummary);
-        // load is done, show results
-        //alert('done loading: \n\r'+ JSON.stringify(loadSummary, undefined, 2));
-      });
     }
+
     /** clear the current bulkloader focal state */
     public clear() {
       this.adminBulkDataService.clear();
+      this.filePickerForm.resetForm();
+      this.filePickerForm.reset();
+      this._streamAnalysisComplete = false;
+      if(this.filePicker && this.filePicker.nativeElement){
+        this.filePicker.nativeElement.value = "";
+      }
     }
 }

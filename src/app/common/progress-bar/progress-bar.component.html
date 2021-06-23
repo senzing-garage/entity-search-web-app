@@ -1,0 +1,5 @@
+<div class="text" [class.complete-message]="isComplete" *ngIf="text">{{text}}</div>
+<div class="bar" [style.width]="barWidth">
+    <span class="perc2" [style.right]="percRightAdjust" *ngIf="percent" [innerHTML]="percent"></span>
+</div>
+<!--<div class="perc" [style.width]="barWidth" *ngIf="percent">{{percent}}</div>-->

@@ -3,6 +3,7 @@ import { SzPrefsService, SzBulkDataService } from '@senzing/sdk-components-ng';
 import { SzBulkDataAnalysis, SzBulkLoadResult } from '@senzing/rest-api-client-ng';
 import { Subject } from 'rxjs';
 import { AdminBulkDataService, AdminStreamLoadSummary } from '../../services/admin.bulk-data.service';
+import { takeUntil } from 'rxjs/operators';
 
 /**
  * show textual summary of data load operation.

@@ -117,6 +117,42 @@ export class WebSocketService {
     return retObs;
   }
 
+  public sendMessages(messages: any[] | string[]): Observable<boolean> {
+    let retSub = new Subject<boolean>();
+    let retObs = retSub.asObservable();
+    if((this.connectionProperties && !this._connected) || this.ws$ === undefined) {
+      //console.log('queueing message..', this._offlineMessageQueue.length, this._connected, this.ws$.closed);
+      this._offlineMessageQueue = this._offlineMessageQueue.concat(
+        (messages as any).map((message: any) => {
+          return {data: JSON.stringify(message)}
+        })
+      );
+    } else if(this.ws$) {
+      //console.log('sending message..', message, this._connected);
+      this.ws$.pipe(
+        take(1)
+      ).subscribe((res) => {
+        // does message match
+        retSub.next(true); // for now just pub true
+        //retSub.unsubscribe();
+        //retSub.complete();
+      });
+      messages.forEach((message: any | string) => {
+        if((message as string).split) {
+          // string
+          this.ws$.next( message );
+        } else {
+          // assume json object
+          this.ws$.next( JSON.stringify(message) );
+        }
+      });
+      retSub.next(true);
+    } else {
+      console.warn('catastrophic premise. no ws$ object or not enough info to create one..');
+    }
+    return retObs;
+  }
+
   constructor() {  
     /** track the connection status of the socket */
     this.onConnectionStateChange.subscribe((connected) => {

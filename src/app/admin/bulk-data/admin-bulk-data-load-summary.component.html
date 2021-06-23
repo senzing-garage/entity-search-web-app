@@ -11,16 +11,22 @@
     <tr><th *ngIf="file && file.name">File Name:</th><td>{{ file.name }}</td></tr>
     <tr><th *ngIf="file && file.size">File Size:</th><td>{{ getFileSize(file.size) }}</td></tr>
     <tr><th>Character Encoding:</th><td>{{ result.characterEncoding }}</td></tr>
-    <tr><th>Media Type:</th><td>{{ result.mediaType }}</td></tr>
+    <tr><th>Media Type:</th><td>{{ result.mediaType }}</td></tr>    
   </table>
 </div>
 <div class="general-stats-reflow" *ngIf="streamResult">
   <table class="stats-col">
     <tr><th>Total Number of Records:</th><td>{{ streamResult.recordCount }}</td></tr>
     <tr><th>Number of Sent Records:</th><td>{{ streamResult.sentRecordCount }}</td></tr>
-    <tr><th>Number of Queued Records:</th><td>{{ streamResult.failedRecordCount }}</td></tr>
+    <tr><th>Number of Queued Records:</th><td>{{ streamResult.unsentRecordCount }}</td></tr>
     <tr><th>Number of Records Missing Data Sources:</th><td>{{ streamResult.missingDataSourceCount }}</td></tr>
     <tr><th>Number of Records Missing Entity Types:</th><td>{{ streamResult.missingEntityTypeCount }}</td></tr>
+    <tr>
+      <th>Data Sources:</th>
+      <td>
+        <div class="datasources-overflow" [matTooltip]="streamResult.dataSources.join(', ')">{{ streamResult.dataSources.join(', ') }}</div>
+      </td>
+    </tr>
   </table>
   <table class="stats-col">
     <tr><th *ngIf="file && file.name">File Name:</th><td>{{ file.name }}</td></tr>
@@ -31,5 +37,6 @@
     <tr><th>Bytes Sent:</th><td>{{ getFileSize(streamResult.bytesSent) }}</td></tr>
     <!--<tr><th>Bytes not yet sent:</th><td>{{ getFileSize(streamResult.bytesQueued) }}</td></tr>-->
   </table>
+  <div *ngIf="streamOperationMessage">{{streamOperationMessage}}</div>
 </div>
 <!-- end BulkDataLoadSummary -->

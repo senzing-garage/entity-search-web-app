@@ -1,0 +1,9 @@
+<h1 mat-dialog-title>Abort?</h1>
+<div mat-dialog-content>
+    There is currently data being analyzed or loading. Are you sure you want to abort 
+    the current process?
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">No</button>
+  <button mat-stroked-button color="primary" [mat-dialog-close]="true" cdkFocusInitial>Yes</button>
+</div>

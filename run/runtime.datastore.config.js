@@ -240,11 +240,13 @@ function createAuthConfigFromInput() {
   }
   if(env.SENZING_WEB_SERVER_ADMIN_SECRET) {
     retConfig = retConfig !== undefined ? retConfig : {};
-    retConfig.adminSecret = env.SENZING_WEB_SERVER_ADMIN_SECRET;
+    retConfig.admin = retConfig.admin !== undefined ? retConfig.admin : {};
+    retConfig.admin.secret = env.SENZING_WEB_SERVER_ADMIN_SECRET;
   }
   if(env.SENZING_WEB_SERVER_ADMIN_SEED) {
     retConfig = retConfig !== undefined ? retConfig : {};
-    retConfig.adminToken = env.SENZING_WEB_SERVER_ADMIN_SEED;
+    retConfig.admin = retConfig.admin !== undefined ? retConfig.admin : {};
+    retConfig.admin.token = env.SENZING_WEB_SERVER_ADMIN_SEED;
   }
   // -------------------- end ENV vars import ------------------
   // -------------------- start CMD LINE ARGS import -----------
@@ -309,6 +311,26 @@ function createAuthConfigFromInput() {
     }
     if(authOpts && authOpts !== undefined && authOpts.authServerHostName && authOpts.authServerHostName !== undefined) {
       retConfig.hostname = authOpts.authServerHostName;
+    }
+    if(authOpts && authOpts !== undefined && authOpts.adminAuthSecret ) {
+      retConfig = retConfig !== undefined ? retConfig : {};
+      retConfig.admin = retConfig.admin !== undefined ? retConfig.admin : {};
+      retConfig.admin.secret = authOpts.adminAuthSecret;
+    }
+    if(authOpts && authOpts !== undefined && authOpts.adminAuthToken ) {
+      retConfig = retConfig !== undefined ? retConfig : {};
+      retConfig.admin = retConfig.admin !== undefined ? retConfig.admin : {};
+      retConfig.admin.token = authOpts.adminAuthToken;
+    }
+    if(authOpts && authOpts !== undefined && authOpts.operatorAuthSecret ) {
+      retConfig = retConfig !== undefined ? retConfig : {};
+      retConfig.operator = retConfig.operator !== undefined ? retConfig.operator : {};
+      retConfig.operator.secret = authOpts.operatorAuthSecret;
+    }
+    if(authOpts && authOpts !== undefined && authOpts.operatorAuthToken ) {
+      retConfig = retConfig !== undefined ? retConfig : {};
+      retConfig.operator = retConfig.operator !== undefined ? retConfig.operator : {};
+      retConfig.operator.token = authOpts.operatorAuthToken;
     }
 
   // -------------------- end CMD LINE ARGS import -----------

@@ -1,13 +1,19 @@
-<input #filePicker (change)="onFileInputChange($event)" type="file"
+<form #szAdminFileSelectForm="ngForm">
+       <input #filePicker (change)="onFileInputChange($event)" type="file"
        [accept]="supportedFileTypes"
        class="hidden-file-picker"
        xmlns="http://www.w3.org/1999/html">
+</form>
 <button mat-stroked-button color="primary" (click)="chooseFileInput($event)" *ngIf="!analysis && (!useSocketStream || !canOpenStreamSocket)">Analyze File</button>
-<button mat-stroked-button color="primary" (click)="chooseFileInputFS($event)" *ngIf="!analysis && useSocketStream && canOpenStreamSocket">Analyze File</button>
-<button mat-stroked-button color="secondary" (click)="chooseFileInput($event)" *ngIf="analysis && !result">Analyze Another File</button>
+<button mat-stroked-button color="primary" (click)="chooseFileInput($event)" *ngIf="!analysis && useSocketStream && canOpenStreamSocket">Analyze File</button>
+<button mat-stroked-button color="secondary" (click)="chooseFileInput($event)" *ngIf="analysis && !result && (!useSocketStream || !canOpenStreamSocket)">Analyze Another File</button>
+<button mat-stroked-button color="secondary" (click)="clearAndChooseFileInput($event)" *ngIf="analysis && !result && (useSocketStream || canOpenStreamSocket)">Analyze Another File</button>
 <button mat-stroked-button color="primary" (click)="loadFile($event)"  *ngIf="analysis && !result && !currentError && !useSocketStream">Load File</button>
-<button mat-stroked-button color="primary" (click)="loadFileFS($event)"  *ngIf="analysis && !result && !currentError && useSocketStream">Load File via Stream</button>
+<button mat-stroked-button color="primary" (click)="loadFileFS($event)"  *ngIf="analysis && !result && !currentError && useSocketStream" [disabled]="!isStreamAnalysisComplete">Load File via Stream</button>
 <button mat-stroked-button color="primary" (click)="chooseFileInput($event)" *ngIf="analysis && result">Analyze Another File</button>
+<!--<button mat-stroked-button color="primary" (click)="debugStreamLoad($event)" *ngIf="analysis && useSocketStream">Debug Stream Depth</button>-->
+<!--<button mat-stroked-button color="primary" (click)="clear();">Clear Results</button>-->
+
 
 <!-- <button mat-stroked-button (click)="clear()"  *ngIf="analysis || result">Clear</button> -->
 <!--<ul>
@@ -15,5 +21,22 @@
        <li><h3>useSocketStream:</h3> {{useSocketStream}}</li>
        <li><h3>analysis:</h3> {{analysis}}</li>
 </ul>-->
+<!--
+<div>
+       Importing: {{streamImportInProgress}}
+</div>
+<div>
+       Phase: {{streamImportPhase}}
+</div>
+<div>
+       is reading ? {{streamImportPhaseIs('reading')}} <button mat-stroked-button (click)="testPhaseIsReading()">Test</button>
+</div>
+<div>
+       is loading ? {{streamImportPhaseIs('sending')}} <button mat-stroked-button (click)="testPhaseIsSending()">Test</button>
+</div>
+<div>
+       Streaming File Read Status: {{readRecordsFromStreamStatus}}
+</div>
+-->
 <admin-bulk-data-analysis-summary *ngIf="showAnalysis && analysis"></admin-bulk-data-analysis-summary>
 <admin-bulk-data-load-summary *ngIf="showResults && result"></admin-bulk-data-load-summary>

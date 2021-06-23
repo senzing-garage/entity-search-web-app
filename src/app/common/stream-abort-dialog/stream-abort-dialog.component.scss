@@ -14,44 +14,13 @@
         font-size: .8rem;
     }
 
-    .stream-parameters {
-        border: 1px solid rgb(41, 41, 41);
-        margin: 20px 0 20px 0;
-
-        
-        .parameters-body {
-            padding: 20px;
-        }
+    .mat-dialog-content {
+        margin: 24px 0;
+        padding: 0px;
     }
+
     .mat-dialog-actions {
         justify-content: flex-end;
-    }
-
-    .row {
-        display: block;
-    }
-    .sc-row-1 {
-        mat-form-field {
-            margin-right: 2rem;
-        }
-    }
-    .sc-row-2 {
-        mat-form-field {
-            width: 182px;
-            margin-right: 2rem;
-            /*font-size: 13px;*/
-        }
-    }
-    .sc-row-3 {
-        mat-form-field {
-            margin-right: 2rem;
-            /*font-size: 13px;*/
-        }
-    }
-    .sc-row-5 {
-        mat-form-field {
-            margin-left: 1rem;
-        }
     }
 
     .test-status {

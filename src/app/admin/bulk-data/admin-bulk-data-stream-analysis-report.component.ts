@@ -9,7 +9,7 @@ import {
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 //import { MatTableDataSource } from '@angular/material/table';
-import { AdminBulkDataService, AdminStreamLoadSummary } from '../../services/admin.bulk-data.service';
+import { AdminBulkDataService, AdminStreamLoadSummary, AdminStreamAnalysisSummary } from '../../services/admin.bulk-data.service';
 
 export interface SzBulkDataComboAnalysis extends SzEntityTypeRecordAnalysis {
   entityType?: string;
@@ -24,11 +24,11 @@ export interface SzBulkDataComboAnalysis extends SzEntityTypeRecordAnalysis {
  * @export
  */
 @Component({
-  selector: 'admin-bulk-data-analysis-report',
-  templateUrl: './admin-bulk-data-analysis-report.component.html',
-  styleUrls: [ './admin-bulk-data-analysis-report.component.scss']
+  selector: 'admin-bulk-data-stream-analysis-report',
+  templateUrl: './admin-bulk-data-stream-analysis-report.component.html',
+  styleUrls: [ './admin-bulk-data-stream-analysis-report.component.scss']
 })
-export class AdminBulkDataAnalysisReportComponent implements OnInit, OnDestroy, AfterViewInit {
+export class AdminBulkDataStreamAnalysisReportComponent implements OnInit, OnDestroy, AfterViewInit {
   /** subscription to notify subscribers to unbind */
   public unsubscribe$ = new Subject<void>();
   public get displayedColumns(): string[] {
@@ -48,17 +48,19 @@ export class AdminBulkDataAnalysisReportComponent implements OnInit, OnDestroy, 
     return undefined;
   }
   /** result of last analysis operation */
-  public get analysis(): SzBulkDataAnalysis {
-    return this.adminBulkDataService.currentAnalysis;
+  public get analysis(): AdminStreamAnalysisSummary {
+    return (this.adminBulkDataService.currentAnalysisResult as AdminStreamAnalysisSummary);
   }
   /** get result of load operation from service */
+  /*
   public get result(): SzBulkLoadResult {
     return (this.adminBulkDataService.currentLoadResult as SzBulkDataAnalysis).analysisByDataSource ? this.adminBulkDataService.currentLoadResult as SzBulkDataAnalysis : undefined;
-  }
+  }*/
   /** get the result of streaming load */
+  /*
   public get streamResult(): AdminStreamLoadSummary {
     return (this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary).recordCount >= 0 ? this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary : undefined;
-  }
+  }*/
   public getDataSourceInputName(index: number): string {
     return 'ds-name-' + index;
   }
@@ -97,11 +99,20 @@ export class AdminBulkDataAnalysisReportComponent implements OnInit, OnDestroy, 
     private adminBulkDataService: AdminBulkDataService) {}
 
     public get isMoreThanOneDataSource() {
-      return (this.analysis && this.analysis.analysisByDataSource && this.analysis.analysisByDataSource.length > 1);
+      return (this.analysis && this.analysis.dataSources && this.analysis.dataSources.length > 1) ? true : false;
     }
     public get isMoreThanOneEntityType() {
-      return (this.analysis && this.analysis.analysisByEntityType && this.analysis.analysisByEntityType.length > 1);
+      return (this.analysis && this.analysis.entityTypes && this.analysis.entityTypes.length > 1) ? true : false;
     }
+/**
+{
+     entityType?: string;
+     recordCount?: number;
+     recordsWithRecordIdCount?: number;
+     recordsWithDataSourceCount?: number;
+ }
+*/
+
 
     public get comboAnalysis() {
       if(!this.isMoreThanOneDataSource && !this.isMoreThanOneEntityType) {
@@ -119,14 +130,20 @@ export class AdminBulkDataAnalysisReportComponent implements OnInit, OnDestroy, 
       ).subscribe((info) => {
         //console.log('SzBulkDataAnalysisReportComponent.ServerInfo obtained: ', info);
       });
-
       this.adminBulkDataService.onDataSourcesChange.pipe(
         takeUntil( this.unsubscribe$ )
       ).subscribe((datasources: string[]) => {
-        //console.warn('UPDATE DATASOURCES! ', datasources, this.adminBulkDataService._dataSources);
+        console.warn('UPDATE DATASOURCES! ', datasources, this.adminBulkDataService._dataSources);
       });
-      this.adminBulkDataService.onError.subscribe((err) => {
+      this.adminBulkDataService.onError.pipe(
+        takeUntil(this.unsubscribe$)
+      ).subscribe((err) => {
         console.warn('AdminBulkDataAnalysisReportComponent.onError SHOW Err MSG: ', err);
+      });
+      this.adminBulkDataService.onStreamAnalysisComplete.pipe(
+        takeUntil(this.unsubscribe$)
+      ).subscribe((summary: AdminStreamAnalysisSummary) => {
+        console.warn('AdminBulkDataAnalysisReportComponent.onStreamAnalysisComplete', this.adminBulkDataService.currentAnalysisResult);
       });
     }
 
