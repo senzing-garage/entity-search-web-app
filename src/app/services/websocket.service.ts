@@ -58,7 +58,8 @@ export class WebSocketService {
     "connected": false,
     "connectionTest": false,
     "reconnectOnClose": false,
-    "reconnectConsecutiveAttemptLimit": 10
+    "reconnectConsecutiveAttemptLimit": 10,
+    "path": "/",
   };
 
   static statusChangeEvtToConnectionBool(status: CloseEvent | Event) {
@@ -73,14 +74,16 @@ export class WebSocketService {
     return retVal;
   }
 
-  static getSocketUriFromConnectionObject(connProps: AdminStreamConnProperties, test: boolean = false): string {
+  static getSocketUriFromConnectionObject(connProps: AdminStreamConnProperties, path?: string, method?: "POST" | "PUT" | "GET"): string {
     let retVal = "ws://localhost:8955";
     if(connProps) {
       retVal  = (connProps.secure) ? "wss://" : "ws://";
       retVal += (connProps.hostname) ? connProps.hostname : 'localhost';
       retVal += (connProps.port) ? ':'+connProps.port : '';
-      if(test){
-        retVal += '/load-queue/bulk-data/records'
+      if(path) {
+        retVal += ''+ path;
+      } else if(connProps.path) {
+        retVal += (connProps.path) ? ''+connProps.path : '';
       }
     }
 
@@ -203,18 +206,23 @@ export class WebSocketService {
     }
   }
   /** open connection */
-  public open(hostname?: string, port?: number): Observable<any> {
+  public open(hostname?: string, port?: number, path?: string, method?: "POST" | "PUT" | "GET"): Observable<any> {
     // set up intial connection properties if not already set up
     this.connectionProperties = this.connectionProperties ? this.connectionProperties : {
       "hostname": hostname,
       "connected": false,
       "connectionTest": false,
       "reconnectOnClose": true,
-      "reconnectConsecutiveAttemptLimit": 10
+      "reconnectConsecutiveAttemptLimit": 10,
+      "path": (path ? path : "/"),
+      "method": (method ? method : "GET")
     }
-    // set hostname if passed in
-    this.connectionProperties.hostname = hostname ? hostname : this.connectionProperties.hostname;
+    // set connection properties if passed in
+    this.connectionProperties.hostname  = hostname ? hostname : this.connectionProperties.hostname;
+    this.connectionProperties.path      = path ? path : this.connectionProperties.path;
+    this.connectionProperties.method    = method ? method : this.connectionProperties.method;
     if(port) { this.connectionProperties.port = port; } 
+
     // connection string
     let _wsaddr = WebSocketService.getSocketUriFromConnectionObject(this.connectionProperties);
 
@@ -251,7 +259,11 @@ export class WebSocketService {
       deserializer: (value) => {
         if(value && value.data) {
           try{
-            var retVal = JSON.parse(value.data.trim());
+            let rawVal: MessageEvent | string = value;
+            if(value && ((value as unknown) as string).trim) {
+              rawVal = ((value as unknown) as string).trim();
+            }
+            var retVal = JSON.parse(((rawVal as unknown) as string));
             //console.log('parsed..', value.data);
             return retVal;
           }catch(err) {
@@ -260,7 +272,18 @@ export class WebSocketService {
           }
         } else {
           //console.log('say wha? ', value);
-          return value;
+          try{
+            let rawVal: MessageEvent | string = value;
+            if(value && ((value as unknown) as string).trim) {
+              rawVal = ((value as unknown) as string).trim();
+            }
+            var retVal = JSON.parse(((rawVal as unknown) as string));
+            //console.log('parsed..', value.data);
+            return retVal;
+          }catch(err) {
+            //console.log('nooooooooooop', '"'+ value.data +'"', value.data, err);
+            return value;
+          }
         }
       },
       serializer: (value) => {
@@ -315,35 +338,46 @@ export class WebSocketService {
     this.close();
   }
   /** reconnect to previously closed connection */
-  public reconnect(){
+  public reconnect(path?: string, method?: "POST" | "PUT" | "GET"){
     if(this.ws$) {
-      console.log('WebSocketService.reconnect: ', this.connectionProperties, this.ws$);
-      this.ws$.pipe(
-        catchError( (error: Error) => {
-          console.log('WebSocketService.reconnect: error: ', error, this.ws$.error.toString());
-          if(error && !error.message) {
-            error.message = `Could not connect to Stream interface(${WebSocketService.getSocketUriFromConnectionObject(this.connectionProperties)}) after a disconnect. Will continue to retry connection until reconnection attempt limit(${this._reconnectionAttemptsIncrement} / ${this.connectionProperties.reconnectConsecutiveAttemptLimit}) is reached.`;
-          } else if(this.ws$ && this.ws$.hasError && this.ws$.error.toString) {
-            error.message = this.ws$.error.toString();
-          } else {
-            error.message = 'Unknown error has occurred during reconnection attempt. Check Developer console for more info.'
-          }
-          this._onError(error);
-          return of(error)
-        } ),
-        map( WebSocketService.statusChangeEvtToConnectionBool ),
-        filter((status: boolean) => {
-          return status;
+      let onWSExists = () => {
+        console.log('WebSocketService.reconnect: ', this.connectionProperties, this.ws$);
+        this.ws$.pipe(
+          catchError( (error: Error) => {
+            console.log('WebSocketService.reconnect: error: ', error, this.ws$.error.toString());
+            if(error && !error.message) {
+              error.message = `Could not connect to Stream interface(${WebSocketService.getSocketUriFromConnectionObject(this.connectionProperties)}) after a disconnect. Will continue to retry connection until reconnection attempt limit(${this._reconnectionAttemptsIncrement} / ${this.connectionProperties.reconnectConsecutiveAttemptLimit}) is reached.`;
+            } else if(this.ws$ && this.ws$.hasError && this.ws$.error.toString) {
+              error.message = this.ws$.error.toString();
+            } else {
+              error.message = 'Unknown error has occurred during reconnection attempt. Check Developer console for more info.'
+            }
+            this._onError(error);
+            return of(error)
+          } ),
+          map( WebSocketService.statusChangeEvtToConnectionBool ),
+          filter((status: boolean) => {
+            return status;
+          })
+        ).subscribe((reconnected) => {
+          //this.status$.next(true);
+          this._reconnectionAttemptsIncrement = 0;
+          console.log(`(${reconnected} | ${this._reconnectionAttemptsIncrement})!!successfully reconnected to "${WebSocketService.getSocketUriFromConnectionObject(this.connectionProperties)}"`, reconnected);
         })
-      ).subscribe((reconnected) => {
-        //this.status$.next(true);
-        this._reconnectionAttemptsIncrement = 0;
-        console.log(`(${reconnected} | ${this._reconnectionAttemptsIncrement})!!successfully reconnected to "${WebSocketService.getSocketUriFromConnectionObject(this.connectionProperties)}"`, reconnected);
-      })
+      }
+
+      if(this.connectionProperties && path && this.connectionProperties.path !== path){
+        // kill con
+        this.ws$.complete();
+        // re-init with new path
+        this.open(undefined, undefined, path, method).subscribe( onWSExists )
+      } else {
+        onWSExists();
+      }
       
     } else if(this.connectionProperties && this.connectionProperties.connectionTest) {
       console.log('WebSocketService.reconnect -> WebSocketService.open', this.ws$, this.connectionProperties);
-      this.open();
+      this.open(undefined, undefined, path, method);
     } else {
       // should we try to connect something that hasnt been flagged as valid?
       this._onErrorSubject.next('Websocket could not connect to Stream interface after a disconnect. Will continue to retry connection until reconnection attempt limit is reached.');
@@ -369,7 +403,7 @@ export class WebSocketService {
     const retVal: Observable<boolean> = retSub.asObservable();
 
     if(connectionProps) {
-      let _wsaddr = WebSocketService.getSocketUriFromConnectionObject(this.connectionProperties, true);
+      let _wsaddr = WebSocketService.getSocketUriFromConnectionObject(this.connectionProperties, "/load-queue/bulk-data/records", "POST");
 
       const openSubject = new Subject<Event>();
       openSubject.pipe(

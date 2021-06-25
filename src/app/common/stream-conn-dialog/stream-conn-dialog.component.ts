@@ -106,7 +106,8 @@ import { Subject } from 'rxjs';
         // make sure each node has an initialized value
         if(!this.data.streamConnectionProperties) {
           this.data.streamConnectionProperties = {
-            "hostname": 'localhost:8555',
+            "path": '/load-queue/bulk-data/records',
+            "hostname": 'localhost:8255',
             "connected": false,
             "connectionTest": false,
             "reconnectOnClose": false,

@@ -20,7 +20,6 @@ import {
 import { WebSocketService } from './websocket.service';
 import { SzStreamingFileRecordParser } from '../common/streaming-file-record-parser';
 import { BulkDataService, SzBulkDataAnalysis, SzBulkDataAnalysisResponse, SzBulkLoadResponse, SzBulkLoadResult, SzDataSourceRecordAnalysis, SzDataSourceBulkLoadResult, SzEntityTypeBulkLoadResult, SzEntityTypeRecordAnalysis } from '@senzing/rest-api-client-ng';
-import { sum } from 'd3';
 
 export interface AdminStreamSummaryBase {
     fileType: any,
@@ -674,10 +673,12 @@ export class AdminBulkDataService {
         let readRecords                 = [];
         let readStreamComplete          = false;
         // socket related
+        let streamAnalysisEndpoint      = "/bulk-data/analyze";
+
         if(!this.webSocketService.connected){
             // we need to reopen connection
             console.log('SzBulkDataService.streamAnalyze: websocket needs to be opened: ', this.webSocketService.connected, this.streamConnectionProperties);
-            this.webSocketService.reconnect();
+            this.webSocketService.reconnect(streamAnalysisEndpoint, "POST");
         } else {
             console.log('SzBulkDataService.streamAnalyze: websocket thinks its still connected: ', this.webSocketService.connected, this.streamConnectionProperties);
         }
@@ -805,10 +806,11 @@ export class AdminBulkDataService {
         let readRecords                 = [];
         let readStreamComplete          = false;
         // socket related
+        let streamSocketEndpoint        = "/bulk-data/load";
         if(!this.webSocketService.connected){
             // we need to reopen connection
             console.log('SzBulkDataService.streamLoad: websocket needs to be opened: ', this.webSocketService.connected, this.streamConnectionProperties);
-            this.webSocketService.reconnect();
+            this.webSocketService.reconnect(streamSocketEndpoint, "POST");
         } else {
             console.log('SzBulkDataService.streamLoad: websocket thinks its still connected: ', this.webSocketService.connected, this.streamConnectionProperties);
         }
