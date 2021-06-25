@@ -673,15 +673,15 @@ export class AdminBulkDataService {
         let readRecords                 = [];
         let readStreamComplete          = false;
         // socket related
+        /*
         let streamAnalysisEndpoint      = "/bulk-data/analyze";
-
         if(!this.webSocketService.connected){
             // we need to reopen connection
             console.log('SzBulkDataService.streamAnalyze: websocket needs to be opened: ', this.webSocketService.connected, this.streamConnectionProperties);
             this.webSocketService.reconnect(streamAnalysisEndpoint, "POST");
         } else {
             console.log('SzBulkDataService.streamAnalyze: websocket thinks its still connected: ', this.webSocketService.connected, this.streamConnectionProperties);
-        }
+        }*/
 
         // construct summary object that we can report 
         // statistics to
@@ -785,7 +785,11 @@ export class AdminBulkDataService {
      * @returns Observeable<AdminStreamLoadSummary>
     */
     streamLoad(file?: File, dataSourceMap?: { [key: string]: string }, entityTypeMap?: { [key: string]: string }, analysis?: SzBulkDataAnalysis): Observable<AdminStreamLoadSummary> {
-        console.log('SzBulkDataService.streamLoad: ', file, this.streamConnectionProperties);
+        // parameter related
+        dataSourceMap = dataSourceMap ? dataSourceMap : this.dataSourceMap;
+        entityTypeMap = entityTypeMap ? entityTypeMap : this.entityTypeMap;
+        console.log('SzBulkDataService.streamLoad: ', file, this.streamConnectionProperties, dataSourceMap, entityTypeMap);
+
         // event streams
         let retSubject  = new Subject<AdminStreamLoadSummary>();
         let retObs      = retSubject.asObservable();
@@ -806,14 +810,24 @@ export class AdminBulkDataService {
         let readRecords                 = [];
         let readStreamComplete          = false;
         // socket related
-        let streamSocketEndpoint        = "/bulk-data/load";
-        if(!this.webSocketService.connected){
-            // we need to reopen connection
-            console.log('SzBulkDataService.streamLoad: websocket needs to be opened: ', this.webSocketService.connected, this.streamConnectionProperties);
-            this.webSocketService.reconnect(streamSocketEndpoint, "POST");
-        } else {
-            console.log('SzBulkDataService.streamLoad: websocket thinks its still connected: ', this.webSocketService.connected, this.streamConnectionProperties);
+        let streamSocketEndpoint        = "/load-queue/bulk-data/records";
+        let qsChar                      = '?';
+        if(dataSourceMap) {
+            streamSocketEndpoint        += `${qsChar}mapDataSources=${encodeURIComponent(JSON.stringify(dataSourceMap))}`;
+            qsChar = '&';
         }
+        if(entityTypeMap) {
+            streamSocketEndpoint        += `${qsChar}mapEntityTypes=${encodeURIComponent(JSON.stringify(entityTypeMap))}`;
+            qsChar = '&';
+        }
+        //if(!this.webSocketService.connected){
+            // we need to reopen connection
+        //    console.log('SzBulkDataService.streamLoad: websocket needs to be opened: ', this.webSocketService.connected, this.streamConnectionProperties);
+            console.log(`SzBulkDataService.streamLoad: ws to be opened: ${streamSocketEndpoint}`, this.streamConnectionProperties);
+            this.webSocketService.reconnect(streamSocketEndpoint, "POST");
+        //} else {
+        //    console.log('SzBulkDataService.streamLoad: websocket thinks its still connected: ', this.webSocketService.connected, this.streamConnectionProperties);
+        //}
 
         // construct summary object that we can report 
         // statistics to
@@ -904,7 +918,7 @@ export class AdminBulkDataService {
         );
 
         let sendQueuedRecords = (records?: any) => {
-            //console.warn('sendQueuedRecords: ', records, readRecords);
+            console.warn('sendQueuedRecords: ', records, readRecords);
             if(readRecords && readRecords.length > 0) {
                 // slice off a batch of records to send
                 let currQueuePush   = readRecords && readRecords.length < bulkRecordSendRate || bulkRecordSendRate < 0 ? readRecords : readRecords.slice(0, bulkRecordSendRate);
@@ -929,7 +943,7 @@ export class AdminBulkDataService {
                 }
             } else if(readRecords && readRecords.length <= 0) {
                 // according to this we sent all the records, what went wrong
-                // console.log('batch should be over. why is it still going?', readStreamComplete, summary.complete);
+                console.log('batch should be over. why is it still going?', readStreamComplete, summary.complete);
             }
         }
         let waitUntilDataSourcesAreValid = (): boolean => {
@@ -1291,13 +1305,13 @@ export class AdminBulkDataService {
         if (newEntityTypes.length > 0) {
             console.log('create new entity types: ', newEntityTypes);
             let simResp = false;
-            //const pTemp = this.createEntityTypes(newDataSources).toPromise();
-            const pTemp   = new Promise((resolve, reject) =>{
+            const pTemp = this.createEntityTypes(newEntityTypes).toPromise();
+            /*const pTemp   = new Promise((resolve, reject) =>{
                 setTimeout(() => {
                     console.log('resolving entity creation promise for: ', newEntityTypes );
                     resolve(newEntityTypes);
                 }, 3000);
-            });
+            });*/
             promises.push( pTemp );
         }
         let promise = Promise.resolve([]);
@@ -1330,13 +1344,14 @@ export class AdminBulkDataService {
         if (newDataSources.length > 0) {
             console.log('create new datasources: ', newDataSources);
             let simResp = false;
-            //const pTemp = this.createDataSources(newDataSources).toPromise();
-            const pTemp   = new Promise((resolve, reject) =>{
+            const pTemp = this.createDataSources(newDataSources).toPromise();
+            
+            /*const pTemp   = new Promise((resolve, reject) =>{
                 setTimeout(() => {
                     console.log('resolving ds creation promise for: ', newDataSources );
                     resolve(newDataSources);
                 }, 3000);
-            })
+            })*/
             promises.push( pTemp );
         }
         let promise = Promise.resolve([]);
