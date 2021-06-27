@@ -104,16 +104,6 @@ export class AdminBulkDataStreamAnalysisReportComponent implements OnInit, OnDes
     public get isMoreThanOneEntityType() {
       return (this.analysis && this.analysis.entityTypes && this.analysis.entityTypes.length > 1) ? true : false;
     }
-/**
-{
-     entityType?: string;
-     recordCount?: number;
-     recordsWithRecordIdCount?: number;
-     recordsWithDataSourceCount?: number;
- }
-*/
-
-
     public get comboAnalysis() {
       if(!this.isMoreThanOneDataSource && !this.isMoreThanOneEntityType) {
         const retVal: SzBulkDataComboAnalysis[] = this.analysis.analysisByDataSource;
@@ -133,7 +123,7 @@ export class AdminBulkDataStreamAnalysisReportComponent implements OnInit, OnDes
       this.adminBulkDataService.onDataSourcesChange.pipe(
         takeUntil( this.unsubscribe$ )
       ).subscribe((datasources: string[]) => {
-        console.warn('UPDATE DATASOURCES! ', datasources, this.adminBulkDataService._dataSources);
+        //console.log('UPDATE DATASOURCES! ', datasources, this.adminBulkDataService._dataSources);
       });
       this.adminBulkDataService.onError.pipe(
         takeUntil(this.unsubscribe$)
@@ -143,7 +133,7 @@ export class AdminBulkDataStreamAnalysisReportComponent implements OnInit, OnDes
       this.adminBulkDataService.onStreamAnalysisComplete.pipe(
         takeUntil(this.unsubscribe$)
       ).subscribe((summary: AdminStreamAnalysisSummary) => {
-        console.warn('AdminBulkDataAnalysisReportComponent.onStreamAnalysisComplete', this.adminBulkDataService.currentAnalysisResult);
+        console.log('AdminBulkDataAnalysisReportComponent.onStreamAnalysisComplete', this.adminBulkDataService.currentAnalysisResult);
       });
     }
 

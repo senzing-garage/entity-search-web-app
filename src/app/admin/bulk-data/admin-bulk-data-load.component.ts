@@ -81,8 +81,10 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
   }
   private _isStreamingAnalysisInProgress  = false;
   private _isStreamingLoadInProgress      = false;
+  private _isStreamingLoadComplete        = false;
   public get isStreamingAnalysisInProgress(): boolean { return this._isStreamingAnalysisInProgress; }
   public get isStreamingLoadInProgress(): boolean { return this._isStreamingAnalysisInProgress; }
+  public get isStreamingLoadComplete(): boolean { return this._isStreamingLoadComplete; }
 
   /** does user have admin rights */
   public get adminEnabled() {
@@ -165,26 +167,52 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
       });
 
       this.adminBulkDataService.onStreamAnalysisProgress.pipe(
-        takeUntil(this.unsubscribe$)
+        takeUntil(this.unsubscribe$),
+        filter( (value) => { return value !== undefined; })
       ).subscribe((summary) =>{
         this._isStreamingAnalysisInProgress = true;
       });
       this.adminBulkDataService.onStreamLoadProgress.pipe(
-        takeUntil(this.unsubscribe$)
+        takeUntil(this.unsubscribe$),
+        filter( (value) => { return value !== undefined; })
       ).subscribe((summary) =>{
         this._isStreamingLoadInProgress = true;
       });
       this.adminBulkDataService.onStreamAnalysisComplete.pipe( 
-        takeUntil(this.unsubscribe$) 
+        takeUntil(this.unsubscribe$),
+        filter( (value) => { return value !== undefined; })
       ).subscribe((summary: AdminStreamAnalysisSummary) => {
         this._streamAnalysisComplete = summary ? summary.complete : false;
         this._isStreamingAnalysisInProgress = summary ? !summary.complete : true;
       });
       this.adminBulkDataService.onStreamLoadComplete.pipe(
-        takeUntil(this.unsubscribe$)
+        takeUntil(this.unsubscribe$),
+        filter( (value) => { return value !== undefined; })
       ).subscribe((summary: AdminStreamLoadSummary) =>{
         this._isStreamingLoadInProgress = summary ? !summary.complete : false;
+        this._isStreamingLoadComplete   = summary ? summary.complete : false;
       });
+
+      /** when the bulk data service clears it's analysis related properties and event streams */
+      this.adminBulkDataService.onAnalysisCleared.pipe(
+        takeUntil(this.unsubscribe$)
+      ).subscribe( (cleared) => {
+        this._streamAnalysisComplete        = false;
+        this._isStreamingAnalysisInProgress = false;
+      });
+      /** when the bulk data service clears it's import related properties and event streams */
+      this.adminBulkDataService.onImportJobCleared.pipe(
+        takeUntil(this.unsubscribe$)
+      ).subscribe( (cleared) => {
+        this._isStreamingLoadInProgress = false;
+        this._isStreamingLoadComplete = false;
+      });
+
+      /** stream state props */
+      this._streamAnalysisComplete  = false;
+      this._isStreamingLoadComplete = false;
+      this._isStreamingAnalysisInProgress = false;
+      this._isStreamingLoadInProgress = false;
     }
     /**
      * unsubscribe when component is destroyed
@@ -196,7 +224,7 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
 
     /** take the current file focus and pass to api load endpoint */
     public onFileInputChange(event: Event) {
-      console.log('onFileInputChange: ', event);
+      //console.log('onFileInputChange: ', event);
       //this.adminBulkDataService.isAnalyzingFile = true;
       //this.adminBulkDataService.analyzingFile.next(true);
       const target: HTMLInputElement = <HTMLInputElement> event.target;
@@ -269,7 +297,8 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
       this.adminBulkDataService.clear();
       this.filePickerForm.resetForm();
       this.filePickerForm.reset();
-      this._streamAnalysisComplete = false;
+      
+      /** file picker */
       if(this.filePicker && this.filePicker.nativeElement){
         this.filePicker.nativeElement.value = "";
       }

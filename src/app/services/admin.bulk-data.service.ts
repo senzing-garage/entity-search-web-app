@@ -110,7 +110,10 @@ export class AdminBulkDataService {
     public onEntityTypeMapChange        = new Subject<{ [key: string]: string }>();
     /** when the result of a load operation changes this behavior subject is broadcast */
     public onLoadResult                 = new BehaviorSubject<SzBulkLoadResult | AdminStreamLoadSummary>(undefined);
-    
+    /** when the result of a load operation has been cleared from memory */
+    public _onImportJobCleared          = new Subject<boolean>();
+    public onImportJobCleared           = this._onImportJobCleared.asObservable();
+
     private _onAutoCreatingDataSource   = false;
     private _streamLoadPaused           = false;
     private _streamAnalysisPaused       = false;
@@ -121,30 +124,36 @@ export class AdminBulkDataService {
     public streamLoadAbort$: Subject<void>;
 
     // ------------------- stream loading -------------------
-    private _onStreamAnalysisStarted    = new BehaviorSubject<AdminStreamAnalysisSummary>(undefined);
-    private _onStreamAnalysisProgress   = new BehaviorSubject<AdminStreamAnalysisSummary>(undefined);
-    private _onStreamAnalysisPaused     = new BehaviorSubject<boolean>(this._streamAnalysisPaused);
-    private _onStreamAnalysisComplete   = new BehaviorSubject<AdminStreamAnalysisSummary>(undefined);
-    private _onStreamLoadStarted        = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
-    private _onStreamLoadProgress       = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
-    private _onStreamLoadPaused         = new BehaviorSubject<boolean>(this._streamLoadPaused);
-    private _onStreamLoadComplete       = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
-    private _onStreamReadStarted        = new BehaviorSubject<AdminStreamLoadSummary | AdminStreamAnalysisSummary>(undefined);
-    private _onStreamReadProgress       = new BehaviorSubject<AdminStreamLoadSummary | AdminStreamAnalysisSummary>(undefined);
-    private _onStreamReadComplete       = new BehaviorSubject<AdminStreamLoadSummary | AdminStreamAnalysisSummary>(undefined);
+    private _onStreamAnalysisStarted            = new BehaviorSubject<AdminStreamAnalysisSummary>(undefined);
+    private _onStreamAnalysisProgress           = new BehaviorSubject<AdminStreamAnalysisSummary>(undefined);
+    private _onStreamAnalysisPaused             = new BehaviorSubject<boolean>(this._streamAnalysisPaused);
+    private _onStreamAnalysisComplete           = new BehaviorSubject<AdminStreamAnalysisSummary>(undefined);
+    private _onStreamAnalysisFileReadStarted    = new BehaviorSubject<AdminStreamAnalysisSummary>(undefined);
+    private _onStreamAnalysisFileReadProgress   = new Subject<AdminStreamAnalysisSummary>();
+    private _onStreamAnalysisFileReadComplete   = new BehaviorSubject<AdminStreamAnalysisSummary>(undefined);
+    private _onStreamLoadStarted                = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
+    private _onStreamLoadProgress               = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
+    private _onStreamLoadPaused                 = new BehaviorSubject<boolean>(this._streamLoadPaused);
+    private _onStreamLoadComplete               = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
+    private _onStreamLoadFileReadStarted        = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
+    private _onStreamLoadFileReadProgress       = new Subject<AdminStreamLoadSummary>();
+    private _onStreamLoadFileReadComplete       = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
 
     // --- public interfaces
-    public onStreamAnalysisStarted      = this._onStreamAnalysisStarted.asObservable();
-    public onStreamAnalysisProgress     = this._onStreamAnalysisProgress.asObservable();
-    public onStreamAnalysisPaused       = this._onStreamAnalysisPaused.asObservable();
-    public onStreamAnalysisComplete     = this._onStreamAnalysisComplete.asObservable();
-    public onStreamLoadStarted          = this._onStreamLoadStarted.asObservable();
-    public onStreamLoadProgress         = this._onStreamLoadProgress.asObservable();
-    public onStreamLoadPaused           = this._onStreamLoadPaused.asObservable();
-    public onStreamLoadComplete         = this._onStreamLoadComplete.asObservable();
-    public onStreamReadStarted          = this._onStreamReadStarted.asObservable();
-    public onStreamReadProgress         = this._onStreamReadProgress.asObservable();
-    public onStreamReadComplete         = this._onStreamReadComplete.asObservable();
+    public onStreamAnalysisStarted              = this._onStreamAnalysisStarted.asObservable();
+    public onStreamAnalysisProgress             = this._onStreamAnalysisProgress.asObservable();
+    public onStreamAnalysisPaused               = this._onStreamAnalysisPaused.asObservable();
+    public onStreamAnalysisComplete             = this._onStreamAnalysisComplete.asObservable();
+    public onStreamAnalysisFileReadStarted      = this._onStreamAnalysisFileReadStarted.asObservable();
+    public onStreamAnalysisFileReadProgress     = this._onStreamAnalysisFileReadProgress.asObservable();
+    public onStreamAnalysisFileReadComplete     = this._onStreamAnalysisFileReadComplete.asObservable();
+    public onStreamLoadStarted                  = this._onStreamLoadStarted.asObservable();
+    public onStreamLoadProgress                 = this._onStreamLoadProgress.asObservable();
+    public onStreamLoadPaused                   = this._onStreamLoadPaused.asObservable();
+    public onStreamLoadComplete                 = this._onStreamLoadComplete.asObservable();
+    public onStreamLoadFileReadStarted          = this._onStreamLoadFileReadStarted.asObservable();
+    public onStreamLoadFileReadProgress         = this._onStreamLoadFileReadProgress.asObservable();
+    public onStreamLoadFileReadComplete         = this._onStreamLoadFileReadComplete.asObservable();
 
     /** when the result of a load operation changes this behavior subject is broadcast */
     public onAnalysisResult = new BehaviorSubject<SzBulkDataAnalysis | AdminStreamAnalysisSummary>(undefined);
@@ -322,7 +331,7 @@ export class AdminBulkDataService {
                 )
                 .subscribe((result: AdminStreamAnalysisSummary) => {
                     //this.currentAnalysisResult = result;
-                    console.warn('AdminBulkDataService().onCurrentFileChange.streamAnalyze: result', result);
+                    console.log('AdminBulkDataService().onCurrentFileChange.streamAnalyze: result', result);
                 }, (error: Error) =>{
                     console.warn('AdminBulkDataService().onCurrentFileChange.streamAnalyze: error', error)
                 })
@@ -580,7 +589,7 @@ export class AdminBulkDataService {
      */
     public changeEntityTypeName(fromEntityType: string, toEntityType: string) {
         fromEntityType = (fromEntityType === null || fromEntityType === undefined) ? "" : fromEntityType;
-        console.log('ET MAP ' + fromEntityType + ' TO ' + toEntityType, this.entityTypeMap);
+        //console.log('ET MAP ' + fromEntityType + ' TO ' + toEntityType, this.entityTypeMap);
         this.entityTypeMap = this.entityTypeMap;
         this.entityTypeMap[fromEntityType] = toEntityType;
     }
@@ -613,12 +622,24 @@ export class AdminBulkDataService {
         this.onCurrentFileChange.next( this.currentFile );
 
         /** clear out behavior subject states */
-        this._onStreamAnalysisComplete.next(undefined);
+        //this._onStreamAnalysisComplete.next(undefined);
+        //this._onStreamAnalysisStarted.next(undefined);
+        //this._onStreamLoadStarted.next(undefined);
+        //this._onStreamLoadComplete.next(undefined);
         this._onStreamAnalysisStarted.next(undefined);
+        this._onStreamAnalysisProgress.next(undefined);
+        this._onStreamAnalysisComplete.next(undefined);
+        this._onStreamAnalysisFileReadStarted.next(undefined);
+        this._onStreamAnalysisFileReadComplete.next(undefined);
         this._onStreamLoadStarted.next(undefined);
+        this._onStreamLoadProgress.next(undefined);
         this._onStreamLoadComplete.next(undefined);
+        this._onStreamLoadFileReadStarted.next(undefined);
+        this._onStreamLoadFileReadComplete.next(undefined);
+
         /** emit cleared event */
         this._onAnalysisCleared.next(true);
+        this._onImportJobCleared.next(true);
     }
     /**
      * unsubscribe event streams
@@ -655,7 +676,7 @@ export class AdminBulkDataService {
     
     /** takes a JSON file and analyze it */
     public streamAnalyze(file: File): Observable<AdminStreamAnalysisSummary> {
-        console.log('SzBulkDataService.streamAnalyze: ', file);
+        //console.log('SzBulkDataService.streamAnalyze: ', file);
         // event streams
         let retSubject  = new Subject<AdminStreamAnalysisSummary>();
         let retObs      = retSubject.asObservable();
@@ -709,7 +730,7 @@ export class AdminBulkDataService {
         }
         // initialize behavior subjects with base info
         this._onStreamAnalysisStarted.next(summary); // singleton
-        this._onStreamReadStarted.next(summary); // singleton
+        this._onStreamAnalysisFileReadStarted.next(summary); // singleton
         retSubject.next(summary); // local
 
         // read file contents as stream
@@ -720,7 +741,7 @@ export class AdminBulkDataService {
             readStreamComplete = true;
             this._onStreamAnalysisProgress.next(summary);
             retSubject.next(summary); // local
-            this._onStreamReadComplete.next(summary);
+            this._onStreamAnalysisFileReadComplete.next(summary);
         }).pipe(
             takeUntil(this.streamAnalysisAbort$)
         ).subscribe(
@@ -732,7 +753,7 @@ export class AdminBulkDataService {
                 readRecords                 = readRecords.concat(records);
                 //console.log(`SzBulkDataService.streamAnalyze: read ${summary.recordCount} records`);
                 this._onStreamAnalysisProgress.next(summary);
-                this._onStreamReadProgress.next(summary);
+                this._onStreamAnalysisFileReadProgress.next(summary);
                 retSubject.next(summary); // local
             }
         );
@@ -743,9 +764,9 @@ export class AdminBulkDataService {
         });
 
         // ---------------------------- on complete evt handlers ----------------------------
-        // proxy "onStreamReadComplete" to "onStreamAnalysisComplete"
+        // proxy "onStreamAnalysisReadComplete" to "onStreamAnalysisComplete"
         // since this is the only phase of this function
-        this.onStreamReadComplete.pipe(
+        this._onStreamAnalysisFileReadComplete.pipe(
             takeUntil(this.streamAnalysisAbort$),
             filter((summary: AdminStreamAnalysisSummary) => { return summary !== undefined;}),
             take(1),
@@ -788,7 +809,7 @@ export class AdminBulkDataService {
         // parameter related
         dataSourceMap = dataSourceMap ? dataSourceMap : this.dataSourceMap;
         entityTypeMap = entityTypeMap ? entityTypeMap : this.entityTypeMap;
-        console.log('SzBulkDataService.streamLoad: ', file, this.streamConnectionProperties, dataSourceMap, entityTypeMap);
+        //console.log('SzBulkDataService.streamLoad: ', file, this.streamConnectionProperties, dataSourceMap, entityTypeMap);
 
         // event streams
         let retSubject  = new Subject<AdminStreamLoadSummary>();
@@ -823,7 +844,7 @@ export class AdminBulkDataService {
         //if(!this.webSocketService.connected){
             // we need to reopen connection
         //    console.log('SzBulkDataService.streamLoad: websocket needs to be opened: ', this.webSocketService.connected, this.streamConnectionProperties);
-            console.log(`SzBulkDataService.streamLoad: ws to be opened: ${streamSocketEndpoint}`, this.streamConnectionProperties);
+            //console.log(`SzBulkDataService.streamLoad: ws to be opened: ${streamSocketEndpoint}`, this.streamConnectionProperties);
             this.webSocketService.reconnect(streamSocketEndpoint, "POST");
         //} else {
         //    console.log('SzBulkDataService.streamLoad: websocket thinks its still connected: ', this.webSocketService.connected, this.streamConnectionProperties);
@@ -857,7 +878,7 @@ export class AdminBulkDataService {
         }
         // initialize behavior subjects with base info
         this._onStreamLoadStarted.next(summary); // singleton
-        this._onStreamReadStarted.next(summary); // singleton
+        this._onStreamLoadFileReadStarted.next(summary); // singleton
         retSubject.next(summary); // local
 
         // first create missing datasources and entity types
@@ -873,7 +894,7 @@ export class AdminBulkDataService {
         ).subscribe((result: string[] | Error) => {
             if((result as string[]).length >= 0) {
                 dataSourcesCreated = true;
-                console.log('SzBulkDataService.streamLoad: all data sources created', dataSourcesCreated);
+                //console.log('SzBulkDataService.streamLoad: all data sources created', dataSourcesCreated);
                 if(dataSourcesCreated && entityTypesCreated) {
                     onAllDataSourcesAndEntityTypesCreated.next(true);
                 }
@@ -885,7 +906,7 @@ export class AdminBulkDataService {
         ).subscribe((result) => {
             if((result as string[]).length >= 0) {
                 entityTypesCreated = true;
-                console.log('SzBulkDataService.streamLoad: all entity types created', entityTypesCreated);
+                //console.log('SzBulkDataService.streamLoad: all entity types created', entityTypesCreated);
                 if(dataSourcesCreated && entityTypesCreated) {
                     onAllDataSourcesAndEntityTypesCreated.next(true);
                 }
@@ -896,10 +917,10 @@ export class AdminBulkDataService {
         // parse to array of records
         this.parseRecordsFromFile(file, (streamStatus) => {
             // on stream complete, do thing
-            console.warn('SzBulkDataService.streamLoad: file stream read complete.');
+            //console.warn('SzBulkDataService.streamLoad: file stream read complete.');
             readStreamComplete = true;
             this._onStreamLoadProgress.next(summary);
-            this._onStreamReadComplete.next(summary);
+            this._onStreamLoadFileReadComplete.next(summary);
             retSubject.next(summary); // local
         }).pipe(
             takeUntil(this.streamLoadAbort$)
@@ -910,15 +931,14 @@ export class AdminBulkDataService {
                 // now concat
                 readRecords                 = readRecords.concat(records);
                 summary.unsentRecordCount   = readRecords.length;
-                //console.log(`SzBulkDataService.streamLoad: read ${summary.recordCount} records`);
                 this._onStreamLoadProgress.next(summary);
-                this._onStreamReadProgress.next(summary);
+                this._onStreamLoadFileReadProgress.next(summary);
                 retSubject.next(summary); // local
             }
         );
 
         let sendQueuedRecords = (records?: any) => {
-            console.warn('sendQueuedRecords: ', records, readRecords);
+            //console.warn('sendQueuedRecords: ', records, readRecords);
             if(readRecords && readRecords.length > 0) {
                 // slice off a batch of records to send
                 let currQueuePush   = readRecords && readRecords.length < bulkRecordSendRate || bulkRecordSendRate < 0 ? readRecords : readRecords.slice(0, bulkRecordSendRate);
@@ -943,7 +963,7 @@ export class AdminBulkDataService {
                 }
             } else if(readRecords && readRecords.length <= 0) {
                 // according to this we sent all the records, what went wrong
-                console.log('batch should be over. why is it still going?', readStreamComplete, summary.complete);
+                //console.log('batch should be over. why is it still going?', readStreamComplete, summary.complete);
             }
         }
         let waitUntilDataSourcesAreValid = (): boolean => {
@@ -981,7 +1001,7 @@ export class AdminBulkDataService {
 
         // ---------------------------- on complete evt handlers ----------------------------
         // on end of read double-check if whole thing is complete
-        this._onStreamReadComplete.pipe(
+        this._onStreamLoadFileReadComplete.pipe(
             takeUntil(this.streamLoadAbort$),
             filter((summary: AdminStreamLoadSummary) => { return summary !== undefined;}),
             take(1),
@@ -993,7 +1013,7 @@ export class AdminBulkDataService {
                 summary.complete = true;
                 this._onStreamLoadComplete.next(summary);
             }*/
-            console.log('_onStreamReadComplete: ',readStreamComplete, summary);
+            //console.log('_onStreamLoadReadComplete: ',readStreamComplete, summary);
         });
         // on end of records queue double-check if whole thing is complete
         this._onStreamLoadComplete.pipe(
@@ -1011,7 +1031,7 @@ export class AdminBulkDataService {
                 summary.complete = true;
                 //this._onStreamLoadComplete.next(summary);
             } else {
-                console.warn('stream load complete 2', readStreamComplete, summary);
+                //console.warn('stream load complete 2', readStreamComplete, summary);
             }
         });
         return retObs;
@@ -1303,7 +1323,7 @@ export class AdminBulkDataService {
             return self.indexOf(entityType) === index;
         });
         if (newEntityTypes.length > 0) {
-            console.log('create new entity types: ', newEntityTypes);
+            //console.log('create new entity types: ', newEntityTypes);
             let simResp = false;
             const pTemp = this.createEntityTypes(newEntityTypes).toPromise();
             /*const pTemp   = new Promise((resolve, reject) =>{
@@ -1317,11 +1337,11 @@ export class AdminBulkDataService {
         let promise = Promise.resolve([]);
         promise     = Promise.all(promises);
         promise.then((entityTypes: string[]) => {
-            console.log('all entity types created', entityTypes);
+            //console.log('all entity types created', entityTypes);
             _retVal.next(entityTypes);
         }).catch((err => {
             // return false
-            console.log('entity creation error', err);
+            //console.log('entity creation error', err);
             _retVal.next(err);
         }));
         return retVal;
@@ -1342,7 +1362,7 @@ export class AdminBulkDataService {
             return self.indexOf(dataSource) === index;
         });
         if (newDataSources.length > 0) {
-            console.log('create new datasources: ', newDataSources);
+            //console.log('create new datasources: ', newDataSources);
             let simResp = false;
             const pTemp = this.createDataSources(newDataSources).toPromise();
             
@@ -1357,10 +1377,10 @@ export class AdminBulkDataService {
         let promise = Promise.resolve([]);
         promise     = Promise.all(promises);
         promise.then((datasources: string[]) => {
-            console.log('all datasources created', datasources);
+            //console.log('all datasources created', datasources);
             _retVal.next(datasources);
         }).catch((err => {
-            console.log('NOT all datasources created', err);
+            //console.log('NOT all datasources created', err);
             _retVal.next(err);
         }));
         return retVal;
