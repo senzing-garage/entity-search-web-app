@@ -22,23 +22,23 @@ import { SzStreamingFileRecordParser } from '../common/streaming-file-record-par
 import { BulkDataService, SzBulkDataAnalysis, SzBulkDataAnalysisResponse, SzBulkLoadResponse, SzBulkLoadResult, SzDataSourceRecordAnalysis, SzDataSourceBulkLoadResult, SzEntityTypeBulkLoadResult, SzEntityTypeRecordAnalysis } from '@senzing/rest-api-client-ng';
 
 export interface AdminStreamSummaryBase {
-    fileType: any,
-    fileName: string,
-    fileSize: number,
-    fileLineEndingStyle: lineEndingStyle,
+    fileType?: any,
+    fileName?: string,
+    fileSize?: number,
+    fileLineEndingStyle?: lineEndingStyle,
     fileColumns?: string[],
     characterEncoding: any,
     mediaType: any,
     recordCount: number,
-    recordsWithRecordIdCount: number,
+    recordsWithRecordIdCount?: number,
     recordsWithDataSourceCount?: number,
     recordsWithEntityTypeCount?: number,
-    missingDataSourceCount: number,
-    missingEntityTypeCount: number,
-    missingRecordIdCount: number,
-    bytesRead: number,
-    bytesSent: number,
-    bytesQueued: number,
+    missingDataSourceCount?: number,
+    missingEntityTypeCount?: number,
+    missingRecordIdCount?: number,
+    bytesRead?: number,
+    bytesSent?: number,
+    bytesQueued?: number,
     dataSources?: string[],
     entityTypes?: string[],
     complete?: boolean
@@ -48,14 +48,50 @@ export interface AdminStreamLoadSummary extends AdminStreamSummaryBase {
     failedRecordCount: number,
     sentRecordCount: number,
     unsentRecordCount: number,
-    resultsByDataSource?: Array<SzDataSourceBulkLoadResult>;
-    resultsByEntityType?: Array<SzEntityTypeBulkLoadResult>;
+    loadedRecordCount: number,
+    incompleteRecordCount: number,
+    status: string,
+    resultsByDataSource: Array<SzDataSourceBulkLoadResult>;
+    resultsByEntityType: Array<SzEntityTypeBulkLoadResult>;
+    topErrors?: []
 }
 
 export interface AdminStreamAnalysisSummary extends AdminStreamSummaryBase {
     analysisByDataSource?: Array<SzDataSourceRecordAnalysis>;
     analysisByEntityType?: Array<SzEntityTypeRecordAnalysis>;
 }
+
+/*
+export interface AdminStreamLoadByDataSourceResult {
+    recordCount: number,
+    loadedRecordCount: number,
+    incompleteRecordCount: number,
+    failedRecordCount: number,
+    dataSource: string,
+    topErrors: []
+}
+export interface AdminStreamLoadByEntityTypeResult {
+    recordCount: number,
+    loadedRecordCount: number,
+    incompleteRecordCount: number,
+    failedRecordCount: number,
+    dataSource: string,
+    topErrors: []
+}
+export interface AdminStreamLoadResponseData {
+    recordCount: number,
+    loadedRecordCount: number,
+    incompleteRecordCount: number,
+    failedRecordCount: number,
+    characterEncoding: string,
+    mediaType: string,
+    missingDataSourceCount: number,
+    missingEntityTypeCount: number,
+    status: string,
+    resultsByDataSource?: Array<SzDataSourceBulkLoadResult>,
+    resultsByEntityType?: Array<SzEntityTypeBulkLoadResult>,
+    topErrors: []
+}*/
 
 export interface StreamReaderComplete {
     (streamClosed: boolean): void;
@@ -302,9 +338,13 @@ export class AdminBulkDataService {
             this._onError.next(error);
         });
         this.webSocketService.onStatusChange.subscribe((statusEvent: CloseEvent | Event) => {
-            //console.warn('AdminBulkDataService.webSocketService.onStatusChange: ', statusEvent);
+            console.warn('AdminBulkDataService.webSocketService.onStatusChange: ', statusEvent);
             this._onStreamStatusChange.next(statusEvent);
         });
+        /*
+        this.webSocketService.onMessageRecieved.subscribe((data: any) => {
+            console.log('AdminBulkDataService.webSocketService.onMessageRecieved: ', data);
+        });*/
         /** check if "reconnection error" is present, if connection state changes to "true" clear out error */
         this.webSocketService.onConnectionStateChange.pipe(
             takeUntil(this.unsubscribe$),
@@ -814,6 +854,9 @@ export class AdminBulkDataService {
         // event streams
         let retSubject  = new Subject<AdminStreamLoadSummary>();
         let retObs      = retSubject.asObservable();
+        let _onAllStreamDataSent    = new Subject<boolean>();
+        let onAllStreamDataSent     = _onAllStreamDataSent.asObservable();
+
         // set up subject used for aborting in progress subscriptions
         if(!this.streamLoadAbort$ || this.streamLoadAbort$ === undefined || (this.streamLoadAbort$ && this.streamLoadAbort$.closed)){
             this.streamLoadAbort$ = new Subject();
@@ -830,6 +873,7 @@ export class AdminBulkDataService {
         // record queues
         let readRecords                 = [];
         let readStreamComplete          = false;
+        let sendStreamComplete          = false;
         // socket related
         let streamSocketEndpoint        = "/load-queue/bulk-data/records";
         let qsChar                      = '?';
@@ -841,14 +885,7 @@ export class AdminBulkDataService {
             streamSocketEndpoint        += `${qsChar}mapEntityTypes=${encodeURIComponent(JSON.stringify(entityTypeMap))}`;
             qsChar = '&';
         }
-        //if(!this.webSocketService.connected){
-            // we need to reopen connection
-        //    console.log('SzBulkDataService.streamLoad: websocket needs to be opened: ', this.webSocketService.connected, this.streamConnectionProperties);
-            //console.log(`SzBulkDataService.streamLoad: ws to be opened: ${streamSocketEndpoint}`, this.streamConnectionProperties);
-            this.webSocketService.reconnect(streamSocketEndpoint, "POST");
-        //} else {
-        //    console.log('SzBulkDataService.streamLoad: websocket thinks its still connected: ', this.webSocketService.connected, this.streamConnectionProperties);
-        //}
+        streamSocketEndpoint            += `${qsChar}eofSendTimeout=20&progressPeriod=500`;
 
         // construct summary object that we can report 
         // statistics to
@@ -860,6 +897,8 @@ export class AdminBulkDataService {
             fileLineEndingStyle: lineEndingStyle.unknown,
             characterEncoding: 'utf-8',
             recordCount: 0,
+            loadedRecordCount: 0,
+            incompleteRecordCount: 0,
             recordsWithRecordIdCount: 0,
             recordsWithDataSourceCount: 0,
             recordsWithEntityTypeCount: 0,
@@ -869,13 +908,41 @@ export class AdminBulkDataService {
             missingDataSourceCount: 0,
             missingEntityTypeCount: 0,
             missingRecordIdCount: 0,
+            resultsByDataSource: [],
+            resultsByEntityType: [],
             bytesRead: 0,
             bytesSent: 0,
             bytesQueued: 0,
             fileColumns: [],
             dataSources: [],
+            status: 'INCOMPLETE',
             complete: false
         }
+        //if(!this.webSocketService.connected){
+            // we need to reopen connection
+        //    console.log('SzBulkDataService.streamLoad: websocket needs to be opened: ', this.webSocketService.connected, this.streamConnectionProperties);
+            //console.log(`SzBulkDataService.streamLoad: ws to be opened: ${streamSocketEndpoint}`, this.streamConnectionProperties);
+            this.webSocketService.reconnect(streamSocketEndpoint, "POST");
+        //} else {
+        //    console.log('SzBulkDataService.streamLoad: websocket thinks its still connected: ', this.webSocketService.connected, this.streamConnectionProperties);
+        //}
+        this.webSocketService.onMessageRecieved.pipe(
+            filter( data => { return data !== undefined}),
+            map( data => { return (data as AdminStreamLoadSummary) })
+        ).subscribe((data: AdminStreamLoadSummary) => {
+            // we change responses "recordCount" to "sentRecordCount" because that's what it really is
+            // and re-assert our internal "recordCount" which includes all records read so far
+            summary = Object.assign(summary, data, {recordCount: summary.recordCount, sentRecordCount: data.recordCount});
+            console.log('AdminBulkDataService.streamLoad.webSocketService.onMessageRecieved: ', summary, data);
+            if(data && data.status === 'COMPLETED' && summary.sentRecordCount === summary.recordCount) {
+                // all data sent
+                summary.complete = true;
+            }
+            if(readStreamComplete && sendStreamComplete && summary.complete === true) {
+                this._onStreamLoadComplete.next(summary);
+            }
+        });
+
         // initialize behavior subjects with base info
         this._onStreamLoadStarted.next(summary); // singleton
         this._onStreamLoadFileReadStarted.next(summary); // singleton
@@ -948,15 +1015,15 @@ export class AdminBulkDataService {
                 this.webSocketService.sendMessages(currQueuePush);
 
                 // update metadata
-                summary.sentRecordCount     = summary.sentRecordCount + currQueuePush.length;
+                //summary.sentRecordCount     = summary.sentRecordCount + currQueuePush.length;
                 summary.unsentRecordCount   = readRecords.length;
 
                 // check if everything has been sent
                 if(readStreamComplete && summary.sentRecordCount === summary.recordCount && summary.recordCount > 0) {
                     // all messages sent
                     //console.warn('stream load complete 1', summary);
-                    summary.complete = true;
-                    this._onStreamLoadComplete.next(summary);
+                    sendStreamComplete = true;
+                    _onAllStreamDataSent.next(true);
                 } else {
                     retSubject.next(summary); // local
                     this._onStreamLoadProgress.next(summary);
@@ -1000,6 +1067,28 @@ export class AdminBulkDataService {
         });
 
         // ---------------------------- on complete evt handlers ----------------------------
+        /** after we have sent all data subscribe to the next socket message */
+        /*
+        //onAllStreamDataSent.pipe(
+        //     take(1)
+        //).subscribe((allSent) => {
+            this.webSocketService.onMessageRecieved.pipe(
+                filter( data => { return data !== undefined}),
+            ).subscribe((data: AdminStreamLoadSummary) => {
+                // we change responses "recordCount" to "sentRecordCount" because that's what it really is
+                // and re-assert our internal "recordCount" which includes all records read so far
+                summary = Object.assign(summary, data, {recordCount: summary.recordCount, sentRecordCount: data.recordCount});
+
+                if(data && data.status === 'COMPLETED' && summary.sentRecordCount === summary.recordCount) {
+                    // all data sent
+                    summary.complete = true;
+                }
+                if(readStreamComplete && sendStreamComplete && summary.complete === true) {
+                    this._onStreamLoadComplete.next(summary);
+                }
+            });
+        //});*/
+
         // on end of read double-check if whole thing is complete
         this._onStreamLoadFileReadComplete.pipe(
             takeUntil(this.streamLoadAbort$),
@@ -1025,15 +1114,11 @@ export class AdminBulkDataService {
             }),
             delay(5000)*/
         ).subscribe((summary: AdminStreamLoadSummary) => {
-            if(readStreamComplete && summary && summary.sentRecordCount === summary.recordCount) {
-                // set this to true to end batching loop Observeable
-                //console.warn('stream load complete 2', summary);
-                summary.complete = true;
-                //this._onStreamLoadComplete.next(summary);
-            } else {
-                //console.warn('stream load complete 2', readStreamComplete, summary);
-            }
+            // close connection
+            console.log('closing connection: all data sent', summary);
+            //this.webSocketService.disconnect();
         });
+
         return retObs;
     }
 

@@ -27,6 +27,9 @@ export class WebSocketService {
   public onConnectionStateChange: Observable<boolean> = this.onStatusChange.pipe(
     map( WebSocketService.statusChangeEvtToConnectionBool )
   )
+  /** when the connected socket receives an upstream message */
+  private _onMessageRecieved: Subject<any> = new Subject<any>();
+  public onMessageRecieved = this._onMessageRecieved.asObservable();
 
   /** subject used for when messages sent by server */
   private message$: Subject<any> = new Subject<any>();
@@ -59,7 +62,7 @@ export class WebSocketService {
     "connectionTest": false,
     "reconnectOnClose": false,
     "reconnectConsecutiveAttemptLimit": 10,
-    "path": "/",
+    "path": "/"
   };
 
   static statusChangeEvtToConnectionBool(status: CloseEvent | Event) {
@@ -141,13 +144,20 @@ export class WebSocketService {
         //retSub.complete();
       });
       messages.forEach((message: any | string) => {
+        let msgStr = '';
         if((message as string).split) {
           // string
-          this.ws$.next( message );
+          msgStr = message;
         } else {
           // assume json object
-          this.ws$.next( JSON.stringify(message) );
+          msgStr = JSON.stringify(message);
         }
+        if(msgStr && !(msgStr.lastIndexOf('\n') >= (msgStr.length > 2 ? msgStr.length - 2 : msgStr.length))) {
+          // add line ending
+          msgStr  = msgStr +'\n';
+        }
+        // send message
+        this.ws$.next( msgStr );
       });
       retSub.next(true);
     } else {
@@ -258,14 +268,15 @@ export class WebSocketService {
       url: _wsaddr,
       deserializer: (value) => {
         if(value && value.data) {
+          // this value is of type "MessageEvent" not "String"
           try{
-            let rawVal: MessageEvent | string = value;
-            if(value && ((value as unknown) as string).trim) {
+            let rawVal: string = (value as MessageEvent).data;
+            /*if(value && ((value as unknown) as string).trim) {
               rawVal = ((value as unknown) as string).trim();
-            }
-            var retVal = JSON.parse(((rawVal as unknown) as string));
-            //console.log('parsed..', value.data);
-            return retVal;
+            }*/
+            var retVal = JSON.parse(rawVal);
+            //console.log('parsed..', retVal.data);
+            return retVal && retVal.data ? retVal.data : retVal;
           }catch(err) {
             //console.log('nooooooooooop', '"'+ value.data +'"', value.data, err);
             return value.data;
@@ -281,16 +292,13 @@ export class WebSocketService {
             //console.log('parsed..', value.data);
             return retVal;
           }catch(err) {
-            //console.log('nooooooooooop', '"'+ value.data +'"', value.data, err);
+            //console.log('nooooooooooop', value, err);
             return value;
           }
         }
       },
-      serializer: (value) => {
-        if(value && value.data) {
-          return value.data;
-        }
-        return value;
+      serializer: (value: any) => {
+        return value && value.data ? value.data : value;
       },
       openObserver: openSubject,
       closeObserver: closeSubject
@@ -304,16 +312,10 @@ export class WebSocketService {
         }
         this._onError(errors);
         return of(errors)
-      } ),
-      filter( (msg) => {
-        return msg && msg.uuid;
-      })
-    ).subscribe((msg) => {
-      console.log('clientId: ', msg);
-      if(msg && msg.uuid) {
-        this.connectionProperties.clientId = msg.uuid;
-        this.connectionProperties.connectionTest = true;
-      }
+      } )
+    ).subscribe((msg: any) => {
+      //console.log('WebsocketService Message: ', msg);
+      this._onMessageRecieved.next(msg);
     }, this._onError);
 
     // return observeable
@@ -341,7 +343,7 @@ export class WebSocketService {
   public reconnect(path?: string, method?: "POST" | "PUT" | "GET"){
     if(this.ws$) {
       let onWSExists = () => {
-        console.log('WebSocketService.reconnect: ', this.connectionProperties, this.ws$);
+        //console.log('WebSocketService.reconnect: ', this.connectionProperties, this.ws$);
         this.ws$.pipe(
           catchError( (error: Error) => {
             console.log('WebSocketService.reconnect: error: ', error, this.ws$.error.toString());
@@ -368,7 +370,8 @@ export class WebSocketService {
 
       if(this.connectionProperties && path && this.connectionProperties.path !== path){
         // kill con
-        this.ws$.complete();
+        //console.log('calling ws$.complete');
+        this.disconnect();
         // re-init with new path
         this.open(undefined, undefined, path, method).subscribe( onWSExists )
       } else {
@@ -376,7 +379,7 @@ export class WebSocketService {
       }
       
     } else if(this.connectionProperties && this.connectionProperties.connectionTest) {
-      console.log('WebSocketService.reconnect -> WebSocketService.open', this.ws$, this.connectionProperties);
+      //console.log('WebSocketService.reconnect -> WebSocketService.open', this.ws$, this.connectionProperties);
       this.open(undefined, undefined, path, method);
     } else {
       // should we try to connect something that hasnt been flagged as valid?
@@ -441,23 +444,16 @@ export class WebSocketService {
 
       this.ws$ = webSocket({
         url: _wsaddr,
-        deserializer: (value) => {
-          if(value && value.data) {
-            try{
-              var retVal = JSON.parse(value.data.trim());
-              return retVal;
-            }catch(err) {
-              return value.data;
-            }
-          } else {
-            return value;
-          }
+        deserializer: (value: any) => {
+          let data = value;
+          try {
+            data  = data.trim ? data.trim() : data;
+            data  = JSON.parse(data);
+          } catch(err) {}
+          return data && data.data ? data.data : data;
         },
         serializer: (value: any) => {
-          if(value && value.data) {
-            return value.data;
-          }
-          return value;
+          return value && value.data ? value.data : value;
         },
         openObserver: openSubject,
         closeObserver: closeSubject
