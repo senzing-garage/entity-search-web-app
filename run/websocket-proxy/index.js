@@ -33,6 +33,9 @@ server.on('upgrade', function (req, socket, head) {
     console.log("proxying upgrade request", req.url);
     proxy.ws(req, socket, head);
 });
+proxy.on('error', (err) => {
+    console.log('-- WS ERROR: '+ err.message) +' --';
+})
 
 //start our proxy server
 proxy.listen(streamServerProxyPort, () => {

@@ -179,13 +179,14 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
     }
     let retStr = 'Initializing...';
     if(this._currentStreamLoadStats) {
+      let sentValue        = this._currentStreamLoadStats.receivedRecordCount ? this._currentStreamLoadStats.receivedRecordCount : this._currentStreamLoadStats.sentRecordCount;
       if(this._currentStreamLoadStats.complete) {
         retStr = 'Complete';
       } else if(this._streamImportPaused) {
-        retStr = `Paused: ${this._currentStreamLoadStats.sentRecordCount}/${this._currentStreamLoadStats.recordCount}`;
+        retStr = `Paused: ${sentValue}/${this._currentStreamLoadStats.recordCount}`;
       } else {
         //retStr = undefined;
-        retStr = `Loading: ${this._currentStreamLoadStats.sentRecordCount}/${this._currentStreamLoadStats.recordCount}`;
+        retStr = `Loading: ${sentValue}/${this._currentStreamLoadStats.recordCount}`;
       }
     }
     return retStr;
@@ -195,7 +196,8 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
     let retValue = 0;
     if(this._currentStreamLoadStats && this._currentStreamLoadStats.recordCount > 0){
       let percUnit        = (100 / this._currentStreamLoadStats.recordCount);
-      let currentPercent  = Math.ceil((this._currentStreamLoadStats.sentRecordCount * percUnit));
+      let percMult        = this._currentStreamLoadStats.receivedRecordCount ? this._currentStreamLoadStats.receivedRecordCount : this._currentStreamLoadStats.sentRecordCount;
+      let currentPercent  = Math.ceil((percMult * percUnit));
       retValue = currentPercent;
     }
     return retValue;

@@ -91,6 +91,12 @@ function getStreamServerOptionsFromInput() {
   let cmdLineOpts = getCommandLineArgsAsJSON();
   if(cmdLineOpts && cmdLineOpts !== undefined) {
     
+    //console.log('cmdline opts: \n', cmdOpts);
+    //streamServerProxyHost   = cmdOpts.streamServerProxyHost ? cmdOpts.streamServerProxyHost : streamServerProxyHost;
+    //streamServerProxyPort   = cmdOpts.streamServerProxyPort ? cmdOpts.streamServerProxyPort : streamServerProxyPort;
+    //streamServerDestUrl     = cmdOpts.streamServerDestUrl ? cmdOpts.streamServerDestUrl : streamServerDestUrl;
+
+
     if(cmdLineOpts.streamServerHost){
       retConfig = retConfig ? retConfig : {};
       retConfig.host = cmdLineOpts.streamServerHost;
