@@ -6,7 +6,7 @@ import {
 } from '@angular/router';
 import { Observable, interval, from, of, EMPTY, Subject } from 'rxjs';
 import { AdminService, SzBaseResponse, SzBaseResponseMeta, SzVersionResponse, SzVersionInfo } from '@senzing/rest-api-client-ng';
-import { switchMap, tap, takeWhile } from 'rxjs/operators';
+import { switchMap, tap, takeWhile, map } from 'rxjs/operators';
 import { version as appVersion, dependencies as appDependencies } from '../../../package.json';
 import { SzAdminService, SzServerInfo } from '@senzing/sdk-components-ng';
 
@@ -20,8 +20,12 @@ import { SzAdminService, SzServerInfo } from '@senzing/sdk-components-ng';
 export class AboutInfoService {
   /** release version of the senzing-rest-api server being used */
   public apiServerVersion: string;
+  /** release version of the senzing-poc-api server being used */
+  public pocServerVersion: string;
   /** version of the OAS senzing-rest-api spec being used */
   public restApiVersion: string;
+  /** version of the OAS senzing-rest-api spec being used in the POC server*/
+  public pocApiVersion: string;
   /** release version of the ui app */
   public appVersion: string;
   /** release version of the @senzing/sdk-components-ng package*/
@@ -37,6 +41,7 @@ export class AboutInfoService {
   public nativeApiVersion: string;
   public isReadOnly: boolean;
   public isAdminEnabled: boolean;
+  public isPocServerInstance: boolean = false;
   private pollingInterval = 60 * 1000;
   /** poll for version info */
   public pollForVersionInfo(): Observable<SzVersionInfo> {
@@ -79,6 +84,7 @@ export class AboutInfoService {
     // get version info from SzAdminService
     this.getVersionInfo().subscribe( this.setVersionInfo.bind(this) );
     this.getServerInfo().subscribe( this.setServerInfo.bind(this) );
+    this.getServerInfoMetadata().subscribe( this.setPocServerInfo.bind(this) );
     this.pollForVersionInfo().subscribe();
     //this.pollForHeartbeat().subscribe();
     this.pollForServerInfo().subscribe();
@@ -96,6 +102,10 @@ export class AboutInfoService {
   /** get the server information from the rest-api-server host */
   public getServerInfo(): Observable<SzServerInfo> {
     return this.adminService.getServerInfo();
+  }
+  public getServerInfoMetadata(): Observable<SzBaseResponseMeta> {
+    console.info('AboutInfoService.getServerInfoMetadata: ');
+    return this.adminService.getServerInfoMetadata();
   }
   public getVersionFromLocalTarPath(packagePath: string | undefined, packagePrefix?: string | undefined ): undefined | string {
     let retVal = packagePath;
@@ -124,6 +134,13 @@ export class AboutInfoService {
     //this.dynamicConfig = info.dynamicConfig;
     this.isReadOnly = info.readOnly;
     this.isAdminEnabled = info.adminEnabled;
+  }
+
+  private setPocServerInfo(resp: SzBaseResponseMeta) {
+    this.pocServerVersion     = resp && resp.pocServerVersion ? resp.pocServerVersion : this.pocApiVersion;
+    this.pocApiVersion        = resp && resp.pocApiVersion ? resp.pocApiVersion : this.pocApiVersion;
+    this.isPocServerInstance  = resp && resp.pocApiVersion !== undefined ? true : this.isPocServerInstance;
+    console.info('SzAdminService.setPocServerInfo: ', this.isPocServerInstance, this.pocServerVersion, this.pocApiVersion, resp);
   }
 
   private setVersionInfo(serverInfo: SzVersionInfo): void {

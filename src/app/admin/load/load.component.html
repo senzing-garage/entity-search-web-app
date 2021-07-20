@@ -1,7 +1,8 @@
 <div class="top-columns">
   <h2 class="section-title" *ngIf="!currentError">Import Data from a file</h2>
   <h2 class="section-title" *ngIf="currentError">Error Encountered</h2>
-  <div class="stream-connection-idicator" *ngIf="useSocketStream">
+  <!--<div>canUseSocketStream: {{ canUseSocketStream }} | {{ aboutInfoService.isPocServerInstance }}</div>-->
+  <div class="stream-connection-idicator" *ngIf="useSocketStream && canUseSocketStream">
     <mat-icon aria-hidden="false" aria-label="stream is disconnected. click to connect." class="disconnected" 
       matTooltip="Disconnected from stream host. Click to connect/reconnect." 
       matTooltipClass="tooltip-red" 
@@ -12,7 +13,7 @@
       matTooltipPosition="left" 
       *ngIf="streamConnected" (click)="setStreamState(false)">flash_on</mat-icon>
   </div>
-  <div class="stream-loading">
+  <div class="stream-loading" *ngIf="canUseSocketStream">
     <mat-slide-toggle [(ngModel)]="useSocketStream">Stream Connection</mat-slide-toggle>
   </div>
 </div>

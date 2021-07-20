@@ -45,20 +45,24 @@ export class AdminBulkDataAnalysisSummaryComponent implements OnInit, OnDestroy 
   }
   /** result of last analysis operation */
   public get analysis(): SzBulkDataAnalysis {
-    return (this.adminBulkDataService.currentAnalysisResult as SzBulkDataAnalysis).analysisByDataSource ? this.adminBulkDataService.currentAnalysisResult as SzBulkDataAnalysis : undefined;
-    //return this.adminBulkDataService.currentAnalysisResult;
+    let asStreamResult = (this.adminBulkDataService.currentAnalysisResult as AdminStreamAnalysisSummary);
+    return (asStreamResult && !asStreamResult.isStreamResponse) ? this.adminBulkDataService.currentAnalysisResult as SzBulkDataAnalysis : undefined;
   }
   /** get the result of streaming analysis */
   public get streamAnalysis(): AdminStreamAnalysisSummary {
-    return (this.adminBulkDataService.currentAnalysisResult as AdminStreamAnalysisSummary) && (this.adminBulkDataService.currentAnalysisResult as AdminStreamAnalysisSummary).recordCount >= 0 ? this.adminBulkDataService.currentAnalysisResult as AdminStreamAnalysisSummary : undefined;
+    let asStreamResult = (this.adminBulkDataService.currentAnalysisResult as AdminStreamAnalysisSummary);
+    let isStreamResult = asStreamResult.missingDataSourceCount !== undefined ? true : false;
+    return isStreamResult ? asStreamResult : undefined;
   }
   /** get result of load operation from service */
   public get result(): SzBulkLoadResult {
-    return (this.adminBulkDataService.currentLoadResult as SzBulkDataAnalysis).analysisByDataSource ? this.adminBulkDataService.currentLoadResult as SzBulkDataAnalysis : undefined;
+    let asStreamResult = (this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary);
+    return (asStreamResult && !asStreamResult.isStreamResponse) ? this.adminBulkDataService.currentLoadResult as SzBulkLoadResult : undefined;
   }
   /** get the result of streaming load */
   public get streamResult(): AdminStreamLoadSummary {
-    return (this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary) && (this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary).recordCount >= 0 ? this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary : undefined;
+    let asStreamResult = (this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary);
+    return (asStreamResult && asStreamResult.isStreamResponse) ? this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary : undefined;
   }
 
   constructor(

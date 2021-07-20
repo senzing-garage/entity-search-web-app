@@ -2,7 +2,7 @@ import { Component, OnInit, ViewContainerRef, OnDestroy } from '@angular/core';
 import { SzPrefsService, SzBulkDataService } from '@senzing/sdk-components-ng';
 import { SzBulkDataAnalysis, SzBulkLoadResult } from '@senzing/rest-api-client-ng';
 import { Subject } from 'rxjs';
-import { AdminBulkDataService, AdminStreamLoadSummary } from '../../services/admin.bulk-data.service';
+import { AdminBulkDataService, AdminStreamLoadSummary, AdminStreamAnalysisSummary } from '../../services/admin.bulk-data.service';
 import { takeUntil } from 'rxjs/operators';
 
 /**
@@ -47,15 +47,18 @@ export class AdminBulkDataLoadSummaryComponent implements OnInit, OnDestroy {
   }
   /** result of last analysis operation */
   public get analysis(): SzBulkDataAnalysis {
-    return this.adminBulkDataService.currentAnalysis;
+    let asStreamResult = (this.adminBulkDataService.currentAnalysisResult as AdminStreamAnalysisSummary);
+    return (asStreamResult && !asStreamResult.isStreamResponse) ? this.adminBulkDataService.currentAnalysisResult as SzBulkDataAnalysis : undefined;
   }
   /** get result of load operation from service */
   public get result(): SzBulkLoadResult {
-    return (this.adminBulkDataService.currentLoadResult as SzBulkDataAnalysis).analysisByDataSource ? this.adminBulkDataService.currentLoadResult as SzBulkDataAnalysis : undefined;
+    let asStreamResult = (this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary);
+    return (asStreamResult && !asStreamResult.isStreamResponse) ? this.adminBulkDataService.currentLoadResult as SzBulkLoadResult : undefined;
   }
   /** get the result of streaming load */
   public get streamResult(): AdminStreamLoadSummary {
-    return (this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary).recordCount >= 0 ? this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary : undefined;
+    let asStreamResult = (this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary);
+    return (asStreamResult && asStreamResult.isStreamResponse) ? this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary : undefined;
   }
   public get streamResultSentRecordCount() {
     let streamResult = this.streamResult;

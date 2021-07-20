@@ -8,6 +8,7 @@ import {
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { AdminBulkDataService, AdminStreamAnalysisSummary, AdminStreamLoadSummary } from '../../services/admin.bulk-data.service';
+import { AboutInfoService } from '../../services/about.service';
 
 /**
  * Provides a component that analyzes a datasource characteristics and mapping.
@@ -78,7 +79,7 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
 
   /** whether or not to use streaming sockets for analysis and loading */
   public get useSocketStream() {
-    return this.adminBulkDataService.useStreaming;
+    return this.adminBulkDataService.useStreaming && this.aboutInfoService.isPocServerInstance;
   }
   public get canOpenStreamSocket(): boolean {
     return this.adminBulkDataService.canOpenStreamSocket;
@@ -218,6 +219,7 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
 
   constructor( public prefs: SzPrefsService,
     private adminService: SzAdminService,
+    public aboutInfoService: AboutInfoService,
     private adminBulkDataService: AdminBulkDataService,
     public viewContainerRef: ViewContainerRef) {}
 

@@ -8,6 +8,7 @@ import { AdminBulkDataService, AdminStreamAnalysisSummary, AdminStreamLoadSummar
 import { AdminStreamAnalysisConfig, AdminStreamConnProperties, AdminStreamLoadConfig } from '@senzing/sdk-components-ng';
 import { filter, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { AboutInfoService } from '../../services/about.service';
 
 @Component({
   selector: 'admin-data-loader',
@@ -61,7 +62,11 @@ export class AdminDataLoaderComponent implements OnInit, OnDestroy {
     this.adminBulkDataService.useStreamingForLoad = value;
   }
   public get useSocketStream() {
-    return this.adminBulkDataService.useStreamingForLoad;
+    return this.adminBulkDataService.useStreamingForLoad && this.aboutInfoService.isPocServerInstance;
+  }
+  /** if the server is not an instance of the POC server don't show stream connection controls */
+  public get canUseSocketStream(): boolean {
+    return this.aboutInfoService.isPocServerInstance;
   }
 
   /** result of last analysis operation */
@@ -101,6 +106,7 @@ export class AdminDataLoaderComponent implements OnInit, OnDestroy {
   constructor(
     private titleService: Title,
     public adminBulkDataService: AdminBulkDataService,
+    public aboutInfoService: AboutInfoService,
     public dialog: MatDialog
     ) { }
 

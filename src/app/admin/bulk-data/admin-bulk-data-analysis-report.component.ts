@@ -9,7 +9,7 @@ import {
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 //import { MatTableDataSource } from '@angular/material/table';
-import { AdminBulkDataService, AdminStreamLoadSummary } from '../../services/admin.bulk-data.service';
+import { AdminBulkDataService, AdminStreamLoadSummary, AdminStreamAnalysisSummary } from '../../services/admin.bulk-data.service';
 
 export interface SzBulkDataComboAnalysis extends SzEntityTypeRecordAnalysis {
   entityType?: string;
@@ -49,15 +49,19 @@ export class AdminBulkDataAnalysisReportComponent implements OnInit, OnDestroy, 
   }
   /** result of last analysis operation */
   public get analysis(): SzBulkDataAnalysis {
-    return this.adminBulkDataService.currentAnalysis;
+    let asStreamResult = (this.adminBulkDataService.currentAnalysisResult as AdminStreamAnalysisSummary);
+    let isNotStreamResult = asStreamResult.missingDataSourceCount == undefined ? true : false;
+    return isNotStreamResult ? this.adminBulkDataService.currentAnalysisResult as SzBulkDataAnalysis : undefined;
   }
   /** get result of load operation from service */
   public get result(): SzBulkLoadResult {
-    return (this.adminBulkDataService.currentLoadResult as SzBulkDataAnalysis).analysisByDataSource ? this.adminBulkDataService.currentLoadResult as SzBulkDataAnalysis : undefined;
+    let asStreamResult = (this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary);
+    return (asStreamResult && !asStreamResult.isStreamResponse) ? this.adminBulkDataService.currentLoadResult as SzBulkLoadResult : undefined;
   }
   /** get the result of streaming load */
   public get streamResult(): AdminStreamLoadSummary {
-    return (this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary).recordCount >= 0 ? this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary : undefined;
+    let asStreamResult = (this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary);
+    return (asStreamResult && asStreamResult.isStreamResponse) ? asStreamResult : undefined;
   }
   public getDataSourceInputName(index: number): string {
     return 'ds-name-' + index;

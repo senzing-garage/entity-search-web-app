@@ -41,7 +41,8 @@ export interface AdminStreamSummaryBase {
     bytesQueued?: number,
     dataSources?: string[],
     entityTypes?: string[],
-    complete?: boolean
+    complete?: boolean,
+    isStreamResponse: boolean
 }
 
 export interface AdminStreamLoadSummary extends AdminStreamSummaryBase {
@@ -380,7 +381,6 @@ export class AdminBulkDataService {
                 this.analyzingFile.next(true);
                 // standard serialized payload
                 this.analyze(file).toPromise().then( (analysisResp: SzBulkDataAnalysisResponse) => {
-                    //console.log('autowire analysis resp on file change: ', analysisResp, this.currentAnalysis);
                     this.analyzingFile.next(false);
                 }, (err) => {
                     console.warn('analyzing of file threw..', err);
@@ -486,13 +486,14 @@ export class AdminBulkDataService {
         }),
         tap( (result: SzBulkDataAnalysisResponse) => {
             this.analyzingFile.next(false);
-            this.currentAnalysis = (result && result.data) ? result.data : {};
-            this.dataSourceMap = this.getDataSourceMapFromAnalysis( this.currentAnalysis.analysisByDataSource );
-            this.entityTypeMap = this.getEntityTypeMapFromAnalysis( this.currentAnalysis.analysisByEntityType );
+            this.currentAnalysisResult = (result && result.data) ? result.data : {};
+            //this.currentAnalysis = (result && result.data) ? result.data : {};
+            this.dataSourceMap = this.getDataSourceMapFromAnalysis( this.currentAnalysisResult.analysisByDataSource );
+            this.entityTypeMap = this.getEntityTypeMapFromAnalysis( this.currentAnalysisResult.analysisByEntityType );
             this.onDataSourceMapChange.next( this.dataSourceMap );
             this.onEntityTypeMapChange.next( this.entityTypeMap );
-            this.onAnalysisChange.next( this.currentAnalysis );
-            console.log('analyze set analysis respose: ', this.dataSourceMap, this.entityTypeMap, this.currentAnalysis);
+            this.onAnalysisChange.next( this.currentAnalysisResult );
+            console.log('analyze set analysis respose: ', this.dataSourceMap, this.entityTypeMap, this.currentAnalysisResult);
         })
         )
     }
@@ -506,16 +507,16 @@ export class AdminBulkDataService {
         this.currentError = undefined;
         dataSourceMap = dataSourceMap ? dataSourceMap : this.dataSourceMap;
         entityTypeMap = entityTypeMap ? entityTypeMap : this.entityTypeMap;
-        analysis      = analysis ?      analysis      : this.currentAnalysis;
+        analysis      = analysis ?      analysis      : this.currentAnalysisResult;
 
         if(file && dataSourceMap && analysis) {
-        const newDataSources = this.currentAnalysis.analysisByDataSource.filter(a => {
+        const newDataSources = this.currentAnalysisResult.analysisByDataSource.filter(a => {
             const targetDS = this.dataSourceMap[((a.dataSource === null || a.dataSource === undefined) ? "" : a.dataSource)];
             return (targetDS && this._dataSources.indexOf(targetDS) < 0);
         }).map( (b) => {
             return this.dataSourceMap[(b.dataSource === null || b.dataSource === undefined ? "" :  b.dataSource)];
         });
-        const newEntityTypes = this.currentAnalysis.analysisByEntityType.filter(a => {
+        const newEntityTypes = this.currentAnalysisResult.analysisByEntityType.filter(a => {
             const targetET = this.entityTypeMap[((a.entityType === null || a.entityType === undefined) ? "" : a.entityType )];
             return (targetET && this._entityTypes.indexOf(targetET) < 0);
         }).map( (b) => {
@@ -658,7 +659,7 @@ export class AdminBulkDataService {
         this.currentFile            = undefined;
         this.dataSourceMap          = undefined;
         this.entityTypeMap          = undefined;
-        this.onAnalysisChange.next( this.currentAnalysis );
+        this.onAnalysisChange.next( this.currentAnalysisResult );
         this.onLoadResult.next( this.currentLoadResult );
         this.onCurrentFileChange.next( this.currentFile );
 
@@ -767,7 +768,8 @@ export class AdminBulkDataService {
             fileColumns: [],
             dataSources: [],
             entityTypes: [],
-            complete: false
+            complete: false,
+            isStreamResponse: true
         }
         // initialize behavior subjects with base info
         this._onStreamAnalysisStarted.next(summary); // singleton
@@ -916,7 +918,8 @@ export class AdminBulkDataService {
             fileColumns: [],
             dataSources: [],
             status: 'INCOMPLETE',
-            complete: false
+            complete: false,
+            isStreamResponse: true
         }
         //if(!this.webSocketService.connected){
             // we need to reopen connection

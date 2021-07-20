@@ -11,7 +11,8 @@ import { filter, take, takeUntil } from 'rxjs/operators';
 import { SzStreamingFileRecordParser } from '../../common/streaming-file-record-parser';
 import { NgForm } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { AdminStreamAbortDialogComponent } from 'src/app/common/stream-abort-dialog/stream-abort-dialog.component';
+import { AdminStreamAbortDialogComponent } from '../../common/stream-abort-dialog/stream-abort-dialog.component';
+import { AboutInfoService } from '../../services/about.service';
 
 /**
  * Provides an interface for loading files in to a datasource.
@@ -70,10 +71,14 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
   }
   /** whether or not to use streaming sockets for analysis and loading */
   public get useSocketStream() {
-    return this.adminBulkDataService.useStreaming;
+    return this.adminBulkDataService.useStreaming && this.aboutInfoService.isPocServerInstance;
   }
   public get canOpenStreamSocket(): boolean {
     return this.adminBulkDataService.canOpenStreamSocket;
+  }
+  /** if the server is not an instance of the POC server don't show stream connection controls */
+  public get canUseSocketStream(): boolean {
+    return this.aboutInfoService.isPocServerInstance;
   }
   private _streamAnalysisComplete = false;
   public get isStreamAnalysisComplete(): boolean {
@@ -146,6 +151,7 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
 
   constructor(
     public prefs: SzPrefsService,
+    public aboutInfoService: AboutInfoService,
     private adminService: SzAdminService,
     //private bulkDataService: SzBulkDataService,
     public dialog: MatDialog,
@@ -154,6 +160,13 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
 
     ngOnInit() {}
     ngAfterViewInit() {
+      this.adminBulkDataService.onAnalysisChange.pipe(
+        takeUntil(this.unsubscribe$),
+        filter( (value) => { return value !== undefined; })
+      ).subscribe((summary) =>{
+        console.log('this.adminBulkDataService.onAnalysisChange: ', summary);
+      });
+
       // if its the users first file load and they just verified stream host
       // immediately prompt for file selection
       this.adminBulkDataService.onUseStreamingSocketChange.pipe(
