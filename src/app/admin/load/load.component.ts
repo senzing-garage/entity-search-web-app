@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { SzBulkDataAnalysis, SzBulkLoadResult } from '@senzing/rest-api-client-ng';
 import { MatDialog } from '@angular/material/dialog';
@@ -9,7 +9,7 @@ import { AdminStreamAnalysisConfig, AdminStreamConnProperties, AdminStreamLoadCo
 import { filter, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { AboutInfoService } from '../../services/about.service';
-
+import { AdminBulkDataLoadComponent } from '../bulk-data/admin-bulk-data-load.component';
 @Component({
   selector: 'admin-data-loader',
   templateUrl: './load.component.html',
@@ -103,12 +103,45 @@ export class AdminDataLoaderComponent implements OnInit, OnDestroy {
     }
   }
 
+  @ViewChild('adminBulkDataLoadRef')
+  private adminBulkDataLoadRef: AdminBulkDataLoadComponent;
+
+  /**
+   * on file drop handler
+   */
+   onFileDropped(files: FileList) {
+    console.log('onFileDropped: ', event);
+    this.adminBulkDataLoadRef.setFileInputOnDrop(files);
+  }
+
+  /** upload a file for analytics */
+  public chooseFileInput(event?: Event) {
+    this.adminBulkDataLoadRef.chooseFileInput(event);
+    /*
+    if(this.filePicker && this.filePicker.nativeElement) {
+      try {
+        this.filePicker.nativeElement.click();
+      } catch(e) {
+        console.warn('AdminBulkDataLoadComponent.filePicker.nativeElement.click error', e);
+      }
+    } else {
+      console.warn('AdminBulkDataLoadComponent.filePicker.nativeElement missing');
+    }
+    */
+  }
+
   constructor(
     private titleService: Title,
     public adminBulkDataService: AdminBulkDataService,
     public aboutInfoService: AboutInfoService,
     public dialog: MatDialog
-    ) { }
+    ) { 
+      this.adminBulkDataService.onCurrentFileChange.pipe(
+        takeUntil(this.unsubscribe$)
+      ).subscribe((file) => {
+        console.warn('adminBulkDataService.onCurrentFileChange: ', file);
+      });
+    }
 
   ngOnInit() {
     // set page title

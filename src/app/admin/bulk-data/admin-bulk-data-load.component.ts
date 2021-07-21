@@ -130,6 +130,14 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
     this._showAnalysis = value;
     this._showResults = value;
   }
+
+  public setFileInputOnDrop(evtFiles: FileList) {
+    console.log('setFileInputOnDrop: ', evtFiles);
+    if(evtFiles && evtFiles.length > 0) {
+        this.adminBulkDataService.file = evtFiles.item(0);
+    }
+  }
+
   public get currentError(): Error {
     return this.adminBulkDataService.currentError;
   }

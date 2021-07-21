@@ -33,10 +33,15 @@
   <mat-icon aria-hidden="false" aria-label="Error!">error_outline</mat-icon>
   {{ currentError.message }}
 </div>
-
+<div *ngIf="!analysis && !result" class="dnd-drop-zone" fileDnD (fileDropped)="onFileDropped($event)" (click)="chooseFileInput($event)">
+  <span class="material-icons">
+    create_new_folder
+  </span>
+  Upload File: Choose a file or drag it here.
+</div>
 <br/>
 <admin-bulk-data-analysis *ngIf="analysis || result" [useSocketStream]="useSocketStream"></admin-bulk-data-analysis>
-<admin-bulk-data-load [showSummaries]="false" [useSocketStream]="useSocketStream"></admin-bulk-data-load>
+<admin-bulk-data-load #adminBulkDataLoadRef [showSummaries]="false" [useSocketStream]="useSocketStream"></admin-bulk-data-load>
 <!--<sz-bulk-data-load [showSummaries]="false"></sz-bulk-data-load>
 <sz-bulk-data-analysis></sz-bulk-data-analysis>
 -->

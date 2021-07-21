@@ -61,6 +61,30 @@ admin-bulk-data-analysis {
     margin-bottom: 3px;
   }
 }
+.dnd-drop-zone {
+  display: flex;
+  border: 2px dotted #c8c8cc;
+  border-radius: 7px;
+  min-height: 300px;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  color: #999;
+
+  .material-icons {
+    font-size: 33px;
+    color: var(--sz-search-button-submit-background-color);
+    margin: 0px 10px;
+  }
+  &:hover {
+    color: rgb(99, 99, 99);
+    cursor: pointer;
+    /* text-decoration: underline; */
+  }
+}
+.fileover {
+  color: var(--sz-search-button-submit-background-color);
+}
 .top-columns {
   display: flex;
   flex-direction: row;

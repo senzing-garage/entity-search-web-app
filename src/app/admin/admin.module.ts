@@ -32,7 +32,7 @@ import { AdminBulkDataLoadComponent } from './bulk-data/admin-bulk-data-load.com
 import { AdminBulkDataLoadReportComponent } from './bulk-data/admin-bulk-data-load-report.component';
 import { AdminBulkDataLoadSummaryComponent } from './bulk-data/admin-bulk-data-load-summary.component';
 import { SzProgressBarComponent } from '../common/progress-bar/progress-bar.component';
-
+import { AppFileDragAndDrop as AdminFileDragAndDrop } from '../common/file-drag-and-drop/file-drag-and-drop.directive';
 // ...
 export function tokenGetter() {
   return localStorage.getItem('access_token');
@@ -52,6 +52,7 @@ import { SzWebAppConfigService } from '../services/config.service';
     AdminBulkDataLoadReportComponent,
     AdminBulkDataLoadSummaryComponent,
     AdminBulkDataStreamAnalysisReportComponent,
+    AdminFileDragAndDrop,
     AdminOAuthTokensComponent,
     AdminErrorNoAdminModeComponent,
     AdminLicenseInfoComponent,
