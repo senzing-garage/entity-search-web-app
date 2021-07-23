@@ -19,7 +19,17 @@ import {
 
 import { WebSocketService } from './websocket.service';
 import { SzStreamingFileRecordParser } from '../common/streaming-file-record-parser';
-import { BulkDataService, SzBulkDataAnalysis, SzBulkDataAnalysisResponse, SzBulkLoadResponse, SzBulkLoadResult, SzDataSourceRecordAnalysis, SzDataSourceBulkLoadResult, SzEntityTypeBulkLoadResult, SzEntityTypeRecordAnalysis } from '@senzing/rest-api-client-ng';
+import { 
+    BulkDataService, 
+    AdminService as SdkAdminService,
+    SzBulkDataAnalysis, 
+    SzBulkDataAnalysisResponse, 
+    SzBulkLoadResponse, 
+    SzBulkLoadResult, 
+    SzDataSourceRecordAnalysis, 
+    SzDataSourceBulkLoadResult, 
+    SzEntityTypeBulkLoadResult, 
+    SzEntityTypeRecordAnalysis } from '@senzing/rest-api-client-ng';
 
 export interface AdminStreamSummaryBase {
     fileType?: any,
@@ -317,6 +327,7 @@ export class AdminBulkDataService {
         public prefs: SzPrefsService,
         private adminService: SzAdminService,
         //private bulkDataService: SzBulkDataService,
+        private sdkAdminService: SdkAdminService,
         private bulkDataService: BulkDataService,
         private datasourcesService: SzDataSourcesService,
         private entityTypesService: SzEntityTypesService,
@@ -510,71 +521,71 @@ export class AdminBulkDataService {
         analysis      = analysis ?      analysis      : this.currentAnalysisResult;
 
         if(file && dataSourceMap && analysis) {
-        const newDataSources = this.currentAnalysisResult.analysisByDataSource.filter(a => {
-            const targetDS = this.dataSourceMap[((a.dataSource === null || a.dataSource === undefined) ? "" : a.dataSource)];
-            return (targetDS && this._dataSources.indexOf(targetDS) < 0);
-        }).map( (b) => {
-            return this.dataSourceMap[(b.dataSource === null || b.dataSource === undefined ? "" :  b.dataSource)];
-        });
-        const newEntityTypes = this.currentAnalysisResult.analysisByEntityType.filter(a => {
-            const targetET = this.entityTypeMap[((a.entityType === null || a.entityType === undefined) ? "" : a.entityType )];
-            return (targetET && this._entityTypes.indexOf(targetET) < 0);
-        }).map( (b) => {
-            return this.entityTypeMap[(b.entityType === null || b.entityType === undefined ? "" : b.entityType)];
-        });
-
-        let promise = Promise.resolve([]);
-        const promises = [];
-        const retVal: Subject<SzBulkLoadResult> =  new Subject<SzBulkLoadResult>();
-        // create new datasources if needed
-        if (newDataSources.length > 0) {
-            //console.log('create new datasources: ', newDataSources);
-            const pTemp = this.createDataSources(newDataSources).toPromise();
-            promises.push( pTemp );
-        }
-        // create new entity types if needed
-        if (newEntityTypes.length > 0) {
-            //console.log('create new entity types: ', newEntityTypes);
-            const pTemp = this.createEntityTypes(newEntityTypes).toPromise();
-            promises.push( pTemp );
-        }
-        promise = Promise.all( promises );
-
-        // no new datasources or already avail
-        this.loadingFile.next(true);
-        promise.then(() => {
-            //this.bulkDataService.loadBulkRecords(file, dataSource?: string, mapDataSources?: string, mapDataSource?: Array<string>, entityType?: string, mapEntityTypes?: string, mapEntityType?: Array<string>, progressPeriod?: string, observe?: 'body', reportProgress?: boolean)
-            //this.bulkDataService.loadBulkRecords(file, dataSource, mapDataSources, mapDataSource, entityType?: string, mapEntityTypes, mapEntityType, progressPeriod, observe, reportProgress)
-            this.bulkDataService.loadBulkRecords  (file, undefined,  JSON.stringify(dataSourceMap),  undefined,     undefined,           JSON.stringify(entityTypeMap)).pipe(
-            //this.bulkDataService.loadBulkRecords(file, dataSourceMap, entityTypeMap ).pipe(
-            catchError((err: Error) => {
-                console.warn('Handling error locally and rethrowing it...', err);
-                this.loadingFile.next(false);
-                this._onError.next( err );
-                return of(undefined);
-            }),
-            tap((response: SzBulkLoadResponse) => {
-                //console.log('RESPONSE', dataSourceMap, response.data);
-                this.currentLoadResult = response.data;
-                this.onLoadResult.next( this.currentLoadResult );
-                this.loadingFile.next(false);
-                //retVal.next(response.data);
-            }),
-            map((response: SzBulkLoadResponse) => {
-                return response.data;
-            })
-            ).pipe(
-            takeUntil( this.unsubscribe$ )
-            ).subscribe( (data: SzBulkDataAnalysis) => {
-            console.log('SzBulkDataService.load', this.currentLoadResult, data);
-            retVal.next(data);
+            const newDataSources = this.currentAnalysisResult.analysisByDataSource.filter(a => {
+                const targetDS = this.dataSourceMap[((a.dataSource === null || a.dataSource === undefined) ? "" : a.dataSource)];
+                return (targetDS && this._dataSources.indexOf(targetDS) < 0);
+            }).map( (b) => {
+                return this.dataSourceMap[(b.dataSource === null || b.dataSource === undefined ? "" :  b.dataSource)];
             });
-        });
-        return retVal.asObservable();
+            const newEntityTypes = this.currentAnalysisResult.analysisByEntityType.filter(a => {
+                const targetET = this.entityTypeMap[((a.entityType === null || a.entityType === undefined) ? "" : a.entityType )];
+                return (targetET && this._entityTypes.indexOf(targetET) < 0);
+            }).map( (b) => {
+                return this.entityTypeMap[(b.entityType === null || b.entityType === undefined ? "" : b.entityType)];
+            });
+
+            let promise = Promise.resolve([]);
+            const promises = [];
+            const retVal: Subject<SzBulkLoadResult> =  new Subject<SzBulkLoadResult>();
+            // create new datasources if needed
+            if (newDataSources.length > 0) {
+                //console.log('create new datasources: ', newDataSources);
+                const pTemp = this.createDataSources(newDataSources).toPromise();
+                promises.push( pTemp );
+            }
+            // create new entity types if needed
+            if (newEntityTypes.length > 0) {
+                //console.log('create new entity types: ', newEntityTypes);
+                const pTemp = this.createEntityTypes(newEntityTypes).toPromise();
+                promises.push( pTemp );
+            }
+            promise = Promise.all( promises );
+
+            // no new datasources or already avail
+            this.loadingFile.next(true);
+            promise.then(() => {
+                //this.bulkDataService.loadBulkRecords(file, dataSource?: string, mapDataSources?: string, mapDataSource?: Array<string>, entityType?: string, mapEntityTypes?: string, mapEntityType?: Array<string>, progressPeriod?: string, observe?: 'body', reportProgress?: boolean)
+                //this.bulkDataService.loadBulkRecords(file, dataSource, mapDataSources, mapDataSource, entityType?: string, mapEntityTypes, mapEntityType, progressPeriod, observe, reportProgress)
+                this.bulkDataService.loadBulkRecords  (file, undefined,  JSON.stringify(dataSourceMap),  undefined,     undefined,           JSON.stringify(entityTypeMap)).pipe(
+                //this.bulkDataService.loadBulkRecords(file, dataSourceMap, entityTypeMap ).pipe(
+                catchError((err: Error) => {
+                    console.warn('Handling error locally and rethrowing it...', err);
+                    this.loadingFile.next(false);
+                    this._onError.next( err );
+                    return of(undefined);
+                }),
+                tap((response: SzBulkLoadResponse) => {
+                    //console.log('RESPONSE', dataSourceMap, response.data);
+                    this.currentLoadResult = response.data;
+                    this.onLoadResult.next( this.currentLoadResult );
+                    this.loadingFile.next(false);
+                    //retVal.next(response.data);
+                }),
+                map((response: SzBulkLoadResponse) => {
+                    return response.data;
+                })
+                ).pipe(
+                    takeUntil( this.unsubscribe$ )
+                ).subscribe( (data: SzBulkDataAnalysis) => {
+                    console.log('SzBulkDataService.load', this.currentLoadResult, data);
+                    retVal.next(data);
+                });
+            });
+            return retVal.asObservable();
         } else {
-        console.warn('missing required parameter: ', file, dataSourceMap);
-        throw new Error('missing required parameter: '+ file.name);
-        return;
+            console.warn('missing required parameter: ', file, dataSourceMap);
+            throw new Error('missing required parameter: '+ file.name);
+            return;
         }
     }
     /**
@@ -1483,6 +1494,10 @@ export class AdminBulkDataService {
             _retVal.next(err);
         }));
         return retVal;
+    }
+
+    public getStreamLoadQueue() {
+        return this.sdkAdminService.getLoadQueueInfo();
     }
 
 }

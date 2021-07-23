@@ -1,0 +1,23 @@
+<!--<h3>AdminStreamLoadQueueInfoComponent</h3>-->
+<div *ngIf="data && !lastKnownError" class="data">
+    <div class="row">
+        <div class="column">Message Count</div>
+        <div class="column value">{{ data.messageCount }}</div>
+    </div>
+    <div class="row">
+        <div class="column">Provider Type</div>
+        <div class="column value">{{ data.providerType }}</div>
+    </div>
+    <div class="row">
+        <div class="column">Description</div>
+        <div class="column value">{{ data.description }}</div>
+    </div>
+</div>
+<p class="error" *ngIf="lastKnownError"> {{ lastKnownError.message }} </p>
+
+<div *ngIf="lastKnownErrors" class="errors">
+    <h3>Details</h3>
+    <textarea class="row" *ngFor="let error of lastKnownErrors">
+        {{ error.message }}
+    </textarea>
+</div>

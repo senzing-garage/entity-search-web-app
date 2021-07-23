@@ -7,6 +7,7 @@ import {
 } from '@senzing/rest-api-client-ng';
 import { Subject } from 'rxjs';
 import { AdminBulkDataService, AdminStreamAnalysisSummary, AdminStreamLoadSummary } from '../../services/admin.bulk-data.service';
+import { AdminStreamLoadQueueDialogComponent } from '../../common/stream-load-queue-dialog/stream-load-queue-dialog.component';
 import { filter, take, takeUntil } from 'rxjs/operators';
 import { SzStreamingFileRecordParser } from '../../common/streaming-file-record-parser';
 import { NgForm } from '@angular/forms';
@@ -90,6 +91,13 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
   public get isStreamingAnalysisInProgress(): boolean { return this._isStreamingAnalysisInProgress; }
   public get isStreamingLoadInProgress(): boolean { return this._isStreamingAnalysisInProgress; }
   public get isStreamingLoadComplete(): boolean { return this._isStreamingLoadComplete; }
+  public get canCheckLoadQueue(): boolean {
+    let retVal = false;
+    if(this.aboutInfoService) {
+      retVal = this.aboutInfoService.isPocServerInstance && this.aboutInfoService.loadQueueConfigured && this.result ? true : false;
+    }
+    return retVal;
+  }
 
   /** does user have admin rights */
   public get adminEnabled() {
@@ -311,6 +319,14 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
     /** take the current file focus and pass to api load endpoint */
     public loadFileFS(event: Event) {
       this.adminBulkDataService.streamLoad(this.adminBulkDataService.file)
+    }
+
+    /** check the SQS load-queue */
+    public checkLoadQueue() {
+      const dialogRef = this.dialog.open(AdminStreamLoadQueueDialogComponent, {
+        width: '600px',
+        data: {}
+      });
     }
 
     /** clear the current bulkloader focal state */

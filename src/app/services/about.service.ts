@@ -35,6 +35,13 @@ export class AboutInfoService {
   /** version of the @senzing/rest-api-client-ng package */
   public restApiClientVersion: string;
 
+  /** The maximum size for inbound text or binary messages when invoking end-points via Web Sockets `ws://` protocol. */
+  public webSocketsMessageMaxSize?: number;
+  /** Whether or not an asynchronous INFO queue has been configured for automatically sending \"INFO\" messages when records are loaded, reevaluated or deleted. */
+  public infoQueueConfigured?: boolean;
+  /** Whether or not an asynchronous LOAD queue has been configured for asynchronously loading records. */
+  public loadQueueConfigured?: boolean;
+
   public configCompatibilityVersion: number | string;
   public nativeApiBuildDate: Date;
   public nativeApiBuildNumber: string;
@@ -132,8 +139,11 @@ export class AboutInfoService {
     //this.concurrency = info.concurrency;
     //this.activeConfigId = info.activeConfigId;
     //this.dynamicConfig = info.dynamicConfig;
-    this.isReadOnly = info.readOnly;
-    this.isAdminEnabled = info.adminEnabled;
+    this.isReadOnly               = info.readOnly;
+    this.isAdminEnabled           = info.adminEnabled;
+    this.infoQueueConfigured      = info && info.infoQueueConfigured !== undefined ? info.infoQueueConfigured : this.infoQueueConfigured;
+    this.loadQueueConfigured      = info && info.loadQueueConfigured !== undefined ? info.loadQueueConfigured : this.loadQueueConfigured;
+    this.webSocketsMessageMaxSize = info && info.webSocketsMessageMaxSize !== undefined ? info.webSocketsMessageMaxSize : this.webSocketsMessageMaxSize;
   }
 
   private setPocServerInfo(resp: SzBaseResponseMeta) {

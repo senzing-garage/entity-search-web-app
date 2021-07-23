@@ -36,6 +36,8 @@ import { BlankComponent } from './common/blank/blank.component';
 import { NoResultsComponent } from './errors/no-results/no-results.component';
 import { AboutComponent } from './about/about.component';
 // admin dialog components that "FREAK-OUT" for no good reason
+import { AdminStreamLoadQueueInfoComponent } from './common/stream-load-queue-dialog/stream-load-queue-info.component';
+import { AdminStreamLoadQueueDialogComponent } from './common/stream-load-queue-dialog/stream-load-queue-dialog.component';
 import { AdminStreamConnDialogComponent } from './common/stream-conn-dialog/stream-conn-dialog.component';
 import { AdminStreamAbortDialogComponent } from './common/stream-abort-dialog/stream-abort-dialog.component';
 
@@ -81,7 +83,9 @@ import { AdminBulkDataService } from './services/admin.bulk-data.service';
     TipsComponent,
     AboutComponent,
     AdminStreamConnDialogComponent,
-    AdminStreamAbortDialogComponent
+    AdminStreamAbortDialogComponent,
+    AdminStreamLoadQueueDialogComponent,
+    AdminStreamLoadQueueInfoComponent
   ],
   imports: [
     BrowserModule,
@@ -98,7 +102,7 @@ import { AdminBulkDataService } from './services/admin.bulk-data.service';
     SpinnerModule,
     environment.test ? HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService, { delay: 100 }) : []
   ],
-  entryComponents: [ AdminStreamConnDialogComponent, AdminStreamAbortDialogComponent ],
+  entryComponents: [ AdminStreamConnDialogComponent, AdminStreamAbortDialogComponent, AdminStreamLoadQueueDialogComponent, AdminStreamLoadQueueInfoComponent ],
   providers: [
     SzWebAppConfigService,
     EntitySearchService,

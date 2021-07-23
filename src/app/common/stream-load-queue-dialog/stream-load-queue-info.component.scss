@@ -1,0 +1,22 @@
+
+.data, .errors {
+    display: flex;
+    flex-direction: column;
+}
+.row {
+    display: flex;
+    flex-direction: row;
+}
+.column {
+    width: 50%;
+}
+
+.error, .errors {
+    color: red;
+}
+.errors h3 {
+    color: #333;
+}
+.errors textarea {
+    height: 400px;
+}

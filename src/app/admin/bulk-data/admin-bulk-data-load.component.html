@@ -10,6 +10,8 @@
 <button mat-stroked-button color="primary" (click)="loadFile($event)"  *ngIf="analysis && !result && !currentError && (!useSocketStream || !canUseSocketStream)">Load File</button>
 <button mat-stroked-button color="primary" (click)="loadFileFS($event)"  *ngIf="analysis && !result && !currentError && canUseSocketStream && useSocketStream" [disabled]="!isStreamAnalysisComplete">Load File via Stream</button>
 <button mat-stroked-button color="primary" (click)="clearAndChooseFileInput($event)" *ngIf="analysis && result">Analyze Another File</button>
+<button mat-stroked-button color="primary" (click)="checkLoadQueue()" *ngIf="canCheckLoadQueue">Check the Load Queue</button>
+
 <!--<button mat-stroked-button color="primary" (click)="debugStreamLoad($event)" *ngIf="analysis && useSocketStream">Debug Stream Depth</button>-->
 <!--<button mat-stroked-button color="primary" (click)="clear();">Clear Results</button>-->
 <!--<ul>
