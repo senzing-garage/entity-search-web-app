@@ -52,7 +52,8 @@ export interface AdminStreamSummaryBase {
     dataSources?: string[],
     entityTypes?: string[],
     complete?: boolean,
-    isStreamResponse: boolean
+    isStreamResponse: boolean,
+    topErrors?: [{error?: AdminStreamSummaryError, occurrenceCount?: number}]
 }
 
 export interface AdminStreamLoadSummary extends AdminStreamSummaryBase {
@@ -65,7 +66,11 @@ export interface AdminStreamLoadSummary extends AdminStreamSummaryBase {
     status: string,
     resultsByDataSource: Array<SzDataSourceBulkLoadResult>;
     resultsByEntityType: Array<SzEntityTypeBulkLoadResult>;
-    topErrors?: []
+}
+
+export interface AdminStreamSummaryError {
+    code?: number;
+    message?: string;
 }
 
 export interface AdminStreamAnalysisSummary extends AdminStreamSummaryBase {
@@ -183,6 +188,7 @@ export class AdminBulkDataService {
     private _onStreamLoadProgress               = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
     private _onStreamLoadPaused                 = new BehaviorSubject<boolean>(this._streamLoadPaused);
     private _onStreamLoadComplete               = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
+    private _onStreamLoadErrors                 = new BehaviorSubject<[{error?: AdminStreamSummaryError, occurrenceCount?: number}]>(undefined);
     private _onStreamLoadFileReadStarted        = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
     private _onStreamLoadFileReadProgress       = new Subject<AdminStreamLoadSummary>();
     private _onStreamLoadFileReadComplete       = new BehaviorSubject<AdminStreamLoadSummary>(undefined);
@@ -199,6 +205,7 @@ export class AdminBulkDataService {
     public onStreamLoadProgress                 = this._onStreamLoadProgress.asObservable();
     public onStreamLoadPaused                   = this._onStreamLoadPaused.asObservable();
     public onStreamLoadComplete                 = this._onStreamLoadComplete.asObservable();
+    public onStreamLoadErrors                   = this._onStreamLoadErrors.asObservable();
     public onStreamLoadFileReadStarted          = this._onStreamLoadFileReadStarted.asObservable();
     public onStreamLoadFileReadProgress         = this._onStreamLoadFileReadProgress.asObservable();
     public onStreamLoadFileReadComplete         = this._onStreamLoadFileReadComplete.asObservable();
@@ -675,10 +682,6 @@ export class AdminBulkDataService {
         this.onCurrentFileChange.next( this.currentFile );
 
         /** clear out behavior subject states */
-        //this._onStreamAnalysisComplete.next(undefined);
-        //this._onStreamAnalysisStarted.next(undefined);
-        //this._onStreamLoadStarted.next(undefined);
-        //this._onStreamLoadComplete.next(undefined);
         this._onStreamAnalysisStarted.next(undefined);
         this._onStreamAnalysisProgress.next(undefined);
         this._onStreamAnalysisComplete.next(undefined);
@@ -687,6 +690,7 @@ export class AdminBulkDataService {
         this._onStreamLoadStarted.next(undefined);
         this._onStreamLoadProgress.next(undefined);
         this._onStreamLoadComplete.next(undefined);
+        this._onStreamLoadErrors.next(undefined);
         this._onStreamLoadFileReadStarted.next(undefined);
         this._onStreamLoadFileReadComplete.next(undefined);
 
@@ -866,8 +870,8 @@ export class AdminBulkDataService {
         //console.log('SzBulkDataService.streamLoad: ', file, this.streamConnectionProperties, dataSourceMap, entityTypeMap);
 
         // event streams
-        let retSubject  = new Subject<AdminStreamLoadSummary>();
-        let retObs      = retSubject.asObservable();
+        let retSubject      = new Subject<AdminStreamLoadSummary>();
+        let retObs          = retSubject.asObservable();
 
         // set up subject used for aborting in progress subscriptions
         if(!this.streamLoadAbort$ || this.streamLoadAbort$ === undefined || (this.streamLoadAbort$ && this.streamLoadAbort$.closed)){
@@ -947,8 +951,12 @@ export class AdminBulkDataService {
             // we change responses "recordCount" to "sentRecordCount" because that's what it really is
             // and re-assert our internal "recordCount" which includes all records read so far
             summary = Object.assign(summary, data, {recordCount: summary.recordCount, receivedRecordCount: data.recordCount});
-            console.log('AdminBulkDataService.streamLoad.webSocketService.onMessageRecieved: ', summary, data);
-            if(data && data.status === 'COMPLETED' && summary.sentRecordCount === summary.recordCount) {
+            console.warn('AdminBulkDataService.streamLoad.webSocketService.onMessageRecieved: ', summary, data);
+            if(data && data.topErrors && data.topErrors.length > 0) {
+                this._onStreamLoadErrors.next( summary.topErrors );
+            }
+            if(data && data.status === 'COMPLETED') {
+            //if(data && data.status === 'COMPLETED' && summary.sentRecordCount === summary.recordCount) {
                 // all data sent
                 summary.complete = true;
             }

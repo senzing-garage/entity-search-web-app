@@ -2,7 +2,19 @@
   <h2 class="section-title" *ngIf="!currentError">Import Data from a file</h2>
   <h2 class="section-title" *ngIf="currentError">Error Encountered</h2>
   <!--<div>canUseSocketStream: {{ canUseSocketStream }} | {{ aboutInfoService.isPocServerInstance }}</div>-->
-  <div class="stream-connection-idicator" *ngIf="useSocketStream && canUseSocketStream">
+  <div class="stream-errors-indicator" *ngIf="hasStreamLoadErrors"
+      matTooltip="Errors occurred during stream load. Click for more information."
+      matTooltipPosition="above"
+      matTooltipClass="tooltip-red"
+      (click)="inspectStreamLoadErrors()">
+    <mat-icon class="error-icon">running_with_errors</mat-icon>
+    <mat-icon class="error-icon-dummy" [matBadge]="streamLoadErrorCount" matBadgeColor="warn" matBadgeSize="small">running_with_errors</mat-icon>
+    <!-- Include text description of the icon's meaning for screen-readers -->
+    <span class="cdk-visually-hidden">
+      Errors encountered during a stream load are indicated by the presence of this element.
+    </span>
+  </div>
+  <!--<div class="stream-connection-idicator" *ngIf="useSocketStream && canUseSocketStream">
     <mat-icon aria-hidden="false" aria-label="stream is disconnected. click to connect." class="disconnected" 
       matTooltip="Disconnected from stream host. Click to connect/reconnect." 
       matTooltipClass="tooltip-red" 
@@ -12,7 +24,7 @@
       matTooltip="Connected to stream host. Click to disconnect."
       matTooltipPosition="left" 
       *ngIf="streamConnected" (click)="setStreamState(false)">flash_on</mat-icon>
-  </div>
+  </div>-->
   <div class="stream-loading" *ngIf="canUseSocketStream">
     <mat-slide-toggle [(ngModel)]="useSocketStream">Stream Connection</mat-slide-toggle>
   </div>

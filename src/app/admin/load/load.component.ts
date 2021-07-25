@@ -4,9 +4,10 @@ import { SzBulkDataAnalysis, SzBulkLoadResult } from '@senzing/rest-api-client-n
 import { MatDialog } from '@angular/material/dialog';
 
 import { AdminStreamConnDialogComponent } from '../../common/stream-conn-dialog/stream-conn-dialog.component';
-import { AdminBulkDataService, AdminStreamAnalysisSummary, AdminStreamLoadSummary } from '../../services/admin.bulk-data.service';
+import { AdminStreamLoadErrorsDialogComponent } from '../../common/stream-load-errors-dialog/stream-load-errors-dialog.component';
+import { AdminBulkDataService, AdminStreamAnalysisSummary, AdminStreamLoadSummary, AdminStreamSummaryError } from '../../services/admin.bulk-data.service';
 import { AdminStreamAnalysisConfig, AdminStreamConnProperties, AdminStreamLoadConfig } from '@senzing/sdk-components-ng';
-import { filter, takeUntil } from 'rxjs/operators';
+import { takeUntil, take } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { AboutInfoService } from '../../services/about.service';
 import { AdminBulkDataLoadComponent } from '../bulk-data/admin-bulk-data-load.component';
@@ -18,6 +19,42 @@ import { AdminBulkDataLoadComponent } from '../bulk-data/admin-bulk-data-load.co
 export class AdminDataLoaderComponent implements OnInit, OnDestroy {
   /** subscription to notify subscribers to unbind */
   public unsubscribe$ = new Subject<void>();
+
+  private _streamLoadErrors: [{error?: AdminStreamSummaryError, occurrenceCount?: number}] | undefined;
+  public get streamLoadErrors(): [{error?: AdminStreamSummaryError, occurrenceCount?: number}] | undefined {
+    return this._streamLoadErrors;
+  }
+  public get streamLoadErrorCount(): number {
+    let retVal = 0;
+    if(this._streamLoadErrors && this._streamLoadErrors.length > 0) {
+      this._streamLoadErrors.forEach((enc) => {
+        if(enc && enc.occurrenceCount){
+          retVal = retVal+enc.occurrenceCount;
+        } else {
+          // no occurence count, guess singular
+          retVal++;
+        }
+      });
+    }
+    return retVal;
+  }
+
+  public get hasStreamLoadErrors(): boolean {
+    return this.streamLoadErrorCount > 0 ? true : false;
+  }
+
+  public inspectStreamLoadErrors() {
+    const dialogRef = this.dialog.open(AdminStreamLoadErrorsDialogComponent, {
+      width: '600px',
+      data: this._streamLoadErrors
+    });
+    dialogRef.afterClosed().pipe(
+      takeUntil(this.unsubscribe$),
+      take(1)
+    ).subscribe(() => {
+      console.log('after error inspector closed.');
+    });
+  }
   
   /** after selecting switch to use stream
    * we set the connection properties of admin streaming
@@ -140,6 +177,11 @@ export class AdminDataLoaderComponent implements OnInit, OnDestroy {
         takeUntil(this.unsubscribe$)
       ).subscribe((file) => {
         console.warn('adminBulkDataService.onCurrentFileChange: ', file);
+      });
+      this.adminBulkDataService.onStreamLoadErrors.pipe(
+        takeUntil(this.unsubscribe$)
+      ).subscribe((errors: [{error?: AdminStreamSummaryError, occurrenceCount?: number}]) => {
+        this._streamLoadErrors = errors;
       });
     }
 

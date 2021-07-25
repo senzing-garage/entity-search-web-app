@@ -40,6 +40,7 @@ import { AdminStreamLoadQueueInfoComponent } from './common/stream-load-queue-di
 import { AdminStreamLoadQueueDialogComponent } from './common/stream-load-queue-dialog/stream-load-queue-dialog.component';
 import { AdminStreamConnDialogComponent } from './common/stream-conn-dialog/stream-conn-dialog.component';
 import { AdminStreamAbortDialogComponent } from './common/stream-abort-dialog/stream-abort-dialog.component';
+import { AdminStreamLoadErrorsDialogComponent } from './common/stream-load-errors-dialog/stream-load-errors-dialog.component';
 
 // errors
 import { PageNotFoundComponent } from './errors/page-not-found/page-not-found.component';
@@ -84,6 +85,7 @@ import { AdminBulkDataService } from './services/admin.bulk-data.service';
     AboutComponent,
     AdminStreamConnDialogComponent,
     AdminStreamAbortDialogComponent,
+    AdminStreamLoadErrorsDialogComponent,
     AdminStreamLoadQueueDialogComponent,
     AdminStreamLoadQueueInfoComponent
   ],
@@ -102,7 +104,7 @@ import { AdminBulkDataService } from './services/admin.bulk-data.service';
     SpinnerModule,
     environment.test ? HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService, { delay: 100 }) : []
   ],
-  entryComponents: [ AdminStreamConnDialogComponent, AdminStreamAbortDialogComponent, AdminStreamLoadQueueDialogComponent, AdminStreamLoadQueueInfoComponent ],
+  entryComponents: [ AdminStreamConnDialogComponent, AdminStreamAbortDialogComponent, AdminStreamLoadErrorsDialogComponent, AdminStreamLoadQueueDialogComponent, AdminStreamLoadQueueInfoComponent ],
   providers: [
     SzWebAppConfigService,
     EntitySearchService,

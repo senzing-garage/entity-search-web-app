@@ -1,4 +1,5 @@
 @import '../../scss/_admin.scss';
+@import "../../scss/variables";
 
 admin-bulk-data-analysis {
   display: block;
@@ -6,7 +7,7 @@ admin-bulk-data-analysis {
 }
 
 .error-msg {
-  color: red;
+  color: #{$sz-red};
   font-size: 25px;
   padding: 10px;
   border-radius: 10px;
@@ -94,6 +95,35 @@ admin-bulk-data-analysis {
     flex-grow: 10;
   }
 
+  .stream-errors-indicator {
+    display: inline-block;
+    margin-right: 1.3rem;
+    position: relative;
+
+    mat-icon {
+      cursor: pointer;
+      font-size: 23px;
+      width: 18px;
+      height: 18px;
+      /* margin-top: 2px;*/
+      padding: 2px;
+      color: #{$sz-red};
+      position: relative;
+      top: -1px;
+    }
+    .error-icon-dummy {
+      color: #fff;
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      z-index: -1;
+    }
+    .error-icon {
+      color: #{$sz-red};
+      position: relative;
+    }
+  }
+
   .stream-connection-idicator {
     display: inline-block;
     margin-right: 1.3rem;
@@ -102,7 +132,7 @@ admin-bulk-data-analysis {
       font-size: 16px;
       width: 14px;
       height: 14px;
-      margin-top: 2px;
+      margin-top: -1px;
       padding: 2px;
       border: 3px solid #656565;
       color:#656565;
@@ -120,7 +150,4 @@ admin-bulk-data-analysis {
   .stream-loading {
     display: inline-block;
   }
-}
-.tooltip-red {
-  background: #b71c1c;
 }
