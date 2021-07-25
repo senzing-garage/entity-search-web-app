@@ -45,7 +45,7 @@ export class AdminDataLoaderComponent implements OnInit, OnDestroy {
 
   public inspectStreamLoadErrors() {
     const dialogRef = this.dialog.open(AdminStreamLoadErrorsDialogComponent, {
-      width: '600px',
+      width: '800px',
       data: this._streamLoadErrors
     });
     dialogRef.afterClosed().pipe(

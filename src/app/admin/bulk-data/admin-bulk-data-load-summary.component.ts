@@ -62,7 +62,8 @@ export class AdminBulkDataLoadSummaryComponent implements OnInit, OnDestroy {
   }
   public get streamResultSentRecordCount() {
     let streamResult = this.streamResult;
-    return streamResult && streamResult.receivedRecordCount ? streamResult.receivedRecordCount : (streamResult && streamResult.sentRecordCount ? streamResult.sentRecordCount : 0);
+    return streamResult && streamResult.receivedRecordCount && streamResult.failedRecordCount ? streamResult.receivedRecordCount - streamResult.failedRecordCount : (streamResult && streamResult.receivedRecordCount ? streamResult.receivedRecordCount : (streamResult && streamResult.sentRecordCount ? streamResult.sentRecordCount : 0));
+    //return streamResult && streamResult.receivedRecordCount ? streamResult.receivedRecordCount : (streamResult && streamResult.sentRecordCount ? streamResult.sentRecordCount : 0);
   }
 
   constructor( public prefs: SzPrefsService,

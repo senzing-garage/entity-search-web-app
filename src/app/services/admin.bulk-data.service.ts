@@ -951,7 +951,7 @@ export class AdminBulkDataService {
             // we change responses "recordCount" to "sentRecordCount" because that's what it really is
             // and re-assert our internal "recordCount" which includes all records read so far
             summary = Object.assign(summary, data, {recordCount: summary.recordCount, receivedRecordCount: data.recordCount});
-            console.warn('AdminBulkDataService.streamLoad.webSocketService.onMessageRecieved: ', summary, data);
+            //console.warn('AdminBulkDataService.streamLoad.webSocketService.onMessageRecieved: ', summary, data);
             if(data && data.topErrors && data.topErrors.length > 0) {
                 this._onStreamLoadErrors.next( summary.topErrors );
             }
@@ -961,10 +961,10 @@ export class AdminBulkDataService {
                 summary.complete = true;
             }
             if(readStreamComplete && sendStreamComplete && summary.complete === true) {
-                console.warn('sending _onStreamLoadComplete: ', summary);
+                //console.warn('sending _onStreamLoadComplete: ', summary);
                 this._onStreamLoadComplete.next(summary);
             } else {
-                console.log('stream not complete', readStreamComplete, sendStreamComplete, summary.complete);
+                //console.log('stream not complete', readStreamComplete, sendStreamComplete, summary.complete);
             }
         });
 
