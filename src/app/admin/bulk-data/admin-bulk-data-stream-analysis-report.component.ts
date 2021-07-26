@@ -102,7 +102,13 @@ export class AdminBulkDataStreamAnalysisReportComponent implements OnInit, OnDes
       return (this.analysis && this.analysis.dataSources && this.analysis.dataSources.length > 1) ? true : false;
     }
     public get isMoreThanOneEntityType() {
-      return (this.analysis && this.analysis.entityTypes && this.analysis.entityTypes.length > 1) ? true : false;
+      let retVal = false;
+      if(this.analysis && this.analysis.analysisByEntityType && this.analysis.analysisByEntityType.length) {
+        retVal = (this.analysis.analysisByEntityType.length > 1) ? true : false;
+      } else if (this.analysis && this.analysis.entityTypes && this.analysis.entityTypes.length > 1) {
+        retVal = true;
+      }
+      return retVal;
     }
     public get comboAnalysis() {
       if(!this.isMoreThanOneDataSource && !this.isMoreThanOneEntityType) {
