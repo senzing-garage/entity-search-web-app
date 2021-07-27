@@ -148,10 +148,12 @@ import { Subject } from 'rxjs';
     ngOnDestroy() {
       this.unsubscribe$.next();
       this.unsubscribe$.complete();
+      this.adminBulkDataService.clearErrors();
     }
   
     onNoClick(): void {
       this.dialogRef.close();
+      this.adminBulkDataService.clearErrors();
     }
  
     public testConnection(event: Event) {
@@ -168,6 +170,7 @@ import { Subject } from 'rxjs';
             setTimeout(() => {
               this.testStatus = undefined;
               this.isTesting = false;
+              
             }, 2000);
           }, 10000)
         } else {

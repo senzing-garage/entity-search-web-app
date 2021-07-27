@@ -464,7 +464,8 @@ export class WebSocketService {
         catchError( (errors: any) => {
           console.warn('WS error: ', errors);
           this._onError(errors);
-          return of(errors)
+          throw errors;
+          //return of(errors)
         } )
       ).subscribe( (res) => {
         this._connected = true;

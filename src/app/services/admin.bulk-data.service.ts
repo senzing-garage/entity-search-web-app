@@ -669,6 +669,11 @@ export class AdminBulkDataService {
         }
         console.log('AdminBulkDataService.abort()', this.streamAnalysisAbort$, this.streamLoadAbort$);
     }
+    /** clear any errors */
+    public clearErrors(): void {
+        this._onStreamLoadErrors.next(undefined);
+        this._onError.next(undefined);
+    }
     /** clear any file and associated data. removes file focus context */
     public clear(): void {
         this.currentAnalysis        = undefined;
@@ -795,7 +800,7 @@ export class AdminBulkDataService {
         // parse to array of records
         this.parseRecordsFromFile(file, (streamStatus) => {
             // on stream complete, do thing
-            //console.warn('SzBulkDataService.streamAnalyze: file stream read complete.');
+            //console.warn('SzBulkDataService.streamAnalyze: file stream read complete.', );
             readStreamComplete = true;
             this._onStreamAnalysisProgress.next(summary);
             retSubject.next(summary); // local
@@ -1007,9 +1012,9 @@ export class AdminBulkDataService {
 
         // read file contents as stream
         // parse to array of records
-        this.parseRecordsFromFile(file, (streamStatus) => {
+        this.parseRecordsFromFile(file, (records) => {
             // on stream complete, do thing
-            //console.warn('SzBulkDataService.streamLoad: file stream read complete.');
+            //console.warn('SzBulkDataService.streamLoad: file stream read complete.', records);
             readStreamComplete = true;
             this._onStreamLoadProgress.next(summary);
             this._onStreamLoadFileReadComplete.next(summary);
@@ -1169,7 +1174,7 @@ export class AdminBulkDataService {
             retSubject.next(records);
         });
         if(onComplete){
-            //console.warn('SzBulkDataService.parseRecordsFromFile: onComplete handler passed to fn');
+            //console.warn('SzBulkDataService.parseRecordsFromFile: onComplete handler passed to fn', _readRecords);
             streamReader.onStreamClosed.subscribe(onComplete);
         }
         streamReader.onStreamClosed.subscribe((state) => {
