@@ -157,29 +157,10 @@ function getRecordsFromFileStream(fileHandle: File, fileReadStream: ReadableStre
             console.log('isValidJSONL: '+ isValidJSONL, );
         }
 
-        //payloadChunks.push(payloadChunk);
         // split chunk by line endings for per-record streaming
         let chunkLines = payloadChunk.split(summary.fileLineEndingStyle);
         //wsRecordsQueue.push(chunkLines);
-        
-        retSubject.next(chunkLines);
-
-        //chunkLines.forEach((_record, indexInc) => {
-        //    summary.bytesQueued += getUtf8ByteLength(_record);
-            //readRecs.push(_record); 
-        //    retSubject.next(_record);
-
-            /*
-            console.log(`[${payloadChunks.length}] sending message [${indexInc}]`);
-            this.sendWebSocketMessage(_record).subscribe((messageSent) => {
-                summary.bytesSent = summary.bytesSent + getUtf8ByteLength(_record);
-                summary.sentRecordCount += 1;
-                retSubject.next(summary);
-            }, (error: Error) => {
-                console.warn('sendWebSocketMessage error: ', error);
-            });*/
-
-        //});
+        retSubject.next(chunkLines);;
 
         // get number of records in chunk
         let numberOfRecordsInChunk = (payloadChunk.match( lineEndingRegEx ) || '').length + 1;
@@ -200,45 +181,24 @@ function getRecordsFromFileStream(fileHandle: File, fileReadStream: ReadableStre
     .finally(() => {
         // sometimes there is a last "hanging chunk"
         payloadChunk = payloadChunk.trim();
-        console.log('checking for hanging chunk.."', payloadChunk, '"');
 
         if(payloadChunk && payloadChunk.length > 0) {
-        if(summary.fileType === validImportFileTypes.JSONL || summary.fileType === validImportFileTypes.JSON) {
-            let payloadChunkHasEndBracket = payloadChunk.lastIndexOf(']') > payloadChunk.indexOf('}');
-            if(payloadChunkHasEndBracket) {
-                // was "json" not "jsonl", correct it
-                payloadChunk = payloadChunk.replace(']','').trim();
-                if(payloadChunk.indexOf('{') > -1 && payloadChunk.indexOf('}') > -1) {
-                    let plChunkSplit = payloadChunk.split('}');
-                    console.log("what's going on here? ", plChunkSplit);
-                    summary.recordCount = summary.recordCount + plChunkSplit.length;
-                    //retSubject.next(summary);
-                }
-                //payloadChunks.push(payloadChunk);
-                // split chunk by line endings for per-record streaming
-                let chunkLines = payloadChunk.split(summary.fileLineEndingStyle);
-                //wsRecordsQueue.push(chunkLines);
-
-                retSubject.next(chunkLines);
-                
-                //chunkLines.forEach((_record) => {
-                //    summary.bytesQueued += getUtf8ByteLength(_record);
-                    //readRecs.push(_record);
-                //    retSubject.next(_record);
-                    /*
-                    retSubject.next(summary);
-                    this.sendWebSocketMessage(_record).pipe(take(1)).subscribe((messageSent) => {
-                        summary.bytesSent = summary.bytesSent + getUtf8ByteLength(_record);
-                        summary.sentRecordCount += 1;
-                        retSubject.next(summary);
-                    }, (error: Error) => {
-                        console.warn('sendWebSocketMessage error: ', error);
-                    });*/
-
-                //});
-                //this.sendWebSocketMessage(payloadChunk);
+            if(summary.fileType === validImportFileTypes.JSONL || summary.fileType === validImportFileTypes.JSON) {
+                let payloadChunkHasEndBracket = payloadChunk.lastIndexOf(']') > payloadChunk.indexOf('}');
+                if(payloadChunkHasEndBracket) {
+                    // was "json" not "jsonl", correct it
+                    payloadChunk = payloadChunk.replace(']','').trim();
+                    if(payloadChunk.indexOf('{') > -1 && payloadChunk.indexOf('}') > -1) {
+                        let plChunkSplit = payloadChunk.split('}');
+                        console.log("what's going on here? ", plChunkSplit);
+                        summary.recordCount = summary.recordCount + plChunkSplit.length;
+                        //retSubject.next(summary);
+                    }
+                    // split chunk by line endings for per-record streaming
+                    let chunkLines = payloadChunk.split(summary.fileLineEndingStyle);
+                    //wsRecordsQueue.push(chunkLines);
+                    retSubject.next(chunkLines);
                 } else {
-                    console.log('no reason to strip out ', payloadChunk);
                     if(payloadChunk.indexOf('{') > -1 && payloadChunk.indexOf('}') > -1) {
                         payloadChunk = payloadChunk.trim();
                         let plChunkSplit = payloadChunk.split('}').filter( (value) => {
@@ -251,9 +211,8 @@ function getRecordsFromFileStream(fileHandle: File, fileReadStream: ReadableStre
                             }
                             return retVal
                         });
-                        console.log("what's going on here? ", plChunkSplit);
                         summary.recordCount = summary.recordCount + plChunkSplit.length;
-                        //retSubject.next(summary);
+                        retSubject.next(plChunkSplit);
                     }
                 }
             }

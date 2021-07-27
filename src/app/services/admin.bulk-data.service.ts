@@ -798,9 +798,9 @@ export class AdminBulkDataService {
 
         // read file contents as stream
         // parse to array of records
-        this.parseRecordsFromFile(file, (streamStatus) => {
+        this.parseRecordsFromFile(file, (status) => {
             // on stream complete, do thing
-            //console.warn('SzBulkDataService.streamAnalyze: file stream read complete.', );
+            //console.log('SzBulkDataService.streamAnalyze: file stream read complete.', status);
             readStreamComplete = true;
             this._onStreamAnalysisProgress.next(summary);
             retSubject.next(summary); // local
@@ -814,7 +814,7 @@ export class AdminBulkDataService {
                 summary.recordCount         = summary.recordCount + records.length;
                 // now concat
                 readRecords                 = readRecords.concat(records);
-                //console.log(`SzBulkDataService.streamAnalyze: read ${summary.recordCount} records`);
+                //console.log(`SzBulkDataService.streamAnalyze: read ${summary.recordCount} records`, readRecords);
                 this._onStreamAnalysisProgress.next(summary);
                 this._onStreamAnalysisFileReadProgress.next(summary);
                 retSubject.next(summary); // local
@@ -1012,9 +1012,9 @@ export class AdminBulkDataService {
 
         // read file contents as stream
         // parse to array of records
-        this.parseRecordsFromFile(file, (records) => {
+        this.parseRecordsFromFile(file, (status) => {
             // on stream complete, do thing
-            //console.warn('SzBulkDataService.streamLoad: file stream read complete.', records);
+            //console.warn('SzBulkDataService.streamLoad: file stream read complete.', status);
             readStreamComplete = true;
             this._onStreamLoadProgress.next(summary);
             this._onStreamLoadFileReadComplete.next(summary);
