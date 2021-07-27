@@ -1,7 +1,7 @@
-ARG BASE_IMAGE=node:12.2.0
+ARG BASE_IMAGE=node:14-buster
 FROM ${BASE_IMAGE}
 
-ENV REFRESHED_AT=2021-04-26
+ENV REFRESHED_AT=2021-07-26
 
 LABEL Name="senzing/entity-search-web-app" \
       Maintainer="support@senzing.com" \
