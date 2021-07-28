@@ -1,7 +1,7 @@
-ARG BASE_IMAGE=node:12.2.0
+ARG BASE_IMAGE=node:lts-buster-slim
 FROM ${BASE_IMAGE}
 
-ENV REFRESHED_AT=2021-04-26
+ENV REFRESHED_AT=2021-07-26
 
 LABEL Name="senzing/entity-search-web-app" \
       Maintainer="support@senzing.com" \
@@ -12,6 +12,12 @@ HEALTHCHECK CMD ["/app/healthcheck.sh"]
 # Run as "root" for system installation.
 
 USER root
+
+# Install WGET
+RUN apt-get -qq update \
+ && apt-get install -qq -yq \
+ wget \
+ gnupg2
 
 # Install chrome for protractor tests.
 
@@ -46,9 +52,6 @@ COPY --chown=1001:1001 ./proxy.conf.json /app
 # Build app. build as root and switch back
 USER root
 RUN npm run build:docker
-
-RUN rm /usr/lib/python2.7/urllib.py \
- && rm /usr/lib/python2.7/lib2to3/pgen2/parse.py
 
 # Remove src tree after build
 RUN rm -fR /app/src
