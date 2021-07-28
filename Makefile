@@ -5,7 +5,7 @@ GIT_VERSION := $(shell git describe --always --tags --long --dirty | sed -e 's/\
 
 # Docker variables
 
-BASE_IMAGE ?= node:12.2.0
+BASE_IMAGE ?= node:lts-buster-slim
 DOCKER_IMAGE_TAG ?= $(GIT_REPOSITORY_NAME):$(GIT_VERSION)
 DOCKER_IMAGE_NAME := senzing/entity-search-web-app
 
