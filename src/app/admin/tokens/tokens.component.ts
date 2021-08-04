@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Inject } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { SzConfigurationService, SzAdminService, SzBaseResponseMeta, SzRestConfiguration } from '@senzing/sdk-components-ng';
+import { SzConfigurationService, SzAdminService, SzRestConfiguration } from '@senzing/sdk-components-ng';
 import { Configuration as SzConfiguration } from '@senzing/sdk-components-ng';
 import { AdminAuthService } from 'src/app/services/admin.service';
 import { Router } from '@angular/router';

@@ -14,7 +14,9 @@
     </div>
 </div>
 <p class="error" *ngIf="lastKnownError"> {{ lastKnownError.message }} </p>
-
+<div *ngIf="showPrefetchMessage" class="initializing">
+Fetching Queue Information...
+</div>
 <div *ngIf="lastKnownErrors" class="errors">
     <h3>Details</h3>
     <textarea class="row" *ngFor="let error of lastKnownErrors">

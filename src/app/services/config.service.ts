@@ -1,9 +1,8 @@
 import { Injectable, Inject } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { ActivatedRouteSnapshot } from '@angular/router';
-import { Observable, of, from, interval, Subject } from 'rxjs';
-import { map, catchError, tap, switchMap, take } from 'rxjs/operators';
-import { SzConfigurationService, SzAdminService, SzServerInfo, SzBaseResponseMeta } from '@senzing/sdk-components-ng';
+import { Observable, Subject } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 
 export interface AuthConfig {

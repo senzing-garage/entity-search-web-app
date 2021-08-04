@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { SzConfigurationService, SzAdminService, SzBaseResponseMeta } from '@senzing/sdk-components-ng';
+import { SzConfigurationService, SzAdminService } from '@senzing/sdk-components-ng';
 import { Configuration as SzConfiguration } from '@senzing/sdk-components-ng';
 @Component({
   selector: 'admin-error-no-admin',

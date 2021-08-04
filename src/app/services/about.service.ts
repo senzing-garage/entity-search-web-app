@@ -5,7 +5,7 @@ import {
   ActivatedRouteSnapshot,
 } from '@angular/router';
 import { Observable, interval, from, of, EMPTY, Subject } from 'rxjs';
-import { AdminService, SzBaseResponse, SzBaseResponseMeta, SzVersionResponse, SzVersionInfo } from '@senzing/rest-api-client-ng';
+import { AdminService, SzBaseResponse, SzMeta, SzVersionResponse, SzVersionInfo } from '@senzing/rest-api-client-ng';
 import { switchMap, tap, takeWhile, map } from 'rxjs/operators';
 import { version as appVersion, dependencies as appDependencies } from '../../../package.json';
 import { SzAdminService, SzServerInfo } from '@senzing/sdk-components-ng';
@@ -61,7 +61,7 @@ export class AboutInfoService {
   public pollForHeartbeat(): Observable<SzVersionInfo> {
     return interval(this.pollingInterval).pipe(
         switchMap(() => from( this.adminService.getHeartbeat() )),
-        takeWhile( (resp: SzBaseResponseMeta) => resp.httpStatusCode !== 403 && resp.httpStatusCode !== 500 ),
+        takeWhile( (resp: SzMeta) => resp.httpStatusCode !== 403 && resp.httpStatusCode !== 500 ),
         tap( this.setHeartbeatInfo.bind(this) )
     );
   }
@@ -97,7 +97,7 @@ export class AboutInfoService {
     this.pollForServerInfo().subscribe();
   }
   /** get heartbeat information from the rest-api-server host */
-  public getHealthInfo(): Observable<SzBaseResponseMeta> {
+  public getHealthInfo(): Observable<SzMeta> {
     // get heartbeat
     return this.adminService.getHeartbeat();
   }
@@ -110,7 +110,7 @@ export class AboutInfoService {
   public getServerInfo(): Observable<SzServerInfo> {
     return this.adminService.getServerInfo();
   }
-  public getServerInfoMetadata(): Observable<SzBaseResponseMeta> {
+  public getServerInfoMetadata(): Observable<SzMeta> {
     console.info('AboutInfoService.getServerInfoMetadata: ');
     return this.adminService.getServerInfoMetadata();
   }
@@ -131,7 +131,7 @@ export class AboutInfoService {
     }
     return retVal;
   }
-  private setHeartbeatInfo(resp: SzBaseResponseMeta) {
+  private setHeartbeatInfo(resp: SzMeta) {
     //
   }
   private setServerInfo(info: SzServerInfo) {
@@ -146,7 +146,7 @@ export class AboutInfoService {
     this.webSocketsMessageMaxSize = info && info.webSocketsMessageMaxSize !== undefined ? info.webSocketsMessageMaxSize : this.webSocketsMessageMaxSize;
   }
 
-  private setPocServerInfo(resp: SzBaseResponseMeta) {
+  private setPocServerInfo(resp: SzMeta) {
     this.pocServerVersion     = resp && resp.pocServerVersion ? resp.pocServerVersion : this.pocApiVersion;
     this.pocApiVersion        = resp && resp.pocApiVersion ? resp.pocApiVersion : this.pocApiVersion;
     this.isPocServerInstance  = resp && resp.pocApiVersion !== undefined ? true : this.isPocServerInstance;

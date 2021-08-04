@@ -26,6 +26,7 @@ import { BehaviorSubject, Subject, timer } from 'rxjs';
     public onError          = this._onError.asObservable();
     public lastKnownError: Error | unknown | undefined;
     public lastKnownErrors: {code?: number, message?: string} | undefined;
+    public showPrefetchMessage = true;
 
     private _interval       = 10000;
     @Input() public set interval(value) {
@@ -75,11 +76,15 @@ import { BehaviorSubject, Subject, timer } from 'rxjs';
 
     private onPollingResponse(data: SzQueueInfoResponse) {
         console.log('AdminStreamLoadQueueInfoComponent: ', data);
-        if(data && data.data){
+        this.showPrefetchMessage = false;
+        if(data && data.data && this._onResponseData && this._onResponseData.next){
             this._onResponseData.next( data.data );
+        } else if(!this._onResponseData || (this._onResponseData && !this._onResponseData.next)) {
+            console.error('cannot broadwave error: ', this);
         }
     }
     private onErrorResponse(error) {
+        this.showPrefetchMessage = false;
         console.warn('AdminStreamLoadQueueInfoComponent Error: ', error, this.onError, this);
         this._onError.next(error);
     }
@@ -89,6 +94,6 @@ import { BehaviorSubject, Subject, timer } from 'rxjs';
         this._intervalPoller = timer(0, this._interval).pipe(
             takeUntil(this.unsubscribe$),
             switchMap( _ => { return this.adminBulkDataService.getStreamLoadQueue(); })
-        ).subscribe( this.onPollingResponse, this.onErrorResponse.bind(this) )
+        ).subscribe( this.onPollingResponse.bind(this), this.onErrorResponse.bind(this) )
     }
   }
