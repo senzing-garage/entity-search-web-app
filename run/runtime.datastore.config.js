@@ -260,12 +260,6 @@ function createAuthConfigFromInput() {
     if(authOpts && authOpts !== undefined && authOpts.adminAuthMode && authOpts.adminAuthMode !== undefined) {
       retConfig = retConfig !== undefined ? retConfig : {};
       retConfig.admin = retConfig && retConfig.admin ? retConfig.admin : {};
-      // _virtualDir is assigned at the very beginning
-      // and is both env and cmd
-      if(_virtualDir && _virtualDir !== '' && _virtualDir !== '/') {
-        retConfig = retConfig !== undefined ? retConfig : {};
-        retConfig.virtualPath = _virtualDir;
-      }
 
       if(authOpts.adminAuthMode === 'JWT') {
         retConfig.admin = {
@@ -331,6 +325,12 @@ function createAuthConfigFromInput() {
       retConfig.operator.token = authOpts.operatorAuthToken;
     }
 
+    // _virtualDir is assigned at the very beginning
+    // and is both env and cmd
+    if(_virtualDir && _virtualDir !== '' && _virtualDir !== '/') {
+      retConfig = retConfig !== undefined ? retConfig : {};
+      retConfig.virtualPath = _virtualDir;
+    }
   // -------------------- end CMD LINE ARGS import -----------
 
   //console.log('AUTH TEMPLATE: ', authTemplate, fs.existsSync(authTemplate));
