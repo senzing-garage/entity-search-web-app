@@ -12,9 +12,6 @@ import { InMemoryDataService } from '../../e2e/data/services/in-memory-data.serv
 import { OverlayModule } from '@angular/cdk/overlay';
 import { LayoutModule } from '@angular/cdk/layout';
 
-// third party components and modules
-import { StorageServiceModule } from 'ngx-webstorage-service';
-
 // local components and modules
 import { AppRoutingModule } from './app-routing.module';
 // import { AdminModule } from './admin/admin.module';
@@ -38,6 +35,13 @@ import { TipsComponent } from './common/tips/tips.component';
 import { BlankComponent } from './common/blank/blank.component';
 import { NoResultsComponent } from './errors/no-results/no-results.component';
 import { AboutComponent } from './about/about.component';
+// admin dialog components that "FREAK-OUT" for no good reason
+import { AdminStreamLoadQueueInfoComponent } from './common/stream-load-queue-dialog/stream-load-queue-info.component';
+import { AdminStreamLoadQueueDialogComponent } from './common/stream-load-queue-dialog/stream-load-queue-dialog.component';
+import { AdminStreamConnDialogComponent } from './common/stream-conn-dialog/stream-conn-dialog.component';
+import { AdminStreamAbortDialogComponent } from './common/stream-abort-dialog/stream-abort-dialog.component';
+import { AdminStreamLoadErrorsDialogComponent } from './common/stream-load-errors-dialog/stream-load-errors-dialog.component';
+import { AdminStreamLoadCollapseableErrorComponent } from './common/stream-load-errors-dialog/stream-load-error-collapseable.component';
 
 // errors
 import { PageNotFoundComponent } from './errors/page-not-found/page-not-found.component';
@@ -61,6 +65,7 @@ import { SzRestConfigurationFactory } from './common/sdk-config.factory';
 import { AuthGuardService } from './services/ag.service';
 import { AdminAuthService } from './services/admin.service';
 import { SzWebAppConfigService } from './services/config.service';
+import { AdminBulkDataService } from './services/admin.bulk-data.service';
 
 @NgModule({
   declarations: [
@@ -78,7 +83,13 @@ import { SzWebAppConfigService } from './services/config.service';
     UnknownErrorComponent,
     BlankComponent,
     TipsComponent,
-    AboutComponent
+    AboutComponent,
+    AdminStreamConnDialogComponent,
+    AdminStreamAbortDialogComponent,
+    AdminStreamLoadCollapseableErrorComponent,
+    AdminStreamLoadErrorsDialogComponent,
+    AdminStreamLoadQueueDialogComponent,
+    AdminStreamLoadQueueInfoComponent
   ],
   imports: [
     BrowserModule,
@@ -89,13 +100,13 @@ import { SzWebAppConfigService } from './services/config.service';
     AdminModule,
     AppRoutingModule,
     LayoutModule,
-    StorageServiceModule,
     SenzingSdkModule.forRoot( SzRestConfigurationFactory ),
     SenzingSdkGraphModule.forRoot( SzRestConfigurationFactory ),
     SenzingDataServiceModule.forRoot( SzRestConfigurationFactory ),
     SpinnerModule,
     environment.test ? HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService, { delay: 100 }) : []
   ],
+  entryComponents: [ AdminStreamConnDialogComponent, AdminStreamAbortDialogComponent, AdminStreamLoadErrorsDialogComponent, AdminStreamLoadQueueDialogComponent, AdminStreamLoadQueueInfoComponent ],
   providers: [
     SzWebAppConfigService,
     EntitySearchService,
@@ -104,6 +115,7 @@ import { SzWebAppConfigService } from './services/config.service';
     UiService,
     PrefsManagerService,
     AboutInfoService,
+    AdminBulkDataService,
     Title
   ],
   bootstrap: [ AppComponent ]

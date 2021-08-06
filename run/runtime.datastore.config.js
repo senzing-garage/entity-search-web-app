@@ -70,6 +70,40 @@ function getOptionsFromInput() {
   return authOpts;
 }
 
+function getStreamServerOptionsFromInput() {
+  let retConfig = undefined;
+  // ------------- set sane defaults
+  retConfigDefaults = undefined;
+  // ------------- now get cmdline options and override any defaults or ENV options
+  let cmdLineOpts = getCommandLineArgsAsJSON();
+  if(cmdLineOpts && cmdLineOpts !== undefined) {
+    
+    //console.log('cmdline opts: \n', cmdOpts);
+    //streamServerProxyHost   = cmdOpts.streamServerProxyHost ? cmdOpts.streamServerProxyHost : streamServerProxyHost;
+    //streamServerProxyPort   = cmdOpts.streamServerProxyPort ? cmdOpts.streamServerProxyPort : streamServerProxyPort;
+    //streamServerDestUrl     = cmdOpts.streamServerDestUrl ? cmdOpts.streamServerDestUrl : streamServerDestUrl;
+
+
+    if(cmdLineOpts.streamServerHost){
+      retConfig = retConfig ? retConfig : {};
+      retConfig.host = cmdLineOpts.streamServerHost;
+    }
+    if(cmdLineOpts.streamServerPort){
+      retConfig = retConfig ? retConfig : {};
+      retConfig.port = cmdLineOpts.streamServerPort;
+    }
+    if(cmdLineOpts.streamServerProxyHost){
+      retConfig = retConfig ? retConfig : {};
+      retConfig.proxyHost = cmdLineOpts.streamServerProxyHost;
+    }
+    if(cmdLineOpts.streamServerProxyPort){
+      retConfig = retConfig ? retConfig : {};
+      retConfig.proxyPort = cmdLineOpts.streamServerProxyPort;
+    }
+  }
+  return retConfig;
+}
+
 function createCspConfigFromInput() {
   let retConfig = undefined;
 
@@ -99,6 +133,17 @@ function createCspConfigFromInput() {
   if(env.SENZING_WEB_SERVER_CSP_IMG_SRC) {
     retConfig.directives['img-src'].push(env.SENZING_WEB_SERVER_CSP_IMG_SRC);
   }
+  if(env.SENZING_WEB_SERVER_HOSTNAME) {
+    retConfig.directives['connect-src'].push('ws://'+env.SENZING_WEB_SERVER_HOSTNAME+':8555');
+    retConfig.directives['connect-src'].push('wss://'+env.SENZING_WEB_SERVER_HOSTNAME+':8443');
+  }
+  if(env.SENZING_WEB_SERVER_CSP_STREAM_SERVER_URL) {
+    retConfig.directives['connect-src'].push(env.SENZING_WEB_SERVER_CSP_STREAM_SERVER_URL);
+  }
+  if(env.SENZING_WEB_SERVER_CSP_SCRIPT_SRC) {
+    retConfig.directives['script-src'].push(env.SENZING_WEB_SERVER_CSP_SCRIPT_SRC);
+  }
+
   if(env.SENZING_WEB_SERVER_CSP_STYLE_SRC) {
     retConfig.directives['style-src'].push(env.SENZING_WEB_SERVER_CSP_STYLE_SRC);
   }
@@ -198,11 +243,13 @@ function createAuthConfigFromInput() {
   }
   if(env.SENZING_WEB_SERVER_ADMIN_SECRET) {
     retConfig = retConfig !== undefined ? retConfig : {};
-    retConfig.adminSecret = env.SENZING_WEB_SERVER_ADMIN_SECRET;
+    retConfig.admin = retConfig.admin !== undefined ? retConfig.admin : {};
+    retConfig.admin.secret = env.SENZING_WEB_SERVER_ADMIN_SECRET;
   }
   if(env.SENZING_WEB_SERVER_ADMIN_SEED) {
     retConfig = retConfig !== undefined ? retConfig : {};
-    retConfig.adminToken = env.SENZING_WEB_SERVER_ADMIN_SEED;
+    retConfig.admin = retConfig.admin !== undefined ? retConfig.admin : {};
+    retConfig.admin.token = env.SENZING_WEB_SERVER_ADMIN_SEED;
   }
   // -------------------- end ENV vars import ------------------
   // -------------------- start CMD LINE ARGS import -----------
@@ -213,6 +260,13 @@ function createAuthConfigFromInput() {
     if(authOpts && authOpts !== undefined && authOpts.adminAuthMode && authOpts.adminAuthMode !== undefined) {
       retConfig = retConfig !== undefined ? retConfig : {};
       retConfig.admin = retConfig && retConfig.admin ? retConfig.admin : {};
+      // _virtualDir is assigned at the very beginning
+      // and is both env and cmd
+      if(_virtualDir && _virtualDir !== '' && _virtualDir !== '/') {
+        retConfig = retConfig !== undefined ? retConfig : {};
+        retConfig.virtualPath = _virtualDir;
+      }
+
       if(authOpts.adminAuthMode === 'JWT') {
         retConfig.admin = {
           "mode": "JWT",
@@ -256,12 +310,27 @@ function createAuthConfigFromInput() {
       retConfig = retConfig !== undefined ? retConfig : {};
       retConfig.hostname = authOpts.authServerHostName;
     }
-  // _virtualDir is assigned at the very beginning
-  // and is both env and cmd
-  if(_virtualDir && _virtualDir !== '' && _virtualDir !== '/') {
-    retConfig = retConfig !== undefined ? retConfig : {};
-    retConfig.virtualPath = _virtualDir;
-  }
+    if(authOpts && authOpts !== undefined && authOpts.adminAuthSecret ) {
+      retConfig = retConfig !== undefined ? retConfig : {};
+      retConfig.admin = retConfig.admin !== undefined ? retConfig.admin : {};
+      retConfig.admin.secret = authOpts.adminAuthSecret;
+    }
+    if(authOpts && authOpts !== undefined && authOpts.adminAuthToken ) {
+      retConfig = retConfig !== undefined ? retConfig : {};
+      retConfig.admin = retConfig.admin !== undefined ? retConfig.admin : {};
+      retConfig.admin.token = authOpts.adminAuthToken;
+    }
+    if(authOpts && authOpts !== undefined && authOpts.operatorAuthSecret ) {
+      retConfig = retConfig !== undefined ? retConfig : {};
+      retConfig.operator = retConfig.operator !== undefined ? retConfig.operator : {};
+      retConfig.operator.secret = authOpts.operatorAuthSecret;
+    }
+    if(authOpts && authOpts !== undefined && authOpts.operatorAuthToken ) {
+      retConfig = retConfig !== undefined ? retConfig : {};
+      retConfig.operator = retConfig.operator !== undefined ? retConfig.operator : {};
+      retConfig.operator.token = authOpts.operatorAuthToken;
+    }
+
   // -------------------- end CMD LINE ARGS import -----------
 
   //console.log('AUTH TEMPLATE: ', authTemplate, fs.existsSync(authTemplate));
@@ -277,9 +346,12 @@ function getWebServerOptionsFromInput() {
     hostname: 'localhost',
     path: '/',
     apiPath: '/api',
-    authPath: 'http://localhost:8080',
+    authPath: 'http://localhost:4200',
     authMode: 'JWT',
     apiServerUrl: 'http://localhost:8250',
+    streamServerUrl: 'ws://localhost:8255',
+    streamServerPort: '8255',
+    streamServerDestUrl: 'ws://localhost:8256',
     ssl: {
       certPath: "/run/secrets/server.cert",
       keyPath: "/run/secrets/server.key"
@@ -287,13 +359,17 @@ function getWebServerOptionsFromInput() {
   }
   // update defaults with ENV options(if present)
   if(env){
-    retOpts.port          = env.SENZING_WEB_SERVER_PORT ?             env.SENZING_WEB_SERVER_PORT             : retOpts.port;
-    retOpts.hostname      = env.SENZING_WEB_SERVER_HOSTNAME ?         env.SENZING_WEB_SERVER_HOSTNAME         : retOpts.hostname;
-    retOpts.apiPath       = env.SENZING_WEB_SERVER_API_PATH ?         env.SENZING_WEB_SERVER_API_PATH         : retOpts.apiPath;
-    retOpts.authPath      = env.SENZING_WEB_SERVER_AUTH_PATH ?        env.SENZING_WEB_SERVER_AUTH_PATH        : retOpts.authPath;
-    retOpts.authMode      = env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE ?  env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE  : retOpts.authMode;
-    retOpts.apiServerUrl  = env.SENZING_API_SERVER_URL ?              env.SENZING_API_SERVER_URL              : retOpts.apiServerUrl;
-    retOpts.path          = env.SENZING_WEB_SERVER_VIRTUAL_PATH ?     env.SENZING_WEB_SERVER_VIRTUAL_PATH     : retOpts.path;
+    retOpts.port                  = env.SENZING_WEB_SERVER_PORT ?             env.SENZING_WEB_SERVER_PORT             : retOpts.port;
+    retOpts.hostname              = env.SENZING_WEB_SERVER_HOSTNAME ?         env.SENZING_WEB_SERVER_HOSTNAME         : retOpts.hostname;
+    retOpts.apiPath               = env.SENZING_WEB_SERVER_API_PATH ?         env.SENZING_WEB_SERVER_API_PATH         : retOpts.apiPath;
+    retOpts.authPath              = env.SENZING_WEB_SERVER_AUTH_PATH ?        env.SENZING_WEB_SERVER_AUTH_PATH        : retOpts.authPath;
+    retOpts.authMode              = env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE ?  env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE  : retOpts.authMode;
+    retOpts.apiServerUrl          = env.SENZING_API_SERVER_URL ?              env.SENZING_API_SERVER_URL              : retOpts.apiServerUrl;
+    retOpts.streamServerUrl       = env.SENZING_STREAM_SERVER_URL ?           env.SENZING_STREAM_SERVER_URL           : retOpts.streamServerUrl;
+    retOpts.streamServerPort      = env.SENZING_STREAM_SERVER_PORT ?          env.SENZING_STREAM_SERVER_PORT          : retOpts.streamServerPort;
+    retOpts.streamServerDestUrl   = env.SENZING_STREAM_SERVER_DEST_URL ?      env.SENZING_STREAM_SERVER_DEST_URL      : retOpts.streamServerDestUrl;
+    retOpts.path                  = env.SENZING_WEB_SERVER_VIRTUAL_PATH ?     env.SENZING_WEB_SERVER_VIRTUAL_PATH     : retOpts.path;
+
     if(env.SENZING_WEB_SERVER_SSL_CERT_PATH) {
       retOpts.ssl.certPath = env.SENZING_WEB_SERVER_SSL_CERT_PATH;
     }
@@ -308,13 +384,17 @@ function getWebServerOptionsFromInput() {
   // now get cmdline options and override any defaults or ENV options
   let cmdLineOpts = getCommandLineArgsAsJSON();
   if(cmdLineOpts && cmdLineOpts !== undefined) {
-    retOpts.port          = cmdLineOpts.webServerPortNumber ?   cmdLineOpts.webServerPortNumber   : retOpts.port;
-    retOpts.hostname      = cmdLineOpts.webServerHostName ?     cmdLineOpts.webServerHostName     : retOpts.hostname;
-    retOpts.apiPath       = cmdLineOpts.webServerApiPath ?      cmdLineOpts.webServerApiPath      : retOpts.apiPath;
-    retOpts.authPath      = cmdLineOpts.webServerAuthPath ?     cmdLineOpts.webServerAuthPath     : retOpts.authPath;
-    retOpts.authMode      = cmdLineOpts.webServerAuthMode ?     cmdLineOpts.webServerAuthMode     : retOpts.authMode;
-    retOpts.apiServerUrl  = cmdLineOpts.webServerApiServerUrl ? cmdLineOpts.webServerApiServerUrl : retOpts.apiServerUrl;
-    retOpts.path          = cmdLineOpts.virtualPath ?           cmdLineOpts.virtualPath           : retOpts.path;
+    retOpts.port                  = cmdLineOpts.webServerPortNumber ?   cmdLineOpts.webServerPortNumber   : retOpts.port;
+    retOpts.hostname              = cmdLineOpts.webServerHostName ?     cmdLineOpts.webServerHostName     : retOpts.hostname;
+    retOpts.apiPath               = cmdLineOpts.webServerApiPath ?      cmdLineOpts.webServerApiPath      : retOpts.apiPath;
+    retOpts.authPath              = cmdLineOpts.webServerAuthPath ?     cmdLineOpts.webServerAuthPath     : retOpts.authPath;
+    retOpts.authMode              = cmdLineOpts.webServerAuthMode ?     cmdLineOpts.webServerAuthMode     : retOpts.authMode;
+    retOpts.apiServerUrl          = cmdLineOpts.webServerApiServerUrl ? cmdLineOpts.webServerApiServerUrl : retOpts.apiServerUrl;
+    retOpts.streamServerUrl       = cmdLineOpts.streamServerUrl ?       cmdLineOpts.streamServerUrl       : retOpts.streamServerUrl;
+    retOpts.streamServerPort      = cmdLineOpts.streamServerPort ?      cmdLineOpts.streamServerPort      : retOpts.streamServerPort;
+    retOpts.streamServerDestUrl   = cmdLineOpts.streamServerDestUrl ?   cmdLineOpts.streamServerDestUrl   : retOpts.streamServerDestUrl;
+    retOpts.path                  = cmdLineOpts.virtualPath ?           cmdLineOpts.virtualPath           : retOpts.path;
+
     if(retOpts.sslCertPath) {
       retOpts.ssl = retOpts.ssl ? retOpts.ssl : {};
       retOpts.ssl.certPath  = retOpts.sslCertPath;
@@ -621,6 +701,8 @@ module.exports = {
   "cors": createCorsConfigFromInput(),
   "csp": createCspConfigFromInput(),
   "proxy": createProxyConfigFromInput(),
+  "stream": getStreamServerOptionsFromInput(),
   "proxyServerOptions": getProxyServerOptionsFromInput(),
-  "webServerOptions": getWebServerOptionsFromInput()
+  "webServerOptions": getWebServerOptionsFromInput(),
+  "getCommandLineArgsAsJSON": getCommandLineArgsAsJSON
 }

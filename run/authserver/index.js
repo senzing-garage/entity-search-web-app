@@ -18,7 +18,6 @@ const runtimeOptions = new inMemoryConfig(inMemoryConfigFromInputs);
 
 // grab env/cmdline vars
 const authOptions = runtimeOptions.config.auth;
-//const authOptions = AuthModule.getOptionsFromInput();
 const auth = new AuthModule( runtimeOptions.config );
 
 // cors

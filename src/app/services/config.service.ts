@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@angular/core';
 import { Observable, of, Subject } from 'rxjs';
 import { catchError, take } from 'rxjs/operators';
-import { SzRestConfigurationParameters, SzConfigurationService, SzAdminService, SzServerInfo, SzBaseResponseMeta } from '@senzing/sdk-components-ng';
+import { SzRestConfigurationParameters, SzConfigurationService } from '@senzing/sdk-components-ng';
 import { HttpClient } from '@angular/common/http';
 
 export interface AuthConfig {

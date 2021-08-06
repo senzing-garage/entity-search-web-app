@@ -93,12 +93,14 @@ table.general-stats td {
     margin-bottom: 22px;
 
     .stats-col {
-      width: 40%;
+      width: calc(50% - 55px);
       &:first-child {
         margin-right: 50px;
       }
       th:first-child {
+        vertical-align: top;
         text-align: left;
+        white-space: nowrap;
       }
     }
   }

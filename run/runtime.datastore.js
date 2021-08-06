@@ -12,6 +12,9 @@ class inMemoryConfig {
     authMode: 'JWT',
     webServerUrl: 'http://senzing-webapp:8080',
     apiServerUrl: 'http://senzing-api-server:8080',
+    streamServerUrl: 'ws://localhost:8255', // usually(99%) the address of the LOCAL stream server/proxy
+    streamServerPort: 8255, // port number the local stream server proxy should run on
+    streamServerDestUrl: 'ws://localhost:8256', // url that the stream proxy should forward sockets to (streamproducer, api server)
     ssl: {
       certPath: "/run/secrets/server.cert",
       keyPath: "/run/secrets/server.key"
@@ -51,6 +54,10 @@ class inMemoryConfig {
   // to the api server
   proxyConfiguration = undefined;
 
+  // Stream related configuration
+  // defines endpoints, proxy ports/domains etc
+  streamServerConfiguration = undefined;
+
   constructor(options) {
     if(options) {
       this.config = options;
@@ -76,6 +83,10 @@ class inMemoryConfig {
     if(this.webConfiguration && this.webConfiguration !== undefined && this.webConfiguration !== null) {
       retValue.web = this.webConfiguration;
     }
+    if(this.streamServerConfiguration && this.streamServerConfiguration !== undefined && this.streamServerConfiguration !== null) {
+      retValue.stream = this.streamServerConfiguration;
+    }
+    
     return retValue;
   }
   // set the configuration objects representing
@@ -116,6 +127,12 @@ class inMemoryConfig {
               "redirectOnFailure": false
             }
           }
+          if(value.auth.admin.token) {
+            this.authConfiguration.admin.token = value.auth.admin.token;
+          }
+          if(value.auth.admin.secret) {
+            this.authConfiguration.admin.secret = value.auth.admin.secret;
+          }
         } else {
           this.authConfiguration.admin = undefined;
           delete this.authConfiguration.admin;
@@ -138,6 +155,12 @@ class inMemoryConfig {
               "mode": false,
               "redirectOnFailure": false
             }
+          }
+          if(value.auth.operator.token) {
+            this.authConfiguration.operator.token = value.auth.operator.token;
+          }
+          if(value.auth.operator.secret) {
+            this.authConfiguration.operator.secret = value.auth.operator.secret;
           }
         } else {
           this.authConfiguration.operator = undefined;
@@ -163,6 +186,9 @@ class inMemoryConfig {
           },
           reportOnly: false
         };
+      }
+      if(value.stream) {
+        this.streamServerConfiguration = value.stream;
       }
     }
   }

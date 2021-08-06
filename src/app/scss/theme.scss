@@ -18,7 +18,7 @@ $my-app-theme: mat-light-theme($my-app-primary, $my-app-accent, $my-app-warn);
 $sz-mat-colors: (
   PRIMARY: #{$sz-blue},
   SECONDARY: #{$sz-blue},
-  WARNING: #{$sz-magenta},
+  WARNING: #{$sz-red},
   contrast: (
     50: $dark-primary-text,
     100: $dark-primary-text,

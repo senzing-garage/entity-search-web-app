@@ -1,4 +1,5 @@
 @import '../../scss/_admin.scss';
+@import "../../scss/variables";
 
 admin-bulk-data-analysis {
   display: block;
@@ -6,7 +7,7 @@ admin-bulk-data-analysis {
 }
 
 .error-msg {
-  color: red;
+  color: #{$sz-red};
   font-size: 25px;
   padding: 10px;
   border-radius: 10px;
@@ -16,4 +17,137 @@ admin-bulk-data-analysis {
 .mat-icon {
   font-weight: 800;
   font-size: 23px;
+}
+
+.section-instructions {
+  font-size: 0.7em;
+  line-height: 1.5em;
+}
+
+.section-notice {
+  font-size: .8em;
+  padding: 5px 20px 5px 5px;
+  margin: 0 0 1em;
+  border: 1px solid #aaaaaa;
+  background-color: #fff5e3;
+  border-radius: 10px;
+  justify-content: center;
+  vertical-align: middle;
+  display: inline-flex;
+  flex-direction: row;
+  box-shadow: 2px 2px 1px 0px #656565;
+
+  h3 {
+    display: inline-block;
+    margin: 0 1em 0 0;
+  }
+  mat-icon {
+    color: #f9af3b;
+    border-radius: 50%;
+    border: 1px solid #e0e0e0;
+    font-size: 25px;
+    padding: 5px;
+    background-color: white;
+  }
+  .instructions {
+    padding: 2px 0 0 0;
+    font-size: .7rem;
+    color: #393939;
+  }
+  .notice-title {
+    display: block;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 1em;
+    margin-bottom: 3px;
+  }
+}
+.dnd-drop-zone {
+  display: flex;
+  margin: 30px 0px 10px 0px;
+  border: 2px dotted #c8c8cc;
+  border-radius: 7px;
+  min-height: 300px;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  color: #999;
+
+  .material-icons {
+    font-size: 33px;
+    color: var(--sz-search-button-submit-background-color);
+    margin: 0px 10px;
+  }
+  &:hover {
+    color: rgb(99, 99, 99);
+    cursor: pointer;
+    /* text-decoration: underline; */
+  }
+}
+.fileover {
+  color: var(--sz-search-button-submit-background-color);
+}
+.top-columns {
+  display: flex;
+  flex-direction: row;
+
+  .section-title {
+    flex-grow: 10;
+  }
+
+  .stream-errors-indicator {
+    display: inline-block;
+    margin-right: 1.3rem;
+    position: relative;
+
+    mat-icon {
+      cursor: pointer;
+      font-size: 23px;
+      width: 18px;
+      height: 18px;
+      /* margin-top: 2px;*/
+      padding: 2px;
+      color: #{$sz-red};
+      position: relative;
+      top: -1px;
+    }
+    .error-icon-dummy {
+      color: #fff;
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      z-index: -1;
+    }
+    .error-icon {
+      color: #{$sz-red};
+      position: relative;
+    }
+  }
+
+  .stream-connection-idicator {
+    display: inline-block;
+    margin-right: 1.3rem;
+    mat-icon {
+      cursor: pointer;
+      font-size: 16px;
+      width: 14px;
+      height: 14px;
+      margin-top: -1px;
+      padding: 2px;
+      border: 3px solid #656565;
+      color:#656565;
+      border-radius: 50%;
+
+      &.disconnected {
+        color:#656565;
+      }
+      &.connected {
+        color: #0c9bf4;
+        border-color: #0c9bf4;
+      }
+    }
+  }
+  .stream-loading {
+    display: inline-block;
+  }
 }
