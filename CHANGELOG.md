@@ -6,16 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.2.1] - 2020-12-20
+## [2.2.1] - 2021-02-01
 - updated @senzing/sdk-graph-components to 2.1.3
 - updated @senzing/sdk-components-ng to 2.2.1
 - fixed bug where entity detail would not render when entity had 0 relationships.
+
+## [2.2.0] - 2021-01-20
+- updated senzing libs to 2.2.0
+- bug in route resolver to only accept numbers for record paths fixed
+- Select Identifiers in Search Form feature added.
 
 ## [2.1.2] - 2020-12-20
 - updated senzing libs to 2.2.0
 - bug in route resolver to only accept numbers for record paths fixed
 
-## [2.1.1] - 2020-10-2
+## [2.1.1] - 2020-10-02
 
 Bugfixes for:
 - [Large graph filtering](https://github.com/Senzing/sdk-graph-components/issues/27)
@@ -26,7 +31,7 @@ Bugfixes for:
 - [Search by Attribute option pinned to menu options](https://github.com/Senzing/entity-search-web-app/issues/131)
 - [Best name logic fix](https://github.com/Senzing/sdk-components-ng/issues/156)
 
-## [2.1.0] - 2020-9-23
+## [2.1.0] - 2020-09-23
 
 Compatibility release for framework upgrade to Angular 10: see [https://blog.angular.io/version-10-of-angular-now-available-78960babd41](https://blog.angular.io/version-10-of-angular-now-available-78960babd41)
 
@@ -38,7 +43,7 @@ see the following links for associated tickets:
 - [rest-api-client-ng/issues/39](https://github.com/Senzing/rest-api-client-ng/issues/39)
 - [sdk-graph-components/issues/37](https://github.com/Senzing/sdk-graph-components/issues/37)
 
-## [2.0.1] - 2020-9-TBD
+## [2.0.1] - 2020-09-TBD
 
 The scripts no longer write any configuration or runtime configuration information to the filesystem. Instead, the options are read from either ENV vars or Command Line arguements in to a data store class, which is then accessed by scripts and endpoints that need access to these arguements. This was done to support immutable containers(see https://cloud.google.com/solutions/best-practices-for-operating-containers#ensure_that_your_containers_are_stateless_and_immutable)
 
