@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { CanActivate, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { ActivatedRouteSnapshot } from '@angular/router';
 import { Observable, of, Subject } from 'rxjs';
 import { map, catchError, tap, concatMap } from 'rxjs/operators';
@@ -28,7 +28,15 @@ export class AuthGuardService implements CanActivate {
       if( this.isUrlExternal(this.adminAuth.loginUrl) ) {
         this.router.navigate(['/admin/externalRedirect', { externalUrl: this.adminAuth.loginUrl }]);
       } else {
-        this.router.navigateByUrl(this.adminAuth.loginUrl);
+        let redirectUrl = this.adminAuth.loginUrl;
+        if(this.adminAuth && this.adminAuth.isOnVirtualPath && this.adminAuth.virtualPath) {
+          // strip virtual path from redirect url
+          // otherwise the angular router will "double-dip" on 
+          // the base-href and you will get two base-hrefs in the path
+          redirectUrl = redirectUrl.replace(this.adminAuth.virtualPath, '');
+        }
+        this.router.navigateByUrl(redirectUrl);
+        //this.router.navigateByUrl(this.adminAuth.loginUrl);
       }
     } else if(this.adminAuth.redirectOnFailure) {
       console.warn('REDIRECTING TO JWT LOGIN: ', this.adminAuth.loginUrl, this.isUrlExternal(this.adminAuth.loginUrl));
@@ -55,7 +63,7 @@ export class AuthGuardService implements CanActivate {
   }
 
   /** route guard check to see if user can access a route */
-  canActivate(route: ActivatedRouteSnapshot): Observable<boolean> {
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean|UrlTree> | Promise<boolean|UrlTree> | boolean | UrlTree {
     // subject to emit once the auth config is available
     const onConfigLoaded = new Subject<AuthConfig>();
 
@@ -87,8 +95,9 @@ export class AuthGuardService implements CanActivate {
         if (!(authConf.admin && authConf.admin.mode)) {
           // no auth check. WWWWHHHHYYYY!!!
           // hope you know what you're doing
-          console.warn('NO AUTH CHECK!!! EXTREMELY DANGEROUS!');
+          // console.warn('NO AUTH CHECK!!! EXTREMELY DANGEROUS!');
           responseMap.noAuth = true;
+          //responseMap.adminEnabled = true;
           retReq = of(true);
           return of(true);
         } else {
@@ -100,7 +109,15 @@ export class AuthGuardService implements CanActivate {
               if( this.isUrlExternal(authConf.admin.loginUrl) ) {
                 this.router.navigate(['/admin/externalRedirect', { externalUrl: this.adminAuth.loginUrl }]);
               } else {
-                this.router.navigateByUrl( authConf.admin.loginUrl );
+                // check to see if we need to strip base href
+                let redirectUrl = authConf.admin.loginUrl;
+                if(authConf && authConf.virtualPath && authConf.virtualPath !== '' && authConf.virtualPath !== '/') {
+                  // strip virtual path from redirect url
+                  // otherwise the angular router will "double-dip" on 
+                  // the base-href and you will get two base-hrefs in the path
+                  redirectUrl = redirectUrl.replace(authConf.virtualPath, '');
+                }
+                this.router.navigateByUrl( redirectUrl );
               }
               retReq = of(false);
             } else {
@@ -139,13 +156,12 @@ export class AuthGuardService implements CanActivate {
         if (!(responseMap.config.admin && responseMap.config.admin.mode)) {
           // no auth check. WWWWHHHHYYYY!!!
           // hope you know what you're doing
-          console.warn('NO AUTH CHECK!!! EXTREMELY DANGEROUS!');
+          // console.warn('2 NO AUTH CHECK!!! EXTREMELY DANGEROUS!');
           responseMap.noAuth = true;
           return of(true);
         } else {
           return this.adminAuth.checkServerInfo().pipe(
             tap((resi: boolean) => {
-              //console.warn('has admin enabled? ', resi);
               responseMap.adminEnabled = resi;
               //responses.push(resi);
             })
@@ -153,8 +169,8 @@ export class AuthGuardService implements CanActivate {
         }
       }),
       tap( (results: boolean) => {
-        //console.warn('!!RESULT!! ', responseMap, results);
-        if(!responseMap.adminEnabled) {
+        console.warn('!!AUTH RESULT!! ', responseMap, results);
+        if(!responseMap.adminEnabled && !responseMap.noAuth) {
           this.router.navigate( ['admin', 'error', 'admin-mode-disabled'] );
         } else if(!responseMap.noAuth && !responseMap.sso && !responseMap.jwt) {
           console.warn('redirecting to login: ', responseMap);
@@ -176,8 +192,12 @@ export class AuthGuardService implements CanActivate {
     // actual return observable of canActivateResult on result
     authStream.subscribe(
       (canActivate: boolean) => {
-        //console.warn('AuthGuardService.canActivate Complete: ', canActivate);
-        _canActivateResult.next(canActivate);
+        // console.warn('AuthGuardService.canActivate Complete: ', canActivate, canActivate === true);
+        // there is some kind of race condition happening here
+        // and between the canActivate sub
+        setTimeout(() => {
+          _canActivateResult.next( canActivate );
+        }, 500);
       }
     );
     // kick off the authStream by emitting on "onConfigLoaded" either
@@ -185,6 +205,7 @@ export class AuthGuardService implements CanActivate {
     if( this.adminAuth.authConfigLoaded ) {
       onConfigLoaded.next( this.adminAuth.authConfig );
     } else {
+      //onConfigLoaded.next( this.adminAuth.authConfig );
       this.adminAuth.onAuthConfigLoaded.subscribe((res: AuthConfig) => {
         onConfigLoaded.next( res );
       });

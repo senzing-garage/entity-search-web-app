@@ -17,6 +17,7 @@ import { EntitySearchService } from './services/entity-search.service';
 import { SpinnerService } from './services/spinner.service';
 import { UiService } from './services/ui.service';
 import { PrefsManagerService } from './services/prefs-manager.service';
+import { SzWebAppConfigService } from './services/config.service';
 
  @Component({
   selector: 'app-root',
@@ -101,6 +102,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   constructor(
+    private configService: SzWebAppConfigService,
     private entitySearchService: EntitySearchService,
     private router: Router,
     private route: ActivatedRoute,
@@ -111,7 +113,8 @@ export class AppComponent implements OnInit, OnDestroy {
     public search: EntitySearchService,
     private prefsManager: PrefsManagerService
   ) {
-
+    // get "/config/api" for immutable api path configuration
+    this.configService.getRuntimeApiConfig();
   }
 
   ngOnInit() {
