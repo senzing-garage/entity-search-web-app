@@ -1,0 +1,54 @@
+
+:host {
+    display: flex;
+    max-width: 100%;
+    overflow: auto;
+    cursor: zoom-in;
+    position: relative;
+
+    .desc-truncated {
+        display: block;
+        max-height: 16px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        margin-left: 24px;
+    }
+    .desc-full {
+        display: none;
+    }
+
+    .total-count {
+        margin-left: 6px;
+    }
+
+    .count {
+        border: 1px solid #ded1ea;
+        border-radius: 50%;
+        background-color: #ded1ea;
+        color: #5f5f5f;
+        display: inline-block;
+        margin: 0 10px 0 0;
+        width: 15px;
+        height: 15px;
+        line-height: 15px;
+        font-size: 11px;
+        text-align: center;
+        vertical-align: middle;
+        position: absolute;
+        top: 19px;
+        font-weight: bold;
+        padding: 1px 2px 2px 1px;
+    }
+
+    &.expanded {
+        cursor: zoom-out;
+        .count { display: none; }
+        .desc-truncated {
+            display: none;
+        }
+        .desc-full {
+            display: block;
+        }
+    }
+}

@@ -2,7 +2,7 @@
 @import '../../scss/_admin.scss';
 
 :host {
-  display: inline-block;
+  display: block;
 
   .hidden-file-picker {
     visibility: hidden;

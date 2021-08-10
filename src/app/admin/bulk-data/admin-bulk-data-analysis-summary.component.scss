@@ -21,13 +21,22 @@
     margin-bottom: 22px;
 
     .stats-col {
-      width: 40%;
+      width: calc(50% - 55px);
       &:first-child {
         margin-right: 50px;
       }
       th:first-child {
+        vertical-align: top;
         text-align: left;
+        white-space: nowrap;
       }
     }
+  }
+  .datasources-overflow {
+    width: 100%;
+    max-height: 56px;
+    text-overflow: ellipsis;
+    overflow-y: hidden;
+    cursor: pointer;
   }
 }

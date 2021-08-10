@@ -83,4 +83,44 @@
     No Results
   </div>
 </div>
+<!-- start Stream Summary -->
+<div *ngIf="streamResult && streamResult.bytesRead > 0">
+  <div *ngIf="streamResult && streamResult.sentRecordCount > 0" class="mat-table-error mat-elevation-z8">
+    <table mat-table [dataSource]="streamResults" class="mat-table-full-width mat-elevation-z8">
+      <!--- Note that these columns can be defined in any order.
+            The actual rendered columns are set as a property on the row definition" -->
+      <!-- Id Column -->
+      <ng-container matColumnDef="dataSources">
+        <th mat-header-cell *matHeaderCellDef >Data Sources</th>
+        <td mat-cell *matCellDef="let element"> {{ element.dataSources && element.dataSources.length > 0 ? element.dataSources.join(', ') : '[NONE]' }}</td>
+      </ng-container>
+      <!-- number of records Column -->
+      <ng-container matColumnDef="recordCount">
+        <th mat-header-cell *matHeaderCellDef > Number of Records </th>
+        <td mat-cell *matCellDef="let element"> {{element.recordCount}} </td>
+      </ng-container>
+      <!-- number of records Column -->
+      <ng-container matColumnDef="loadedRecordCount">
+        <th mat-header-cell *matHeaderCellDef > Number of Sent Records </th>
+        <td mat-cell *matCellDef="let element"> {{element.sentRecordCount}} </td>
+      </ng-container>
+      <!-- Records with Record ID Column -->
+      <ng-container matColumnDef="failedRecordCount">
+        <th mat-header-cell *matHeaderCellDef > Number of Unsent Records </th>
+        <td mat-cell *matCellDef="let element"> {{element.unsentRecordCount}} </td>
+      </ng-container>
+      <!-- number of incomplete records -->
+      <!--<ng-container matColumnDef="incompleteRecordCount">
+        <th mat-header-cell *matHeaderCellDef > Number of Incomplete Records </th>
+        <td mat-cell *matCellDef="let element"> {{element.incompleteRecordCount}} </td>
+      </ng-container>-->
+  
+      <tr mat-header-row *matHeaderRowDef="displayedColumnsForStream" ></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumnsForStream;" ></tr>
+    </table>
+    <div class="message">
+      No Results
+    </div>
+  </div>
+</div>
 <!--  end BulkDataLoadReport  -->

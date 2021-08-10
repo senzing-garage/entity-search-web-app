@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
-import { SzPrefsService, SzAdminService, SzBulkDataService } from '@senzing/sdk-components-ng';
+import { SzPrefsService, SzAdminService } from '@senzing/sdk-components-ng';
 
 import {
   SzBulkDataAnalysis,
@@ -9,6 +9,7 @@ import {
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 //import { MatTableDataSource } from '@angular/material/table';
+import { AdminBulkDataService, AdminStreamLoadSummary, AdminStreamAnalysisSummary } from '../../services/admin.bulk-data.service';
 
 export interface SzBulkDataComboAnalysis extends SzEntityTypeRecordAnalysis {
   entityType?: string;
@@ -41,18 +42,26 @@ export class AdminBulkDataAnalysisReportComponent implements OnInit, OnDestroy, 
 
   /** get the file reference currently loaded in the the bulk data service */
   public get file(): File {
-    if(this.bulkDataService) {
-      return this.bulkDataService.currentFile;
+    if(this.adminBulkDataService) {
+      return this.adminBulkDataService.currentFile;
     }
     return undefined;
   }
   /** result of last analysis operation */
   public get analysis(): SzBulkDataAnalysis {
-    return this.bulkDataService.currentAnalysis;
+    let asStreamResult = (this.adminBulkDataService.currentAnalysisResult as AdminStreamAnalysisSummary);
+    let isNotStreamResult = asStreamResult.missingDataSourceCount == undefined ? true : false;
+    return isNotStreamResult ? this.adminBulkDataService.currentAnalysisResult as SzBulkDataAnalysis : undefined;
   }
   /** get result of load operation from service */
   public get result(): SzBulkLoadResult {
-    return this.bulkDataService.currentLoadResult;
+    let asStreamResult = (this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary);
+    return (asStreamResult && !asStreamResult.isStreamResponse) ? this.adminBulkDataService.currentLoadResult as SzBulkLoadResult : undefined;
+  }
+  /** get the result of streaming load */
+  public get streamResult(): AdminStreamLoadSummary {
+    let asStreamResult = (this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary);
+    return (asStreamResult && asStreamResult.isStreamResponse) ? asStreamResult : undefined;
   }
   public getDataSourceInputName(index: number): string {
     return 'ds-name-' + index;
@@ -72,7 +81,7 @@ export class AdminBulkDataAnalysisReportComponent implements OnInit, OnDestroy, 
     return value && (value.trim().length > 0) && (this.entityTypes.indexOf(value) < 0);
   }
   public get currentError(): Error {
-    return this.bulkDataService.currentError;
+    return this.adminBulkDataService.currentError;
   }
   /**
    * when the user changes the file dest for a datasource
@@ -81,15 +90,15 @@ export class AdminBulkDataAnalysisReportComponent implements OnInit, OnDestroy, 
   // public _dataSourceMap: { [key: string]: string };
   /** whether or not a file is being analyzed */
   public get analyzingFile() {
-    return this.bulkDataService.isAnalyzingFile;
+    return this.adminBulkDataService.isAnalyzingFile;
   }
   /** whether or not a file is being loaded */
   public get loadingFile() {
-    return this.bulkDataService.isLoadingFile;
+    return this.adminBulkDataService.isLoadingFile;
   }
   constructor( public prefs: SzPrefsService,
     private adminService: SzAdminService,
-    private bulkDataService: SzBulkDataService) {}
+    private adminBulkDataService: AdminBulkDataService) {}
 
     public get isMoreThanOneDataSource() {
       return (this.analysis && this.analysis.analysisByDataSource && this.analysis.analysisByDataSource.length > 1);
@@ -115,12 +124,12 @@ export class AdminBulkDataAnalysisReportComponent implements OnInit, OnDestroy, 
         //console.log('SzBulkDataAnalysisReportComponent.ServerInfo obtained: ', info);
       });
 
-      this.bulkDataService.onDataSourcesChange.pipe(
+      this.adminBulkDataService.onDataSourcesChange.pipe(
         takeUntil( this.unsubscribe$ )
       ).subscribe((datasources: string[]) => {
-        console.warn('UPDATE DATASOURCES! ', datasources, this.bulkDataService._dataSources);
+        //console.warn('UPDATE DATASOURCES! ', datasources, this.adminBulkDataService._dataSources);
       });
-      this.bulkDataService.onError.subscribe((err) => {
+      this.adminBulkDataService.onError.subscribe((err) => {
         console.warn('AdminBulkDataAnalysisReportComponent.onError SHOW Err MSG: ', err);
       });
     }
@@ -136,28 +145,28 @@ export class AdminBulkDataAnalysisReportComponent implements OnInit, OnDestroy, 
     ngAfterViewInit() {}
     /** get the current datasources from the service */
     public get dataSources(): string[] {
-      if(this.bulkDataService && this.bulkDataService._dataSources) {
-        return this.bulkDataService._dataSources;
+      if(this.adminBulkDataService && this.adminBulkDataService._dataSources) {
+        return this.adminBulkDataService._dataSources;
       }
       return undefined;
     }
 
     /** get the current entity types from the service */
     public get entityTypes(): string[] {
-      if(this.bulkDataService && this.bulkDataService._entityTypes) {
-        return this.bulkDataService._entityTypes;
+      if(this.adminBulkDataService && this.adminBulkDataService._entityTypes) {
+        return this.adminBulkDataService._entityTypes;
       }
       return undefined;
     }
 
     /** when user changes the destination for a datasource */
     public handleDataSourceChange(fromDataSource: string, toDataSource: string) {
-      this.bulkDataService.changeDataSourceName(fromDataSource, toDataSource);
+      this.adminBulkDataService.changeDataSourceName(fromDataSource, toDataSource);
     }
 
     /** when user changes the destination for a datasource */
     public handleEntityTypeChange(fromEntityType: string, toEntityType: string) {
-      this.bulkDataService.changeEntityTypeName(fromEntityType, toEntityType);
+      this.adminBulkDataService.changeEntityTypeName(fromEntityType, toEntityType);
     }
     /** return a default value if value is undefined or null */
     public defaultIfUndefined(value: any, defaultValue: string): string | undefined {

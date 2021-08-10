@@ -3,6 +3,7 @@ import { SzAdminService, SzBulkDataService } from '@senzing/sdk-components-ng';
 import { SzBulkDataAnalysis, SzBulkLoadResult } from '@senzing/rest-api-client-ng';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { AdminBulkDataService, AdminStreamAnalysisSummary, AdminStreamLoadSummary } from '../../services/admin.bulk-data.service';
 
 /**
  * Provides a textual summary of a analyze file operation.
@@ -22,8 +23,8 @@ export class AdminBulkDataAnalysisSummaryComponent implements OnInit, OnDestroy 
   public unsubscribe$ = new Subject<void>();
   /** get the file reference currently loaded in the the bulk data service */
   public get file(): File {
-    if(this.bulkDataService) {
-      return this.bulkDataService.currentFile;
+    if(this.adminBulkDataService) {
+      return this.adminBulkDataService.currentFile;
     }
     return undefined;
   }
@@ -44,16 +45,29 @@ export class AdminBulkDataAnalysisSummaryComponent implements OnInit, OnDestroy 
   }
   /** result of last analysis operation */
   public get analysis(): SzBulkDataAnalysis {
-    return this.bulkDataService.currentAnalysis;
+    let asStreamResult = (this.adminBulkDataService.currentAnalysisResult as AdminStreamAnalysisSummary);
+    return (asStreamResult && !asStreamResult.isStreamResponse) ? this.adminBulkDataService.currentAnalysisResult as SzBulkDataAnalysis : undefined;
+  }
+  /** get the result of streaming analysis */
+  public get streamAnalysis(): AdminStreamAnalysisSummary {
+    let asStreamResult = (this.adminBulkDataService.currentAnalysisResult as AdminStreamAnalysisSummary);
+    let isStreamResult = asStreamResult.missingDataSourceCount !== undefined ? true : false;
+    return isStreamResult ? asStreamResult : undefined;
   }
   /** get result of load operation from service */
   public get result(): SzBulkLoadResult {
-    return this.bulkDataService.currentLoadResult;
+    let asStreamResult = (this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary);
+    return (asStreamResult && !asStreamResult.isStreamResponse) ? this.adminBulkDataService.currentLoadResult as SzBulkLoadResult : undefined;
+  }
+  /** get the result of streaming load */
+  public get streamResult(): AdminStreamLoadSummary {
+    let asStreamResult = (this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary);
+    return (asStreamResult && asStreamResult.isStreamResponse) ? this.adminBulkDataService.currentLoadResult as AdminStreamLoadSummary : undefined;
   }
 
   constructor(
     private adminService: SzAdminService,
-    private bulkDataService: SzBulkDataService) {}
+    private adminBulkDataService: AdminBulkDataService) {}
 
   ngOnInit() {
     this.adminService.onServerInfo.pipe(

@@ -1,0 +1,14 @@
+<h1 mat-dialog-title>Load Queue Errors<span *ngIf="totalCount" class="total-count">({{ totalCount }})</span></h1>
+<div mat-dialog-content>
+  <div class="error-list">
+    <collapseable-stream-load-error *ngFor="let error of dataReverseOrder; let i = index" 
+    [data]="error.error" 
+    [occurrenceCount]="error.occurrenceCount"
+    [collectionIndex]="i"
+    [expanded]="getExpandedStateFromIndex(i)"
+    (onExpansionChange)="onItemExpandedStateChange($event)"></collapseable-stream-load-error>
+  </div>
+</div>
+<div mat-dialog-actions>
+  <button mat-stroked-button color="primary" cdkFocusInitial (click)="onNoClick()">Ok</button>
+</div>

@@ -1,0 +1,87 @@
+@import "../../scss/variables";
+
+:host {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    min-height: 5px;
+    background-color: $sz-dark-grey;
+    border-radius: 12px;
+    border: 1px solid $sz-dark-grey;
+    padding: 0 0 1px 0;
+
+    .bar {
+        position: absolute;
+        display: inline-block;
+        background-color: $sz-blue;
+        height: 100%;
+        min-height: 15px;
+        min-width: 10px;
+        transition: width 4000ms ease-out;
+        border: 1px outset #7bb8df;
+        border-radius: 5px;
+        text-align: right;
+        vertical-align: middle;
+        line-height: 20px;
+        /*padding-right: 10px;*/
+    }
+    .perc {
+        position: absolute;
+        left: 30px;
+        top: 0px;
+        color: #fff;
+        text-align: right;
+        /*min-width: 40px;*/
+        /*color: #7a798d;
+        filter: invert(1);
+        mix-blend-mode: color-dodge;*/
+        font-size: 12px;
+        /*text-align: right;*/
+        vertical-align: middle;
+        line-height: 20px;
+        white-space: nowrap;
+        transition: width 4000ms ease-out;
+        box-sizing: border-box;
+        padding-left: 10px;
+    }
+    .perc2 {
+        color: #fff;
+        font-size: 12px;
+        min-width: 50px;
+        white-space: nowrap;
+        line-height: 20px;
+        position: relative;
+        display: inline-block;
+        right: -55px;
+        top: -1px;
+        background: #808285;
+        text-align: left;
+        transition: right 3000ms linear;
+    }
+    .text {
+        position: absolute;
+        right: 10px;
+        top: 0px;
+        color: #c3c3c3;
+        text-align: right;
+        min-width: 20px;
+        /*color: #7a798d;
+        filter: invert(1);
+        mix-blend-mode: color-dodge;*/
+        font-size: 12px;
+        /*text-align: right;*/
+        vertical-align: middle;
+        line-height: 20px;
+        transition: all 600ms cubic-bezier(0, 0, 0, 0.96);
+
+        /* in complete mode override */
+        &.complete-message {
+            color: #fff;
+            letter-spacing: .1rem;
+            z-index: 20;
+            text-align: unset;
+            right: calc(50% - 20px);
+            z-index: 20;
+        }
+    }
+}

@@ -3,7 +3,7 @@ import { CanActivate, Router } from '@angular/router';
 import { ActivatedRouteSnapshot } from '@angular/router';
 import { Observable, of, from, interval, Subject } from 'rxjs';
 import { map, catchError, tap, switchMap } from 'rxjs/operators';
-import { SzConfigurationService, SzAdminService, SzServerInfo, SzBaseResponseMeta } from '@senzing/sdk-components-ng';
+import { SzConfigurationService, SzAdminService, SzServerInfo } from '@senzing/sdk-components-ng';
 import { HttpClient } from '@angular/common/http';
 import { AuthConfig, SzWebAppConfigService } from './config.service';
 
