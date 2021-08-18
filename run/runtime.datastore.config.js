@@ -1,5 +1,5 @@
 const { env } = require("process");
-const { getHostnameFromUrl, getPortFromUrl, getProtocolFromUrl } = require("./utils");
+const { getHostnameFromUrl, getPortFromUrl, getProtocolFromUrl, replaceProtocol } = require("./utils");
 
 function getCommandLineArgsAsJSON() {
   // grab cmdline args
@@ -73,127 +73,39 @@ function getOptionsFromInput() {
 
 function getStreamServerOptionsFromInput() {
   let retConfig = undefined;
+  let webServerCfg = getWebServerOptionsFromInput();
   // ------------- set sane defaults
-  retConfigDefaults = undefined;
+  retConfigDefaults = {
+    protocol: (getProtocolFromUrl(webServerCfg.apiServerUrl) === 'https' ? 'wss':'ws'),
+    target: replaceProtocol((getProtocolFromUrl(webServerCfg.apiServerUrl) === 'https' ? 'wss':'ws'), webServerCfg.apiServerUrl),
+    proxy: {
+      protocol: (getProtocolFromUrl(webServerCfg.apiServerUrl) === 'https' ? 'wss':'ws'),
+      hostname: webServerCfg.hostname ? webServerCfg.hostname : 'localhost',
+      port: 5255
+    }    
+  };
+  retConfig = Object.assign({}, retConfigDefaults);
+  
+  // update defaults with ENV options(if present)
+  if(env){
+    retConfig.proxy.port                  = env.SENZING_STREAM_SERVER_PORT ?          env.SENZING_STREAM_SERVER_PORT             : retConfig.proxy.port;
+  }
+
   // ------------- now get cmdline options and override any defaults or ENV options
   let cmdLineOpts = getCommandLineArgsAsJSON();
   if(cmdLineOpts && cmdLineOpts !== undefined) {
-
-    /** if all necessary variables are passed enable stream proxy */
-    /*
-    if(env && 
-        env.SENZING_WEB_SERVER_HOSTNAME &&
-        (env.SENZING_API_SERVER_URL || env.SENZING_STREAM_SERVER_URL)
-      ) {
-      retConfig = retConfig ? retConfig : {};
-      retConfig.proxy = {
-
-      };
-    }*/
-    /** or if proxy is specifically set to enabled */
-    /*
-    if(env && env.SENZING_STREAM_PROXY_ENABLED && env.SENZING_STREAM_PROXY_ENABLED.toLowerCase && env.SENZING_STREAM_PROXY_ENABLED.toLowerCase() == 'true') {
-      retConfig = retConfig ? retConfig : {};
-      retConfig.proxy = {
-
-      };
-    }*/
-
-    /** ----------- PROXY OPTIONS ---------- */
-    /*
-    if(retConfig && retConfig.proxyEnabled) {
-      retConfig = retConfig ? retConfig : {};
-      retConfig.streamServerHost          = getHostnameFromUrl( env.SENZING_API_SERVER_URL );     // default to same address as API_SERVER_URL
-      retConfig.streamServerHost          = getHostnameFromUrl( env.SENZING_STREAM_SERVER_URL ) ? getHostnameFromUrl( env.SENZING_STREAM_SERVER_URL ) : retConfig.streamServerHost;   // override if set 
-      retConfig.streamServerPort          = getPortFromUrl( env.SENZING_API_SERVER_URL );         // default to same port as API SERVER 
-      retConfig.streamServerPort          = getPortFromUrl( env.SENZING_STREAM_SERVER_URL ) ? getPortFromUrl( env.SENZING_STREAM_SERVER_URL ) : retConfig.streamServerPort;           // default to same port as API SERVER 
-
-      retConfig.streamServerProxyHost     = getHostnameFromUrl( env.SENZING_WEB_SERVER_HOSTNAME ); // default to same host as webserver
-      retConfig.streamServerProxyPort     = env.SENZING_STREAM_PROXY_PORT ? env.SENZING_STREAM_PROXY_PORT : 8255;         // default to `8255`
-      retConfig.streamServerProxyProtocol = env.SENZING_STREAM_PROXY_PROTOCOL ? SENZING_STREAM_PROXY_PROTOCOL : 'ws';
-      
-      // this one is actually the important variable, all the others are more for generating this string
-      retConfig.proxyUrl       = ((retConfig.streamServerProxyProtocol ? retConfig.streamServerProxyProtocol : 'ws') + 
-        '://'+ retConfig.streamServerProxyHost +':'+ 
-        (retConfig.streamServerProxyPort ? retConfig.streamServerProxyPort : '8255')
-      );
-
-    }*/
-
-    /** ----------- POC DESTINATION OPTIONS ---------- */
-
-    if(cmdLineOpts.streamServerUrl) {
-      retConfig = retConfig ? retConfig : {};
-      retConfig.target    = cmdLineOpts.streamServerUrl;
-      retConfig.protocol  = getProtocolFromUrl( retConfig.target )
-    } else if(cmdLineOpts.apiServerUrl) {
-      // default to {API_SERVER} but with 'ws://' protocol
-      retConfig = retConfig ? retConfig : {};
-      retConfig.target    = cmdLineOpts.apiServerUrl;
-      retConfig.protocol  = getProtocolFromUrl( retConfig.target ) === 'https' ? 'wss' : `ws`
-    }
-
-    if(cmdLineOpts.streamServerProxyUrl) {
-      retConfig = retConfig ? retConfig : {};
-      retConfig.proxy = {
-        host: getHostnameFromUrl(cmdLineOpts.streamServerProxyUrl),
-        port: cmdLineOpts.streamServerProxyPort ? cmdLineOpts.streamServerProxyPort : 8255,
-        protocol: getProtocolFromUrl( retConfig.streamServerProxyUrl )
-      }
-    } else if(cmdLineOpts.webServerUrl && retConfig.target) {
-      // if we have the public webserver url we have enough to 
-      // create a proxy for stream loading
-      retConfig = retConfig ? retConfig : {};
-      retConfig.proxy = {
-        host: getHostnameFromUrl(cmdLineOpts.webServerUrl),
-        port: cmdLineOpts.streamServerProxyPort ? cmdLineOpts.streamServerProxyPort : 8255,
-        protocol: retConfig.protocol
-      }
-    }
-
-    /*
-    if(cmdLineOpts.streamServerHost){
-      retConfig = retConfig ? retConfig : {};
-      retConfig.host = cmdLineOpts.streamServerHost;
-    }
     if(cmdLineOpts.streamServerPort){
-      retConfig = retConfig ? retConfig : {};
-      retConfig.port = cmdLineOpts.streamServerPort;
+      retConfig.proxy.port = cmdLineOpts.streamServerPort;
     }
-    if(cmdLineOpts.webServerUrl) {
-      retConfig = retConfig ? retConfig : {};
-      retConfig.proxyHost = getHostnameFromUrl(cmdLineOpts.webServerUrl) ? getHostnameFromUrl(cmdLineOpts.webServerUrl) : 'localhost';
-    }
-    if(cmdLineOpts.webServerHostName) {
-      retConfig = retConfig ? retConfig : {};
-      retConfig.proxyHost = cmdLineOpts.streamServerProxyHost;
-    }
-    if(cmdLineOpts.streamServerProxyHost){
-      retConfig = retConfig ? retConfig : {};
-      retConfig.proxyHost = cmdLineOpts.streamServerProxyHost;
-    }
-    if(cmdLineOpts.streamServerProxyPort){
-      retConfig = retConfig ? retConfig : {};
-      retConfig.proxyPort = cmdLineOpts.streamServerProxyPort;
-    }
-    if(cmdLineOpts.streamServerProxyProtocol){
-      retConfig = retConfig ? retConfig : {};
-      retConfig.proxyProtocol = cmdLineOpts.streamServerProxyProtocol;
-    }
-    if(cmdLineOpts.streamServerDestUrl){
-      retConfig = retConfig ? retConfig : {};
-      retConfig.target = cmdLineOpts.streamServerDestUrl;
-    }
-    
-    retConfig = retConfig ? retConfig : {};
-    retConfig.proxyUrl = ((retConfig.proxyProtocol ? retConfig.proxyProtocol : 'ws') + '://'+ retConfig.proxyHost +':'+ (retConfig.proxyPort ? retConfig.proxyPort : '8255'));
-    */
   }
+  // make sure the "url" is updated if anything has been overridden
+  retConfig.proxy.url = ((retConfig.proxy.protocol ? retConfig.proxy.protocol : 'ws') + '://'+ retConfig.proxy.hostname +':'+ (retConfig.proxy.port ? retConfig.proxy.port : '8255'));
   return retConfig;
 }
 
 function createCspConfigFromInput() {
   let retConfig = undefined;
+  let streamCfg = getStreamServerOptionsFromInput();
 
   // ------------- set sane defaults
   retConfigDefaults = {
@@ -221,13 +133,14 @@ function createCspConfigFromInput() {
   if(env.SENZING_WEB_SERVER_CSP_IMG_SRC) {
     retConfig.directives['img-src'].push(env.SENZING_WEB_SERVER_CSP_IMG_SRC);
   }
+  /*
   if(env.SENZING_WEB_SERVER_HOSTNAME) {
     retConfig.directives['connect-src'].push('ws://'+env.SENZING_WEB_SERVER_HOSTNAME+':8555');
     retConfig.directives['connect-src'].push('wss://'+env.SENZING_WEB_SERVER_HOSTNAME+':8443');
   }
   if(env.SENZING_WEB_SERVER_CSP_STREAM_SERVER_URL) {
     retConfig.directives['connect-src'].push(env.SENZING_WEB_SERVER_CSP_STREAM_SERVER_URL);
-  }
+  }*/
   if(env.SENZING_WEB_SERVER_CSP_SCRIPT_SRC) {
     retConfig.directives['script-src'].push(env.SENZING_WEB_SERVER_CSP_SCRIPT_SRC);
   }
@@ -265,6 +178,13 @@ function createCspConfigFromInput() {
       retConfig.directives['font-src'] = retConfigDefaults.directives['font-src']
       retConfig.directives['font-src'].push(cmdLineOpts.webServerCspFontSrc);
     }
+  }
+  // ------------- add streaming proxy information to connect src
+  if( streamCfg && streamCfg.target) {
+    retConfig.directives['connect-src'].push(streamCfg.target);
+  }
+  if( streamCfg && streamCfg.proxy && streamCfg.proxy.url ) {
+    retConfig.directives['connect-src'].push(streamCfg.proxy.url);
   }
 
   return retConfig;
@@ -430,6 +350,7 @@ function createAuthConfigFromInput() {
 }
 function getWebServerOptionsFromInput() {
   let retOpts = {
+    protocol: 'http',
     port: 4200,
     hostname: 'localhost',
     path: '/',
@@ -445,8 +366,10 @@ function getWebServerOptionsFromInput() {
   }
   // update defaults with ENV options(if present)
   if(env){
+    retOpts.protocol              = env.SENZING_WEB_SERVER_PROTOCOL ?         env.SENZING_WEB_SERVER_PROTOCOL         : retOpts.protocol;
     retOpts.port                  = env.SENZING_WEB_SERVER_PORT ?             env.SENZING_WEB_SERVER_PORT             : retOpts.port;
     retOpts.hostname              = env.SENZING_WEB_SERVER_HOSTNAME ?         env.SENZING_WEB_SERVER_HOSTNAME         : retOpts.hostname;
+    retOpts.url                   = env.SENZING_WEB_SERVER_URL ?              env.SENZING_WEB_SERVER_URL              : retOpts.url;
     retOpts.apiPath               = env.SENZING_WEB_SERVER_API_PATH ?         env.SENZING_WEB_SERVER_API_PATH         : retOpts.apiPath;
     retOpts.authPath              = env.SENZING_WEB_SERVER_AUTH_PATH ?        env.SENZING_WEB_SERVER_AUTH_PATH        : retOpts.authPath;
     retOpts.authMode              = env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE ?  env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE  : retOpts.authMode;
@@ -463,7 +386,11 @@ function getWebServerOptionsFromInput() {
       retOpts.authBasicJson = env.SENZING_WEB_SERVER_BASIC_AUTH_JSON;
     }
 
+    // if we just have "hostname" construct "url" from that
+    retOpts.url                   = !retOpts.url && retOpts.hostname ? ((retOpts.protocol ? retOpts.protocol + '://' : 'http://') + retOpts.hostname +(retOpts.port ? ':'+ retOpts.port : '')) : retOpts.url;
+
     // streaming support
+    /*
     if(true) {
       retOpts.streamLoading = {
         proxy: {
@@ -480,17 +407,20 @@ function getWebServerOptionsFromInput() {
       retOpts.streamLoading.proxy.port   = env.SENZING_STREAM_SERVER_PORT ?          env.SENZING_STREAM_SERVER_PORT          : retOpts.streamLoading.proxyPort;
       retOpts.streamLoading.target       = env.SENZING_STREAM_SERVER_DEST_URL ?      env.SENZING_STREAM_SERVER_DEST_URL      : retOpts.streamLoading.proxyTarget;
     }
+    */
   }
 
   // now get cmdline options and override any defaults or ENV options
   let cmdLineOpts = getCommandLineArgsAsJSON();
   if(cmdLineOpts && cmdLineOpts !== undefined) {
+    retOpts.protocol              = cmdLineOpts.protocol ?              cmdLineOpts.protocol              : retOpts.protocol;
     retOpts.port                  = cmdLineOpts.webServerPortNumber ?   cmdLineOpts.webServerPortNumber   : retOpts.port;
     retOpts.hostname              = cmdLineOpts.webServerHostName ?     cmdLineOpts.webServerHostName     : retOpts.hostname;
+    retOpts.url                   = cmdLineOpts.url ?                   cmdLineOpts.webServerUrl          : retOpts.url;
     retOpts.apiPath               = cmdLineOpts.webServerApiPath ?      cmdLineOpts.webServerApiPath      : retOpts.apiPath;
     retOpts.authPath              = cmdLineOpts.webServerAuthPath ?     cmdLineOpts.webServerAuthPath     : retOpts.authPath;
     retOpts.authMode              = cmdLineOpts.webServerAuthMode ?     cmdLineOpts.webServerAuthMode     : retOpts.authMode;
-    retOpts.apiServerUrl          = cmdLineOpts.webServerApiServerUrl ? cmdLineOpts.webServerApiServerUrl : retOpts.apiServerUrl;
+    retOpts.apiServerUrl          = cmdLineOpts.apiServerUrl ?          cmdLineOpts.apiServerUrl          : retOpts.apiServerUrl;
     retOpts.path                  = cmdLineOpts.virtualPath ?           cmdLineOpts.virtualPath           : retOpts.path;
 
     if(retOpts.sslCertPath) {
@@ -503,11 +433,12 @@ function getWebServerOptionsFromInput() {
     }
 
     // stream loading support
+    /*
     if(retOpts.stream) {
       retOpts.streamLoading.proxy.url      = cmdLineOpts.streamServerUrl ?       cmdLineOpts.streamServerUrl       : retOpts.streamLoading.proxyUrl;
       retOpts.streamLoading.proxy.port     = cmdLineOpts.streamServerPort ?      cmdLineOpts.streamServerPort      : retOpts.streamLoading.proxyPort;
       retOpts.streamLoading.target         = cmdLineOpts.streamServerDestUrl ?   cmdLineOpts.streamServerDestUrl   : retOpts.streamLoading.proxyTarget;
-    }
+    }*/
   }
 
   if(retOpts.ssl && retOpts.ssl !== undefined && retOpts.ssl.certPath && retOpts.ssl.keyPath) {
