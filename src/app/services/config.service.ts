@@ -21,6 +21,16 @@ export interface AuthConfig {
     loginUrl?: string;
   };
 }
+export interface POCStreamConfig {
+  proxy?: {
+    host?: string;
+    port?: number;
+    url: string;
+    protocol?: string;
+  }
+  target: string;
+  protocol?: string;
+}
 
 /**
  * A service used to provide methods and services
@@ -32,6 +42,7 @@ export interface AuthConfig {
 export class SzWebAppConfigService {
   private _authConfig: AuthConfig;
   private _apiConfig: SzRestConfigurationParameters;
+  private _pocStreamConfig: POCStreamConfig;
 
   public get authConfig(): AuthConfig {
     return this._authConfig;
@@ -45,10 +56,18 @@ export class SzWebAppConfigService {
   public set apiConfig(value: SzRestConfigurationParameters) {
     this._apiConfig = value;
   }
+  public get pocStreamConfig(): POCStreamConfig {
+    return this._pocStreamConfig;
+  }
+  public set pocStreamConfig(value: POCStreamConfig) {
+    this._pocStreamConfig = value;
+  }
   private _onAuthConfigChange: Subject<AuthConfig>                    = new Subject<AuthConfig>();
   public onAuthConfigChange                                           = this._onAuthConfigChange.asObservable();
   private _onApiConfigChange: Subject<SzRestConfigurationParameters>  = new Subject<SzRestConfigurationParameters>();
   public onApiConfigChange                                            = this._onApiConfigChange.asObservable();
+  private _onPocStreamConfigChange: Subject<POCStreamConfig>          = new Subject<POCStreamConfig>();
+  public onPocStreamConfigChange                                      = this._onPocStreamConfigChange.asObservable();
 
   constructor( 
     private http: HttpClient,
@@ -69,6 +88,11 @@ export class SzWebAppConfigService {
     ).subscribe((authConf: AuthConfig) => {
       this._authConfig = authConf;
     });
+    this.getRuntimePOCStreamingConfig().pipe(
+      take(1)
+    ).subscribe((pocConf: POCStreamConfig) => {
+      this._pocStreamConfig = pocConf;
+    });
   }
   public getRuntimeAuthConfig(): Observable<AuthConfig> {
     // reach out to webserver to get auth
@@ -76,6 +100,17 @@ export class SzWebAppConfigService {
     // directly since container is immutable and
     // doesnt write to file system.
     return this.http.get<AuthConfig>('./config/auth');
+  }
+  public getRuntimePOCStreamingConfig() : Observable<POCStreamConfig> {
+    // reach out to webserver to get stream loading
+    // configuration properties
+    return this.http.get<POCStreamConfig>('./config/pocstream').pipe(
+      catchError((err) => {
+        return of({
+          target: "ws://localhost:8255"
+        })
+      })
+    );
   }
   public getRuntimeApiConfig(): Observable<SzRestConfigurationParameters> {
     // reach out to webserver to get api
