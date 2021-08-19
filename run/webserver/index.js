@@ -33,6 +33,9 @@ var proxyOptions  = runtimeOptions.config.proxy;
 // web server config
 let serverOptions = runtimeOptions.config.web;
 
+// stream options
+let streamOptions = runtimeOptions.config.stream;
+
 // write proxy conf to file? (we need this for DEV mode)
 if(inMemoryConfigFromInputs.proxyServerOptions.writeToFile) {
   runtimeOptions.writeProxyConfigToFile("../","proxy.conf.json");
@@ -167,6 +170,53 @@ const authRes = (req, res, next) => {
   });
 };
 
+// ----------------- start config endpoints -----------------
+  let _confBasePath = '';
+  if(runtimeOptions.config && 
+    runtimeOptions.config.web && 
+    runtimeOptions.config.web.path && runtimeOptions.config.web.path !== '/') {
+      _confBasePath = runtimeOptions.config.web.path;
+  }
+  app.get(_confBasePath+'/conf/auth', (req, res, next) => {
+    res.status(200).json( authOptions );
+  });
+  app.get(_confBasePath+'/conf/auth/admin', (req, res, next) => {
+    res.status(200).json( authOptions.admin );
+  });
+  app.get(_confBasePath+'/conf/auth/operator', (req, res, next) => {
+    res.status(200).json( authOptions.operator );
+  });
+  app.get(_confBasePath+'/conf/cors', (req, res, next) => {
+      res.status(200).json( corsOptions );
+  });
+
+  app.get(_confBasePath+'/conf/csp', (req, res, next) => {
+      res.status(200).json( cspOptions );
+  });
+
+  app.get(_confBasePath+'/conf/streams', (req, res, next) => {
+      res.status(200).json( streamOptions );
+  });
+
+  // ----------------- wildcards -----------------
+  // we need a wildcarded version due to 
+  // queries from virtual directory hosted apps
+  // and any number of SPA routes on top of that
+  app.get('*/conf/auth', (req, res, next) => {
+    res.status(200).json( authOptions );
+  });
+  app.get('*/conf/cors', (req, res, next) => {
+    res.status(200).json( corsOptions );
+  });
+  app.get('*/conf/csp', (req, res, next) => {
+      res.status(200).json( cspOptions );
+  });
+  app.get('*/conf/streams', (req, res, next) => {
+      res.status(200).json( streamOptions );
+  });
+
+// ----------------- end config endpoints -----------------
+
 if(authOptions && authOptions !== undefined) {
   let _authBasePath = '';
   if(runtimeOptions.config && 
@@ -174,22 +224,6 @@ if(authOptions && authOptions !== undefined) {
     runtimeOptions.config.web.path && runtimeOptions.config.web.path !== '/') {
       _authBasePath = runtimeOptions.config.web.path;
   }
-  app.get(_authBasePath+'/conf/auth', (req, res, next) => {
-    res.status(200).json( authOptions );
-  });
-  // we need a wildcarded version due to 
-  // queries from virtual directory hosted apps
-  // and any number of SPA routes on top of that
-  app.get('*/conf/auth', (req, res, next) => {
-    res.status(200).json( authOptions );
-  });
-  app.get(_authBasePath+'/conf/auth/admin', (req, res, next) => {
-    res.status(200).json( authOptions.admin );
-  });
-  app.get(_authBasePath+'/conf/auth/operator', (req, res, next) => {
-    res.status(200).json( authOptions.operator );
-  });
-
   if(authOptions.admin && authOptions.admin.mode === 'SSO' || authOptions.admin && authOptions.admin.mode === 'EXTERNAL') {
     const ssoResForceTrue = (req, res, next) => {
       res.status(200).json({
@@ -353,23 +387,34 @@ if( serverOptions && serverOptions.ssl && serverOptions.ssl.enabled ){
 } else {
   // check if we need a websocket proxy
   let streamServerPromise = new Promise((resolve) => {
-    if(serverOptions && serverOptions.streamServerDestUrl) {
-      var wsProxy   = httpProxy.createServer({ 
-        target: serverOptions.streamServerDestUrl,
-        ws: true 
-      });
-      wsProxy.on('error', function(e) {
-        console.log('WS Proxy Error: '+ e.message);
-      });
-      WebSocketProxyInstance = wsProxy.listen(serverOptions.streamServerPort || 8255, () => {
-        console.log('[started] WS Proxy Server on port '+ (serverOptions.streamServerPort || 8255) +'. Forwarding to "'+ serverOptions.streamServerDestUrl +'"');
+    let setupWebsocketProxy = function(streamOptions) {
+      if(streamOptions && streamOptions.proxy) {
+        var wsProxy   = httpProxy.createServer({ 
+          target: streamOptions.target,
+          ws: true 
+        });
+        wsProxy.on('error', function(e) {
+          console.log('WS Proxy Error: '+ e.message);
+        });
+        WebSocketProxyInstance = wsProxy.listen(streamOptions.proxy.port || 8255, () => {
+          console.log('[started] WS Proxy Server on port '+ (streamOptions.proxy.port || 8255) +'. Forwarding to "'+ streamOptions.target +'"');
+          resolve();
+        });
+      } else {
         resolve();
-      });
-      //STARTUP_MSG = 'WS Proxy Server started on port '+ (serverOptions.streamServerPort || 8255) +'. Forwarding to "'+ serverOptions.streamServerDestUrl +'"\n'+ STARTUP_MSG;
+      }
+    }
+
+    if(runtimeOptions.initialized) {
+      // immediately check
+      streamOptions = runtimeOptions.config.stream;
+      setupWebsocketProxy(streamOptions);
     } else {
-      //STARTUP_MSG = STARTUP_MSG + '\n NO WS PROXY!!';
-      //console.log('NO WS PROXY!!', serverOptions);
-      resolve();
+      // wait for initialization
+      runtimeOptions.on('initialized', () => {
+        streamOptions = runtimeOptions.config.stream;
+        setupWebsocketProxy(streamOptions);
+      });
     }
   }, (reason) => { 
     console.log('[error] WS Proxy Server: ', reason);
@@ -379,10 +424,20 @@ if( serverOptions && serverOptions.ssl && serverOptions.ssl.enabled ){
   
   // http
   let webServerPromise = new Promise((resolve) => {
-    ExpressSrvInstance = app.listen(serverOptions.port, () => {
-      console.log('[started] Web Server on port '+ serverOptions.port);
-      resolve();
-    });
+    if(runtimeOptions.initialized) {
+      ExpressSrvInstance = app.listen(serverOptions.port, () => {
+        console.log('[started] Web Server on port '+ serverOptions.port);
+        resolve();
+      });
+    } else {
+      // wait for initialization
+      runtimeOptions.on('initialized', () => {
+        ExpressSrvInstance = app.listen(serverOptions.port, () => {
+          console.log('[started] Web Server on port '+ serverOptions.port);
+          resolve();
+        });
+      });
+    }
   }, (reason) => { 
     console.log('[error] Web Server', reason);
     reject(); 

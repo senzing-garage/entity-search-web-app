@@ -65,6 +65,11 @@ class inMemoryConfig extends EventEmitter {
   // initial timer for checking if API Server is up
   apiServerInitializedTimer = undefined;
 
+  // will be set to "true" if initial response 
+  // from api server recieved
+  _apiServerIsReady   = false;
+  _initialized        = false;
+
   constructor(options) {
     super();
     if(options) {
@@ -76,6 +81,13 @@ class inMemoryConfig extends EventEmitter {
     this.checkIfApiServerInitialized();
     //console.info("inMemoryConfig.constructor: ", "\n\n", JSON.stringify(this.config, undefined, 2));
   }
+
+  get apiServerIsReady() {
+    return this._apiServerIsReady === true;
+  }
+  get initialized() {
+    return this._apiServerIsReady === true;
+  }  
 
   // get an JSON object representing all of the configuration
   // options specified through either the command line args or env vars
@@ -281,20 +293,28 @@ class inMemoryConfig extends EventEmitter {
     if(serverInfo.meta) {
       if(serverInfo.meta.pocServerVersion || serverInfo.meta.pocApiVersion) {
         // poc server
+        this.webConfiguration.streamLoading = true;
         if(serverInfo.data && !serverInfo.data.adminEnabled) {
           // poc server supports adding datasources and importing data
           this.streamServerConfiguration = undefined;
+          this.webConfiguration.streamLoading = false;
         }
         if(!serverInfo.data.loadQueueConfigured) {
           // poc server does not support loading through stream socket
           this.streamServerConfiguration = undefined;
+          this.webConfiguration.streamLoading = false;
         }
       } else if(serverInfo.data && !serverInfo.data.adminEnabled) {
         // standard rest server that supports loading data
         this.streamServerConfiguration = undefined;
+        this.webConfiguration.streamLoading = false;
       }
+    } else {
+      this.webConfiguration.streamLoading = false;
     }
     // now notify any listeners that we fully have the data we need
+    this._apiServerIsReady = true;
+    this._initialized = true;
     this.emit('initialized');
   }
 

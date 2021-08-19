@@ -1,3 +1,4 @@
+const { calcProjectFileAndBasePath } = require("@angular/compiler-cli");
 const { env } = require("process");
 const { getHostnameFromUrl, getPortFromUrl, getProtocolFromUrl, replaceProtocol } = require("./utils");
 
@@ -81,7 +82,7 @@ function getStreamServerOptionsFromInput() {
     proxy: {
       protocol: (getProtocolFromUrl(webServerCfg.apiServerUrl) === 'https' ? 'wss':'ws'),
       hostname: webServerCfg.hostname ? webServerCfg.hostname : 'localhost',
-      port: 5255
+      port: 8255
     }    
   };
   retConfig = Object.assign({}, retConfigDefaults);
@@ -385,29 +386,6 @@ function getWebServerOptionsFromInput() {
     if(env.SENZING_WEB_SERVER_BASIC_AUTH_JSON) {
       retOpts.authBasicJson = env.SENZING_WEB_SERVER_BASIC_AUTH_JSON;
     }
-
-    // if we just have "hostname" construct "url" from that
-    retOpts.url                   = !retOpts.url && retOpts.hostname ? ((retOpts.protocol ? retOpts.protocol + '://' : 'http://') + retOpts.hostname +(retOpts.port ? ':'+ retOpts.port : '')) : retOpts.url;
-
-    // streaming support
-    /*
-    if(true) {
-      retOpts.streamLoading = {
-        proxy: {
-          protocol: "ws",
-          host: "localhost",
-          port: 5255,
-          url: "ws://localhost:5255",    // composite of `${proxyProtocol}://${proxyHost}:${proxyPort}`
-        },
-        target: "ws://americium.local" // composite of `${proxyProtocol}://${apiServerHost}:${apiServerPort}`
-      }
-    }
-    if(retOpts.streamLoading) {
-      retOpts.streamLoading.proxy.url    = env.SENZING_STREAM_SERVER_URL ?           env.SENZING_STREAM_SERVER_URL           : retOpts.streamLoading.proxyUrl;
-      retOpts.streamLoading.proxy.port   = env.SENZING_STREAM_SERVER_PORT ?          env.SENZING_STREAM_SERVER_PORT          : retOpts.streamLoading.proxyPort;
-      retOpts.streamLoading.target       = env.SENZING_STREAM_SERVER_DEST_URL ?      env.SENZING_STREAM_SERVER_DEST_URL      : retOpts.streamLoading.proxyTarget;
-    }
-    */
   }
 
   // now get cmdline options and override any defaults or ENV options
@@ -431,14 +409,6 @@ function getWebServerOptionsFromInput() {
       retOpts.ssl = retOpts.ssl ? retOpts.ssl : {};
       retOpts.ssl.keyPath   = retOpts.sslKeyPath;
     }
-
-    // stream loading support
-    /*
-    if(retOpts.stream) {
-      retOpts.streamLoading.proxy.url      = cmdLineOpts.streamServerUrl ?       cmdLineOpts.streamServerUrl       : retOpts.streamLoading.proxyUrl;
-      retOpts.streamLoading.proxy.port     = cmdLineOpts.streamServerPort ?      cmdLineOpts.streamServerPort      : retOpts.streamLoading.proxyPort;
-      retOpts.streamLoading.target         = cmdLineOpts.streamServerDestUrl ?   cmdLineOpts.streamServerDestUrl   : retOpts.streamLoading.proxyTarget;
-    }*/
   }
 
   if(retOpts.ssl && retOpts.ssl !== undefined && retOpts.ssl.certPath && retOpts.ssl.keyPath) {
@@ -449,6 +419,8 @@ function getWebServerOptionsFromInput() {
     retOpts.ssl = undefined;
     delete retOpts.ssl;
   }
+  // if we just have "hostname" construct "url" from that
+  retOpts.url                   = !retOpts.url && retOpts.hostname ? ((retOpts.protocol ? retOpts.protocol + '://' : 'http://') + retOpts.hostname +(retOpts.port ? ':'+ retOpts.port : '')) : retOpts.url;
 
   return retOpts;
 }
@@ -464,6 +436,7 @@ function getProxyServerOptionsFromInput() {
     authServerPortNumber: 8080,
     logLevel: "error",
     apiServerUrl: "",
+    configPath: "",
     adminAuthPath: "http://localhost:8080",
     jwtPathRewrite: "/jwt",
     ssoPathRewrite: "/sso",
@@ -492,6 +465,9 @@ function getProxyServerOptionsFromInput() {
     }
     if(env.SENZING_API_SERVER_URL) {
       retOpts.apiServerUrl = env.SENZING_API_SERVER_URL;
+    }
+    if(env.SENZING_WEB_SERVER_URL) {
+      retOpts.configPath = env.SENZING_WEB_SERVER_URL;
     }
     /*if(env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE) {
       retOpts.authMode = env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE;
@@ -529,6 +505,9 @@ function getProxyServerOptionsFromInput() {
     }
     if(cmdLineOpts.apiServerUrl && cmdLineOpts.apiServerUrl !== undefined) {
       retOpts.apiServerUrl = cmdLineOpts.apiServerUrl;
+    }
+    if(cmdLineOpts.webServerUrl && cmdLineOpts.webServerUrl !== undefined) {
+      retOpts.configPath = cmdLineOpts.webServerUrl;
     }
     if(cmdLineOpts.proxyJWTPathRewrite) {
       retOpts.jwtPathRewrite = cmdLineOpts.proxyJWTPathRewrite;
@@ -613,6 +592,44 @@ function createProxyConfigFromInput() {
       return obj;
     }
   }
+
+  // ------------------------ config endpoints 
+  retConfig = retConfig !== undefined ? retConfig : {};
+  let mergeObj = appendBasePathToKeys({
+    "/config/cors": {
+      "target": proxyOpts.configPath + "/conf/cors/",
+      "secure": true,
+      "logLevel": "debug",
+      "pathRewrite": {
+        "^/config/cors": ""
+      }
+    },
+    "/config/csp": {
+      "target": proxyOpts.configPath + "/conf/csp/",
+      "secure": true,
+      "logLevel": "debug",
+      "pathRewrite": {
+        "^/config/csp": ""
+      }
+    },  
+    "/config/server": {
+      "target": proxyOpts.configPath + "/conf/server/",
+      "secure": true,
+      "logLevel": "debug",
+      "pathRewrite": {
+        "^/config/server": ""
+      }
+    },
+    "/config/streams": {
+      "target": proxyOpts.configPath + "/conf/streams/",
+      "secure": true,
+      "logLevel": "debug",
+      "pathRewrite": {
+        "^/config/streams": ""
+      }
+    }
+  });
+  retConfig = Object.assign(retConfig, mergeObj);
 
   if(env.SENZING_WEB_SERVER_ADMIN_AUTH_PATH) {
     retConfig = retConfig !== undefined ? retConfig : {};
