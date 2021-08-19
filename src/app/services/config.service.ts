@@ -88,10 +88,11 @@ export class SzWebAppConfigService {
     ).subscribe((authConf: AuthConfig) => {
       this._authConfig = authConf;
     });
-    this.getRuntimePOCStreamingConfig().pipe(
+    this.getRuntimeStreamConfig().pipe(
       take(1)
     ).subscribe((pocConf: POCStreamConfig) => {
       this._pocStreamConfig = pocConf;
+      console.warn('POC STREAM CONFIG!', this._pocStreamConfig);
     });
   }
   public getRuntimeAuthConfig(): Observable<AuthConfig> {
@@ -101,6 +102,7 @@ export class SzWebAppConfigService {
     // doesnt write to file system.
     return this.http.get<AuthConfig>('./config/auth');
   }
+  /*
   public getRuntimePOCStreamingConfig() : Observable<POCStreamConfig> {
     // reach out to webserver to get stream loading
     // configuration properties
@@ -111,7 +113,7 @@ export class SzWebAppConfigService {
         })
       })
     );
-  }
+  }*/
   public getRuntimeApiConfig(): Observable<SzRestConfigurationParameters> {
     // reach out to webserver to get api
     // config. we cant do this with static files
@@ -126,4 +128,17 @@ export class SzWebAppConfigService {
       })
     );
   }
+  public getRuntimeStreamConfig(): Observable<POCStreamConfig | undefined> {
+    // reach out to webserver to get api
+    // config. we cant do this with static files
+    // directly since container is immutable and
+    // doesnt write to file system.
+    return this.http.get<POCStreamConfig | undefined>('./config/streams').pipe(
+      catchError((err) => {
+        // return default payload for local developement when "/config/api" not available
+        return of(undefined);
+      })
+    );
+  }
+
 }

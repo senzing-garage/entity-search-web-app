@@ -1,6 +1,6 @@
 {
   "/api/*": {
-    "target": "http://localhost:8250",
+    "target": "http://americium.local:8250",
     "secure": false,
     "logLevel": "debug",
     "pathRewrite": {
@@ -8,7 +8,7 @@
     }
   },
   "/admin/auth/jwt/*": {
-    "target": "http://localhost:8080/jwt/",
+    "target": "http://localhost:8200/jwt/",
     "secure": true,
     "logLevel": "debug",
     "pathRewrite": {
@@ -16,7 +16,7 @@
     }
   },
   "/admin/auth/sso/*": {
-    "target": "http://localhost:8080/sso/",
+    "target": "http://localhost:8200/sso/",
     "secure": true,
     "logLevel": "debug",
     "pathRewrite": {
@@ -24,7 +24,7 @@
     }
   },
   "/auth/jwt/*": {
-    "target": "http://localhost:8080/jwt/",
+    "target": "http://localhost:8200/jwt/",
     "secure": true,
     "logLevel": "debug",
     "pathRewrite": {
@@ -32,7 +32,7 @@
     }
   },
   "/auth/sso/*": {
-    "target": "http://localhost:8080/sso/",
+    "target": "http://localhost:8200/sso/",
     "secure": true,
     "logLevel": "debug",
     "pathRewrite": {
@@ -40,11 +40,43 @@
     }
   },
   "/config/auth": {
-    "target": "http://localhost:8080/conf/auth/",
+    "target": "http://localhost:8200/conf/auth/",
     "secure": true,
     "logLevel": "debug",
     "pathRewrite": {
       "^/config/auth": ""
+    }
+  },
+  "/config/cors": {
+    "target": "http://localhost:4201/conf/cors/",
+    "secure": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/config/cors": ""
+    }
+  },
+  "/config/csp": {
+    "target": "http://localhost:4201/conf/csp/",
+    "secure": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/config/csp": ""
+    }
+  },  
+  "/config/server": {
+    "target": "http://localhost:4201/conf/server/",
+    "secure": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/config/server": ""
+    }
+  },
+  "/config/streams": {
+    "target": "http://localhost:4201/conf/streams/",
+    "secure": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/config/streams": ""
     }
   }
 }
