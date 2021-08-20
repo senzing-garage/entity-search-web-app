@@ -98,7 +98,7 @@ import { getHostnameFromUrl, getPortFromUrl } from '../../common/url-utilities';
         streamAnalysisConfig: AdminStreamAnalysisConfig,
         streamLoadConfig: AdminStreamLoadConfig
       }) {
-      console.info('AdminStreamConnDialogComponent()', this.data, webappConfigService.pocStreamConfig);
+      //console.info('AdminStreamConnDialogComponent()', this.data, webappConfigService.pocStreamConfig);
       if(!this.data) {
         this.data = {
           streamConnectionProperties: this.adminBulkDataService.streamConnectionProperties,

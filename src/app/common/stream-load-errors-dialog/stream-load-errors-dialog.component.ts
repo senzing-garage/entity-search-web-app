@@ -13,7 +13,7 @@ import { Subject } from 'rxjs';
     templateUrl: 'stream-load-errors-dialog.component.html',
     styleUrls: ['stream-load-errors-dialog.component.scss']
   })
-  export class AdminStreamLoadErrorsDialogComponent implements OnInit, OnDestroy, AfterViewInit {
+  export class AdminStreamLoadErrorsDialogComponent implements OnDestroy, AfterViewInit {
     /** subscription to notify subscribers to unbind */
     public unsubscribe$ = new Subject<void>();
     private expandedStateStore = {};
@@ -24,7 +24,6 @@ import { Subject } from 'rxjs';
       private adminBulkDataService: AdminBulkDataService,
       @Inject(MAT_DIALOG_DATA) public data: [{error?: AdminStreamSummaryError, occurrenceCount?: number}]) {
       
-      console.info('AdminStreamLoadErrorsDialogComponent()', this.data);
     }
 
     public get totalCount(): number | undefined {
@@ -52,13 +51,6 @@ import { Subject } from 'rxjs';
         retVal = this.expandedStateStore[ (indexPos) ];
       }
       return retVal;
-    }
-
-    /**
-     * listen for websocket service errors
-     */
-    ngOnInit() {
-      
     }
 
     ngAfterViewInit() {
@@ -91,6 +83,5 @@ import { Subject } from 'rxjs';
       if( this.expandedStateStore && expansionStateChangeEvent && expansionStateChangeEvent.index ) {
         this.expandedStateStore[ (expansionStateChangeEvent.index) ] = expansionStateChangeEvent.value;
       }
-      console.log('AdminStreamLoadErrorsDialogComponent.onItemExpandedStateChange: ', expansionStateChangeEvent, this.expandedStateStore);
     }
   }

@@ -103,18 +103,6 @@ export class SzWebAppConfigService {
     // doesnt write to file system.
     return this.http.get<AuthConfig>('./config/auth');
   }
-  /*
-  public getRuntimePOCStreamingConfig() : Observable<POCStreamConfig> {
-    // reach out to webserver to get stream loading
-    // configuration properties
-    return this.http.get<POCStreamConfig>('./config/pocstream').pipe(
-      catchError((err) => {
-        return of({
-          target: "ws://localhost:8255"
-        })
-      })
-    );
-  }*/
   public getRuntimeApiConfig(): Observable<SzRestConfigurationParameters> {
     // reach out to webserver to get api
     // config. we cant do this with static files

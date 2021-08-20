@@ -190,11 +190,14 @@ export class AdminDataLoaderComponent implements OnInit, OnDestroy {
     this.titleService.setTitle( 'Admin Area - Bulk Import' );
 
     this.adminBulkDataService.onError.pipe(
-      takeUntil(this.unsubscribe$)
+      takeUntil(this.unsubscribe$),
     ).subscribe((err) => {
       if(!this.adminBulkDataService.currentError) { this.adminBulkDataService.currentError = err; }
-      console.warn('AdminDataLoaderComponent.onInit SHOW Err MSG: ', err, this.currentError);
-      //this.currentError = err;
+      if(err === undefined) {
+        this.adminBulkDataService.currentError = undefined;
+      } else {
+        console.warn('AdminDataLoaderComponent.onInit SHOW Err MSG: ', err, this.currentError);
+      }
     });
   }
 

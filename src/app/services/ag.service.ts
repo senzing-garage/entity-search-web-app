@@ -169,7 +169,6 @@ export class AuthGuardService implements CanActivate {
         }
       }),
       tap( (results: boolean) => {
-        console.warn('!!AUTH RESULT!! ', responseMap, results);
         if(!responseMap.adminEnabled && !responseMap.noAuth) {
           this.router.navigate( ['admin', 'error', 'admin-mode-disabled'] );
         } else if(!responseMap.noAuth && !responseMap.sso && !responseMap.jwt) {

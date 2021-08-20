@@ -365,7 +365,6 @@ export class AdminBulkDataService {
                 return result && result !== undefined;
             })
         ).subscribe((result: POCStreamConfig) => {
-            console.warn('POCStreamConfig: retrieved', result);
             this.testStreamLoadingConnection(result);
         });
 
@@ -446,7 +445,6 @@ export class AdminBulkDataService {
         this.onError.pipe(
             takeUntil( this.unsubscribe$ )
         ).subscribe( (err: Error) => {
-            console.log('error happened: ', err);
             this.currentError = err;
         });
         this.onAutoCreatingDataSources.subscribe( (dataSources: string[] | undefined) => {
@@ -1076,7 +1074,6 @@ export class AdminBulkDataService {
                         this._onStreamLoadComplete.next(summary);
                     }
                 } else {
-                    console.warn('the fuck?!?!', summary.sentRecordCount, summary.recordCount);
                     retSubject.next(summary); // local
                     this._onStreamLoadProgress.next(summary);
                 }
@@ -1538,7 +1535,6 @@ export class AdminBulkDataService {
             "reconnectOnClose": false,
             "reconnectConsecutiveAttemptLimit": 10
         }
-        console.warn('testStreamLoadingConnection: ', connectionProperties, pocConfig);
 
         this.webSocketService.testConnection( connectionProperties ).subscribe((isValid: boolean) => {
             connectionProperties.connectionTest = true;
@@ -1557,13 +1553,7 @@ export class AdminBulkDataService {
             this.useStreamingForLoad = isValid;
             this.useStreamingForAnalysis = isValid;
             this.useStreaming = isValid;
-            //this.canOpenStreamSocket = isValid;
-            console.log("testStreamLoadingConnection.webSocketService.connectionProperties: ",
-            this.webSocketService.connectionProperties, 
-            connectionProperties);
-
         }, (error: Error) => {
-            console.warn('error');
             connectionProperties.connectionTest = false;
             this.useStreamingForLoad = false;
             this.useStreamingForAnalysis = false;

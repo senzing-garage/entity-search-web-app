@@ -9,14 +9,14 @@
         <div class="row sc-row-1">
             <mat-form-field>
                 <mat-label for="ws-hostname">Hostname/IP:</mat-label>
-                <input type="text" [(ngModel)]="streamHost" matInput placeholder="localhost">
+                <input type="text" [(ngModel)]="streamHost" matInput disabled="disabled">
             </mat-form-field>
             <mat-form-field >
                 <mat-label for="ws-port">Port:</mat-label>
-                <input type="text" [(ngModel)]="streamPort" matInput placeholder="8255">
+                <input type="text" [(ngModel)]="streamPort" matInput disabled="disabled">
             </mat-form-field>
         </div>
-        <div class="row sc-row-2">
+        <!-- <div class="row sc-row-2">
             <mat-form-field>
                 <mat-label>Reconnection Attempts:</mat-label>
                 <mat-select class="ws-reconnection-attempts-field" [(ngModel)]="streamReconnectionAttempts" [disabled]="!streamReconnect" id="ws-reconnection-attempts">
@@ -26,7 +26,7 @@
                 </mat-select>
             </mat-form-field>
             <mat-checkbox [(ngModel)]="streamReconnect" labelPosition="after">Auto Reconnect</mat-checkbox>
-        </div>
+        </div> -->
     </div>
     <div class="row">
         <h3>Loading:</h3>
