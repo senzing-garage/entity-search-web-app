@@ -406,7 +406,7 @@ export class WebSocketService {
     const retVal: Observable<boolean> = retSub.asObservable();
 
     if(connectionProps) {
-      let _wsaddr = WebSocketService.getSocketUriFromConnectionObject(this.connectionProperties, "/load-queue/bulk-data/records", "POST");
+      let _wsaddr = WebSocketService.getSocketUriFromConnectionObject(connectionProps, "/load-queue/bulk-data/records", "POST");
 
       const openSubject = new Subject<Event>();
       openSubject.pipe(

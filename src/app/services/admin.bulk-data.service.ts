@@ -5,7 +5,7 @@ import { Observable, of, from, interval, Subject, BehaviorSubject, timer } from 
 import { map, catchError, tap, switchMap, takeUntil, take, filter, takeWhile, delay } from 'rxjs/operators';
 import { SzConfigurationService, SzAdminService, SzEntityTypesService, SzServerInfo, SzPrefsService, SzBulkDataService, SzDataSourcesService } from '@senzing/sdk-components-ng';
 import { HttpClient } from '@angular/common/http';
-import { AuthConfig, SzWebAppConfigService } from './config.service';
+import { AuthConfig, POCStreamConfig, SzWebAppConfigService } from './config.service';
 import { AdminStreamConnProperties, AdminStreamAnalysisConfig, AdminStreamLoadConfig } from '@senzing/sdk-components-ng';
 
 import {
@@ -30,6 +30,7 @@ import {
     SzDataSourceBulkLoadResult, 
     SzEntityTypeBulkLoadResult, 
     SzEntityTypeRecordAnalysis } from '@senzing/rest-api-client-ng';
+import { AboutInfoService } from './about.service';
 
 export interface AdminStreamSummaryBase {
     fileType?: any,
@@ -339,7 +340,10 @@ export class AdminBulkDataService {
         private datasourcesService: SzDataSourcesService,
         private entityTypesService: SzEntityTypesService,
         private webSocketService: WebSocketService,
+        private aboutService: AboutInfoService,
+        private configService: SzWebAppConfigService
     ) {
+        /*
         this.prefs.admin.prefsChanged.subscribe((prefs) => {
             //console.log('AdminBulkDataService.prefs.admin.prefChanged: ', this.webSocketService.connected, prefs);
             if(prefs && prefs && prefs.streamConnectionProperties !== undefined) {
@@ -352,7 +356,19 @@ export class AdminBulkDataService {
             } else {
                 console.warn('no stream connection props in payload: ', prefs);
             }
+        });*/
+
+        // if running the poc server check if streaming is configured
+        // if so do a quick test
+        this.configService.onPocStreamConfigChange.pipe(
+            filter((result: POCStreamConfig | undefined) => {
+                return result && result !== undefined;
+            })
+        ).subscribe((result: POCStreamConfig) => {
+            console.warn('POCStreamConfig: retrieved', result);
+            this.testStreamLoadingConnection(result);
         });
+
         this.webSocketService.onError.subscribe((error: Error) => {
             //console.warn('AdminBulkDataService.webSocketService.onError: ', error);
             this._onError.next(error);
@@ -381,7 +397,7 @@ export class AdminBulkDataService {
         ).subscribe( (file: File) => {
             if(!file){ return; }
             
-            //console.info('AdminBulkDataService().onCurrentFileChange: ', file, this.streamAnalysisConfig, this.streamConnectionProperties);
+            console.info('AdminBulkDataService().onCurrentFileChange: ', file, this.streamAnalysisConfig, this.streamConnectionProperties, this.useStreamingForLoad, this.canOpenStreamSocket);
 
             if(this.useStreamingForLoad && this.canOpenStreamSocket) {
                 // open analysis stream
@@ -1512,5 +1528,49 @@ export class AdminBulkDataService {
     public getStreamLoadQueue() {
         return this.sdkAdminService.getLoadQueueInfo();
     }
+
+    public testStreamLoadingConnection(pocConfig: POCStreamConfig) {        
+        let connectionProperties: AdminStreamConnProperties = {
+            "path": '/load-queue/bulk-data/records',
+            "hostname": pocConfig.proxy ? pocConfig.proxy.hostname +(pocConfig.proxy.port ? ':'+ pocConfig.proxy.port : '') : pocConfig.target,
+            "connected": false,
+            "connectionTest": false,
+            "reconnectOnClose": false,
+            "reconnectConsecutiveAttemptLimit": 10
+        }
+        console.warn('testStreamLoadingConnection: ', connectionProperties, pocConfig);
+
+        this.webSocketService.testConnection( connectionProperties ).subscribe((isValid: boolean) => {
+            connectionProperties.connectionTest = true;
+            connectionProperties.path = '/';
+            this.streamConnectionProperties = connectionProperties;
+            this.webSocketService.connectionProperties = connectionProperties;
+            this.streamAnalysisConfig   = {
+                sampleSize: 10000,
+                uploadRate: 1000
+            };
+            this.streamLoadConfig       = {
+                autoCreateMissingDataSources: false,
+                uploadRate: 10000
+            };
+
+            this.useStreamingForLoad = isValid;
+            this.useStreamingForAnalysis = isValid;
+            this.useStreaming = isValid;
+            //this.canOpenStreamSocket = isValid;
+            console.log("testStreamLoadingConnection.webSocketService.connectionProperties: ",
+            this.webSocketService.connectionProperties, 
+            connectionProperties);
+
+        }, (error: Error) => {
+            console.warn('error');
+            connectionProperties.connectionTest = false;
+            this.useStreamingForLoad = false;
+            this.useStreamingForAnalysis = false;
+            this.useStreaming = false;
+        })
+    }
+
+
 
 }

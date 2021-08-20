@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@angular/core';
-import { Observable, of, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { catchError, take } from 'rxjs/operators';
 import { SzRestConfigurationParameters, SzConfigurationService } from '@senzing/sdk-components-ng';
 import { HttpClient } from '@angular/common/http';
@@ -23,7 +23,7 @@ export interface AuthConfig {
 }
 export interface POCStreamConfig {
   proxy?: {
-    host?: string;
+    hostname?: string;
     port?: number;
     url: string;
     protocol?: string;
@@ -66,7 +66,7 @@ export class SzWebAppConfigService {
   public onAuthConfigChange                                           = this._onAuthConfigChange.asObservable();
   private _onApiConfigChange: Subject<SzRestConfigurationParameters>  = new Subject<SzRestConfigurationParameters>();
   public onApiConfigChange                                            = this._onApiConfigChange.asObservable();
-  private _onPocStreamConfigChange: Subject<POCStreamConfig>          = new Subject<POCStreamConfig>();
+  private _onPocStreamConfigChange: Subject<POCStreamConfig>          = new BehaviorSubject<POCStreamConfig>(undefined);
   public onPocStreamConfigChange                                      = this._onPocStreamConfigChange.asObservable();
 
   constructor( 
@@ -92,7 +92,8 @@ export class SzWebAppConfigService {
       take(1)
     ).subscribe((pocConf: POCStreamConfig) => {
       this._pocStreamConfig = pocConf;
-      console.warn('POC STREAM CONFIG!', this._pocStreamConfig);
+      this._onPocStreamConfigChange.next( this._pocStreamConfig );
+      //console.warn('POC STREAM CONFIG!', this._pocStreamConfig);
     });
   }
   public getRuntimeAuthConfig(): Observable<AuthConfig> {

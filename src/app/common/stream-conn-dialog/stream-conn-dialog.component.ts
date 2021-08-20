@@ -2,11 +2,13 @@ import { AfterViewInit, Component, Inject, OnDestroy, OnInit } from '@angular/co
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { WebSocketService } from '../../services/websocket.service';
 import { AdminBulkDataService } from '../../services/admin.bulk-data.service';
+import { SzWebAppConfigService } from '../../services/config.service';
 
 //import { AdminStreamConnProperties } from '../../services/admin.bulk-data.service';
 import { AdminStreamConnProperties, AdminStreamAnalysisConfig, AdminStreamLoadConfig, AdminStreamUploadRates } from '@senzing/sdk-components-ng';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { getHostnameFromUrl, getPortFromUrl } from '../../common/url-utilities';
 
 @Component({
     selector: 'stream-conn-dialog',
@@ -90,12 +92,13 @@ import { Subject } from 'rxjs';
       public dialogRef: MatDialogRef<AdminStreamConnDialogComponent>,
       private webSocketService: WebSocketService,
       private adminBulkDataService: AdminBulkDataService,
+      private webappConfigService: SzWebAppConfigService,
       @Inject(MAT_DIALOG_DATA) public data: {
         streamConnectionProperties: AdminStreamConnProperties,
         streamAnalysisConfig: AdminStreamAnalysisConfig,
         streamLoadConfig: AdminStreamLoadConfig
       }) {
-      console.info('AdminStreamConnDialogComponent()', this.data);
+      console.info('AdminStreamConnDialogComponent()', this.data, webappConfigService.pocStreamConfig);
       if(!this.data) {
         this.data = {
           streamConnectionProperties: this.adminBulkDataService.streamConnectionProperties,
@@ -123,6 +126,12 @@ import { Subject } from 'rxjs';
       }
       if(this.data && this.data.streamConnectionProperties && this.data.streamConnectionProperties.connectionTest) {
         this.data.streamConnectionProperties.connectionTest = false;
+      }
+      if(webappConfigService.pocStreamConfig) {
+        this.data.streamConnectionProperties.hostname = webappConfigService.pocStreamConfig.proxy ? webappConfigService.pocStreamConfig.proxy.hostname : getHostnameFromUrl( webappConfigService.pocStreamConfig.target );
+        this.data.streamConnectionProperties.port     = webappConfigService.pocStreamConfig.proxy ? webappConfigService.pocStreamConfig.proxy.port : getPortFromUrl( webappConfigService.pocStreamConfig.target );
+
+        //console.warn('overriding connection properties with defaults from "/config/pocstream"', webappConfigService.pocStreamConfig, this.data.streamConnectionProperties);
       }
     }
     /**
