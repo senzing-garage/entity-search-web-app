@@ -25,7 +25,7 @@
       matTooltipPosition="left" 
       *ngIf="streamConnected" (click)="setStreamState(false)">flash_on</mat-icon>
   </div>-->
-  <div class="stream-loading" *ngIf="canUseSocketStream">
+  <div class="stream-loading" *ngIf="canUseSocketStream && canSwitchFromStreamingToHttp">
     <mat-slide-toggle [(ngModel)]="useSocketStream">Stream Connection</mat-slide-toggle>
   </div>
 </div>
