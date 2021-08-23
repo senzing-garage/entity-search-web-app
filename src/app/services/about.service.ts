@@ -111,7 +111,6 @@ export class AboutInfoService {
     return this.adminService.getServerInfo();
   }
   public getServerInfoMetadata(): Observable<SzMeta> {
-    console.info('AboutInfoService.getServerInfoMetadata: ');
     return this.adminService.getServerInfoMetadata();
   }
   public getVersionFromLocalTarPath(packagePath: string | undefined, packagePrefix?: string | undefined ): undefined | string {
@@ -135,7 +134,6 @@ export class AboutInfoService {
     //
   }
   private setServerInfo(info: SzServerInfo) {
-    console.info('SzAdminService.setServerInfo: ', this.isReadOnly, info.readOnly, this.isAdminEnabled, info.adminEnabled);
     //this.concurrency = info.concurrency;
     //this.activeConfigId = info.activeConfigId;
     //this.dynamicConfig = info.dynamicConfig;
@@ -150,7 +148,6 @@ export class AboutInfoService {
     this.pocServerVersion     = resp && resp.pocServerVersion ? resp.pocServerVersion : this.pocApiVersion;
     this.pocApiVersion        = resp && resp.pocApiVersion ? resp.pocApiVersion : this.pocApiVersion;
     this.isPocServerInstance  = resp && resp.pocApiVersion !== undefined ? true : this.isPocServerInstance;
-    console.info('SzAdminService.setPocServerInfo: ', this.isPocServerInstance, this.pocServerVersion, this.pocApiVersion, resp);
   }
 
   private setVersionInfo(serverInfo: SzVersionInfo): void {

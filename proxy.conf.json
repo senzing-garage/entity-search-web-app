@@ -46,5 +46,37 @@
     "pathRewrite": {
       "^/config/auth": ""
     }
+  },
+  "/config/cors": {
+    "target": "http://localhost:8080/conf/cors/",
+    "secure": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/config/cors": ""
+    }
+  },
+  "/config/csp": {
+    "target": "http://localhost:8080/conf/csp/",
+    "secure": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/config/csp": ""
+    }
+  },  
+  "/config/server": {
+    "target": "http://localhost:8080/conf/server/",
+    "secure": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/config/server": ""
+    }
+  },
+  "/config/streams": {
+    "target": "http://localhost:8080/conf/streams/",
+    "secure": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/config/streams": ""
+    }
   }
 }

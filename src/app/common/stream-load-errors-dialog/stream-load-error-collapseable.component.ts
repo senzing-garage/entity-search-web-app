@@ -10,7 +10,7 @@ import { Subject } from 'rxjs';
     templateUrl: 'stream-load-error-collapseable.component.html',
     styleUrls: ['stream-load-error-collapseable.component.scss']
   })
-  export class AdminStreamLoadCollapseableErrorComponent implements OnInit, OnDestroy, AfterViewInit {
+  export class AdminStreamLoadCollapseableErrorComponent implements OnDestroy {
     /** subscription to notify subscribers to unbind */
     public unsubscribe$ = new Subject<void>();
     private _errorEncapsulation: AdminStreamSummaryError;
@@ -20,22 +20,18 @@ import { Subject } from 'rxjs';
 
     @Input() public set data(value: AdminStreamSummaryError | undefined) {
         this._errorEncapsulation = value;
-        console.info('AdminStreamLoadCollapseableErrorComponent.set data: ', value);
     }
     @Input() public set occurrenceCount(value: number | undefined) {
         this._occurrenceCount = value;
-        console.info('AdminStreamLoadCollapseableErrorComponent.set occurrenceCount: ', value);
     }
     @Input() public set collectionIndex(value: number | undefined) {
         this._collectionIndex = value;
-        console.info('AdminStreamLoadCollapseableErrorComponent.set _collectionIndex: ', value);
     }
     @Input() public set expanded(value: boolean | undefined) {
         if(value && value !== undefined) { 
             this._expanded = value; 
             this._lastExpandedStateFromInput = value;
         }
-        //console.info('AdminStreamLoadCollapseableErrorComponent.set expanded: ', value);
     }
     @Output() public onExpansionChange = new EventEmitter<{index: number, value: boolean}>();
 
@@ -78,19 +74,7 @@ import { Subject } from 'rxjs';
 
     constructor(
       private adminBulkDataService: AdminBulkDataService
-    ) {
-      console.info('AdminStreamLoadErrorsDialogComponent()', this._errorEncapsulation);
-    }
-    /**
-     * listen for websocket service errors
-     */
-    ngOnInit() {
-      
-    }
-
-    ngAfterViewInit() {
-
-    }
+    ) {}
 
     /**
      * unsubscribe event streams

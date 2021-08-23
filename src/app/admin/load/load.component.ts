@@ -2,15 +2,16 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { SzBulkDataAnalysis, SzBulkLoadResult } from '@senzing/rest-api-client-ng';
 import { MatDialog } from '@angular/material/dialog';
+import { takeUntil, take } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 import { AdminStreamConnDialogComponent } from '../../common/stream-conn-dialog/stream-conn-dialog.component';
 import { AdminStreamLoadErrorsDialogComponent } from '../../common/stream-load-errors-dialog/stream-load-errors-dialog.component';
 import { AdminBulkDataService, AdminStreamAnalysisSummary, AdminStreamLoadSummary, AdminStreamSummaryError } from '../../services/admin.bulk-data.service';
-import { AdminStreamAnalysisConfig, AdminStreamConnProperties, AdminStreamLoadConfig } from '@senzing/sdk-components-ng';
-import { takeUntil, take } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { SzPrefsService, AdminStreamAnalysisConfig, AdminStreamConnProperties, AdminStreamLoadConfig } from '@senzing/sdk-components-ng';
 import { AboutInfoService } from '../../services/about.service';
 import { AdminBulkDataLoadComponent } from '../bulk-data/admin-bulk-data-load.component';
+
 @Component({
   selector: 'admin-data-loader',
   templateUrl: './load.component.html',
@@ -106,6 +107,12 @@ export class AdminDataLoaderComponent implements OnInit, OnDestroy {
     return this.aboutInfoService.isPocServerInstance;
   }
 
+  public get canSwitchFromStreamingToHttp(): boolean {
+    return false;
+    // never added to model
+    // return this.prefs.admin.allowUserStreamConfiguration;
+  }
+
   /** result of last analysis operation */
   public get analysis(): SzBulkDataAnalysis | AdminStreamAnalysisSummary {
     return this.adminBulkDataService.currentAnalysisResult;
@@ -171,6 +178,7 @@ export class AdminDataLoaderComponent implements OnInit, OnDestroy {
     private titleService: Title,
     public adminBulkDataService: AdminBulkDataService,
     public aboutInfoService: AboutInfoService,
+    public prefs: SzPrefsService,
     public dialog: MatDialog
     ) { 
       this.adminBulkDataService.onCurrentFileChange.pipe(
@@ -190,11 +198,14 @@ export class AdminDataLoaderComponent implements OnInit, OnDestroy {
     this.titleService.setTitle( 'Admin Area - Bulk Import' );
 
     this.adminBulkDataService.onError.pipe(
-      takeUntil(this.unsubscribe$)
+      takeUntil(this.unsubscribe$),
     ).subscribe((err) => {
       if(!this.adminBulkDataService.currentError) { this.adminBulkDataService.currentError = err; }
-      console.warn('AdminDataLoaderComponent.onInit SHOW Err MSG: ', err, this.currentError);
-      //this.currentError = err;
+      if(err === undefined) {
+        this.adminBulkDataService.currentError = undefined;
+      } else {
+        console.warn('AdminDataLoaderComponent.onInit SHOW Err MSG: ', err, this.currentError);
+      }
     });
   }
 

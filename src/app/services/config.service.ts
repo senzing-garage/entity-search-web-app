@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@angular/core';
-import { Observable, of, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { catchError, take } from 'rxjs/operators';
 import { SzRestConfigurationParameters, SzConfigurationService } from '@senzing/sdk-components-ng';
 import { HttpClient } from '@angular/common/http';
@@ -21,6 +21,16 @@ export interface AuthConfig {
     loginUrl?: string;
   };
 }
+export interface POCStreamConfig {
+  proxy?: {
+    hostname?: string;
+    port?: number;
+    url: string;
+    protocol?: string;
+  }
+  target: string;
+  protocol?: string;
+}
 
 /**
  * A service used to provide methods and services
@@ -32,6 +42,7 @@ export interface AuthConfig {
 export class SzWebAppConfigService {
   private _authConfig: AuthConfig;
   private _apiConfig: SzRestConfigurationParameters;
+  private _pocStreamConfig: POCStreamConfig;
 
   public get authConfig(): AuthConfig {
     return this._authConfig;
@@ -45,10 +56,18 @@ export class SzWebAppConfigService {
   public set apiConfig(value: SzRestConfigurationParameters) {
     this._apiConfig = value;
   }
+  public get pocStreamConfig(): POCStreamConfig {
+    return this._pocStreamConfig;
+  }
+  public set pocStreamConfig(value: POCStreamConfig) {
+    this._pocStreamConfig = value;
+  }
   private _onAuthConfigChange: Subject<AuthConfig>                    = new Subject<AuthConfig>();
   public onAuthConfigChange                                           = this._onAuthConfigChange.asObservable();
   private _onApiConfigChange: Subject<SzRestConfigurationParameters>  = new Subject<SzRestConfigurationParameters>();
   public onApiConfigChange                                            = this._onApiConfigChange.asObservable();
+  private _onPocStreamConfigChange: Subject<POCStreamConfig>          = new BehaviorSubject<POCStreamConfig>(undefined);
+  public onPocStreamConfigChange                                      = this._onPocStreamConfigChange.asObservable();
 
   constructor( 
     private http: HttpClient,
@@ -68,6 +87,13 @@ export class SzWebAppConfigService {
       take(1)
     ).subscribe((authConf: AuthConfig) => {
       this._authConfig = authConf;
+    });
+    this.getRuntimeStreamConfig().pipe(
+      take(1)
+    ).subscribe((pocConf: POCStreamConfig) => {
+      this._pocStreamConfig = pocConf;
+      this._onPocStreamConfigChange.next( this._pocStreamConfig );
+      //console.warn('POC STREAM CONFIG!', this._pocStreamConfig);
     });
   }
   public getRuntimeAuthConfig(): Observable<AuthConfig> {
@@ -91,4 +117,17 @@ export class SzWebAppConfigService {
       })
     );
   }
+  public getRuntimeStreamConfig(): Observable<POCStreamConfig | undefined> {
+    // reach out to webserver to get api
+    // config. we cant do this with static files
+    // directly since container is immutable and
+    // doesnt write to file system.
+    return this.http.get<POCStreamConfig | undefined>('./config/streams').pipe(
+      catchError((err) => {
+        // return default payload for local developement when "/config/api" not available
+        return of(undefined);
+      })
+    );
+  }
+
 }
