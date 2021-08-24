@@ -394,7 +394,7 @@ function getWebServerOptionsFromInput() {
     retOpts.protocol              = cmdLineOpts.protocol ?              cmdLineOpts.protocol              : retOpts.protocol;
     retOpts.port                  = cmdLineOpts.webServerPortNumber ?   cmdLineOpts.webServerPortNumber   : retOpts.port;
     retOpts.hostname              = cmdLineOpts.webServerHostName ?     cmdLineOpts.webServerHostName     : retOpts.hostname;
-    retOpts.url                   = cmdLineOpts.url ?                   cmdLineOpts.webServerUrl          : retOpts.url;
+    retOpts.url                   = cmdLineOpts.webServerUrl ?          cmdLineOpts.webServerUrl          : retOpts.url;
     retOpts.apiPath               = cmdLineOpts.webServerApiPath ?      cmdLineOpts.webServerApiPath      : retOpts.apiPath;
     retOpts.authPath              = cmdLineOpts.webServerAuthPath ?     cmdLineOpts.webServerAuthPath     : retOpts.authPath;
     retOpts.authMode              = cmdLineOpts.webServerAuthMode ?     cmdLineOpts.webServerAuthMode     : retOpts.authMode;
@@ -421,7 +421,17 @@ function getWebServerOptionsFromInput() {
   }
   // if we just have "hostname" construct "url" from that
   retOpts.url                   = !retOpts.url && retOpts.hostname ? ((retOpts.protocol ? retOpts.protocol + '://' : 'http://') + retOpts.hostname +(retOpts.port ? ':'+ retOpts.port : '')) : retOpts.url;
-
+  let hostnameFromUrL           = getHostnameFromUrl(retOpts.url);
+  let portFromUrl               = getPortFromUrl(retOpts.url);
+  
+  if(hostnameFromUrL && hostnameFromUrL !== retOpts.hostname){
+    // override from url
+    retOpts.hostname            = hostnameFromUrL;
+  }
+  if(portFromUrl && portFromUrl !== retOpts.port){
+    // override from url
+    retOpts.port                = portFromUrl;
+  }
   return retOpts;
 }
 
