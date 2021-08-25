@@ -28,7 +28,6 @@ import { Subject } from 'rxjs';
         streamAnalysisConfig: AdminStreamAnalysisConfig,
         streamLoadConfig: AdminStreamLoadConfig
       }) {
-      console.info('AdminStreamLoadQueueDialogComponent()', this.data);
     }
     /**
      * listen for websocket service errors
