@@ -39,23 +39,30 @@ let streamOptions = runtimeOptions.config.stream;
 // ----------------- start config endpoints -----------------
 const app = express();
 
-app.get('/conf/auth', (req, res, next) => {
+let _confBasePath = '';
+if(runtimeOptions.config && 
+  runtimeOptions.config.web && 
+  runtimeOptions.config.web.path && runtimeOptions.config.web.path !== '/') {
+    _confBasePath = runtimeOptions.config.web.path;
+}
+
+app.get(_confBasePath+'/conf/auth', (req, res, next) => {
     res.status(200).json( authOptions );
 });
 
-app.get('/conf/cors', (req, res, next) => {
+app.get(_confBasePath+'/conf/cors', (req, res, next) => {
     res.status(200).json( corsOptions );
 });
 
-app.get('/conf/csp', (req, res, next) => {
+app.get(_confBasePath+'/conf/csp', (req, res, next) => {
     res.status(200).json( cspOptions );
 });
 
-app.get('/conf/server', (req, res, next) => {
+app.get(_confBasePath+'/conf/server', (req, res, next) => {
     res.status(200).json( serverOptions );
 });
 
-app.get('/conf/streams', (req, res, next) => {
+app.get(_confBasePath+'/conf/streams', (req, res, next) => {
     res.status(200).json( streamOptions );
 });
 // ----------------- start config endpoints -----------------

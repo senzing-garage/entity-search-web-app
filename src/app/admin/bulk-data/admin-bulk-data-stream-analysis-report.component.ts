@@ -139,7 +139,7 @@ export class AdminBulkDataStreamAnalysisReportComponent implements OnInit, OnDes
       this.adminBulkDataService.onStreamAnalysisComplete.pipe(
         takeUntil(this.unsubscribe$)
       ).subscribe((summary: AdminStreamAnalysisSummary) => {
-        console.log('AdminBulkDataAnalysisReportComponent.onStreamAnalysisComplete', this.adminBulkDataService.currentAnalysisResult);
+        //console.log('AdminBulkDataAnalysisReportComponent.onStreamAnalysisComplete', this.adminBulkDataService.currentAnalysisResult);
       });
     }
 

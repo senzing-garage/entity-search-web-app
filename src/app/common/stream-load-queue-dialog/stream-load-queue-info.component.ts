@@ -37,7 +37,6 @@ import { BehaviorSubject, Subject, timer } from 'rxjs';
       public dialogRef: MatDialogRef<AdminStreamLoadQueueInfoComponent>,
       private webSocketService: WebSocketService,
       private adminBulkDataService: AdminBulkDataService) {
-      console.info('AdminStreamLoadQueueInfoComponent()');
     }
     /**
      * listen for websocket service errors
@@ -75,7 +74,6 @@ import { BehaviorSubject, Subject, timer } from 'rxjs';
     }
 
     private onPollingResponse(data: SzQueueInfoResponse) {
-        console.log('AdminStreamLoadQueueInfoComponent: ', data);
         this.showPrefetchMessage = false;
         if(data && data.data && this._onResponseData && this._onResponseData.next){
             this._onResponseData.next( data.data );
@@ -90,7 +88,6 @@ import { BehaviorSubject, Subject, timer } from 'rxjs';
     }
 
     private startPolling() {
-        console.info('AdminStreamLoadQueueInfoComponent.startPolling: ', this._interval);
         this._intervalPoller = timer(0, this._interval).pipe(
             takeUntil(this.unsubscribe$),
             switchMap( _ => { return this.adminBulkDataService.getStreamLoadQueue(); })

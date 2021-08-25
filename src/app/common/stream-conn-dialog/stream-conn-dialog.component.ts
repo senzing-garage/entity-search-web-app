@@ -31,6 +31,12 @@ import { getHostnameFromUrl, getPortFromUrl } from '../../common/url-utilities';
     public get streamPort() {
       return this.data.streamConnectionProperties.port;
     }
+    public set streamPath(value: string) {
+      this.data.streamConnectionProperties.path = value;
+    }
+    public get streamPath() {
+      return this.data.streamConnectionProperties.path;
+    }
     public get streamReconnect(): boolean {
       return this.data.streamConnectionProperties.reconnectOnClose;
     }
@@ -168,6 +174,8 @@ import { getHostnameFromUrl, getPortFromUrl } from '../../common/url-utilities';
     public testConnection(event: Event) {
       this.testStatus = "Opening Connection.."
       this.isTesting  = true;
+      this.data.streamConnectionProperties.path = "/app";
+      
       this.webSocketService.testConnection(this.data.streamConnectionProperties).subscribe((isValid: boolean) => {
         if(isValid) {
           this.data.streamConnectionProperties.connectionTest = true;

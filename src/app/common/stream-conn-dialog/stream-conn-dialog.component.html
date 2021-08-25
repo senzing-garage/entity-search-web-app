@@ -9,11 +9,17 @@
         <div class="row sc-row-1">
             <mat-form-field>
                 <mat-label for="ws-hostname">Hostname/IP:</mat-label>
-                <input type="text" [(ngModel)]="streamHost" matInput disabled="disabled">
+                <input type="text" [(ngModel)]="streamHost" matInput>
             </mat-form-field>
             <mat-form-field >
                 <mat-label for="ws-port">Port:</mat-label>
-                <input type="text" [(ngModel)]="streamPort" matInput disabled="disabled">
+                <input type="text" [(ngModel)]="streamPort" matInput>
+            </mat-form-field>
+        </div>
+        <div class="row sc-row-2">
+            <mat-form-field >
+                <mat-label for="ws-port">Path:</mat-label>
+                <input type="text" [(ngModel)]="streamPath" matInput>
             </mat-form-field>
         </div>
         <!-- <div class="row sc-row-2">

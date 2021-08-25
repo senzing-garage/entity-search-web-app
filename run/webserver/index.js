@@ -1,5 +1,6 @@
 // server related
 const express = require('express');
+const http = require('http');
 const https = require('https');
 const serveStatic = require('serve-static');
 const cors = require('cors');
@@ -35,6 +36,9 @@ let serverOptions = runtimeOptions.config.web;
 
 // stream options
 let streamOptions = runtimeOptions.config.stream;
+
+// test options
+let testOptions   = runtimeOptions.config.testing;
 
 // write proxy conf to file? (we need this for DEV mode)
 if(inMemoryConfigFromInputs.proxyServerOptions.writeToFile) {
@@ -389,14 +393,17 @@ if( serverOptions && serverOptions.ssl && serverOptions.ssl.enabled ){
   let streamServerPromise = new Promise((resolve) => {
     let setupWebsocketProxy = function(streamOptions) {
       if(streamOptions && streamOptions.proxy) {
-        var wsProxy   = httpProxy.createServer({ 
-          target: streamOptions.target,
-          ws: true 
+        var proxy = new httpProxy.createProxyServer({
+          target: streamOptions.target
         });
-        wsProxy.on('error', function(e) {
-          console.log('WS Proxy Error: '+ e.message);
+        var wsProxy = http.createServer(function (req, res) {
+          proxy.web(req, res);
         });
-        WebSocketProxyInstance = wsProxy.listen(streamOptions.proxy.port || 8255, () => {
+        wsProxy.on('upgrade', function (req, socket, head) {
+          req.url = (req.url && req.url.startsWith && req.url.startsWith(serverOptions.path) && serverOptions.path !== '/') ? req.url.substring(serverOptions.path.length) : req.url;
+          proxy.ws(req, socket, head);
+        });
+        wsProxy.listen(streamOptions.proxy.port || 8255, () => {
           console.log('[started] WS Proxy Server on port '+ (streamOptions.proxy.port || 8255) +'. Forwarding to "'+ streamOptions.target +'"');
           resolve();
         });

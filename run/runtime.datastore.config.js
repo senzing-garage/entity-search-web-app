@@ -1,6 +1,6 @@
 const { calcProjectFileAndBasePath } = require("@angular/compiler-cli");
 const { env } = require("process");
-const { getHostnameFromUrl, getPortFromUrl, getProtocolFromUrl, replaceProtocol } = require("./utils");
+const { getHostnameFromUrl, getPortFromUrl, getProtocolFromUrl, getRootFromUrl, replaceProtocol } = require("./utils");
 
 function getCommandLineArgsAsJSON() {
   // grab cmdline args
@@ -72,6 +72,21 @@ function getOptionsFromInput() {
   return authOpts;
 }
 
+function getTestingOptionsFromInput() {
+  let retConfig = undefined;
+  if(env) {
+
+  }
+  let cmdLineOpts = getCommandLineArgsAsJSON();
+  if(cmdLineOpts && cmdLineOpts !== undefined) {
+    if(cmdLineOpts.testWebServerStartup === true) {
+      retConfig = !retConfig ? {} : retConfig;
+      retConfig.testWebServerStartup = cmdLineOpts.testWebServerStartup;
+    }
+  }
+  return retConfig;
+}
+
 function getStreamServerOptionsFromInput() {
   let retConfig = undefined;
   let webServerCfg = getWebServerOptionsFromInput();
@@ -86,6 +101,11 @@ function getStreamServerOptionsFromInput() {
     }    
   };
   retConfig = Object.assign({}, retConfigDefaults);
+
+  // check to see if operating under virtual dir
+  if(webServerCfg.path && webServerCfg.path.endsWith && !webServerCfg.path.endsWith('/')) {
+    retConfig.proxy.path = webServerCfg.path;
+  }
   
   // update defaults with ENV options(if present)
   if(env){
@@ -99,8 +119,9 @@ function getStreamServerOptionsFromInput() {
       retConfig.proxy.port = cmdLineOpts.streamServerPort;
     }
   }
+
   // make sure the "url" is updated if anything has been overridden
-  retConfig.proxy.url = ((retConfig.proxy.protocol ? retConfig.proxy.protocol : 'ws') + '://'+ retConfig.proxy.hostname +':'+ (retConfig.proxy.port ? retConfig.proxy.port : '8255'));
+  retConfig.proxy.url = ((retConfig.proxy.protocol ? retConfig.proxy.protocol : 'ws') + '://'+ retConfig.proxy.hostname +':'+ (retConfig.proxy.port ? retConfig.proxy.port : '8255') + (retConfig.proxy.path ? retConfig.proxy.path : ''));
   return retConfig;
 }
 
@@ -186,6 +207,7 @@ function createCspConfigFromInput() {
   }
   if( streamCfg && streamCfg.proxy && streamCfg.proxy.url ) {
     retConfig.directives['connect-src'].push(streamCfg.proxy.url);
+    retConfig.directives['connect-src'].push( getRootFromUrl( streamCfg.proxy.url ) );
   }
 
   return retConfig;
@@ -527,9 +549,13 @@ function getProxyServerOptionsFromInput() {
     }
     if(cmdLineOpts.proxyAdminJWTPathRewrite) {
       retOpts.adminJwtPathRewrite = cmdLineOpts.proxyAdminJWTPathRewrite;
+    } else if(cmdLineOpts.virtualPath) {
+      retOpts.adminJwtPathRewrite = cmdLineOpts.virtualPath + "/jwt/admin";
     }
     if(cmdLineOpts.proxyAdminSSOPathRewrite) {
       retOpts.adminSsoPathRewrite = cmdLineOpts.proxyAdminSSOPathRewrite;
+    } else if(cmdLineOpts.virtualPath) {
+      retOpts.adminSsoPathRewrite = cmdLineOpts.virtualPath + "/sso/admin";
     }
     if(cmdLineOpts.writeProxyConfigToFile === 'true' || cmdLineOpts.writeProxyConfigToFile === 'TRUE') {
       retOpts.writeToFile = true;
@@ -765,6 +791,7 @@ module.exports = {
   "csp": createCspConfigFromInput(),
   "proxy": createProxyConfigFromInput(),
   "stream": getStreamServerOptionsFromInput(),
+  "testing": getTestingOptionsFromInput(),
   "proxyServerOptions": getProxyServerOptionsFromInput(),
   "webServerOptions": getWebServerOptionsFromInput(),
   "getCommandLineArgsAsJSON": getCommandLineArgsAsJSON
