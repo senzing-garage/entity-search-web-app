@@ -70,9 +70,26 @@ let replaceProtocol = function(protoStr, url) {
     return url;
 }
 
+let getRootFromUrl = function(url) {
+    if(!url) return;
+    if( url ) {
+        if(url.indexOf && url.indexOf('://') > -1) {
+            let urlTokened = url.split('://');
+            let urlBase    = urlTokened[1];
+            if(urlBase && urlBase.indexOf('/') > -1) {
+                urlBase = urlBase.substring(0, urlBase.indexOf('/'));
+                urlTokened[1] = urlBase;
+            }
+            url = urlTokened.join('://');
+        }
+    }
+    return url;
+}
+
 module.exports = {
     "getHostnameFromUrl": getHostnameFromUrl,
     "getPortFromUrl": getPortFromUrl,
     "getProtocolFromUrl": getProtocolFromUrl,
+    "getRootFromUrl": getRootFromUrl,
     "replaceProtocol": replaceProtocol
 }

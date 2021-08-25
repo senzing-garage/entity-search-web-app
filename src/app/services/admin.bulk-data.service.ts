@@ -1067,10 +1067,10 @@ export class AdminBulkDataService {
                 // check if everything has been sent
                 if(readStreamComplete && summary.sentRecordCount === summary.recordCount && summary.recordCount > 0) {
                     // all messages sent
-                    console.warn('stream load complete 1', summary);
+                    //console.warn('stream load complete 1', summary);
                     sendStreamComplete = true;
                     if(summary.complete === true) {
-                        console.warn('sending _onStreamLoadComplete 2: ', summary);
+                        //console.warn('sending _onStreamLoadComplete 2: ', summary);
                         this._onStreamLoadComplete.next(summary);
                     }
                 } else {
@@ -1528,7 +1528,7 @@ export class AdminBulkDataService {
 
     public testStreamLoadingConnection(pocConfig: POCStreamConfig) {        
         let connectionProperties: AdminStreamConnProperties = {
-            "path": '/load-queue/bulk-data/records',
+            "path": pocConfig.proxy.path ? pocConfig.proxy.path : '',
             "hostname": pocConfig.proxy ? pocConfig.proxy.hostname +(pocConfig.proxy.port ? ':'+ pocConfig.proxy.port : '') : pocConfig.target,
             "connected": false,
             "connectionTest": false,

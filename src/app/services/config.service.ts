@@ -27,6 +27,7 @@ export interface POCStreamConfig {
     port?: number;
     url: string;
     protocol?: string;
+    path?: string;
   }
   target: string;
   protocol?: string;

@@ -4,6 +4,7 @@ import { take, takeUntil, filter, map, tap, catchError, takeWhile } from 'rxjs/o
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 //import { v4 as uuidv4 } from 'uuid';
 import { AdminStreamConnProperties } from '@senzing/sdk-components-ng';
+import { POCStreamConfig, SzWebAppConfigService } from './config.service';
 
 interface offlineMessage {
   data: any,
@@ -62,7 +63,7 @@ export class WebSocketService {
     "connectionTest": false,
     "reconnectOnClose": false,
     "reconnectConsecutiveAttemptLimit": 10,
-    "path": "/"
+    "path": ""
   };
 
   static statusChangeEvtToConnectionBool(status: CloseEvent | Event) {
@@ -83,10 +84,11 @@ export class WebSocketService {
       retVal  = (connProps.secure) ? "wss://" : "ws://";
       retVal += (connProps.hostname) ? connProps.hostname : 'localhost';
       retVal += (connProps.port) ? ':'+connProps.port : '';
+      if(connProps.path) {
+        retVal += connProps.path;
+      }
       if(path) {
         retVal += ''+ path;
-      } else if(connProps.path) {
-        retVal += (connProps.path) ? ''+connProps.path : '';
       }
     }
 
@@ -166,7 +168,21 @@ export class WebSocketService {
     return retObs;
   }
 
-  constructor() {  
+  constructor(
+    public configService: SzWebAppConfigService
+  ) {  
+    // if running the poc server check if streaming is configured
+    // if so do a quick test
+    this.configService.onPocStreamConfigChange.pipe(
+      filter((result: POCStreamConfig | undefined) => {
+          return result && result !== undefined;
+      })
+    ).subscribe((result: POCStreamConfig) => {
+      if(this.connectionProperties) {
+        this.connectionProperties.path = result && result.proxy && result.proxy.path ? result.proxy.path : (this.connectionProperties.path ? this.connectionProperties.path : '');
+      }
+    });
+      
     /** track the connection status of the socket */
     this.onConnectionStateChange.subscribe((connected) => {
       if(!this._connected && connected) {
@@ -218,23 +234,24 @@ export class WebSocketService {
   /** open connection */
   public open(hostname?: string, port?: number, path?: string, method?: "POST" | "PUT" | "GET"): Observable<any> {
     // set up intial connection properties if not already set up
+    //console.log('WebsocketService.open: ', this.connectionProperties, this.configService.pocStreamConfig);
     this.connectionProperties = this.connectionProperties ? this.connectionProperties : {
       "hostname": hostname,
       "connected": false,
       "connectionTest": false,
       "reconnectOnClose": true,
       "reconnectConsecutiveAttemptLimit": 10,
-      "path": (path ? path : "/"),
+      "path": this.configService.pocStreamConfig && this.configService.pocStreamConfig.proxy && this.configService.pocStreamConfig.proxy.path ? this.configService.pocStreamConfig.proxy.path : '',
       "method": (method ? method : "GET")
     }
     // set connection properties if passed in
     this.connectionProperties.hostname  = hostname ? hostname : this.connectionProperties.hostname;
-    this.connectionProperties.path      = path ? path : this.connectionProperties.path;
+    this.connectionProperties.path      = this.configService.pocStreamConfig && this.configService.pocStreamConfig.proxy && this.configService.pocStreamConfig.proxy.path ? this.configService.pocStreamConfig.proxy.path : this.connectionProperties.path;
     this.connectionProperties.method    = method ? method : this.connectionProperties.method;
     if(port) { this.connectionProperties.port = port; } 
 
     // connection string
-    let _wsaddr = WebSocketService.getSocketUriFromConnectionObject(this.connectionProperties);
+    let _wsaddr = WebSocketService.getSocketUriFromConnectionObject(this.connectionProperties, path);
 
     // when connection is opened proxy to status$
     const openSubject = new Subject<Event>();

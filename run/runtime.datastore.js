@@ -65,6 +65,9 @@ class inMemoryConfig extends EventEmitter {
   // initial timer for checking if API Server is up
   apiServerInitializedTimer = undefined;
 
+  // options used for testing purposes
+  testOptionsConfiguration = undefined;
+
   // will be set to "true" if initial response 
   // from api server recieved
   _apiServerIsReady   = false;
@@ -109,6 +112,9 @@ class inMemoryConfig extends EventEmitter {
     }
     if(this.streamServerConfiguration && this.streamServerConfiguration !== undefined && this.streamServerConfiguration !== null) {
       retValue.stream = this.streamServerConfiguration;
+    }
+    if(this.testOptionsConfiguration && this.testOptionsConfiguration !== undefined && this.testOptionsConfiguration !== null) {
+      retValue.testing = this.testOptionsConfiguration;
     }
     
     return retValue;
@@ -214,6 +220,9 @@ class inMemoryConfig extends EventEmitter {
       if(value.stream) {
         this.streamServerConfiguration = value.stream;
       }
+      if(value.testing) {
+        this.testOptionsConfiguration = value.testing;
+      }
     }
   }
 
@@ -274,7 +283,8 @@ class inMemoryConfig extends EventEmitter {
       }).bind(this));
 
     }).bind(this)).on('error', error => {
-      console.log(error)
+      console.log('checking if api server up yet: '+ error.code);
+      //console.log(error)
     })
   }
   /**
