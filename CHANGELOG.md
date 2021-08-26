@@ -6,11 +6,44 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.2.4] - TBD
+## [2.3.1] - 2021-08-26
+
+The configuration options/setup surrounding the stream loading feature released in [2.3.0](https://github.com/Senzing/entity-search-web-app/releases/tag/2.3.0) has been simplified. Now stream loading is automatically enabled for the user **_IF_** the webapp is running against a **[POC Server](https://github.com/Senzing/senzing-poc-server)** that has SQS configured. If not configured properly or running against the [API server](https://github.com/Senzing/senzing-api-server)(with adminMode=true set) the loading feature will fallback to the **non**-stream method. As a result of this streamlining the UI **_toggle switch_** and **"connection configuration"** modal has been _removed_ from the UI.
+
+The following ENV vars introduced in `2.3.0` have been removed:
+- `SENZING_STREAM_SERVER_URL`
+- `SENZING_STREAM_SERVER_PORT`
+- `SENZING_STREAM_SERVER_DEST_URL`
+- `SENZING_WEB_SERVER_CSP_STREAM_SERVER_URL`
+
+The following ENV var has been introduced:
+- `SENZING_WEB_SERVER_URL` - The fully qualified url to the root of where the webapp is being served from. This is used to define in the webapp security policy that outbound socket connections are allowed to this address. 
+  - `http://my.public.domain/webapp`
+  - `http://my.specific.domain:specificport`
+  
+The following cmdline args have been introduced:
+- `webServerUrl` - see ENV var `SENZING_WEB_SERVER_URL` description
+
+relevant tickets #180 #183 #185
+
+## [2.3.0] - 2021-08-10
+
+## Stream loading via websockets to the poc-server to rabbitMQ or Amazon SQS:
+
+This release is primarily to support stream loading which enables stream ingestion through a web interface to the POC Server which hands off to the configured SQS provider. The stream interface is capable of reading records in a file and sending them out in small chunked batches either as quickly as they can be read or a fast as configured upload rate.
+
+These features should be cross compatible with the standard API Server backend. If the stack is set up with SQS ingestion and the backend is the POC Server then stream loading will be available. If the backend is the standard API server then stream loading features will be hidden from the UI. 
+
+relevant tickets: #143 #179
+
+## [2.2.4] - 2021-07-28
 
 - support for runtime configuration of API path that client connects to through env vars and cmdline switches. 
+- bugfix for virtual directories
+- dependency security updates
+- docker image base is now `lts-buster-slim`
 
-relevant tickets: #163
+relevant tickets: #163 #166 #173 
 
 ## [2.2.2,2.2.3] - 2021-04-08
 
