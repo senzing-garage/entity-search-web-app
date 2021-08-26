@@ -9,6 +9,7 @@ import {Overlay, CdkOverlayOrigin, OverlayConfig, OverlayRef} from '@angular/cdk
 import { ComponentPortal } from '@angular/cdk/portal';
 import { AboutComponent } from '../about/about.component';
 import { SzAttributeSearchResult } from '@senzing/sdk-components-ng';
+import { AboutInfoService } from '../services/about.service';
 
 @Component({
   selector: 'app-toolbar',
@@ -31,14 +32,15 @@ export class ToolbarComponent implements OnInit, OnDestroy {
   @ViewChild(CdkOverlayOrigin) _overlayOrigin: CdkOverlayOrigin;
   @ViewChild('poweredByOrigin') poweredByOrigin: CdkOverlayOrigin;
 
-
   constructor(
-    private spinner: SpinnerService,
-    public uiService: UiService,
-    private router: Router,
+    public aboutService: AboutInfoService,
     public overlay: Overlay,
+    private router: Router,
     private search: EntitySearchService,
-    private titleService: Title) { }
+    private spinner: SpinnerService,
+    private titleService: Title,
+    public uiService: UiService
+  ) { }
 
   ngOnInit() {
     this.search.entityIdChange.subscribe(
@@ -75,6 +77,11 @@ export class ToolbarComponent implements OnInit, OnDestroy {
     } else {
       return false;
     }
+  }
+
+  /** when admin is enabled in the poc/api server the "Admin" sub menu is shown */
+  public get showAdminOptions(): boolean {
+    return this.aboutService.isAdminEnabled;
   }
 
   public get headerTitle(): string {
@@ -206,5 +213,9 @@ export class ToolbarComponent implements OnInit, OnDestroy {
   goHome() {
     // pop search open if its closed
     this.uiService.searchExpanded = true;
+  }
+
+  goAdmin() {
+
   }
 }

@@ -8,6 +8,7 @@
   <sz-powered-by cdkOverlayOrigin #poweredByOrigin="cdkOverlayOrigin" format="small" (click)="toggleAboutInfo()"></sz-powered-by>
   <mat-menu #appMenu="matMenu">
     <a (click)="goHome()" routerLink="/" routerLinkActive="active" mat-menu-item><mat-icon>home</mat-icon>Home</a>
+    <a *ngIf="showAdminOptions" mat-menu-item [matMenuTriggerFor]="adminMenu"><mat-icon>admin_panel_settings</mat-icon>Admin</a>
     <a *ngIf="!showGraphOptions" (click)="showSearchByAttributeForm()" mat-menu-item>
       <mat-icon>assignment_ind</mat-icon>
       Search By Attribute
@@ -55,5 +56,10 @@
     <a routerLink="/entity/9002324729487" routerLinkActive="active" mat-menu-item>Bad Ent Id</a>
     <a routerLink="/page/not/found" routerLinkActive="active" mat-menu-item>Page Not Found</a>
     <a [routerLink]="[{ outlets: { popup: ['compose'] } }]" mat-menu-item>Send</a> -->
+  </mat-menu>
+  <mat-menu #adminMenu="matMenu">
+    <button routerLink="/admin/datasources" mat-menu-item><mat-icon>account_tree</mat-icon>Data Sources</button>
+    <button routerLink="/admin/load" mat-menu-item><mat-icon>upload_file</mat-icon>Load Data</button>
+    <button routerLink="/admin/license/info" mat-menu-item><mat-icon>vpn_key</mat-icon>License</button>
   </mat-menu>
 </mat-toolbar>
