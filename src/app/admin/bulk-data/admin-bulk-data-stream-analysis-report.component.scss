@@ -28,3 +28,14 @@
     }
   }
 }
+
+.mat-badge-ds-new-tag {
+  height: 13px;
+  width: 25px;
+
+  .mat-badge-content {
+    right: 0px;
+    left: 4px;
+    top: -4px;
+  }
+}

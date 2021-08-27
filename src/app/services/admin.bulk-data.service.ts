@@ -461,6 +461,12 @@ export class AdminBulkDataService {
         ).subscribe((info) => {
             //console.log('ServerInfo obtained: ', info);
         });
+        this.onDataSourceMapChange.subscribe((result) => {
+            console.warn('onDataSourceMapChange: ', result);
+        });
+        this.onEntityTypeMapChange.subscribe((result) => {
+            console.warn('onEntityTypeMapChange: ', result);
+        });
         this.updateDataSources();
         this.updateEntityTypes();
     }
