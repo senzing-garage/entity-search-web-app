@@ -87,12 +87,15 @@ export class WebSocketService {
       if(connProps.url) {
         // override base path
         retVal = connProps.url;
+        console.warn(`getSocketUriFromConnectionObject #1: ${retVal}`, connProps.url);
       }
       if(connProps.path) {
         retVal += connProps.path;
+        console.warn(`getSocketUriFromConnectionObject #2: ${retVal}`, connProps.path);
       }
       if(path) {
         retVal += ''+ path;
+        console.warn(`getSocketUriFromConnectionObject #3: ${retVal}`, path);
       }
       // make sure we catch double "//" for sanity-sakes
       if(retVal && retVal.lastIndexOf('//') > 4) {
@@ -105,6 +108,7 @@ export class WebSocketService {
         }
       }
     }
+    console.warn(`getSocketUriFromConnectionObject #4: ${retVal}`);
 
     return retVal;
   }
