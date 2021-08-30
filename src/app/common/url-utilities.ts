@@ -56,3 +56,23 @@ export function getProtocolFromUrl(url: string) {
         return protocol;
     }
 }
+
+export function getPathFromUrl(url: string) {
+    if(!url) return;
+    if( url ) {
+        let path    = '';
+        if(url.indexOf && url.indexOf('://') > -1) {
+            let urlTokened = url.split('://');
+            let strPath  = urlTokened[1];
+            if(strPath.indexOf && strPath.indexOf('/') > -1) {
+                path = strPath.substring(strPath.indexOf('/'));
+            } else {
+                // no "/" in url
+            }
+        } else if(url.indexOf && url.indexOf('/') > -1) {
+            // no protocol, assume first "/" to end
+            path = url.substring(url.indexOf('/'));
+        }
+        return path;
+    }
+}

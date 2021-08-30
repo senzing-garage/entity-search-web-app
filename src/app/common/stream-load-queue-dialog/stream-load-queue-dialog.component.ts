@@ -2,10 +2,7 @@ import { AfterViewInit, Component, Inject, OnDestroy, OnInit } from '@angular/co
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { WebSocketService } from '../../services/websocket.service';
 import { AdminBulkDataService } from '../../services/admin.bulk-data.service';
-
-//import { AdminStreamConnProperties } from '../../services/admin.bulk-data.service';
-import { AdminStreamConnProperties, AdminStreamAnalysisConfig, AdminStreamLoadConfig, AdminStreamUploadRates } from '@senzing/sdk-components-ng';
-import { takeUntil } from 'rxjs/operators';
+import { AdminStreamConnProperties, AdminStreamAnalysisConfig, AdminStreamLoadConfig } from '../../common/models/AdminStreamConnection';
 import { Subject } from 'rxjs';
 
 @Component({
