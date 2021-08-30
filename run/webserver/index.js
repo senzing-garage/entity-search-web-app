@@ -406,7 +406,7 @@ if( serverOptions && serverOptions.ssl && serverOptions.ssl.enabled ){
         });
         wsProxy.on('upgrade', function (req, socket, head) {
           let oldUrl = req.url;
-          if(req.url && req.url.startsWith && req.url.startsWith( getPathFromUrl(serverOptions.streamClientUrl) ) && getPathFromUrl(serverOptions.streamClientUrl) !== '/') {
+          if(req.url && req.url.startsWith && req.url.substring && req.url.startsWith( getPathFromUrl(serverOptions.streamClientUrl) ) && getPathFromUrl(serverOptions.streamClientUrl) !== '/') {
             // make sure we strip off that path
             req.url = req.url.substring( getPathFromUrl(serverOptions.streamClientUrl).length );
             if(proxyOptions.logLevel === 'debug') {
