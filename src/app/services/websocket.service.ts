@@ -88,8 +88,7 @@ export class WebSocketService {
         // override base path
         retVal = connProps.url;
         console.warn(`getSocketUriFromConnectionObject #1: ${retVal}`, connProps.url);
-      }
-      if(connProps.path) {
+      } else if(connProps.path) {
         retVal += connProps.path;
         console.warn(`getSocketUriFromConnectionObject #2: ${retVal}`, connProps.path);
       }
