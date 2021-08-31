@@ -6,9 +6,10 @@ import {
 } from '@angular/router';
 import { Observable, interval, from, of, EMPTY, Subject } from 'rxjs';
 import { AdminService, SzBaseResponse, SzMeta, SzVersionResponse, SzVersionInfo } from '@senzing/rest-api-client-ng';
-import { switchMap, tap, takeWhile, map } from 'rxjs/operators';
+import { switchMap, tap, takeWhile, map, take } from 'rxjs/operators';
 import { version as appVersion, dependencies as appDependencies } from '../../../package.json';
 import { SzAdminService, SzServerInfo } from '@senzing/sdk-components-ng';
+import { SzWebAppConfigService } from './config.service';
 
 /**
  * Service to provide package and release versions of key
@@ -72,7 +73,10 @@ export class AboutInfoService {
         tap( this.setServerInfo.bind(this) )
     );
   }
-  constructor(private adminService: SzAdminService, private router: Router) {
+  constructor(
+    private adminService: SzAdminService, 
+    private configService: SzWebAppConfigService,
+    private router: Router) {
     this.appVersion = appVersion;
     if(appDependencies) {
       // check to see if we can pull sdk-components-ng and sdk-graph-components
@@ -89,13 +93,21 @@ export class AboutInfoService {
     }
 
     // get version info from SzAdminService
-    this.getVersionInfo().subscribe( this.setVersionInfo.bind(this) );
-    this.getServerInfo().subscribe( this.setServerInfo.bind(this) );
-    this.getServerInfoMetadata().subscribe( this.setPocServerInfo.bind(this) );
+    this.getVersionInfo().pipe(take(1)).subscribe( this.setVersionInfo.bind(this) );
+    this.getServerInfo().pipe(take(1)).subscribe( this.setServerInfo.bind(this) );
+    this.getServerInfoMetadata().pipe(take(1)).subscribe( this.setPocServerInfo.bind(this) );
     this.pollForVersionInfo().subscribe();
     //this.pollForHeartbeat().subscribe();
     this.pollForServerInfo().subscribe();
+
+    this.configService.onApiConfigChange.subscribe(() => {
+      console.warn('AboutInfoService() config updated, making new info calls..');
+      this.getVersionInfo().pipe(take(1)).subscribe( this.setVersionInfo.bind(this) );
+      this.getServerInfo().pipe(take(1)).subscribe( this.setServerInfo.bind(this) );
+      this.getServerInfoMetadata().pipe(take(1)).subscribe( this.setPocServerInfo.bind(this) );
+    });
   }
+
   /** get heartbeat information from the rest-api-server host */
   public getHealthInfo(): Observable<SzMeta> {
     // get heartbeat
