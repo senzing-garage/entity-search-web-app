@@ -14,8 +14,12 @@
       Errors encountered during a stream load are indicated by the presence of this element.
     </span>
   </div>
-  useSocketStream: {{useSocketStream}}<br/>
-  canUseSocketStream: {{canUseSocketStream}}
+  <ul>
+    <li>useSocketStream: {{ useSocketStream }}</li>
+    <li>canUseSocketStream: {{ canUseSocketStream }}</li>
+    <li>adminBulkDataService.useStreamingForLoad: {{ adminBulkDataService.useStreamingForLoad }}</li>
+    <li>aboutInfoService.isPocServerInstance: {{ aboutInfoService.isPocServerInstance }}</li>
+  </ul>
   <div class="stream-connection-idicator" *ngIf="useSocketStream && canUseSocketStream">
     <mat-icon aria-hidden="false" aria-label="stream is disconnected. click to connect." class="disconnected" 
       matTooltip="Disconnected from stream host. Click to connect/reconnect." 
