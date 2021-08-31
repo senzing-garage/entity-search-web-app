@@ -365,7 +365,10 @@ export class AdminBulkDataService {
                 return result && result !== undefined;
             })
         ).subscribe((result: POCStreamConfig) => {
-            this.testStreamLoadingConnection(result);
+            //console.info('AdminBulkDataService.configService.onPocStreamConfigChange: ', result, this.aboutService.loadQueueConfigured, this.aboutService);
+            if(this.aboutService.isPocServerInstance && this.aboutService.isAdminEnabled && this.aboutService.loadQueueConfigured) {
+                this.testStreamLoadingConnection(result);
+            }
         });
 
         this.webSocketService.onError.subscribe((error: Error) => {
