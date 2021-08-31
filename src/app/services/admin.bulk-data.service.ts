@@ -1557,11 +1557,13 @@ export class AdminBulkDataService {
             this.useStreamingForLoad = isValid;
             this.useStreamingForAnalysis = isValid;
             this.useStreaming = isValid;
+            console.warn('successful stream test! ', this.useStreaming);
         }, (error: Error) => {
             connectionProperties.connectionTest = false;
             this.useStreamingForLoad = false;
             this.useStreamingForAnalysis = false;
             this.useStreaming = false;
+            console.warn('stream connection test failure! ', this.useStreaming);
         })
     }
 

@@ -14,7 +14,9 @@
       Errors encountered during a stream load are indicated by the presence of this element.
     </span>
   </div>
-  <!--<div class="stream-connection-idicator" *ngIf="useSocketStream && canUseSocketStream">
+  useSocketStream: {{useSocketStream}}<br/>
+  canUseSocketStream: {{canUseSocketStream}}
+  <div class="stream-connection-idicator" *ngIf="useSocketStream && canUseSocketStream">
     <mat-icon aria-hidden="false" aria-label="stream is disconnected. click to connect." class="disconnected" 
       matTooltip="Disconnected from stream host. Click to connect/reconnect." 
       matTooltipClass="tooltip-red" 
@@ -24,7 +26,7 @@
       matTooltip="Connected to stream host. Click to disconnect."
       matTooltipPosition="left" 
       *ngIf="streamConnected" (click)="setStreamState(false)">flash_on</mat-icon>
-  </div>-->
+  </div>
   <div class="stream-loading" *ngIf="canSwitchFromStreamingToHttp">
     <mat-slide-toggle [(ngModel)]="useSocketStream">Stream Connection</mat-slide-toggle>
   </div>
