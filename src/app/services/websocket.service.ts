@@ -3,7 +3,7 @@ import { BehaviorSubject, CompletionObserver, Observable, of, PartialObserver, S
 import { take, takeUntil, filter, map, tap, catchError, takeWhile } from 'rxjs/operators';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 //import { v4 as uuidv4 } from 'uuid';
-import { AdminStreamConnProperties } from '@senzing/sdk-components-ng';
+import { AdminStreamConnProperties } from '../common/models/AdminStreamConnection';
 import { POCStreamConfig, SzWebAppConfigService } from './config.service';
 
 interface offlineMessage {
@@ -84,14 +84,26 @@ export class WebSocketService {
       retVal  = (connProps.secure) ? "wss://" : "ws://";
       retVal += (connProps.hostname) ? connProps.hostname : 'localhost';
       retVal += (connProps.port) ? ':'+connProps.port : '';
-      if(connProps.path) {
+      if(connProps.url) {
+        // override base path
+        retVal = connProps.url;
+      } else if(connProps.path) {
         retVal += connProps.path;
       }
       if(path) {
         retVal += ''+ path;
       }
+      // make sure we catch double "//" for sanity-sakes
+      if(retVal && retVal.lastIndexOf('//') > 4) {
+        if(retVal.indexOf('://') > -1) {
+          let tokened = retVal.split('://');
+          retVal  = tokened[0] +'://'+ tokened[1].split('//').join('/');
+        } else {
+          // no protocol
+          retVal  = retVal.split('//').join('/');
+        }
+      }
     }
-
     return retVal;
   }
 
@@ -424,6 +436,7 @@ export class WebSocketService {
 
     if(connectionProps) {
       let _wsaddr = WebSocketService.getSocketUriFromConnectionObject(connectionProps, "/load-queue/bulk-data/records", "POST");
+      console.warn('testConnection: '+ _wsaddr, connectionProps);
 
       const openSubject = new Subject<Event>();
       openSubject.pipe(

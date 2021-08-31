@@ -3,10 +3,10 @@ import { CanActivate, Router } from '@angular/router';
 import { ActivatedRouteSnapshot } from '@angular/router';
 import { Observable, of, from, interval, Subject, BehaviorSubject, timer } from 'rxjs';
 import { map, catchError, tap, switchMap, takeUntil, take, filter, takeWhile, delay } from 'rxjs/operators';
-import { SzConfigurationService, SzAdminService, SzEntityTypesService, SzServerInfo, SzPrefsService, SzBulkDataService, SzDataSourcesService } from '@senzing/sdk-components-ng';
-import { HttpClient } from '@angular/common/http';
+import { SzAdminService, SzEntityTypesService, SzPrefsService, SzBulkDataService, SzDataSourcesService } from '@senzing/sdk-components-ng';
 import { AuthConfig, POCStreamConfig, SzWebAppConfigService } from './config.service';
-import { AdminStreamConnProperties, AdminStreamAnalysisConfig, AdminStreamLoadConfig } from '@senzing/sdk-components-ng';
+import { getHostnameFromUrl, getPortFromUrl, getProtocolFromUrl, getPathFromUrl } from '../common/url-utilities';
+import { AdminStreamConnProperties, AdminStreamAnalysisConfig, AdminStreamLoadConfig } from '../common/models/AdminStreamConnection';
 
 import {
     determineLineEndingStyle,
@@ -365,7 +365,10 @@ export class AdminBulkDataService {
                 return result && result !== undefined;
             })
         ).subscribe((result: POCStreamConfig) => {
-            this.testStreamLoadingConnection(result);
+            //console.info('AdminBulkDataService.configService.onPocStreamConfigChange: ', result, this.aboutService.loadQueueConfigured, this.aboutService);
+            if(this.aboutService.isPocServerInstance && this.aboutService.isAdminEnabled && this.aboutService.loadQueueConfigured) {
+                this.testStreamLoadingConnection(result);
+            }
         });
 
         this.webSocketService.onError.subscribe((error: Error) => {
@@ -1527,6 +1530,7 @@ export class AdminBulkDataService {
     }
 
     public testStreamLoadingConnection(pocConfig: POCStreamConfig) {        
+
         let connectionProperties: AdminStreamConnProperties = {
             "path": pocConfig.proxy.path ? pocConfig.proxy.path : '',
             "hostname": pocConfig.proxy ? pocConfig.proxy.hostname +(pocConfig.proxy.port ? ':'+ pocConfig.proxy.port : '') : pocConfig.target,
@@ -1534,6 +1538,9 @@ export class AdminBulkDataService {
             "connectionTest": false,
             "reconnectOnClose": false,
             "reconnectConsecutiveAttemptLimit": 10
+        }
+        if(pocConfig.proxy.url) {
+            connectionProperties.url        = pocConfig.proxy.url;
         }
 
         this.webSocketService.testConnection( connectionProperties ).subscribe((isValid: boolean) => {

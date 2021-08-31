@@ -1,6 +1,6 @@
 const { calcProjectFileAndBasePath } = require("@angular/compiler-cli");
 const { env } = require("process");
-const { getHostnameFromUrl, getPortFromUrl, getProtocolFromUrl, getRootFromUrl, replaceProtocol } = require("./utils");
+const { getHostnameFromUrl, getPortFromUrl, getProtocolFromUrl, getRootFromUrl, replaceProtocol, getPathFromUrl } = require("./utils");
 
 function getCommandLineArgsAsJSON() {
   // grab cmdline args
@@ -98,7 +98,7 @@ function getStreamServerOptionsFromInput() {
       protocol: (getProtocolFromUrl(webServerCfg.apiServerUrl) === 'https' ? 'wss':'ws'),
       hostname: webServerCfg.hostname ? webServerCfg.hostname : 'localhost',
       port: 8255
-    }    
+    }
   };
   retConfig = Object.assign({}, retConfigDefaults);
 
@@ -120,8 +120,31 @@ function getStreamServerOptionsFromInput() {
     }
   }
 
+  // if "streamClientUrl" is defined use that instead
+  /*
+  if(webServerCfg.streamClientUrl) {
+    let hostnameFromUrL           = getHostnameFromUrl(retOpts.streamClientUrl);
+    let portFromUrl               = getPortFromUrl(retOpts.streamClientUrl);
+    
+    if(hostnameFromUrL && hostnameFromUrL !== retConfig.proxy.hostname){
+      // override from url
+      retConfig.proxy.hostname    = hostnameFromUrL;
+    }
+    if(portFromUrl && portFromUrl !== retConfig.proxy.port){
+      // override from url
+      retConfig.proxy.port        = portFromUrl;
+    }
+  }
+  */
+
   // make sure the "url" is updated if anything has been overridden
-  retConfig.proxy.url = ((retConfig.proxy.protocol ? retConfig.proxy.protocol : 'ws') + '://'+ retConfig.proxy.hostname +':'+ (retConfig.proxy.port ? retConfig.proxy.port : '8255') + (retConfig.proxy.path ? retConfig.proxy.path : ''));
+  retConfig.proxy.url = webServerCfg.streamClientUrl ? webServerCfg.streamClientUrl : (
+    (retConfig.proxy.protocol ? retConfig.proxy.protocol : 'ws') + 
+    '://'+ retConfig.proxy.hostname +
+    ':'+ (retConfig.proxy.port ? retConfig.proxy.port : '8255') + 
+    (retConfig.proxy.path ? retConfig.proxy.path : '')
+  );
+
   return retConfig;
 }
 
@@ -389,24 +412,27 @@ function getWebServerOptionsFromInput() {
   }
   // update defaults with ENV options(if present)
   if(env){
-    retOpts.protocol              = env.SENZING_WEB_SERVER_PROTOCOL ?         env.SENZING_WEB_SERVER_PROTOCOL         : retOpts.protocol;
-    retOpts.port                  = env.SENZING_WEB_SERVER_PORT ?             env.SENZING_WEB_SERVER_PORT             : retOpts.port;
-    retOpts.hostname              = env.SENZING_WEB_SERVER_HOSTNAME ?         env.SENZING_WEB_SERVER_HOSTNAME         : retOpts.hostname;
-    retOpts.url                   = env.SENZING_WEB_SERVER_URL ?              env.SENZING_WEB_SERVER_URL              : retOpts.url;
-    retOpts.apiPath               = env.SENZING_WEB_SERVER_API_PATH ?         env.SENZING_WEB_SERVER_API_PATH         : retOpts.apiPath;
-    retOpts.authPath              = env.SENZING_WEB_SERVER_AUTH_PATH ?        env.SENZING_WEB_SERVER_AUTH_PATH        : retOpts.authPath;
-    retOpts.authMode              = env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE ?  env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE  : retOpts.authMode;
-    retOpts.apiServerUrl          = env.SENZING_API_SERVER_URL ?              env.SENZING_API_SERVER_URL              : retOpts.apiServerUrl;
-    retOpts.path                  = env.SENZING_WEB_SERVER_VIRTUAL_PATH ?     env.SENZING_WEB_SERVER_VIRTUAL_PATH     : retOpts.path;
+    retOpts.protocol              = env.SENZING_WEB_SERVER_PROTOCOL ?         env.SENZING_WEB_SERVER_PROTOCOL           : retOpts.protocol;
+    retOpts.port                  = env.SENZING_WEB_SERVER_PORT ?             env.SENZING_WEB_SERVER_PORT               : retOpts.port;
+    retOpts.hostname              = env.SENZING_WEB_SERVER_HOSTNAME ?         env.SENZING_WEB_SERVER_HOSTNAME           : retOpts.hostname;
+    retOpts.url                   = env.SENZING_WEB_SERVER_URL ?              env.SENZING_WEB_SERVER_URL                : retOpts.url;
+    retOpts.apiPath               = env.SENZING_WEB_SERVER_API_PATH ?         env.SENZING_WEB_SERVER_API_PATH           : retOpts.apiPath;
+    retOpts.authPath              = env.SENZING_WEB_SERVER_AUTH_PATH ?        env.SENZING_WEB_SERVER_AUTH_PATH          : retOpts.authPath;
+    retOpts.authMode              = env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE ?  env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE    : retOpts.authMode;
+    retOpts.apiServerUrl          = env.SENZING_API_SERVER_URL ?              env.SENZING_API_SERVER_URL                : retOpts.apiServerUrl;
+    retOpts.path                  = env.SENZING_WEB_SERVER_VIRTUAL_PATH ?     env.SENZING_WEB_SERVER_VIRTUAL_PATH       : retOpts.path;
 
+    if(env.SENZING_WEB_SERVER_STREAM_CLIENT_URL) {
+      retOpts.streamClientUrl     = env.SENZING_WEB_SERVER_STREAM_CLIENT_URL? env.SENZING_WEB_SERVER_STREAM_CLIENT_URL  : retOpts.url;
+    }
     if(env.SENZING_WEB_SERVER_SSL_CERT_PATH) {
-      retOpts.ssl.certPath = env.SENZING_WEB_SERVER_SSL_CERT_PATH;
+      retOpts.ssl.certPath        = env.SENZING_WEB_SERVER_SSL_CERT_PATH;
     }
     if(env.SENZING_WEB_SERVER_SSL_KEY_PATH) {
-      retOpts.ssl.keyPath = env.SENZING_WEB_SERVER_SSL_KEY_PATH;
+      retOpts.ssl.keyPath         = env.SENZING_WEB_SERVER_SSL_KEY_PATH;
     }
     if(env.SENZING_WEB_SERVER_BASIC_AUTH_JSON) {
-      retOpts.authBasicJson = env.SENZING_WEB_SERVER_BASIC_AUTH_JSON;
+      retOpts.authBasicJson       = env.SENZING_WEB_SERVER_BASIC_AUTH_JSON;
     }
   }
 
@@ -422,7 +448,10 @@ function getWebServerOptionsFromInput() {
     retOpts.authMode              = cmdLineOpts.webServerAuthMode ?     cmdLineOpts.webServerAuthMode     : retOpts.authMode;
     retOpts.apiServerUrl          = cmdLineOpts.apiServerUrl ?          cmdLineOpts.apiServerUrl          : retOpts.apiServerUrl;
     retOpts.path                  = cmdLineOpts.virtualPath ?           cmdLineOpts.virtualPath           : retOpts.path;
-
+    
+    if(cmdLineOpts.streamClientUrl) {
+      retOpts.streamClientUrl       = cmdLineOpts.streamClientUrl ?     cmdLineOpts.streamClientUrl       : retOpts.url;
+    }
     if(retOpts.sslCertPath) {
       retOpts.ssl = retOpts.ssl ? retOpts.ssl : {};
       retOpts.ssl.certPath  = retOpts.sslCertPath;
@@ -501,6 +530,9 @@ function getProxyServerOptionsFromInput() {
     if(env.SENZING_WEB_SERVER_URL) {
       retOpts.configPath = env.SENZING_WEB_SERVER_URL;
     }
+    if(env.SENZING_WEB_SERVER_INTERNAL_URL) {
+      retOpts.configPath = env.SENZING_WEB_SERVER_INTERNAL_URL;
+    }
     /*if(env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE) {
       retOpts.authMode = env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE;
     }*/
@@ -540,6 +572,9 @@ function getProxyServerOptionsFromInput() {
     }
     if(cmdLineOpts.webServerUrl && cmdLineOpts.webServerUrl !== undefined) {
       retOpts.configPath = cmdLineOpts.webServerUrl;
+    }
+    if(cmdLineOpts.webServerInternalUrl) {
+      retOpts.configPath = cmdLineOpts.webServerInternalUrl;
     }
     if(cmdLineOpts.proxyJWTPathRewrite) {
       retOpts.jwtPathRewrite = cmdLineOpts.proxyJWTPathRewrite;
@@ -635,7 +670,7 @@ function createProxyConfigFromInput() {
     "/config/cors": {
       "target": proxyOpts.configPath + "/conf/cors/",
       "secure": true,
-      "logLevel": "debug",
+      "logLevel": proxyOpts.logLevel,
       "pathRewrite": {
         "^/config/cors": ""
       }
@@ -643,7 +678,7 @@ function createProxyConfigFromInput() {
     "/config/csp": {
       "target": proxyOpts.configPath + "/conf/csp/",
       "secure": true,
-      "logLevel": "debug",
+      "logLevel": proxyOpts.logLevel,
       "pathRewrite": {
         "^/config/csp": ""
       }
@@ -651,7 +686,7 @@ function createProxyConfigFromInput() {
     "/config/server": {
       "target": proxyOpts.configPath + "/conf/server/",
       "secure": true,
-      "logLevel": "debug",
+      "logLevel": proxyOpts.logLevel,
       "pathRewrite": {
         "^/config/server": ""
       }
@@ -659,7 +694,7 @@ function createProxyConfigFromInput() {
     "/config/streams": {
       "target": proxyOpts.configPath + "/conf/streams/",
       "secure": true,
-      "logLevel": "debug",
+      "logLevel": proxyOpts.logLevel,
       "pathRewrite": {
         "^/config/streams": ""
       }

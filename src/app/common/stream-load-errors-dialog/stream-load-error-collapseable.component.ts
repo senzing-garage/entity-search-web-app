@@ -1,7 +1,6 @@
 import { AfterViewInit, Component, EventEmitter, HostBinding, HostListener, Inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { AdminBulkDataService, AdminStreamSummaryError } from '../../services/admin.bulk-data.service';
 
-//import { AdminStreamConnProperties } from '../../services/admin.bulk-data.service';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 

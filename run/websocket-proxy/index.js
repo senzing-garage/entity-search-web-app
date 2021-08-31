@@ -9,29 +9,28 @@ const { v4: uuidv4 } = require('uuid');
 const inMemoryConfig = require("../runtime.datastore");
 const inMemoryConfigFromInputs = require('../runtime.datastore.config');
 
-const configurations = new inMemoryConfig(inMemoryConfigFromInputs);
+const runtimeOptions = new inMemoryConfig(inMemoryConfigFromInputs);
+runtimeOptions.on('initialized', () => {
+    const streamOptions = runtimeOptions.config.stream;    
 
-configurations.on('initialized', () => {
-    const streamOptions = configurations.streamServerConfiguration;
+    if(streamOptions) {
+        // create a server
+        var app     = express();
+        var server  = http.createServer(app);
+        var proxy   = httpProxy.createServer({ 
+            target: streamOptions.target,
+            ws: true 
+        });
 
-    //console.log('inMemoryConfig now fully initialized.. ', streamOptions);
-
-    // create a server
-    var app     = express();
-    var server  = http.createServer(app);
-    var proxy   = httpProxy.createServer({ 
-        target: streamOptions.target,
-        ws: true 
-    });
-
-    // Proxy websockets
-    server.on('upgrade', function (req, socket, head) {
-        console.log("proxying upgrade request", req.url);
-        proxy.ws(req, socket, head);
-    });
-    proxy.on('error', (err) => {
-        console.log('-- WS ERROR: '+ err.message) +' --';
-    })
+        // Proxy websockets
+        server.on('upgrade', function (req, socket, head) {
+            console.log("proxying upgrade request", req.url);
+            proxy.ws(req, socket, head);
+        });
+        proxy.on('error', (err) => {
+            console.log('-- WS ERROR: '+ err.message) +' --';
+        })
+    }
 
     if(streamOptions && streamOptions.proxy) {
         //start our proxy server

@@ -81,8 +81,25 @@ export class SzWebAppConfigService {
       this._apiConfig = apiConf;
       if(this._apiConfig.basePath !== this.sdkConfigService.basePath) {
         this.sdkConfigService.basePath    = this._apiConfig.basePath;
+        this._onApiConfigChange.next( this._apiConfig );
         //console.warn('SzWebAppConfigService.getRuntimeApiConfig: set SDK basePath', apiConf);
       }
+    });
+    this.onApiConfigChange.pipe(
+      take(5)
+    ).subscribe(() => {
+      this.getRuntimeAuthConfig().pipe(
+        take(1)
+      ).subscribe((authConf: AuthConfig) => {
+        this._authConfig = authConf;
+      });
+      this.getRuntimeStreamConfig().pipe(
+        take(1)
+      ).subscribe((pocConf: POCStreamConfig) => {
+        this._pocStreamConfig = pocConf;
+        this._onPocStreamConfigChange.next( this._pocStreamConfig );
+        //console.warn('POC STREAM CONFIG!', this._pocStreamConfig);
+      });
     });
     this.getRuntimeAuthConfig().pipe(
       take(1)

@@ -14,6 +14,7 @@ const fs = require('fs');
 const csp = require(`helmet-csp`);
 const winston = require(`winston`);
 const sanitize = require("sanitize-filename");
+const { getPathFromUrl } = require("../utils");
 
 // utils
 const AuthModule = require('../authserver/auth');
@@ -29,7 +30,8 @@ var corsOptions   = runtimeOptions.config.cors;
 // csp
 var cspOptions    = runtimeOptions.config.csp;
 // proxy config
-var proxyOptions  = runtimeOptions.config.proxy;
+var proxyConfig  = runtimeOptions.config.proxy;  // these are the actual path-rewrite/src/target collection objects
+var proxyOptions = (inMemoryConfigFromInputs).proxyServerOptions;  // runtime options used to generate some of the re-write objects etc
 
 // web server config
 let serverOptions = runtimeOptions.config.web;
@@ -105,11 +107,14 @@ if( serverOptions.authBasicJson ){
 }
 
 // set up proxy tunnels
-if(proxyOptions) {
+if(proxyConfig) {
   STARTUP_MSG = STARTUP_MSG + '\n'+'-- REVERSE PROXY PATHS SET UP --';
+  if(proxyOptions.logLevel === 'debug') {
+    STARTUP_MSG = STARTUP_MSG + '\n'+'-- PROXY LOG LEVEL: '+ proxyOptions.logLevel +' --';
+  }
 
-  for(proxyPath in proxyOptions){
-    let proxyTargetOptions = proxyOptions[proxyPath];
+  for(proxyPath in proxyConfig){
+    let proxyTargetOptions = proxyConfig[proxyPath];
     // add custom error handler to prevent XSS/Injection in to error response
     function onError(err, req, res) {
       res.writeHead(500, {
@@ -118,9 +123,9 @@ if(proxyOptions) {
       res.end('proxy encountered an error.');
     }
     proxyTargetOptions.onError = onError;
-    //console.log('Proxy CFG: '+ proxyPath);
-    //console.log(proxyTargetOptions);
-    //console.log('');
+    if(proxyOptions.logLevel === 'debug') {
+      STARTUP_MSG = STARTUP_MSG + '\n'+' ['+proxyPath+'] ~> '+ proxyTargetOptions.target +' ('+ JSON.stringify(proxyTargetOptions.pathRewrite) +')';
+    }
     app.use(proxyPath, apiProxy(proxyTargetOptions));
   }
 } else {
@@ -400,7 +405,18 @@ if( serverOptions && serverOptions.ssl && serverOptions.ssl.enabled ){
           proxy.web(req, res);
         });
         wsProxy.on('upgrade', function (req, socket, head) {
-          req.url = (req.url && req.url.startsWith && req.url.startsWith(serverOptions.path) && serverOptions.path !== '/') ? req.url.substring(serverOptions.path.length) : req.url;
+          let oldUrl = req.url;
+          if(req.url && req.url.startsWith && req.url.substring && req.url.startsWith( getPathFromUrl(serverOptions.streamClientUrl) ) && getPathFromUrl(serverOptions.streamClientUrl) !== '/') {
+            // make sure we strip off that path
+            req.url = req.url.substring( getPathFromUrl(serverOptions.streamClientUrl).length );
+            if(proxyOptions.logLevel === 'debug') {
+              console.log(`rewrote websocket conn path from "${oldUrl}" to "${req.url}"`);
+            }
+          } else if(req.url && req.url.startsWith && req.url.startsWith(serverOptions.path) && serverOptions.path !== '/') {
+            req.url = req.url.substring(serverOptions.path.length);
+          } else {
+            req.url = req.url;
+          }
           proxy.ws(req, socket, head);
         });
         wsProxy.listen(streamOptions.proxy.port || 8255, () => {

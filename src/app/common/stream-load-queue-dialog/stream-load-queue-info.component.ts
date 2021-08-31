@@ -3,8 +3,7 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 import { WebSocketService } from '../../services/websocket.service';
 import { AdminBulkDataService } from '../../services/admin.bulk-data.service';
 
-//import { AdminStreamConnProperties } from '../../services/admin.bulk-data.service';
-import { AdminStreamConnProperties, AdminStreamAnalysisConfig, AdminStreamLoadConfig, AdminStreamUploadRates, SzQueueInfoResponse, SzQueueInfo } from '@senzing/sdk-components-ng';
+import { SzQueueInfoResponse, SzQueueInfo } from '@senzing/sdk-components-ng';
 import { switchMap, takeUntil } from 'rxjs/operators';
 import { BehaviorSubject, Subject, timer } from 'rxjs';
 

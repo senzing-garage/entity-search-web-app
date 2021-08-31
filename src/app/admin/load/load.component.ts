@@ -8,9 +8,10 @@ import { Subject } from 'rxjs';
 import { AdminStreamConnDialogComponent } from '../../common/stream-conn-dialog/stream-conn-dialog.component';
 import { AdminStreamLoadErrorsDialogComponent } from '../../common/stream-load-errors-dialog/stream-load-errors-dialog.component';
 import { AdminBulkDataService, AdminStreamAnalysisSummary, AdminStreamLoadSummary, AdminStreamSummaryError } from '../../services/admin.bulk-data.service';
-import { SzPrefsService, AdminStreamAnalysisConfig, AdminStreamConnProperties, AdminStreamLoadConfig } from '@senzing/sdk-components-ng';
+import { SzPrefsService } from '@senzing/sdk-components-ng';
 import { AboutInfoService } from '../../services/about.service';
 import { AdminBulkDataLoadComponent } from '../bulk-data/admin-bulk-data-load.component';
+import { AdminStreamAnalysisConfig, AdminStreamConnProperties, AdminStreamLoadConfig } from '../../common/models/AdminStreamConnection';
 
 @Component({
   selector: 'admin-data-loader',
