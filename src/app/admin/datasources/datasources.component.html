@@ -32,7 +32,8 @@
   </table>
 </div>
 <div class="form-group form-actions">
-  <button mat-stroked-button color="primary" class="btn btn-primary" type="button" (click)="openNewDataSourceDialog()">New Data Source</button>
+  <button mat-stroked-button color="primary" class="btn btn-primary" type="button" (click)="openNewDataSourceDialog()"><mat-icon>add</mat-icon>New Data Source</button>
+  <button mat-stroked-button color="primary" class="btn btn-primary" type="button" (click)="updateDataSourcesList()"><mat-icon>refresh</mat-icon>Refresh</button>
 </div>
 <!-- start spinner overlay -->
 <div class="mat-background" *ngIf="loading">

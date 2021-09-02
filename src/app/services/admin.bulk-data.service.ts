@@ -478,9 +478,10 @@ export class AdminBulkDataService {
         this.datasourcesService.listDataSources().pipe(
         takeUntil( this.unsubscribe$ )
         ).subscribe((datasources: string[]) => {
-        //console.log('datasources obtained: ', datasources);
-        this._dataSources = datasources.filter(s => s !== 'TEST' && s !== 'SEARCH');
-        this.onDataSourcesChange.next(this._dataSources);
+            //console.log('datasources obtained: ', datasources);
+            //this._dataSources = datasources.filter(s => s !== 'TEST' && s !== 'SEARCH');
+            this._dataSources = datasources;
+            this.onDataSourcesChange.next(this._dataSources);
         },
         (err) => {
         // ignore errors since this is a auto-req
@@ -494,7 +495,8 @@ export class AdminBulkDataService {
         takeUntil( this.unsubscribe$ )
         ).subscribe((entityTypes: string[]) => {
         //console.log('entity types obtained: ', entityTypes);
-        this._entityTypes = entityTypes.filter(s => s !== 'TEST' && s !== 'SEARCH');
+        //this._entityTypes = entityTypes.filter(s => s !== 'TEST' && s !== 'SEARCH');
+        this._entityTypes = entityTypes;
         this.onEntityTypesChange.next(this._entityTypes);
         },
         (err) => {

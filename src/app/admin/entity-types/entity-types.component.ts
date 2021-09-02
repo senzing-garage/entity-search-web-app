@@ -19,7 +19,7 @@ export interface DialogData {
   styleUrls: ['./entity-types.component.scss']
 })
 export class AdminEntityTypesComponent implements OnInit {
-  displayedColumns: string[] = ['entityTypeId', 'entityTypeCode'];
+  displayedColumns: string[] = ['entityTypeId', 'entityTypeCode', 'entityClassCode'];
   public datasource:  MatTableDataSource<SzEntityType> = new MatTableDataSource<SzEntityType>();
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -31,7 +31,6 @@ export class AdminEntityTypesComponent implements OnInit {
     [id: string]: SzEntityType;
   }) {
     this._entityTypesData = value;
-    console.log('entityTypesData = ', value);
 
     if(this._entityTypesData) {
       this.datasource.data = Object.values( this._entityTypesData );

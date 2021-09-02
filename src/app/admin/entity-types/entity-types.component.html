@@ -37,9 +37,9 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
   </table>
 </div>
-<!--<div class="form-group form-actions">
-  <button mat-stroked-button color="primary" class="btn btn-primary" type="button" (click)="openNewDataSourceDialog()">New Data Source</button>
-</div>-->
+<div class="form-group form-actions">
+  <button mat-stroked-button color="primary" class="btn btn-primary" type="button" (click)="updateEntityTypesList()"><mat-icon>refresh</mat-icon>Refresh</button>
+</div>
 <!-- start spinner overlay -->
 <div class="mat-background" *ngIf="loading">
   <div class="spinner">

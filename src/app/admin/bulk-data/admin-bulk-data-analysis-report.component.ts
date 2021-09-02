@@ -11,10 +11,6 @@ import { takeUntil } from 'rxjs/operators';
 //import { MatTableDataSource } from '@angular/material/table';
 import { AdminBulkDataService, AdminStreamLoadSummary, AdminStreamAnalysisSummary } from '../../services/admin.bulk-data.service';
 
-export interface SzBulkDataComboAnalysis extends SzEntityTypeRecordAnalysis {
-  entityType?: string;
-}
-
 /**
  * Provides a visual report for a file analysis request.
  *
@@ -32,9 +28,10 @@ export class AdminBulkDataAnalysisReportComponent implements OnInit, OnDestroy, 
   /** subscription to notify subscribers to unbind */
   public unsubscribe$ = new Subject<void>();
   public get displayedColumns(): string[] {
-    const retVal = ['dataSource', 'recordCount', 'recordsWithRecordIdCount', 'dataSourceCode'];
-    if( !this.isMoreThanOneDataSource && !this.isMoreThanOneEntityType) {
-      retVal.push('entityType');
+    const retVal = [];
+    retVal.push('dataSource', 'recordCount', 'recordsWithRecordIdCount');
+    if( this.hasBlankDataSource) {
+      retVal.push('dataSourceCode');
     }
     return retVal;
   }
@@ -107,14 +104,13 @@ export class AdminBulkDataAnalysisReportComponent implements OnInit, OnDestroy, 
       return (this.analysis && this.analysis.analysisByEntityType && this.analysis.analysisByEntityType.length > 1);
     }
 
-    public get comboAnalysis() {
-      if(!this.isMoreThanOneDataSource && !this.isMoreThanOneEntityType) {
-        const retVal: SzBulkDataComboAnalysis[] = this.analysis.analysisByDataSource;
-        retVal[0].entityType = this.analysis.analysisByEntityType[0].entityType;
-        return retVal;
-      } else {
-        return this.analysis.analysisByDataSource;
-      }
+    /** check whether or not the analyzed file has any records with no datasource */
+    public get hasBlankDataSource() {
+      let retVal =  true;
+      retVal = this.analysis.analysisByDataSource ? this.analysis.analysisByDataSource.some((item) => {
+        return (item && item.dataSource === null || !item.dataSource);
+      }) : false;
+      return retVal;
     }
 
     ngOnInit() {

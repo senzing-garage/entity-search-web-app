@@ -23,7 +23,7 @@
   </tr>
 </table> -->
 <!-- start BulkDataAnalysisReport -->
-<table *ngIf="analysis && !currentError" mat-table [dataSource]="comboAnalysis" class="mat-table-full-width mat-elevation-z8">
+<table *ngIf="analysis && !currentError" mat-table [dataSource]="analysis.analysisByDataSource" class="mat-table-full-width mat-elevation-z8">
   <!--- Note that these columns can be defined in any order.
         The actual rendered columns are set as a property on the row definition" -->
   <!-- Id Column -->
@@ -73,81 +73,7 @@
       </div>
     </td>
   </ng-container>
-  <!-- Map to Entity Type Column -->
-  <!--<ng-container matColumnDef="entityType">
-    <th mat-header-cell *matHeaderCellDef > Map to Entity Type </th>
-    <td mat-cell *matCellDef="let element">
-      <mat-form-field class="example-full-width">
-        <input
-        matInput
-        type="text" placeholder="Entity Type to map to" #targetET
-        [value]="defaultIfUndefined(element.entityType,'GENERIC')"
-        [attr.list]="getEntityTypeInputName(l)"
-        matBadgeOverlap="true"
-        (change)="handleEntityTypeChange(element.entityType, targetET.value)">
-      </mat-form-field>
-      <datalist #entityTypeOptions [id]="getEntityTypeInputName(l)">
-        <option *ngFor="let eType of entityTypes" [value]="eType" (click)="handleEntityTypeChange(element.entityType,  eType)">{{eType}}</option>
-      </datalist>
-      <span class="mat-badge"
-      matBadge="new" matBadgeOverlap="false" matBadgeDescription="New Data Source"
-      matBadgePosition="after"
-      matBadgeSize="medium"
-      [matBadgeHidden]="!isNewEntityType( targetET.value )"></span>
-    </td>
-  </ng-container>-->
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-</table>
-<!-- end BulkDataAnalysisReport (single ds, single etype) -->
-
-<!-- start entity type map table -->
-<!-- instead of commenting out just "falsey"'d the if statement until were sure 
-     were not going to use this -->
-<table *ngIf="false" mat-table [dataSource]="analysis.analysisByEntityType" class="mat-table-full-width mat-elevation-z8">
-
-  <!--- Note that these columns can be defined in any order.
-        The actual rendered columns are set as a property on the row definition" -->
-  <!-- Id Column -->
-  <ng-container matColumnDef="entityType">
-    <th mat-header-cell *matHeaderCellDef>Record Entity Type</th>
-    <td mat-cell *matCellDef="let element"> {{ element.entityType && element.entityType.trim().length > 0 ? element.entityType : '[NONE]' }}</td>
-  </ng-container>
-
-  <!-- number of records Column -->
-  <ng-container matColumnDef="recordCount">
-    <th mat-header-cell *matHeaderCellDef > Number of Records </th>
-    <td mat-cell *matCellDef="let element"> {{element.recordCount}} </td>
-  </ng-container>
-  <!-- Records with Record ID Column -->
-  <ng-container matColumnDef="recordsWithRecordIdCount">
-    <th mat-header-cell *matHeaderCellDef > Records with Record ID </th>
-    <td mat-cell *matCellDef="let element"> {{element.recordsWithRecordIdCount}} </td>
-  </ng-container>
-  <!-- Map to Entity Type Column -->
-  <ng-container matColumnDef="entityTypeCode">
-    <th mat-header-cell *matHeaderCellDef > Map to Entity Type </th>
-    <td mat-cell *matCellDef="let element">
-      <mat-form-field class="example-full-width">
-        <input
-        matInput
-        type="text" placeholder="Entity Type to map to" #targetET
-        [value]="defaultIfUndefined(element.entityType,'GENERIC')"
-        [attr.list]="getEntityTypeInputName(l)"
-        matBadgeOverlap="true"
-        (change)="handleEntityTypeChange(element.entityType, targetET.value)">
-      </mat-form-field>
-      <datalist #entityTypeOptions [id]="getEntityTypeInputName(l)">
-        <option *ngFor="let eType of entityTypes" [value]="eType" (click)="handleEntityTypeChange(element.entityType,  eType)">{{eType}}</option>
-      </datalist>
-      <span class="mat-badge"
-      matBadge="new" matBadgeOverlap="false" matBadgeDescription="New Data Source"
-      matBadgePosition="after"
-      matBadgeSize="medium"
-      [matBadgeHidden]="!isNewEntityType( targetET.value )"></span>
-    </td>
-  </ng-container>
-  <tr mat-header-row *matHeaderRowDef="entityTypeColumns"></tr>
-  <tr mat-row *matRowDef="let row; columns: entityTypeColumns;"></tr>
 </table>
 <!-- end BulkDataAnalysisReport (single ds, single etype) -->
