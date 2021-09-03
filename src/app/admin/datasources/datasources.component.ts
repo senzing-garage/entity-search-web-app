@@ -58,7 +58,7 @@ export class AdminDataSourcesComponent implements OnInit {
     this.adminBulkDataService.onDataSourcesChange.subscribe(this.updateDataSourcesList.bind(this));
   }
 
-  private updateDataSourcesList() {
+  public updateDataSourcesList() {
     this._loading = true;
     this.datasourcesServices.listDataSourcesDetails().subscribe( (data: SzDataSourcesResponseData) => {
       this.dataSourcesData = data.dataSourceDetails;

@@ -8,6 +8,7 @@ import { map } from 'rxjs/operators';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { AdminBulkDataService } from '../../services/admin.bulk-data.service';
 
 export interface DialogData {
   name: string;
@@ -45,6 +46,7 @@ export class AdminEntityTypesComponent implements OnInit {
   }
 
   constructor(
+    private adminBulkDataService: AdminBulkDataService,
     private entityTypesServices: SzEntityTypesService,
     private titleService: Title,
     public dialog: MatDialog
@@ -54,10 +56,11 @@ export class AdminEntityTypesComponent implements OnInit {
     this.datasource.paginator = this.paginator;
     // set page title
     this.titleService.setTitle( 'Admin Area - Entity Types' );
-    this.updateEntityTypesList();
+    this._loading = true;
+    this.adminBulkDataService.onEntityTypesChange.subscribe(this.updateEntityTypesList.bind(this));
   }
 
-  private updateEntityTypesList() {
+  public updateEntityTypesList() {
     this._loading = true;
     this.entityTypesServices.listEntityTypesDetails().subscribe( 
       (data: {[key: string]: SzEntityType;}) => {
@@ -68,48 +71,4 @@ export class AdminEntityTypesComponent implements OnInit {
         console.error('hey', err);
       } );
   }
-
-  /*
-  public openNewDataSourceDialog() {
-    if(!this._dialogOpen) {
-      const dialogRef = this.dialog.open(NewDataSourceDialogComponent, {
-        width: '400px',
-        data: { name: '' }
-      });
-
-      dialogRef.afterClosed().subscribe(dsName => {
-        if(dsName && dsName.length > 0) {
-          this.datasourcesServices.addDataSources([ dsName ]).subscribe(
-            (result) => {
-              console.log('created new datasource', result);
-              this.updateDataSourcesList();
-            }
-          );
-        }
-        this._dialogOpen = false;
-      });
-    }
-  }*/
-
 }
-/*
-@Component({
-  selector: 'admin-add-datasource-dialog',
-  templateUrl: 'add-datasource.component.html',
-  styleUrls: ['./add-datasource.component.scss']
-})
-export class NewDataSourceDialogComponent {
-
-  constructor(
-    public dialogRef: MatDialogRef<NewDataSourceDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: DialogData) {}
-
-  onNoClick(): void {
-    this.dialogRef.close();
-  }
-
-  public isEmpty(value: any): boolean {
-    return (value && value.trim() === '');
-  }
-
-}*/
