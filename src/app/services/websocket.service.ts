@@ -143,7 +143,7 @@ export class WebSocketService {
     if((this.connectionProperties && !this._connected) || this.ws$ === undefined) {
       //console.log('queueing messages..', this._offlineMessageQueue.length, this._connected, this.ws$.closed);
       this._offlineMessageQueue = this._offlineMessageQueue.concat(
-        (messages as any).map((message: any) => {
+        (messages as any).map((message: any | string) => {
           let msgStr = '';
           if((message as string).split) {
             // string
