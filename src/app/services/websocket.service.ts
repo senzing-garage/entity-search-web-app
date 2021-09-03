@@ -141,10 +141,22 @@ export class WebSocketService {
     let retSub = new Subject<boolean>();
     let retObs = retSub.asObservable();
     if((this.connectionProperties && !this._connected) || this.ws$ === undefined) {
-      //console.log('queueing message..', this._offlineMessageQueue.length, this._connected, this.ws$.closed);
+      //console.log('queueing messages..', this._offlineMessageQueue.length, this._connected, this.ws$.closed);
       this._offlineMessageQueue = this._offlineMessageQueue.concat(
         (messages as any).map((message: any) => {
-          return {data: JSON.stringify(message)}
+          let msgStr = '';
+          if((message as string).split) {
+            // string
+            msgStr = message;
+          } else {
+            // assume json object
+            msgStr = JSON.stringify(message);
+          }
+          if(msgStr && !(msgStr.lastIndexOf('\n') >= (msgStr.length > 2 ? msgStr.length - 2 : msgStr.length))) {
+            // add line ending
+            msgStr  = msgStr +'\n';
+          }
+          return {data: msgStr}
         })
       );
     } else if(this.ws$) {
