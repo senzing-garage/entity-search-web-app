@@ -18,6 +18,7 @@ import { SzWebAppConfigService } from '../services/config.service';
 import { AdminComponent } from './admin/admin.component';
 import { AdminDataSourcesComponent } from './datasources/datasources.component';
 import { AdminDataLoaderComponent } from './load/load.component';
+import { AdminEntityTypesComponent } from './entity-types/entity-types.component';
 import { AdminOAuthTokensComponent } from './tokens/tokens.component';
 import { AuthGuardService } from '../services/ag.service';
 import { AdminErrorNoAdminModeComponent } from './errors/no-admin.component';
@@ -42,6 +43,11 @@ const routes: Routes = [
               path: 'datasources',
               canActivate: [AuthGuardService],
               component: AdminDataSourcesComponent
+          },
+          {
+              path: 'entity-types',
+              canActivate: [AuthGuardService],
+              component: AdminEntityTypesComponent
           },
           {
               path: 'load',

@@ -1,8 +1,9 @@
 import { Injectable, Inject } from '@angular/core';
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
-import { catchError, take } from 'rxjs/operators';
+import { catchError, filter, take } from 'rxjs/operators';
 import { SzRestConfigurationParameters, SzConfigurationService } from '@senzing/sdk-components-ng';
 import { HttpClient } from '@angular/common/http';
+import { AboutInfoService } from './about.service';
 
 export interface AuthConfig {
   hostname?: string;
@@ -71,6 +72,7 @@ export class SzWebAppConfigService {
   public onPocStreamConfigChange                                      = this._onPocStreamConfigChange.asObservable();
 
   constructor( 
+    private aboutInfoService: AboutInfoService,
     private http: HttpClient,
     private sdkConfigService: SzConfigurationService
   ) {
@@ -106,13 +108,35 @@ export class SzWebAppConfigService {
     ).subscribe((authConf: AuthConfig) => {
       this._authConfig = authConf;
     });
-    this.getRuntimeStreamConfig().pipe(
-      take(1)
-    ).subscribe((pocConf: POCStreamConfig) => {
-      this._pocStreamConfig = pocConf;
-      this._onPocStreamConfigChange.next( this._pocStreamConfig );
-      //console.warn('POC STREAM CONFIG!', this._pocStreamConfig);
-    });
+    if(this.aboutInfoService.isPocServerInstance && this.aboutInfoService.isAdminEnabled) {
+      this.getRuntimeStreamConfig().pipe(
+        filter(() => {
+          return this.aboutInfoService.isPocServerInstance && this.aboutInfoService.isAdminEnabled;
+        }),
+        take(1)
+      ).subscribe((pocConf: POCStreamConfig) => {
+        this._pocStreamConfig = pocConf;
+        this._onPocStreamConfigChange.next( this._pocStreamConfig );
+        console.warn('POC STREAM CONFIG!', this._pocStreamConfig);
+      });
+    } else {
+      this.aboutInfoService.onServerInfoUpdated.pipe(
+        filter(() => {
+          return this.aboutInfoService.isPocServerInstance && this.aboutInfoService.isAdminEnabled;
+        })
+      ).subscribe((result) => {
+        this.getRuntimeStreamConfig().pipe(
+          filter(() => {
+            return this.aboutInfoService.isPocServerInstance && this.aboutInfoService.isAdminEnabled;
+          }),
+          take(1)
+        ).subscribe((pocConf: POCStreamConfig) => {
+          this._pocStreamConfig = pocConf;
+          this._onPocStreamConfigChange.next( this._pocStreamConfig );
+          console.warn('POC STREAM CONFIG!', this._pocStreamConfig);
+        });
+      });
+    }
   }
   public getRuntimeAuthConfig(): Observable<AuthConfig> {
     // reach out to webserver to get auth

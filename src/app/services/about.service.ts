@@ -4,7 +4,7 @@ import {
   RouterStateSnapshot,
   ActivatedRouteSnapshot,
 } from '@angular/router';
-import { Observable, interval, from, of, EMPTY, Subject } from 'rxjs';
+import { Observable, interval, from, of, EMPTY, Subject, BehaviorSubject } from 'rxjs';
 import { AdminService, SzBaseResponse, SzMeta, SzVersionResponse, SzVersionInfo } from '@senzing/rest-api-client-ng';
 import { switchMap, tap, takeWhile, map, take } from 'rxjs/operators';
 import { version as appVersion, dependencies as appDependencies } from '../../../package.json';
@@ -51,6 +51,11 @@ export class AboutInfoService {
   public isAdminEnabled: boolean;
   public isPocServerInstance: boolean = false;
   private pollingInterval = 60 * 1000;
+
+  /** provide a event subject to notify listeners of updates */
+  private _onServerInfoUpdated = new BehaviorSubject(this);
+  public onServerInfoUpdated = this._onServerInfoUpdated.asObservable();
+
   /** poll for version info */
   public pollForVersionInfo(): Observable<SzVersionInfo> {
     return interval(this.pollingInterval).pipe(
@@ -154,12 +159,14 @@ export class AboutInfoService {
     this.infoQueueConfigured      = info && info.infoQueueConfigured !== undefined ? info.infoQueueConfigured : this.infoQueueConfigured;
     this.loadQueueConfigured      = info && info.loadQueueConfigured !== undefined ? info.loadQueueConfigured : this.loadQueueConfigured;
     this.webSocketsMessageMaxSize = info && info.webSocketsMessageMaxSize !== undefined ? info.webSocketsMessageMaxSize : this.webSocketsMessageMaxSize;
+    this._onServerInfoUpdated.next(this);
   }
 
   private setPocServerInfo(resp: SzMeta) {
     this.pocServerVersion     = resp && resp.pocServerVersion ? resp.pocServerVersion : this.pocApiVersion;
     this.pocApiVersion        = resp && resp.pocApiVersion ? resp.pocApiVersion : this.pocApiVersion;
     this.isPocServerInstance  = resp && resp.pocApiVersion !== undefined ? true : this.isPocServerInstance;
+    this._onServerInfoUpdated.next(this);
   }
 
   private setVersionInfo(serverInfo: SzVersionInfo): void {

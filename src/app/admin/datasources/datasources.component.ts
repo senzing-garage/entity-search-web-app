@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Inject } from '@angular/core';
+import { Component, OnInit, ViewChild, Inject, AfterViewInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { SzDataSourcesService, SzDataSourcesResponseData, SzDataSourcesResponse, SzDataSource } from '@senzing/sdk-components-ng';
 import { Observable } from 'rxjs';
@@ -6,6 +6,7 @@ import { map } from 'rxjs/operators';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { AdminBulkDataService } from '../../services/admin.bulk-data.service';
 
 export interface DialogData {
   name: string;
@@ -43,6 +44,7 @@ export class AdminDataSourcesComponent implements OnInit {
   }
 
   constructor(
+    private adminBulkDataService: AdminBulkDataService,
     private datasourcesServices: SzDataSourcesService,
     private titleService: Title,
     public dialog: MatDialog
@@ -52,10 +54,11 @@ export class AdminDataSourcesComponent implements OnInit {
     this.datasource.paginator = this.paginator;
     // set page title
     this.titleService.setTitle( 'Admin Area - Data Sources' );
-    this.updateDataSourcesList();
+    this._loading = true;
+    this.adminBulkDataService.onDataSourcesChange.subscribe(this.updateDataSourcesList.bind(this));
   }
 
-  private updateDataSourcesList() {
+  public updateDataSourcesList() {
     this._loading = true;
     this.datasourcesServices.listDataSourcesDetails().subscribe( (data: SzDataSourcesResponseData) => {
       this.dataSourcesData = data.dataSourceDetails;

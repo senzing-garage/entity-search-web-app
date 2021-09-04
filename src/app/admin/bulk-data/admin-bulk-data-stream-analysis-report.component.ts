@@ -11,10 +11,6 @@ import { takeUntil } from 'rxjs/operators';
 //import { MatTableDataSource } from '@angular/material/table';
 import { AdminBulkDataService, AdminStreamLoadSummary, AdminStreamAnalysisSummary } from '../../services/admin.bulk-data.service';
 
-export interface SzBulkDataComboAnalysis extends SzEntityTypeRecordAnalysis {
-  entityType?: string;
-}
-
 /**
  * Provides a visual report for a file analysis request.
  *
@@ -32,9 +28,10 @@ export class AdminBulkDataStreamAnalysisReportComponent implements OnInit, OnDes
   /** subscription to notify subscribers to unbind */
   public unsubscribe$ = new Subject<void>();
   public get displayedColumns(): string[] {
-    const retVal = ['dataSource', 'recordCount', 'recordsWithRecordIdCount', 'dataSourceCode'];
-    if( !this.isMoreThanOneDataSource && !this.isMoreThanOneEntityType) {
-      retVal.push('entityType');
+    const retVal = [];
+    retVal.push('dataSource', 'recordCount', 'recordsWithRecordIdCount');
+    if( this.hasBlankDataSource) {
+      retVal.push('dataSourceCode');
     }
     return retVal;
   }
@@ -101,23 +98,13 @@ export class AdminBulkDataStreamAnalysisReportComponent implements OnInit, OnDes
     public get isMoreThanOneDataSource() {
       return (this.analysis && this.analysis.dataSources && this.analysis.dataSources.length > 1) ? true : false;
     }
-    public get isMoreThanOneEntityType() {
-      let retVal = false;
-      if(this.analysis && this.analysis.analysisByEntityType && this.analysis.analysisByEntityType.length) {
-        retVal = (this.analysis.analysisByEntityType.length > 1) ? true : false;
-      } else if (this.analysis && this.analysis.entityTypes && this.analysis.entityTypes.length > 1) {
-        retVal = true;
-      }
+    /** check whether or not the analyzed file has any records with no datasource */
+    public get hasBlankDataSource() {
+      let retVal = (this.analysis && this.analysis.dataSources) ? true : false;
+      retVal = this.analysis.analysisByDataSource ? this.analysis.analysisByDataSource.some((item) => {
+        return (item && item.dataSource === null || !item.dataSource);
+      }) : false;
       return retVal;
-    }
-    public get comboAnalysis() {
-      if(!this.isMoreThanOneDataSource && !this.isMoreThanOneEntityType) {
-        const retVal: SzBulkDataComboAnalysis[] = this.analysis.analysisByDataSource;
-        retVal[0].entityType = this.analysis.analysisByEntityType[0].entityType;
-        return retVal;
-      } else {
-        return this.analysis.analysisByDataSource;
-      }
     }
 
     ngOnInit() {
