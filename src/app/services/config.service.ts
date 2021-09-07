@@ -66,19 +66,19 @@ export class SzWebAppConfigService {
   public set pocStreamConfig(value: POCStreamConfig) {
     this._pocStreamConfig = value;
   }
-  private get isReadOnly(): boolean {
+  public get isReadOnly(): boolean {
     return this._serverInfo && this._serverInfo.readOnly;
   }
-  private get isAdminEnabled(): boolean {
+  public get isAdminEnabled(): boolean {
     return this._serverInfo && this._serverInfo.adminEnabled;
   }
-  private get infoQueueConfigured(): boolean {
+  public get infoQueueConfigured(): boolean {
     return this._serverInfo && this._serverInfo.infoQueueConfigured !== undefined ? this._serverInfo.infoQueueConfigured : false;
   }
-  private get loadQueueConfigured(): boolean {
+  public get loadQueueConfigured(): boolean {
     return this._serverInfo && this._serverInfo.loadQueueConfigured !== undefined ? this._serverInfo.loadQueueConfigured : false;
   }
-  private get isPocServerInstance(): boolean {
+  public get isPocServerInstance(): boolean {
     return this._serverInfoMetadata && this._serverInfoMetadata.pocApiVersion !== undefined ? true : false;
   }
 

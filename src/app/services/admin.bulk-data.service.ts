@@ -362,11 +362,11 @@ export class AdminBulkDataService {
         // if so do a quick test
         this.configService.onPocStreamConfigChange.pipe(
             filter((result: POCStreamConfig | undefined) => {
-                return result && result !== undefined;
+                return result && result !== undefined && result !== null;
             })
         ).subscribe((result: POCStreamConfig) => {
-            //console.info('AdminBulkDataService.configService.onPocStreamConfigChange: ', result, this.aboutService.loadQueueConfigured, this.aboutService);
-            if(this.aboutService.isPocServerInstance && this.aboutService.isAdminEnabled && this.aboutService.loadQueueConfigured) {
+            console.info('AdminBulkDataService.configService.onPocStreamConfigChange: ', result, this.aboutService.loadQueueConfigured, this.aboutService);
+            if(this.configService.isPocServerInstance && this.configService.isAdminEnabled && this.configService.loadQueueConfigured) {
                 this.testStreamLoadingConnection(result);
             }
         });
