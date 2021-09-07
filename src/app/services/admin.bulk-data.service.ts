@@ -243,28 +243,30 @@ export class AdminBulkDataService {
     public isLoadingFile = false;
     public currentError: Error;
     /** use streaming file record importing */
+    private _useStreamingForLoad = false;
+    private _useStreamingForAnalysis = false;
     public set useStreamingForLoad(value: boolean) {
-        this.prefs.admin.useStreamingForLoad = value;
+        this._useStreamingForLoad = value;
     }
     public get useStreamingForLoad(): boolean {
-        return this.prefs.admin.useStreamingForLoad;
+        return this._useStreamingForLoad;
     }
     /** use streaming file importing analysis */
     public set useStreamingForAnalysis(value: boolean) {
-        this.prefs.admin.useStreamingForAnalysis = value;
+        this._useStreamingForAnalysis = value;
     }
     public get useStreamingForAnalysis(): boolean {
-        return this.prefs.admin.useStreamingForAnalysis;
+        return this._useStreamingForAnalysis;
     }
     
     /** convenience setter for setting both "useStreamingForLoad" and "useStreamingForAnalysis" to the same value */
     public set useStreaming(value: boolean) {
-        this.useStreamingForAnalysis = value;
-        this.useStreamingForLoad = value;
+        this._useStreamingForAnalysis = value;
+        this._useStreamingForLoad = value;
     }
     /** convenience getter, returns true if both useStreamingForAnalysis and useStreamingForLoad are set to true */
     public get useStreaming(): boolean {
-        return (this.useStreamingForAnalysis && this.useStreamingForLoad);
+        return (this._useStreamingForAnalysis && this._useStreamingForLoad);
     }
     /** when the load behavrior changes from stream to http or vise-versa */
     private _onUseStreamingSocketChange = new BehaviorSubject<boolean>(this.useStreamingForLoad);
