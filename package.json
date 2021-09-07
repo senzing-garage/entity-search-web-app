@@ -20,7 +20,7 @@
     "install:sdk": "npm install && npm run build:sdk && npm i ./dist/@senzing/sdk-components-ng",
     "watch": "rm -fR dist/@senzing/sdk-components-ng && concurrently --kill-others \"wait-on file:dist/@senzing/sdk-components-ng/public_api.d.ts && ng serve\" \"ng build @senzing/sdk-components-ng --watch\"",
     "test": "ng test",
-    "test:ws:config":"node ./run/test-config.js -- webServerUrl=\"http://localhost:4300\" streamServerUrl=\"ws://americium.local:8250\" apiServerUrl=\"http://americium.local:8250\"",
+    "test:ws:config": "node ./run/test-config.js -- webServerUrl=\"http://localhost:4300\" streamServerUrl=\"ws://americium.local:8250\" apiServerUrl=\"http://americium.local:8250\"",
     "test:headless": "ng test --no-watch --watch=false --karma-config karma.ci.conf --progress=false --no-progress --browsers=ChromeHeadless",
     "lint": "ng lint",
     "e2e": "ng e2e --configuration=e2e --protractor-config=e2e/protractor.conf.js",
