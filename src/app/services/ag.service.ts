@@ -95,7 +95,7 @@ export class AuthGuardService implements CanActivate {
         if (!(authConf.admin && authConf.admin.mode)) {
           // no auth check. WWWWHHHHYYYY!!!
           // hope you know what you're doing
-          // console.warn('NO AUTH CHECK!!! EXTREMELY DANGEROUS!');
+          console.warn('NO AUTH CHECK!!! EXTREMELY DANGEROUS!');
           responseMap.noAuth = true;
           //responseMap.adminEnabled = true;
           retReq = of(true);
@@ -156,7 +156,7 @@ export class AuthGuardService implements CanActivate {
         if (!(responseMap.config.admin && responseMap.config.admin.mode)) {
           // no auth check. WWWWHHHHYYYY!!!
           // hope you know what you're doing
-          // console.warn('2 NO AUTH CHECK!!! EXTREMELY DANGEROUS!');
+          console.warn('2 NO AUTH CHECK!!! EXTREMELY DANGEROUS!');
           responseMap.noAuth = true;
           return of(true);
         } else {
@@ -175,6 +175,7 @@ export class AuthGuardService implements CanActivate {
           console.warn('redirecting to login: ', responseMap);
           this.redirectOnFailure();
         } else {
+          console.warn('ag true: ', responseMap);
           return of(true);
         }
       }),
