@@ -77,7 +77,7 @@ export class SzStreamingFileRecordParser {
                 let lastBracketPos  = streamChunkLine.lastIndexOf("}");
                 let lastCommaPos    = streamChunkLine.lastIndexOf(",");
                 if(lastCommaPos > lastBracketPos) {
-                    // strip off last "}"
+                    // strip off last ","
                     streamChunkLine = streamChunkLine.substring(0, lastCommaPos);
                 }
                 try{
