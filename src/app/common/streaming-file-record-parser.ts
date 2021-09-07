@@ -73,6 +73,13 @@ export class SzStreamingFileRecordParser {
         })
         if(!hasDouble) {
             return streamChunkLines.map( (streamChunkLine) => {
+                // does line have "," after last "}"
+                let lastBracketPos  = streamChunkLine.lastIndexOf("}");
+                let lastCommaPos    = streamChunkLine.lastIndexOf(",");
+                if(lastCommaPos > lastBracketPos) {
+                    // strip off last "}"
+                    streamChunkLine = streamChunkLine.substring(0, lastCommaPos);
+                }
                 try{
                     return JSON.parse(streamChunkLine);
                 }catch(err){
