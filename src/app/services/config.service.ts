@@ -1,9 +1,8 @@
 import { Injectable, Inject } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
-import { catchError, filter, take } from 'rxjs/operators';
-import { SzRestConfigurationParameters, SzConfigurationService } from '@senzing/sdk-components-ng';
+import { BehaviorSubject, Observable, of, Subject, interval, from } from 'rxjs';
+import { catchError, filter, switchMap, take, tap } from 'rxjs/operators';
+import { SzAdminService, SzRestConfigurationParameters, SzConfigurationService, SzServerInfo, SzMeta } from '@senzing/sdk-components-ng';
 import { HttpClient } from '@angular/common/http';
-import { AboutInfoService } from './about.service';
 
 export interface AuthConfig {
   hostname?: string;
@@ -45,6 +44,9 @@ export class SzWebAppConfigService {
   private _authConfig: AuthConfig;
   private _apiConfig: SzRestConfigurationParameters;
   private _pocStreamConfig: POCStreamConfig;
+  private _serverInfo: SzServerInfo;
+  private _serverInfoMetadata: SzMeta
+  private pollingInterval = 60 * 1000;
 
   public get authConfig(): AuthConfig {
     return this._authConfig;
@@ -64,18 +66,95 @@ export class SzWebAppConfigService {
   public set pocStreamConfig(value: POCStreamConfig) {
     this._pocStreamConfig = value;
   }
+  public get isReadOnly(): boolean {
+    return this._serverInfo && this._serverInfo.readOnly;
+  }
+  public get isAdminEnabled(): boolean {
+    return this._serverInfo && this._serverInfo.adminEnabled;
+  }
+  public get infoQueueConfigured(): boolean {
+    return this._serverInfo && this._serverInfo.infoQueueConfigured !== undefined ? this._serverInfo.infoQueueConfigured : false;
+  }
+  public get loadQueueConfigured(): boolean {
+    return this._serverInfo && this._serverInfo.loadQueueConfigured !== undefined ? this._serverInfo.loadQueueConfigured : false;
+  }
+  public get isPocServerInstance(): boolean {
+    return this._serverInfoMetadata && this._serverInfoMetadata.pocApiVersion !== undefined ? true : false;
+  }
+
+  /** provide a event subject to notify listeners of updates */
   private _onAuthConfigChange: Subject<AuthConfig>                    = new Subject<AuthConfig>();
   public onAuthConfigChange                                           = this._onAuthConfigChange.asObservable();
   private _onApiConfigChange: Subject<SzRestConfigurationParameters>  = new Subject<SzRestConfigurationParameters>();
   public onApiConfigChange                                            = this._onApiConfigChange.asObservable();
-  private _onPocStreamConfigChange: Subject<POCStreamConfig>          = new BehaviorSubject<POCStreamConfig>(undefined);
+  private _onPocStreamConfigChange: BehaviorSubject<POCStreamConfig>  = new BehaviorSubject<POCStreamConfig>(undefined);
   public onPocStreamConfigChange                                      = this._onPocStreamConfigChange.asObservable();
+  private _onServerInfoUpdated: BehaviorSubject<SzServerInfo>         = new BehaviorSubject<SzServerInfo>(undefined);
+  public onServerInfoUpdated                                          = this._onServerInfoUpdated.asObservable();
 
   constructor( 
-    private aboutInfoService: AboutInfoService,
+    private adminService: SzAdminService, 
     private http: HttpClient,
     private sdkConfigService: SzConfigurationService
   ) {
+
+    // ---------------------------------------  set up event handlers -------------------------------------------
+
+    // if the api config changes we need to grab a new versions of 
+    // stream config and auth config
+    // _serverInfo and _serverInfoMetadata
+    this.onApiConfigChange.pipe(
+      take(5)
+    ).subscribe(() => {
+      console.warn('AboutInfoService() config updated, making new info calls..');
+
+      // get updated runtime auth config
+      this.getRuntimeAuthConfig().pipe(
+        take(1)
+      ).subscribe((authConf: AuthConfig) => {
+        this._authConfig = authConf;
+      });
+      // get updated stream config
+      this.getRuntimeStreamConfig().pipe(
+        take(1)
+      ).subscribe((pocConf: POCStreamConfig) => {
+        this._pocStreamConfig = pocConf;
+        this._onPocStreamConfigChange.next( this._pocStreamConfig );
+        //console.warn('POC STREAM CONFIG!', this._pocStreamConfig);
+      });
+      // get updated server info if api config has changed
+      this.adminService.getServerInfo().pipe(take(1)).subscribe( (resp: SzServerInfo) => {
+        this._serverInfo = resp;
+        this._onServerInfoUpdated.next(this._serverInfo);
+      } );
+      // get updated server info metadata if api config has changed
+      this.adminService.getServerInfoMetadata().pipe(take(1)).subscribe( (resp: SzMeta) => {
+        this._serverInfoMetadata = resp;
+        this._onServerInfoUpdated.next(this._serverInfo);
+      });
+    });
+
+    // If the server info or server info metadata has been updated we need to 
+    // requery for runtime stream config (maybe)
+    this.onServerInfoUpdated.pipe(
+      filter((srvInfo: undefined | SzServerInfo) => {
+        return srvInfo !== undefined && this.isPocServerInstance && this.isAdminEnabled;
+      })
+    ).subscribe((result) => {
+      this.getRuntimeStreamConfig().pipe(
+        filter(() => {
+          return this.isPocServerInstance && this.isAdminEnabled;
+        }),
+        take(1)
+      ).subscribe((pocConf: POCStreamConfig) => {
+        this._pocStreamConfig = pocConf;
+        this._onPocStreamConfigChange.next( this._pocStreamConfig );
+        console.warn('POC STREAM CONFIG!', this._pocStreamConfig);
+      });
+    });
+
+    // -----------------------------------------  initial requests ---------------------------------------------
+    // get initial runtime config for /api requests
     this.getRuntimeApiConfig().pipe(
       take(1)
     ).subscribe((apiConf: SzRestConfigurationParameters) => {
@@ -87,56 +166,35 @@ export class SzWebAppConfigService {
         //console.warn('SzWebAppConfigService.getRuntimeApiConfig: set SDK basePath', apiConf);
       }
     });
-    this.onApiConfigChange.pipe(
-      take(5)
-    ).subscribe(() => {
-      this.getRuntimeAuthConfig().pipe(
-        take(1)
-      ).subscribe((authConf: AuthConfig) => {
-        this._authConfig = authConf;
-      });
-      this.getRuntimeStreamConfig().pipe(
-        take(1)
-      ).subscribe((pocConf: POCStreamConfig) => {
-        this._pocStreamConfig = pocConf;
-        this._onPocStreamConfigChange.next( this._pocStreamConfig );
-        //console.warn('POC STREAM CONFIG!', this._pocStreamConfig);
-      });
-    });
+    // get initial runtime config for /auth requests
     this.getRuntimeAuthConfig().pipe(
       take(1)
     ).subscribe((authConf: AuthConfig) => {
       this._authConfig = authConf;
     });
-    if(this.aboutInfoService.isPocServerInstance && this.aboutInfoService.isAdminEnabled) {
-      this.getRuntimeStreamConfig().pipe(
-        filter(() => {
-          return this.aboutInfoService.isPocServerInstance && this.aboutInfoService.isAdminEnabled;
-        }),
-        take(1)
-      ).subscribe((pocConf: POCStreamConfig) => {
-        this._pocStreamConfig = pocConf;
-        this._onPocStreamConfigChange.next( this._pocStreamConfig );
-        console.warn('POC STREAM CONFIG!', this._pocStreamConfig);
-      });
-    } else {
-      this.aboutInfoService.onServerInfoUpdated.pipe(
-        filter(() => {
-          return this.aboutInfoService.isPocServerInstance && this.aboutInfoService.isAdminEnabled;
-        })
-      ).subscribe((result) => {
-        this.getRuntimeStreamConfig().pipe(
-          filter(() => {
-            return this.aboutInfoService.isPocServerInstance && this.aboutInfoService.isAdminEnabled;
-          }),
-          take(1)
-        ).subscribe((pocConf: POCStreamConfig) => {
-          this._pocStreamConfig = pocConf;
-          this._onPocStreamConfigChange.next( this._pocStreamConfig );
-          console.warn('POC STREAM CONFIG!', this._pocStreamConfig);
-        });
-      });
-    }
+    // get initial "ServerInfo"
+    this.adminService.getServerInfo().pipe(take(1)).subscribe( (resp: SzServerInfo) => {
+      this._serverInfo = resp;
+      this._onServerInfoUpdated.next(this._serverInfo);
+    });
+    // in order to get "POC" specific properties we neet the metadata node instead
+    this.adminService.getServerInfoMetadata().pipe(take(1)).subscribe((resp: SzMeta) => {
+      this._serverInfoMetadata = resp;
+      this._onServerInfoUpdated.next(this._serverInfo);
+    });
+
+    // -------------------------------------  set up polling requests -----------------------------------------
+    /** now set up polling for updates of server-info properties */
+    this.pollForServerInfo().subscribe();
+  }
+  /** poll for server info */
+  private pollForServerInfo(): Observable<SzServerInfo> {
+    return interval(this.pollingInterval).pipe(
+        switchMap(() => from( this.adminService.getServerInfo() )),
+        tap( (resp: SzServerInfo) => {
+          this._serverInfo = resp;
+        } )
+    );
   }
   public getRuntimeAuthConfig(): Observable<AuthConfig> {
     // reach out to webserver to get auth
