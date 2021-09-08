@@ -97,7 +97,7 @@ export class AuthGuardService implements CanActivate {
         if (!(authConf.admin && authConf.admin.mode)) {
           // no auth check. WWWWHHHHYYYY!!!
           // hope you know what you're doing
-          console.warn('NO AUTH CHECK!!! EXTREMELY DANGEROUS!');
+          //console.warn('NO AUTH CHECK!!! EXTREMELY DANGEROUS!');
           responseMap.noAuth = true;
           //responseMap.adminEnabled = true;
           retReq = of(true);
@@ -159,7 +159,7 @@ export class AuthGuardService implements CanActivate {
           // no auth check. WWWWHHHHYYYY!!!
           // hope you know what you're doing
           responseMap.noAuth = true;
-          console.warn('2 NO AUTH CHECK!!! EXTREMELY DANGEROUS!', responseMap);
+          //console.warn('2 NO AUTH CHECK!!! EXTREMELY DANGEROUS!', responseMap);
           return this.adminAuth.getServerInfo().pipe(
             tap((resi: SzServerInfo) => {
               responseMap.adminEnabled = resi.adminEnabled;
@@ -170,14 +170,11 @@ export class AuthGuardService implements CanActivate {
               return of(true)
             })
           );
-          //responseMap.noAuth = true;
-          //return of(true);
         } else {
           return this.adminAuth.getServerInfo().pipe(
             tap((resi: SzServerInfo) => {
               responseMap.adminEnabled = resi.adminEnabled;
               responseMap.readonly = resi.readOnly;
-              //responses.push(resi);
             }),
             map( (resi: SzServerInfo) => {
               return true
@@ -194,7 +191,6 @@ export class AuthGuardService implements CanActivate {
         } else if(!responseMap.adminEnabled){
           this.router.navigate( ['admin', 'error', 'admin-mode-disabled'] );
         } else {
-          console.warn('ag true: ', responseMap);
           return of(true);
         }
       }),
