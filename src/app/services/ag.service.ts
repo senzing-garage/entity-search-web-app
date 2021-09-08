@@ -5,6 +5,7 @@ import { Observable, of, Subject } from 'rxjs';
 import { map, catchError, tap, concatMap } from 'rxjs/operators';
 import { AdminAuthService } from './admin.service';
 import { AuthConfig } from './config.service';
+import { SzServerInfo } from '@senzing/sdk-components-ng';
 
 /**
  * A service that provides authentication checks for routes
@@ -79,6 +80,7 @@ export class AuthGuardService implements CanActivate {
       sso?: boolean,
       noAuth?: boolean,
       adminEnabled?: boolean,
+      readonly?: boolean,
       error?: any
     } = {};
 
@@ -156,14 +158,29 @@ export class AuthGuardService implements CanActivate {
         if (!(responseMap.config.admin && responseMap.config.admin.mode)) {
           // no auth check. WWWWHHHHYYYY!!!
           // hope you know what you're doing
-          console.warn('2 NO AUTH CHECK!!! EXTREMELY DANGEROUS!');
           responseMap.noAuth = true;
-          return of(true);
-        } else {
-          return this.adminAuth.checkServerInfo().pipe(
-            tap((resi: boolean) => {
-              responseMap.adminEnabled = resi;
+          console.warn('2 NO AUTH CHECK!!! EXTREMELY DANGEROUS!', responseMap);
+          return this.adminAuth.getServerInfo().pipe(
+            tap((resi: SzServerInfo) => {
+              responseMap.adminEnabled = resi.adminEnabled;
+              responseMap.readonly = resi.readOnly;
               //responses.push(resi);
+            }),
+            map( (resi: SzServerInfo) => {
+              return of(true)
+            })
+          );
+          //responseMap.noAuth = true;
+          //return of(true);
+        } else {
+          return this.adminAuth.getServerInfo().pipe(
+            tap((resi: SzServerInfo) => {
+              responseMap.adminEnabled = resi.adminEnabled;
+              responseMap.readonly = resi.readOnly;
+              //responses.push(resi);
+            }),
+            map( (resi: SzServerInfo) => {
+              return true
             })
           );
         }
@@ -174,6 +191,8 @@ export class AuthGuardService implements CanActivate {
         } else if(!responseMap.noAuth && !responseMap.sso && !responseMap.jwt) {
           console.warn('redirecting to login: ', responseMap);
           this.redirectOnFailure();
+        } else if(!responseMap.adminEnabled){
+          this.router.navigate( ['admin', 'error', 'admin-mode-disabled'] );
         } else {
           console.warn('ag true: ', responseMap);
           return of(true);
