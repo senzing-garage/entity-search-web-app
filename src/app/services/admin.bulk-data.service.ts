@@ -880,6 +880,8 @@ export class AdminBulkDataService {
                 //this.onAnalysisChange.next( this.currentAnalysisResult );
             })
         ).subscribe((summary: AdminStreamAnalysisSummary) => {
+            console.log('onStreamAnalysisComplete: ', summary);
+
             if(readStreamComplete && summary) {
                 // set this to true to end batching loop Observeable
                 //console.warn('stream load complete 2', summary);
@@ -1041,7 +1043,7 @@ export class AdminBulkDataService {
 
         // read file contents as stream
         // parse to array of records
-        this.parseRecordsFromFile(file, (status) => {
+        let _onStreamRecordParserListener = this.parseRecordsFromFile(file, (status) => {
             // on stream complete, do thing
             //console.warn('SzBulkDataService.streamLoad: file stream read complete.', status);
             readStreamComplete = true;
@@ -1128,7 +1130,7 @@ export class AdminBulkDataService {
         //}
         
         // when ANYTHING changes, update the singleton "currentLoadResult" var so components can read status
-        retObs.subscribe((summary: AdminStreamLoadSummary) => {
+        let _onAdminStreamLoadSummaryChangedListener = retObs.subscribe((summary: AdminStreamLoadSummary) => {
             this.currentLoadResult = summary;
         });
 
@@ -1188,6 +1190,12 @@ export class AdminBulkDataService {
                 if(_onStreamLoadCompleteListener && _onStreamLoadCompleteListener.unsubscribe) {
                     _onStreamLoadCompleteListener.unsubscribe();
                 }
+                if(_onStreamRecordParserListener && _onStreamRecordParserListener.unsubscribe) {
+                    _onStreamRecordParserListener.unsubscribe();
+                }
+                if(_onAdminStreamLoadSummaryChangedListener && _onAdminStreamLoadSummaryChangedListener.unsubscribe) {
+                    _onAdminStreamLoadSummaryChangedListener.unsubscribe();
+                }                
             //}, 3000)
         });
 
