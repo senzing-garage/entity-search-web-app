@@ -825,7 +825,7 @@ export class AdminBulkDataService {
 
         // read file contents as stream
         // parse to array of records
-        this.parseRecordsFromFile(file, (status) => {
+        let _onStreamRecordParserListener = this.parseRecordsFromFile(file, (status) => {
             // on stream complete, do thing
             //console.log('SzBulkDataService.streamAnalyze: file stream read complete.', status);
             readStreamComplete = true;
@@ -849,7 +849,7 @@ export class AdminBulkDataService {
         );
         
         // when ANYTHING changes, update the singleton "currentAnalysisResult" var so components can read status
-        retObs.subscribe((summary: AdminStreamAnalysisSummary) => {
+        let _onAdminStreamAnalysisSummaryChangedListener = retObs.subscribe((summary: AdminStreamAnalysisSummary) => {
             this.currentAnalysisResult = summary;
         });
 
@@ -867,7 +867,7 @@ export class AdminBulkDataService {
         });
 
         // on end of records queue double-check if whole thing is complete
-        this.onStreamAnalysisComplete.pipe(
+        let _onStreamAnalysisCompleteListener = this.onStreamAnalysisComplete.pipe(
             takeUntil(this.streamAnalysisAbort$),
             filter((summary: AdminStreamAnalysisSummary) => { return summary !== undefined;}),
             take(1),
@@ -888,6 +888,15 @@ export class AdminBulkDataService {
                 summary.complete = true;
             } else {
                 //console.warn('stream analysis complete 2', readStreamComplete, summary);
+            }
+            if(_onStreamAnalysisCompleteListener && _onStreamAnalysisCompleteListener.unsubscribe) {
+                _onStreamAnalysisCompleteListener.unsubscribe();
+            }
+            if(_onStreamRecordParserListener && _onStreamRecordParserListener.unsubscribe) {
+                _onStreamRecordParserListener.unsubscribe();
+            }
+            if(_onAdminStreamAnalysisSummaryChangedListener && _onAdminStreamAnalysisSummaryChangedListener.unsubscribe) {
+                _onAdminStreamAnalysisSummaryChangedListener.unsubscribe();
             }
         });
         return retObs;
