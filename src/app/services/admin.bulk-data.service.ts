@@ -880,8 +880,7 @@ export class AdminBulkDataService {
                 //this.onAnalysisChange.next( this.currentAnalysisResult );
             })
         ).subscribe((summary: AdminStreamAnalysisSummary) => {
-            console.log('onStreamAnalysisComplete: ', summary);
-
+            //console.log('onStreamAnalysisComplete: ', summary);
             if(readStreamComplete && summary) {
                 // set this to true to end batching loop Observeable
                 //console.warn('stream load complete 2', summary);
