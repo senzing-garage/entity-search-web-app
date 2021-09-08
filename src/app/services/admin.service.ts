@@ -64,6 +64,11 @@ export class AdminAuthService {
    */
   public onAdminModeChange: Subject<boolean> =  new Subject<boolean>();
   /**
+   * when the state of the rest server "readOnly" flag is changed.
+   */
+  public onAdminReadOnlyChange: Subject<boolean> =  new Subject<boolean>();
+
+  /**
    * when the authenticated status of the current user has changed
    */
   public onAdminAuthenticatedChange: Subject<boolean> =  new Subject<boolean>();
@@ -211,5 +216,21 @@ export class AdminAuthService {
         if( _isChanged ) { this.onAdminModeChange.next( this.adminService.adminEnabled ); }
       })
     );
+  }
+  /** reach out to rest server to check whether or not the "adminEnabled" flag is set to true */
+  public checkIsReadOnly(): Observable<boolean> {
+    return this.adminService.getServerInfo().pipe(
+      map( (resp: SzServerInfo) => resp.readOnly ),
+      tap( (resp: boolean) => {
+        const _isChanged = (this.adminService.readOnly !== resp);
+        this.adminService.readOnly = resp;
+        //console.info('AdminAuthService.checkServerInfo: ', this.isAdminModeEnabled, _isChanged);
+        if( _isChanged ) { this.onAdminReadOnlyChange.next( this.adminService.readOnly ); }
+      })
+    );
+  }
+  /** reach out to rest server to check whether or not the "adminEnabled" flag is set to true */
+  public getServerInfo(): Observable<SzServerInfo> {
+    return this.adminService.getServerInfo();
   }
 }
