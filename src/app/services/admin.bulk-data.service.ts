@@ -991,9 +991,11 @@ export class AdminBulkDataService {
             //if(data && data.status === 'COMPLETED' && summary.sentRecordCount === summary.recordCount) {
                 // all data sent
                 summary.complete = true;
+            } else {
+                summary.complete = false;
             }
             if(readStreamComplete && sendStreamComplete && summary.complete === true) {
-                //console.warn('sending _onStreamLoadComplete: ', summary);
+                console.warn('sending _onStreamLoadComplete: ', summary, data);
                 this._onStreamLoadComplete.next(summary);
             } else {
                 //console.log('stream not complete', readStreamComplete, sendStreamComplete, summary.complete);
@@ -1083,7 +1085,7 @@ export class AdminBulkDataService {
                     //console.warn('stream load complete 1', summary);
                     sendStreamComplete = true;
                     if(summary.complete === true) {
-                        //console.warn('sending _onStreamLoadComplete 2: ', summary);
+                        console.warn('sending _onStreamLoadComplete 2: ', summary);
                         this._onStreamLoadComplete.next(summary);
                     }
                 } else {
