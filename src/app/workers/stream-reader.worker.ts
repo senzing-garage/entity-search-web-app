@@ -151,7 +151,7 @@ function getRecordsFromFileStream(fileHandle: File, fileReadStream: ReadableStre
             if(firstChunk) {
                 payloadChunk = payloadChunk.trim();
                 payloadChunk = payloadChunk.substring(payloadChunk.indexOf('[')+1);
-                console.log('cutting "[" out from line 1', payloadChunk);
+                //console.log('cutting "[" out from line 1', payloadChunk);
             }
         } else if(firstChunk){
             console.log('isValidJSONL: '+ isValidJSONL, );
@@ -159,8 +159,28 @@ function getRecordsFromFileStream(fileHandle: File, fileReadStream: ReadableStre
 
         // split chunk by line endings for per-record streaming
         let chunkLines = payloadChunk.split(summary.fileLineEndingStyle);
+        // strip out anything like "]" that may break things
+        chunkLines = chunkLines.map((streamChunkLine) => {
+            // does line have "," after last "}"
+            if(streamChunkLine && streamChunkLine.lastIndexOf) {
+                let lastBracketPos  = streamChunkLine.lastIndexOf("}");
+                let lastCommaPos    = streamChunkLine.lastIndexOf(",");
+                if(lastCommaPos > lastBracketPos) {
+                    // strip off last ","
+                    streamChunkLine = streamChunkLine.substring(0, lastCommaPos);
+                }
+            }
+            if(streamChunkLine && streamChunkLine.trim && streamChunkLine.trim() === ']') {
+                streamChunkLine = undefined;
+            }
+            return streamChunkLine;
+        }).filter((chunkLine) => {
+            return chunkLine && chunkLine !== undefined;
+        });
+        //console.log('split records in chunk by line endings: ', chunkLines);
+
         //wsRecordsQueue.push(chunkLines);
-        retSubject.next(chunkLines);;
+        retSubject.next(chunkLines);
 
         // get number of records in chunk
         let numberOfRecordsInChunk = (payloadChunk.match( lineEndingRegEx ) || '').length + 1;
