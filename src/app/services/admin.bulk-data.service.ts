@@ -976,7 +976,7 @@ export class AdminBulkDataService {
         //} else {
         //    console.log('SzBulkDataService.streamLoad: websocket thinks its still connected: ', this.webSocketService.connected, this.streamConnectionProperties);
         //}
-        this.webSocketService.onMessageRecieved.pipe(
+        let _onWSMessageRecievedListener = this.webSocketService.onMessageRecieved.pipe(
             filter( data => { return data !== undefined}),
             map( data => { return (data as AdminStreamLoadSummary) })
         ).subscribe((data: AdminStreamLoadSummary) => {
@@ -995,7 +995,7 @@ export class AdminBulkDataService {
                 summary.complete = false;
             }
             if(readStreamComplete && sendStreamComplete && summary.complete === true) {
-                console.warn('sending _onStreamLoadComplete: ', summary, data);
+                //console.warn('sending _onStreamLoadComplete: ', summary, data);
                 this._onStreamLoadComplete.next(summary);
             } else {
                 //console.log('stream not complete', readStreamComplete, sendStreamComplete, summary.complete);
@@ -1085,7 +1085,7 @@ export class AdminBulkDataService {
                     //console.warn('stream load complete 1', summary);
                     sendStreamComplete = true;
                     if(summary.complete === true) {
-                        console.warn('sending _onStreamLoadComplete 2: ', summary);
+                        //console.warn('sending _onStreamLoadComplete 2: ', summary);
                         this._onStreamLoadComplete.next(summary);
                     }
                 } else {
@@ -1172,7 +1172,7 @@ export class AdminBulkDataService {
         });*/
 
         // on end of records queue double-check if whole thing is complete
-        this._onStreamLoadComplete.pipe(
+        let _onStreamLoadCompleteListener = this._onStreamLoadComplete.pipe(
             takeUntil(this.streamLoadAbort$),
             filter((summary: AdminStreamLoadSummary) => { return summary !== undefined;}),
             take(5),
@@ -1182,6 +1182,12 @@ export class AdminBulkDataService {
             //setTimeout(() => {
                 console.log('closing connection: all data sent', summary);
                 this.webSocketService.disconnect();
+                if(_onWSMessageRecievedListener && _onWSMessageRecievedListener.unsubscribe) {
+                    _onWSMessageRecievedListener.unsubscribe();
+                }
+                if(_onStreamLoadCompleteListener && _onStreamLoadCompleteListener.unsubscribe) {
+                    _onStreamLoadCompleteListener.unsubscribe();
+                }
             //}, 3000)
         });
 
