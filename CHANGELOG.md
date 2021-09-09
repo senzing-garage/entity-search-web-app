@@ -13,7 +13,7 @@ datasources on the record level. If the record contains an explicit datasource t
 will be loaded in to. If the datasource specified does not exist it will be created. If the file contains 
 records that have _NO_ datasource specified the user will be prompted to enter one before load.
 - removed the UI interaction in admin/load around custom entity types. Now 
-if a imported file specifies a specific entity type that does not exist is is created. If no 
+if a imported file specifies a specific entity type that does not exist it is created. If no 
 entity type is specified it is automatically assumed `GENERIC`
 - Added a "Admin" menu option in the upper-left site menu _WHEN_ the poc or api server has "-adminEnabled" set.
 - bugfixes related to stream loading (various, see relevant tickets)
