@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.2] - 2021-09-09
+
+- removed the re-mapping UI interaction in admin/load when an import contains explicitly specified 
+datasources on the record level. If the record contains an explicit datasource that is what the record 
+will be loaded in to. If the datasource specified does not exist it will be created. If the file contains 
+records that have _NO_ datasource specified the user will be prompted to enter one before load.
+- removed the UI interaction in admin/load around custom entity types. Now 
+if a imported file specifies a specific entity type that does not exist is is created. If no 
+entity type is specified it is automatically assumed `GENERIC`
+- Added a "Admin" menu option in the upper-left site menu _WHEN_ the poc or api server has "-adminEnabled" set.
+- bugfixes related to stream loading (various, see relevant tickets)
+
+relevant tickets #189 #190 #192 #196 #198 #200 #202 #204
+
 ## [2.3.1] - 2021-08-26
 
 The configuration options/setup surrounding the stream loading feature released in [2.3.0](https://github.com/Senzing/entity-search-web-app/releases/tag/2.3.0) has been simplified. Now stream loading is automatically enabled for the user **_IF_** the webapp is running against a **[POC Server](https://github.com/Senzing/senzing-poc-server)** that has SQS configured. If not configured properly or running against the [API server](https://github.com/Senzing/senzing-api-server)(with adminMode=true set) the loading feature will fallback to the **non**-stream method. As a result of this streamlining the UI **_toggle switch_** and **"connection configuration"** modal has been _removed_ from the UI.
