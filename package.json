@@ -1,6 +1,7 @@
 {
   "name": "@senzing/entity-search-web-app",
   "version": "2.3.2",
+  "license":  "Apache-2.0",
   "scripts": {
     "ng": "ng",
     "start": "npm run start:with:auth",
