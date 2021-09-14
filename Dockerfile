@@ -12,7 +12,8 @@ LABEL Name="senzing/entity-search-web-app" \
 HEALTHCHECK CMD ["/app/healthcheck.sh"]
 
 # Set working directory.
-WORKDIR /app
+COPY ./rootfs /
+WORKDIR /
 
 # Add `/app/node_modules/.bin` to $PATH
 ENV PATH /app/node_modules/.bin:$PATH
@@ -20,22 +21,26 @@ ENV PATH /app/node_modules/.bin:$PATH
 # Install and cache app dependencies.
 COPY package.json /app/package.json
 COPY package-lock.json /app/package-lock.json
+WORKDIR /app
+
 RUN npm config set loglevel warn \
  && npm install --silent \
  && npm install --silent -g @angular/cli@10.0.0
 
-# Build app. build as root and switch back
-COPY ./rootfs /
+# Build app
 COPY . /app
 RUN npm run build:docker
 
 # production output stage
 FROM ${PROD_IMAGE}
+WORKDIR /app
 
 # Copy files from repository.
 COPY ./rootfs /
 COPY ./run /app/run
 COPY --from=0 /app/dist /app/dist
+COPY --from=0 /app/package.json /app/package.json
+
 RUN npm config set loglevel warn \
  && npm install --silent --production
 
