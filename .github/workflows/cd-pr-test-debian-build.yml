@@ -1,9 +1,10 @@
 name: Pull Request Test Entity Search Web App Build on Debian
 
 on:
+  push:
+    branches: [ $default-branch, master ]
   pull_request:
-    branches:
-      - master
+    branches: [ $default-branch, master ]
 
 jobs:
   prBuildEntitySearchWebApp:
@@ -21,8 +22,26 @@ jobs:
           make \
             BASE_IMAGE="node:12.2.0" \
             docker-build
+
+  prTestEntitySearchWebApp:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm ci
+    - run: npm run build:docker --if-present
+    - run: npm run test:headless
+#    - run: npm run e2e:headless
+
   logPrBuildEntitySearchWebApp:
-    needs: prBuildEntitySearchWebApp
+    needs: [prBuildEntitySearchWebApp, prTestEntitySearchWebApp]
     if: always()
     runs-on: ubuntu-latest
     steps:
