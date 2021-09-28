@@ -36,6 +36,8 @@ export class AppComponent implements OnInit, OnDestroy {
   public get searchExpanded() {
     return this.ui.searchExpanded;
   }
+  public isExpanded = true;
+
   /** whether or not to display prefs in the interface ribbon */
   public showPrefs = false;
   /** prefs storage mode (do not directly modify)
@@ -50,6 +52,10 @@ export class AppComponent implements OnInit, OnDestroy {
     } else {
       return 'memory';
     }
+  }
+
+  public toggleMenu() {
+    this.isExpanded = !this.isExpanded;
   }
 
   /** subscription to notify subscribers to unbind */

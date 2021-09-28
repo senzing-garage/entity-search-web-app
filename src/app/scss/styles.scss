@@ -92,3 +92,11 @@ button.graph {
     font-size: 20px;
   }
 }
+
+// override material inline style to allow mini nav state
+mat-sidenav[style] {
+  visibility: visible !important;
+}
+.mat-drawer {
+  transform: none !important;
+}

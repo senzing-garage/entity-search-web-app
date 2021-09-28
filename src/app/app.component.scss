@@ -1,3 +1,8 @@
+mat-sidenav {
+  background-color: #3c3a3c;
+  color: #dde2ff;
+}
+
 
 sz-powered-by {
   font-size: 10px;
@@ -146,7 +151,7 @@ sz-powered-by {
     height: unset;
   }
 }
-:host.layout-super-narrow, {
+:host.layout-super-narrow {
   .tool-tray.expanded {
     height: 520px;
   }
@@ -154,7 +159,7 @@ sz-powered-by {
     height: unset;
   }
 }
-:host.layout-medium, {
+:host.layout-medium {
 
   .tool-tray.expanded.prefs-showing {
     height: unset;

@@ -20,6 +20,7 @@ import { GatewayTimeoutErrorComponent } from './errors/timeout/timeout.component
 import { UnknownErrorComponent } from './errors/uknown/uknown.component';
 import { AboutComponent } from './about/about.component';
 import { BlankComponent } from './common/blank/blank.component';
+import { OverviewComponent } from './overview/overview.component';
 
 export const routes: Routes = [
   { path: 'debug', component: BlankComponent},
@@ -35,7 +36,8 @@ export const routes: Routes = [
   { path: 'errors/504', component: GatewayTimeoutErrorComponent, data: { animation: 'search-detail' } },
   { path: 'errors/unknown', component: UnknownErrorComponent, data: { animation: 'search-detail' } },
   { path: 'about', component: AboutComponent, data: { animation: 'search-detail'} },
-  { path: '',   redirectTo: 'search', pathMatch: 'full' },
+  { path: '',   redirectTo: 'overview', pathMatch: 'full' },
+  { path: 'overview',  component: OverviewComponent },
   { path: '**', component: PageNotFoundComponent }
 ];
 

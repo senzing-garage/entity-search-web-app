@@ -1,0 +1,87 @@
+:host {
+    display: block;
+    width: 30px;
+    .subbug-logo, .subbug-tagline {
+        display: none
+    }
+
+    ul.nav-list, ol.nav-list {
+        list-style-type: none;
+
+        margin: 0;
+        padding: 0;
+        color: #757686;
+
+        li {
+            background-color: #3c3a3c;
+            box-sizing: border-box;
+            vertical-align: middle;
+            line-height: 56px;
+            position: relative
+
+            a {
+                border: none;
+                box-sizing: border-box;
+                text-decoration: none;
+            }
+            mat-icon {
+                top: 6px;
+                position: relative;
+                color: #757686;
+                width: 25px;
+            }
+
+            &.active {
+                color: #dde2ff;
+                background-color: #444245;
+                border-left: solid 3px #dde2ff;
+                padding-left: 29px;
+
+                mat-icon {
+                    color: #dde2ff;
+                    margin-right: 19px;
+                }
+            }
+            &:hover {
+                color: #dde2ff;
+                background-color: #444245;
+                border-left: solid 3px #dde2ff;
+            }
+            &.separator {
+                background-color: #403e40;
+                height: 1px;
+                margin-top: 5px;
+                margin-bottom: 5px;
+            }
+        }
+    }
+
+    &.expanded {
+        width: 255px;
+        
+        .subbug-logo {
+            display: block;
+            margin-top: 24px;
+            margin-left: 19px;
+        }
+        .subbug-tagline {
+            display: block;
+            margin-top: 1px;
+            margin-left: 19px;
+            margin-bottom: 28px;
+            /* Subtitle / Subtitle 1 */
+            font-family: Montserrat;
+            font-style: normal;
+            font-weight: bold;
+            font-size: 18px;
+            line-height: 28px;
+            /* identical to box height, or 156% */
+            font-feature-settings: 'liga' off;
+            /* sidebar / gray */
+            color: #A4A6B3;
+            opacity: 0.7;
+        }
+    }
+}
+
+

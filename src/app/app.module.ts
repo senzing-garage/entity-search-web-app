@@ -28,6 +28,8 @@ import { SearchResultsComponent } from './search-results/search-results.componen
 import { DetailComponent } from './detail/detail.component';
 import { GraphComponent } from './graph/graph.component';
 import { SearchRecordComponent } from './record/record.component';
+import { SideNavComponent } from './sidenav/sidenav.component';
+import { OverviewComponent } from './overview/overview.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { UiService } from './services/ui.service';
 import { PrefsManagerService } from './services/prefs-manager.service';
@@ -70,6 +72,8 @@ import { AdminBulkDataService } from './services/admin.bulk-data.service';
 @NgModule({
   declarations: [
     AppComponent,
+    SideNavComponent,
+    OverviewComponent,
     SearchResultsComponent,
     SearchRecordComponent,
     DetailComponent,
