@@ -3,6 +3,14 @@ mat-sidenav {
   color: #dde2ff;
 }
 
+mat-sidenav-content {
+  margin-left: 79px !important;
+
+  &.nav-expanded {
+    margin-left: 256px !important;
+  }
+}
+
 
 sz-powered-by {
   font-size: 10px;

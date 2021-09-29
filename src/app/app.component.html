@@ -1,9 +1,9 @@
-<mat-sidenav-container autosize>
+<mat-sidenav-container>
   <mat-sidenav #sidenav mode="side" [(opened)]="isExpanded" fixedInViewport="true" mode="side">
     <app-sidenav [isExpanded]="isExpanded" (toggleMenu)="toggleMenu()"></app-sidenav>
   </mat-sidenav>
 
-  <mat-sidenav-content [style.margin-left.px]="!isExpanded ? 60 : 250">
+  <mat-sidenav-content [class.nav-expanded]="isExpanded">
     <!--<app-toolbar
     (showSection)="onToolBarSectionChange($event)"
     [prefsIsShowing]="showPrefs"></app-toolbar>
