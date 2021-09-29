@@ -55,10 +55,11 @@
                 box-sizing: border-box;
                 text-decoration: none;
             }
-            mat-icon {
+            mat-icon, svg {
                 top: 6px;
                 position: relative;
                 color: #757686;
+                fill: #757686;
                 width: 25px;
             }
 
@@ -77,8 +78,9 @@
                     }
                 }*/
                 
-                mat-icon {
+                mat-icon, svg {
                     color: #3FD0F5 !important;
+                    fill: #3FD0F5 !important;
                 }
             }
             &:hover {
@@ -88,15 +90,19 @@
                 border-left: solid 3px #dde2ff;
                 padding-left: 0;
 
-                mat-icon {
+                mat-icon, svg {
                     color: #dde2ff;
+                    fill:  #dde2ff;
                 }
             }
             &.separator {
                 background-color: #403e40;
                 height: 1px;
-                margin-top: 5px;
-                margin-bottom: 5px;
+                /*margin-top: 5px;
+                margin-bottom: 5px;*/
+                &:hover {
+                    border-left: none;
+                }
             }
         }
     }
@@ -143,7 +149,7 @@
                 padding-left: 29px;
                 font-size: 14px;
 
-                mat-icon {
+                mat-icon, svg {
                     margin-right: 19px;
                 }
                 &:hover, &.active {
