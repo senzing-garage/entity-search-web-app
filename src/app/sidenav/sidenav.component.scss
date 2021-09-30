@@ -4,12 +4,13 @@
     transition: 100ms linear width;
 
     .subbug-tagline {
-        display: none
+        display: none;
+        white-space: nowrap;
     }
     .subbug-logo {
         display: block;
         text-align: center;
-        line-height: 56px;
+        /* line-height: 56px; */
         position: relative;
         cursor: pointer;
         margin-top: 19px;
@@ -50,6 +51,7 @@
     ul.subnav-list, ol.subnav-list {
         display: block;
         min-width: 79px;
+        /*transition: 100ms linear min-width width;*/
         margin: 0;
         padding: 0;
         color: #757686;
@@ -247,7 +249,7 @@
         }
 
         ul.nav-list, ol.nav-list {
-            width: 100%;
+            width: 255px;
             li {
                 text-align: left;
                 padding-left: 29px;

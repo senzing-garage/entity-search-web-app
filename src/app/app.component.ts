@@ -36,7 +36,7 @@ export class AppComponent implements OnInit, OnDestroy {
   public get searchExpanded() {
     return this.ui.searchExpanded;
   }
-  public isExpanded = true;
+  public isExpanded = false;
 
   /** whether or not to display prefs in the interface ribbon */
   public showPrefs = false;
