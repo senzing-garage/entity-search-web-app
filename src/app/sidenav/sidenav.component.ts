@@ -21,9 +21,40 @@ export class SideNavComponent {
   get expandedClass() {
       return this.isExpanded;
   };
+  @HostBinding('class')
+  get cssClasses(): string[] {
+    let retVal = [];
+    if(this.isExpanded) {
+      retVal.push('expanded')
+    }
+    if(this.showSubNav) {
+      retVal.push('subnav-expanded')
+      // add specifically selected subnav class
+      retVal.push('subnav-'+ this.selectedPrimaryNavItem.toLowerCase() +'-visible' );
+    }
+    return retVal;
+  };
 
   @Input() public isExpanded: boolean = true;
   @Output() public  toggleMenu = new EventEmitter();
+
+  private menuItems = {
+    'overview': false,
+    'search': true,
+    'statistics': false,
+    'composition': false,
+    'review': false,
+    'datasources': false,
+    'settings': true,
+    'admin': true,
+    'license': false
+  }
+
+  private selectedPrimaryNavItem: string = 'overview';
+  public get showSubNav(): boolean {
+    return (this.menuItems[ this.selectedPrimaryNavItem ] && this.menuItems[ this.selectedPrimaryNavItem ] === true)
+    //return false;
+  }
   
   constructor(
     public aboutService: AboutInfoService,
@@ -46,5 +77,9 @@ export class SideNavComponent {
   /** when admin is enabled in the poc/api server the "Admin" sub menu is shown */
   public get showAdminOptions(): boolean {
     return this.aboutService.isAdminEnabled;
+  }
+
+  public selectMenuItem(itemKey: string) {
+    this.selectedPrimaryNavItem = itemKey;
   }
 }

@@ -2,7 +2,6 @@
   <mat-sidenav #sidenav mode="side" [(opened)]="isExpanded" fixedInViewport="true" mode="side">
     <app-sidenav [isExpanded]="isExpanded" (toggleMenu)="toggleMenu()"></app-sidenav>
   </mat-sidenav>
-
   <mat-sidenav-content [class.nav-expanded]="isExpanded">
     <!--<app-toolbar
     (showSection)="onToolBarSectionChange($event)"

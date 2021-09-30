@@ -57,6 +57,9 @@ export class AppComponent implements OnInit, OnDestroy {
   public toggleMenu() {
     this.isExpanded = !this.isExpanded;
   }
+  public toggleMenuSecondary() {
+    //this.isExpanded = !this.isExpanded;
+  }
 
   /** subscription to notify subscribers to unbind */
   public unsubscribe$ = new Subject<void>();

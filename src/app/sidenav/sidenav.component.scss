@@ -34,9 +34,22 @@
         }
     }
 
-    ul.nav-list, ol.nav-list {
-        list-style-type: none;
+    .lists-container {
+        display: flex;
+        flex-direction: row;
 
+        ul.nav-list, ol.nav-list,
+        ul.subnav-list, ol.subnav-list {
+            display: block;
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+    }
+    ul.nav-list, ol.nav-list,
+    ul.subnav-list, ol.subnav-list {
+        display: block;
+        min-width: 79px;
         margin: 0;
         padding: 0;
         color: #757686;
@@ -48,8 +61,6 @@
             text-align: center;
             line-height: 56px;
             position: relative;
-            padding-left: 3px; // adjust for the non-highlighted items having no accent color
-
             a {
                 border: none;
                 box-sizing: border-box;
@@ -62,6 +73,54 @@
                 fill: #757686;
                 width: 25px;
             }
+            &.separator {
+                background-color: #403e40;
+                height: 1px;
+                /*margin-top: 5px;
+                margin-bottom: 5px;*/
+                &:hover {
+                    border-left: none;
+                }
+            }
+        }
+    }
+
+    ul.subnav-list, ol.subnav-list {
+        background-color: #60616F;
+        li {
+            display: none;
+        }
+    }
+
+    ul.nav-list, ol.nav-list {
+        /*list-style-type: none;
+        min-width: 79px;
+        margin: 0;
+        padding: 0;
+        color: #757686;*/
+
+        li {
+            /*background-color: #3c3a3c;
+            box-sizing: border-box;
+            vertical-align: middle;
+            text-align: center;
+            line-height: 56px;
+            position: relative;
+            */
+            padding-left: 3px; // adjust for the non-highlighted items having no accent color
+            /*
+            a {
+                border: none;
+                box-sizing: border-box;
+                text-decoration: none;
+            }
+            mat-icon, svg {
+                top: 6px;
+                position: relative;
+                color: #757686;
+                fill: #757686;
+                width: 25px;
+            }*/
 
             &.active {
                 cursor: default !important;
@@ -95,20 +154,55 @@
                     fill:  #dde2ff;
                 }
             }
-            &.separator {
-                background-color: #403e40;
-                height: 1px;
-                /*margin-top: 5px;
-                margin-bottom: 5px;*/
-                &:hover {
-                    border-left: none;
-                }
+        }
+    }
+
+    /* make only search subnav items visible when selected */
+    &.subnav-search-visible {
+        ul.subnav-list, ol.subnav-list {
+            margin-top: 56px !important;
+            li.selected-search {
+                display: block;
+            }
+        }
+    }
+    /* make only admin subnav items visible when selected */
+    &.subnav-admin-visible {
+        ul.subnav-list, ol.subnav-list {
+            margin-top: calc(56px * 8) !important;
+            li.selected-admin {
+                display: block;
             }
         }
     }
 
     &.expanded {
         width: 255px;
+        overflow: hidden;
+        
+        &.subnav-expanded {
+            width: calc(255px + 240px);
+            ul.nav-list, ol.nav-list {
+                width: 255px;
+            }
+            ul.subnav-list, ol.subnav-list {
+                background-color: transparent;
+                width: calc(240px - 17px);
+                color: #E1E2ED;
+                padding-left: 17px;
+                /* Label / Medium Label */
+                font-family: Montserrat;
+                font-style: normal;
+                font-weight: bold;
+                font-size: 14px;
+                line-height: 20px;
+
+                li {
+                    background-color: transparent;
+                    text-align: left;
+                }
+            }
+        }
 
         .subbug-logo {
             display: block;
@@ -144,6 +238,7 @@
         }
 
         ul.nav-list, ol.nav-list {
+            width: 100%;
             li {
                 text-align: left;
                 padding-left: 29px;
