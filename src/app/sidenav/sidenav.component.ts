@@ -7,6 +7,7 @@ import { Title } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 import {Overlay } from '@angular/cdk/overlay';
 import { AboutInfoService } from '../services/about.service';
+import { Timer } from 'd3-timer';
 
 @Component({
   selector: 'app-sidenav',
@@ -44,15 +45,15 @@ export class SideNavComponent {
     'statistics': false,
     'composition': false,
     'review': false,
-    'datasources': false,
+    'datasources': true,
     'settings': true,
-    'admin': true,
+    'admin': false,
     'license': false
   }
 
   private selectedPrimaryNavItem: string = 'overview';
   public get showSubNav(): boolean {
-    return (this.menuItems[ this.selectedPrimaryNavItem ] && this.menuItems[ this.selectedPrimaryNavItem ] === true)
+    return (this.selectedPrimaryNavItem && this.menuItems[ this.selectedPrimaryNavItem ] && this.menuItems[ this.selectedPrimaryNavItem ] === true)
     //return false;
   }
   
@@ -79,7 +80,31 @@ export class SideNavComponent {
     return this.aboutService.isAdminEnabled;
   }
 
+  private submenuCollapseTimer;
+
   public selectMenuItem(itemKey: string) {
     this.selectedPrimaryNavItem = itemKey;
+  }
+  public onMouseEnterMenuItem(itemKey: string) {
+    this.selectedPrimaryNavItem = itemKey;
+  }
+  public onMouseLeaveMenuItem(itemKey: string) {
+    /*
+    this.submenuCollapseTimer = setTimeout(() => {
+      this.selectedPrimaryNavItem = undefined
+    }, 1000);
+    */
+  }
+  public onMouseEnterSubNav() {
+    console.log('onMouseEnterSubNav');
+    if(this.submenuCollapseTimer) {
+      clearTimeout(this.submenuCollapseTimer);
+    }
+  }
+  public onMouseLeaveSubNav() {
+    console.log('onMouseLeaveSubNav');
+    this.submenuCollapseTimer = setTimeout(() => {
+      this.selectedPrimaryNavItem = undefined
+    }, 1000);
   }
 }

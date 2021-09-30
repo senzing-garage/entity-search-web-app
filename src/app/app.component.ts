@@ -60,6 +60,14 @@ export class AppComponent implements OnInit, OnDestroy {
   public toggleMenuSecondary() {
     //this.isExpanded = !this.isExpanded;
   }
+  public onSideNavLeave(event) {
+    console.log('onSideNavLeave: ', event);
+    this.isExpanded = false;
+  }
+  public onSideNavEnter(event) {
+    console.log('onSideNavEnter: ', event);
+    this.isExpanded = true;
+  }
 
   /** subscription to notify subscribers to unbind */
   public unsubscribe$ = new Subject<void>();

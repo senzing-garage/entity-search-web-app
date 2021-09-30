@@ -169,8 +169,17 @@
     /* make only admin subnav items visible when selected */
     &.subnav-admin-visible {
         ul.subnav-list, ol.subnav-list {
-            margin-top: calc(56px * 8) !important;
+            margin-top: calc(56px * 7 + 1px) !important;
             li.selected-admin {
+                display: block;
+            }
+        }
+    }
+    /* make only datasources subnav items visible when selected */
+    &.subnav-datasources-visible {
+        ul.subnav-list, ol.subnav-list {
+            margin-top: calc(56px * 5 + 1px) !important;
+            li.selected-datasources {
                 display: block;
             }
         }
@@ -243,6 +252,7 @@
                 text-align: left;
                 padding-left: 29px;
                 font-size: 14px;
+                white-space: nowrap;
 
                 mat-icon, svg {
                     margin-right: 19px;
