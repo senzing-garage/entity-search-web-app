@@ -1,10 +1,14 @@
 <mat-sidenav-container>
-  <mat-sidenav #sidenav mode="side" [(opened)]="isExpanded" fixedInViewport="true" mode="side"
+  <mat-sidenav #sidenav mode="side" [(opened)]="navExpanded" fixedInViewport="true" mode="side"
   (mouseleave)="onSideNavLeave($event)"
     >
-    <app-sidenav [isExpanded]="isExpanded" (toggleMenu)="toggleMenu()"></app-sidenav>
+    <app-sidenav 
+      [primaryExpanded]="navExpanded"
+      [secondaryExpanded]="subNavExpanded"
+      (expand)="expandNavDrawer()"
+      (onItemHover)="onSideNavItemHover($event)"></app-sidenav>
   </mat-sidenav>
-  <mat-sidenav-content [class.nav-expanded]="isExpanded">
+  <mat-sidenav-content [class.nav-expanded]="navExpanded">
     <!--<app-toolbar
     (showSection)="onToolBarSectionChange($event)"
     [prefsIsShowing]="showPrefs"></app-toolbar>

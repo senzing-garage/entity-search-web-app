@@ -19,9 +19,9 @@
     <img class="small-logo" src="assets/Sz_icon_black.png" width="48" height="48" alt="logo"/>
 </div>
 <div class="subbug-tagline">Results Explorer</div>
-<div class="toggle" *ngIf="!isExpanded">
-    <mat-icon (click)="toggleMenu.emit(null)">
-        {{ isExpanded ? "keyboard_backspace" : "dehaze" }}
+<div class="toggle" *ngIf="!primaryExpanded">
+    <mat-icon (click)="expand.emit(null)">
+        {{ primaryExpanded ? "keyboard_backspace" : "dehaze" }}
     </mat-icon>
 </div>
 <div class="lists-container">
@@ -32,25 +32,26 @@
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M15.5233 8.94116H8.54418L13.1921 13.5891C13.3698 13.7667 13.6621 13.7812 13.8448 13.6091C14.983 12.5367 15.7659 11.0912 15.9957 9.46616C16.0351 9.18793 15.8042 8.94116 15.5233 8.94116ZM15.0577 7.03528C14.8154 3.52176 12.0077 0.714119 8.49418 0.471767C8.22595 0.453237 8.00006 0.679413 8.00006 0.948236V7.5294H14.5815C14.8504 7.5294 15.0762 7.30352 15.0577 7.03528ZM6.5883 8.94116V1.96206C6.5883 1.68118 6.34153 1.45029 6.06359 1.48971C2.55859 1.985 -0.120524 5.04705 0.00418193 8.71675C0.132417 12.4856 3.37742 15.5761 7.14801 15.5288C8.63036 15.5103 10.0001 15.0326 11.1262 14.2338C11.3586 14.0691 11.3739 13.727 11.1724 13.5256L6.5883 8.94116Z"/>
             </svg>   
-            <span *ngIf="isExpanded">Overview</span>
+            <span *ngIf="primaryExpanded">Overview</span>
         </li>
-        <li routerLinkActive="active" routerLink="/search" (click)="selectMenuItem('search')"
+        <li routerLinkActive="active" routerLink="/search" 
+            (click)="selectMenuItem('search')"
             (mouseenter)="onMouseEnterMenuItem('search')"
             >
             <mat-icon>search</mat-icon>
-            <span *ngIf="isExpanded">Entity Search</span>
+            <span *ngIf="primaryExpanded">Entity Search</span>
         </li>
         <li (click)="selectMenuItem('statistics')" (mouseenter)="onMouseEnterMenuItem('statistics')">
             <svg width="13" height="15" viewBox="0 0 13 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M0 5H3V15H0V5ZM0 0H3V4H0V0ZM10 11H13V15H10V11ZM10 8H13V10H10V8ZM5 8H8V15H5V8ZM5 4H8V7H5V4Z"/>
             </svg>
-            <span *ngIf="isExpanded">Statistics</span>
+            <span *ngIf="primaryExpanded">Statistics</span>
         </li>
         <li (click)="selectMenuItem('composition')" (mouseenter)="onMouseEnterMenuItem('composition')">
             <svg width="24" height="18" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M3.6 7.80001C4.92375 7.80001 6 6.72376 6 5.40001C6 4.07626 4.92375 3.00001 3.6 3.00001C2.27625 3.00001 1.2 4.07626 1.2 5.40001C1.2 6.72376 2.27625 7.80001 3.6 7.80001ZM20.4 7.80001C21.7238 7.80001 22.8 6.72376 22.8 5.40001C22.8 4.07626 21.7238 3.00001 20.4 3.00001C19.0763 3.00001 18 4.07626 18 5.40001C18 6.72376 19.0763 7.80001 20.4 7.80001ZM21.6 9.00001H19.2C18.54 9.00001 17.9438 9.26626 17.5088 9.69751C19.02 10.5263 20.0925 12.0225 20.325 13.8H22.8C23.4638 13.8 24 13.2638 24 12.6V11.4C24 10.0763 22.9238 9.00001 21.6 9.00001ZM12 9.00001C14.3213 9.00001 16.2 7.12126 16.2 4.80001C16.2 2.47876 14.3213 0.600006 12 0.600006C9.67875 0.600006 7.8 2.47876 7.8 4.80001C7.8 7.12126 9.67875 9.00001 12 9.00001ZM14.88 10.2H14.5688C13.7888 10.575 12.9225 10.8 12 10.8C11.0775 10.8 10.215 10.575 9.43125 10.2H9.12C6.735 10.2 4.8 12.135 4.8 14.52V15.6C4.8 16.5938 5.60625 17.4 6.6 17.4H17.4C18.3938 17.4 19.2 16.5938 19.2 15.6V14.52C19.2 12.135 17.265 10.2 14.88 10.2ZM6.49125 9.69751C6.05625 9.26626 5.46 9.00001 4.8 9.00001H2.4C1.07625 9.00001 0 10.0763 0 11.4V12.6C0 13.2638 0.53625 13.8 1.2 13.8H3.67125C3.9075 12.0225 4.98 10.5263 6.49125 9.69751Z"/>
             </svg>
-            <span *ngIf="isExpanded">Entity Composition</span>
+            <span *ngIf="primaryExpanded">Entity Composition</span>
         </li>
         <li (click)="selectMenuItem('review')" (mouseenter)="onMouseEnterMenuItem('review')">
             <svg width="20" height="27" viewBox="0 0 20 27" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -64,7 +65,7 @@
                 <path d="M3.80836 9.60258C3.66792 9.86693 3.76971 10.1971 4.03554 10.3384L7.19067 12.016C7.45502 12.1564 7.78458 12.0558 7.92502 11.7915L8.90661 9.9457L4.78995 7.75682L3.80836 9.60258Z"/>
                 <path d="M8.35218 1.0568L4.99524 7.37001L9.1119 9.55889L10.5706 6.81563C9.54885 6.27247 9.16087 5.00381 9.70433 3.98209C10.244 2.96717 11.4993 2.5786 12.5175 3.10613C12.568 2.87452 12.4638 2.62787 12.2443 2.51104L9.08948 0.83375C8.82335 0.692132 8.49261 0.792444 8.35218 1.0568Z"/>
             </svg>
-            <span *ngIf="isExpanded">Review Samples</span>
+            <span *ngIf="primaryExpanded">Review Samples</span>
         </li>
         <li *ngIf="showAdminOptions" routerLinkActive="active" routerLink="/admin/datasources" 
             (click)="selectMenuItem('datasources')"
@@ -76,23 +77,23 @@
                 <path d="M19.1351 16.8649C19.6725 16.8649 20.1081 16.4292 20.1081 15.8919C20.1081 15.3545 19.6725 14.9189 19.1351 14.9189C18.5978 14.9189 18.1622 15.3545 18.1622 15.8919C18.1622 16.4292 18.5978 16.8649 19.1351 16.8649Z"/>
                 <path d="M19.1351 10.3784C19.6725 10.3784 20.1081 9.94277 20.1081 9.40541C20.1081 8.86805 19.6725 8.43243 19.1351 8.43243C18.5978 8.43243 18.1622 8.86805 18.1622 9.40541C18.1622 9.94277 18.5978 10.3784 19.1351 10.3784Z"/>
             </svg>
-            <span *ngIf="isExpanded">Data Sources</span>
+            <span *ngIf="primaryExpanded">Data Sources</span>
         </li>
         <li class="separator"></li>
         <li (click)="selectMenuItem('settings')" (mouseenter)="onMouseEnterMenuItem('settings')">
             <mat-icon>settings</mat-icon>
-            <span *ngIf="isExpanded">Settings</span>
+            <span *ngIf="primaryExpanded">Settings</span>
         </li>
         <!--<li *ngIf="showAdminOptions" routerLinkActive="active" routerLink="/admin" (click)="selectMenuItem('admin')">
             <mat-icon>admin_panel_settings</mat-icon>
-            <span *ngIf="isExpanded">Admin</span>
+            <span *ngIf="primaryExpanded">Admin</span>
         </li>-->
         <li routerLinkActive="active" routerLink="/admin/license/info" 
             (click)="selectMenuItem('license')" (mouseenter)="onMouseEnterMenuItem('license')">
             <svg width="18" height="24" viewBox="0 0 18 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M4.55247 16.9983C4.14513 16.5909 4.35747 16.7058 3.37497 16.4428C2.92919 16.3233 2.53731 16.0936 2.18294 15.8184L0.0562205 21.0328C-0.149561 21.5376 0.234814 22.0861 0.779502 22.0655L3.24935 21.9712L4.9481 23.7656C5.3231 24.1612 5.98122 24.038 6.187 23.5331L8.62684 17.5509C8.11872 17.8341 7.55481 18 6.97169 18C6.05763 18 5.19888 17.6442 4.55247 16.9983ZM17.9437 21.0328L15.817 15.8184C15.4626 16.0941 15.0708 16.3233 14.625 16.4428C13.6373 16.7072 13.8539 16.5919 13.4475 16.9983C12.8011 17.6442 11.9418 18 11.0278 18C10.4447 18 9.88075 17.8336 9.37263 17.5509L11.8125 23.5331C12.0183 24.038 12.6768 24.1612 13.0514 23.7656L14.7506 21.9712L17.2204 22.0655C17.7651 22.0861 18.1495 21.5372 17.9437 21.0328ZM12.3281 15.9375C13.0443 15.2086 13.1264 15.2714 14.1464 14.9934C14.7975 14.8158 15.3065 14.2978 15.4809 13.635C15.8315 12.3037 15.7406 12.4645 16.6973 11.4905C17.174 11.0053 17.3601 10.298 17.1858 9.63515C16.8356 8.30483 16.8351 8.49046 17.1858 7.15874C17.3601 6.49593 17.174 5.78858 16.6973 5.30343C15.7406 4.32936 15.8315 4.48968 15.4809 3.1589C15.3065 2.49608 14.7975 1.97811 14.1464 1.80046C12.8395 1.44374 12.997 1.53702 12.0393 0.562489C11.5626 0.0773326 10.8675 -0.112511 10.2164 0.0651451C8.90997 0.421395 9.09231 0.421864 7.78356 0.0651451C7.13247 -0.112511 6.43731 0.0768639 5.9606 0.562489C5.00388 1.53655 5.16138 1.44374 3.85403 1.80046C3.20294 1.97811 2.69388 2.49608 2.5195 3.1589C2.16935 4.48968 2.25981 4.32936 1.3031 5.30343C0.826377 5.78858 0.639814 6.49593 0.814658 7.15874C1.16481 8.48811 1.16528 8.30249 0.814658 9.63468C0.640283 10.2975 0.826377 11.0048 1.3031 11.4905C2.25981 12.4645 2.16888 12.3037 2.5195 13.635C2.69388 14.2978 3.20294 14.8158 3.85403 14.9934C4.9031 15.2794 4.98138 15.2344 5.67185 15.9375C6.292 16.5689 7.2581 16.6819 8.00341 16.2103C8.30145 16.0211 8.64718 15.9206 9.00021 15.9206C9.35323 15.9206 9.69896 16.0211 9.997 16.2103C10.7418 16.6819 11.7079 16.5689 12.3281 15.9375ZM4.57778 8.24811C4.57778 5.76233 6.55778 3.74718 8.99997 3.74718C11.4422 3.74718 13.4222 5.76233 13.4222 8.24811C13.4222 10.7339 11.4422 12.7491 8.99997 12.7491C6.55778 12.7491 4.57778 10.7339 4.57778 8.24811Z"/>
             </svg>
-            <span *ngIf="isExpanded">License Information</span>
+            <span *ngIf="primaryExpanded">License Information</span>
         </li>
     </ol>
     <ol class="subnav-list" *ngIf="showSubNav"

@@ -9,6 +9,14 @@ import {Overlay } from '@angular/cdk/overlay';
 import { AboutInfoService } from '../services/about.service';
 import { Timer } from 'd3-timer';
 
+export interface NavItem {
+  key: string;
+  name: string;
+  order: number;
+  submenuItems?: NavItem[],
+  default?: boolean
+}
+
 @Component({
   selector: 'app-sidenav',
   templateUrl: './sidenav.component.html',
@@ -20,40 +28,120 @@ export class SideNavComponent {
   
   @HostBinding('class.expanded')
   get expandedClass() {
-      return this.isExpanded;
+      return this.primaryExpanded;
   };
   @HostBinding('class')
   get cssClasses(): string[] {
     let retVal = [];
-    if(this.isExpanded) {
+    if(this.primaryExpanded) {
       retVal.push('expanded')
     }
     if(this.showSubNav) {
       retVal.push('subnav-expanded')
       // add specifically selected subnav class
-      retVal.push('subnav-'+ this.selectedPrimaryNavItem.toLowerCase() +'-visible' );
+      retVal.push('subnav-'+ this.selectedPrimaryNavItem.key.toLowerCase() +'-visible' );
     }
     return retVal;
   };
 
-  @Input() public isExpanded: boolean = true;
-  @Output() public  toggleMenu = new EventEmitter();
+  @Input() public primaryExpanded: boolean = false;
+  @Input() public secondaryExpanded: boolean = false;
+
+  @Output() public  onItemHover = new EventEmitter<NavItem>();
+  @Output() public  expand = new EventEmitter<NavItem>();
 
   private menuItems = {
-    'overview': false,
-    'search': true,
-    'statistics': false,
-    'composition': false,
-    'review': false,
-    'datasources': true,
-    'settings': true,
-    'admin': false,
-    'license': false
+    'overview': {
+      name: 'overview',
+      key: 'overview',
+      order: 0
+    },
+    'search': {
+      name: 'search',
+      key: 'search',
+      order: 1,
+      submenuItems: [
+        {
+          name: 'By Attribute',
+          key: 'search-by-attribute',
+          order: 0
+        },
+        {
+          name: 'By Record/Entity Id',
+          key: 'search-by-id',
+          order: 1
+        }
+      ]
+    },
+    'statistics': {
+      name: 'search',
+      key: 'search',
+      order: 2
+    },
+    'composition': {
+      name: 'search',
+      key: 'search',
+      order: 3
+    },
+    'review': {
+      name: 'search',
+      key: 'search',
+      order: 4
+    },
+    'datasources': {
+      name: 'Data Sources',
+      key: 'datasources',
+      order: 5,
+      submenuItems: [
+        {
+          name: 'List',
+          key: 'datasources-list',
+          order: 0
+        },
+        {
+          name: 'Import Data',
+          key: 'datasources-import',
+          order: 1
+        }
+      ]
+    },
+    'settings': {
+      name: 'Settings',
+      key: 'settings',
+      order: 6,
+      submenuItems: [
+        {
+          name: 'Search',
+          key: 'settings-search-results',
+          order: 0
+        },
+        {
+          name: 'Entity Resume',
+          key: 'settings-entity-resume',
+          order: 1
+        },
+        {
+          name: 'Graph',
+          key: 'settings-graph',
+          order: 2
+        }
+      ]
+    },
+    'admin': {
+      name: 'Admin',
+      key: 'admin',
+      order: 7
+    },
+    'license': {
+      name: 'License Information',
+      key: 'license',
+      order: 8
+    }
   }
 
-  private selectedPrimaryNavItem: string = 'overview';
+  private selectedPrimaryNavItem: NavItem = this.getDefaultMenuItem();
   public get showSubNav(): boolean {
-    return (this.selectedPrimaryNavItem && this.menuItems[ this.selectedPrimaryNavItem ] && this.menuItems[ this.selectedPrimaryNavItem ] === true)
+    return (this.selectedPrimaryNavItem && this.selectedPrimaryNavItem.submenuItems && this.selectedPrimaryNavItem.submenuItems.length > 0)
     //return false;
   }
   
@@ -82,11 +170,25 @@ export class SideNavComponent {
 
   private submenuCollapseTimer;
 
+  private getDefaultMenuItem(): NavItem {
+    let retValue = this.menuItems[0];
+    if(this.menuItems) {
+      for(let key in this.menuItems) {
+        let menuItem = this.menuItems[ key ];
+        if(menuItem.default) {
+          retValue = menuItem;
+        }
+      }
+    }
+    return retValue;
+  }
+
   public selectMenuItem(itemKey: string) {
-    this.selectedPrimaryNavItem = itemKey;
+    this.selectedPrimaryNavItem = this.menuItems[ itemKey ];
   }
   public onMouseEnterMenuItem(itemKey: string) {
-    this.selectedPrimaryNavItem = itemKey;
+    this.selectedPrimaryNavItem = this.menuItems[ itemKey ];
+    this.onItemHover.emit(this.selectedPrimaryNavItem);
   }
   public onMouseLeaveMenuItem(itemKey: string) {
     /*

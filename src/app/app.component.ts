@@ -18,6 +18,7 @@ import { SpinnerService } from './services/spinner.service';
 import { UiService } from './services/ui.service';
 import { PrefsManagerService } from './services/prefs-manager.service';
 import { SzWebAppConfigService } from './services/config.service';
+import { NavItem } from './sidenav/sidenav.component';
 
  @Component({
   selector: 'app-root',
@@ -36,7 +37,15 @@ export class AppComponent implements OnInit, OnDestroy {
   public get searchExpanded() {
     return this.ui.searchExpanded;
   }
-  public isExpanded = false;
+  public get navExpanded() {
+    return this.ui.navExpanded;
+  }
+  public set navExpanded(value: boolean) {
+    this.ui.navExpanded = value;
+  }
+  public get subNavExpanded() {
+    return this.ui.subNavExpanded;
+  }
 
   /** whether or not to display prefs in the interface ribbon */
   public showPrefs = false;
@@ -54,19 +63,24 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
-  public toggleMenu() {
-    this.isExpanded = !this.isExpanded;
-  }
-  public toggleMenuSecondary() {
-    //this.isExpanded = !this.isExpanded;
-  }
   public onSideNavLeave(event) {
     console.log('onSideNavLeave: ', event);
-    this.isExpanded = false;
+    this.ui.navExpanded = false;
   }
   public onSideNavEnter(event) {
     console.log('onSideNavEnter: ', event);
-    this.isExpanded = true;
+    this.ui.navExpanded = true;
+  }
+  public onSideNavItemHover(navItem: NavItem) {
+    console.log('onSideNavItemHover: ', event);
+    if(!this.navExpanded && navItem && navItem.submenuItems && navItem.submenuItems.length > 0) {
+      // has subnav, make sure nav is expanded on rollover
+      this.ui.navExpanded = true;
+      this.ui.subNavExpanded = true;
+    }
+  }
+  public expandNavDrawer() {
+    this.ui.navExpanded = true;
   }
 
   /** subscription to notify subscribers to unbind */

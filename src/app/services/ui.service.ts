@@ -7,6 +7,8 @@ import { Router, ActivatedRoute, UrlSegment, NavigationEnd } from '@angular/rout
   providedIn: 'root'
 })
 export class UiService {
+  private _navExpanded = false;
+  private _subNavExpanded = false;
   private _searchExpanded = true;
   private _searchType = 'default';
   public createPdfClicked = new Subject<number>();
@@ -18,6 +20,18 @@ export class UiService {
   }
   public set searchExpanded(value) {
     this._searchExpanded = value;
+  }
+  public get navExpanded(): boolean {
+    return this._navExpanded;
+  }
+  public set navExpanded(value: boolean) {
+    this._navExpanded = value
+  }
+  public get subNavExpanded(): boolean {
+    return this._subNavExpanded;
+  }
+  public set subNavExpanded(value: boolean) {
+    this._subNavExpanded = value
   }
   public get searchType(): string {
     return this._searchType;
