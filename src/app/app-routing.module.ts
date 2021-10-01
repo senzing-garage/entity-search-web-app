@@ -8,6 +8,7 @@ import {
   CurrentEntityUnResolverService,
   GraphEntityNetworkResolverService,
   RecordResolverService } from './services/entity-search.service';
+import { AppSearchComponent } from './search/search.component';
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { SearchRecordComponent } from './record/record.component';
 import { DetailComponent } from './detail/detail.component';
@@ -24,9 +25,16 @@ import { OverviewComponent } from './overview/overview.component';
 
 export const routes: Routes = [
   { path: 'debug', component: BlankComponent},
-  { path: 'search', component: TipsComponent, resolve:  {entityId: CurrentEntityUnResolverService}, data: { animation: 'search-results' }},
+
+  { path: 'search', redirectTo: 'search/by-attribute', pathMatch: 'full'},
+  { path: 'search/by-attribute', component: AppSearchComponent, resolve:  {entityId: CurrentEntityUnResolverService, params: SearchParamsResolverService}, data: { animation: 'search-results' }},
+  { path: 'search/by-id', component: AppSearchComponent, resolve:  {entityId: CurrentEntityUnResolverService}, data: { animation: 'search-results' }},
   { path: 'search/results', component: SearchResultsComponent, resolve: { params: SearchParamsResolverService, results: SearchResultsResolverService }, data: { animation: 'search-results' } },
+
+  { path: 'search/by-attribute/entity/:entityId', component: DetailComponent, resolve: { entityData: EntityDetailResolverService }, data: { animation: 'search-detail' } },
   { path: 'entity/:entityId', component: DetailComponent, resolve: { entityData: EntityDetailResolverService }, data: { animation: 'search-detail' } },
+
+
   { path: 'datasources/:datasource/records/:recordId', component: SearchRecordComponent, resolve: { params: SearchByIdParamsResolverService, result: RecordResolverService }, data: { animation: 'search-detail' } },
   { path: 'graph/:entityId', component: GraphComponent, resolve: { networkData: GraphEntityNetworkResolverService, entityData: EntityDetailResolverService }, data: { animation: 'search-detail' } },
   { path: 'graph/:entityId/:detailId', component: GraphComponent, resolve: { networkData: GraphEntityNetworkResolverService, entityData: EntityDetailResolverService }, data: { animation: 'search-detail' } },

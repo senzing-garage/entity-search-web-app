@@ -99,11 +99,8 @@
     <ol class="subnav-list" *ngIf="showSubNav"
         (mouseenter)="onMouseEnterSubNav()">
         <!-- start search subnav -->
-        <li class="selected-search">By Attribute(s)</li>
-        <li class="selected-search">By Record/Entity Id</li>
-        <li class="separator selected-search"></li>
-        <li class="selected-search">Results</li>
-        <li class="selected-search">Graph</li>
+        <li class="selected-search" routerLink="search/by-attribute">By Attribute(s)</li>
+        <li class="selected-search" routerLink="search/by-id">By Record/Entity Id</li>
         <!-- end search subnav -->
         <!-- start admin subnav -->
         <li class="selected-datasources" routerLinkActive="active" routerLink="/admin/datasources">

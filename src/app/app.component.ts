@@ -222,62 +222,6 @@ export class AppComponent implements OnInit, OnDestroy {
     return this.uiService.graphOpen && this.search.currentSearchResults && this.search.currentSearchResults.length > 0;
   }
 
-  /**
-   * Event handler for when a search has been performed in
-   * the SzSearchComponent.
-   */
-  onSearchResults(evt: SzAttributeSearchResult[]) {
-
-    console.info('onSearchResultsChange: ', evt, this.isGraphOpen);
-    if (this.uiService.graphOpen) {
-      // show results in graph
-      this.entitySearchService.currentSearchResults = evt;
-    } else {
-      // show results
-      this.router.navigate(['search/results'], {
-        queryParams: {refresh: new Date().getTime()}
-      });
-      this.entitySearchService.currentSearchResults = evt;
-    }
-  }
-
-  /**
-   * Event handler for when the fields in the SzSearchComponent
-   * are cleared.
-   */
-  public onSearchResultsCleared(searchParams: SzEntitySearchParams) {
-    // hide search results
-    this.entitySearchService.currentSearchResults = undefined;
-    this.entitySearchService.currentlySelectedEntityId = undefined;
-    this.router.navigate(['/search']);
-  }
-
-  /**
-   * Event handler for when the parameters of the search performed from
-   * the SzSearchComponent | SzSearchByIdComponent has changed.
-   * This only happens on submit button click
-   */
-  public onSearchParameterChange(searchParams: SzEntitySearchParams | SzSearchByIdFormParams) {
-    //console.log('onSearchParameterChange: ', searchParams);
-    let isByIdParams = false;
-    const byIdParams = (searchParams as SzSearchByIdFormParams);
-    if ( byIdParams && ((byIdParams.dataSource && byIdParams.recordId) || byIdParams.entityId)  ) {
-      isByIdParams = true;
-    } else {
-      // console.warn('not by id: ' + isByIdParams, byIdParams);
-    }
-    if (!isByIdParams) {
-      this.entitySearchService.currentSearchParameters = (searchParams as SzEntitySearchParams);
-    } else {
-      this.entitySearchService.currentSearchByIdParameters = (searchParams as SzSearchByIdFormParams);
-    }
-  }
-
-  public onSearchStart(evt) {
-    console.log('onSearchStart: ', evt);
-    this.spinner.show();
-  }
-
   /** when the value from the sz-search-by-id component changes */
   onRecordChange(evt: SzEntityRecord) {
     console.log('onRecordChange: ', evt);

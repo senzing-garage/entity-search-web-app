@@ -24,6 +24,7 @@ import { AboutInfoService } from './services/about.service';
 //import { AdminComponent } from './admin/admin.component';
 //import { AdminDataSourcesComponent } from './admin/datasources.component';
 import { AppComponent } from './app.component';
+import { AppSearchComponent } from './search/search.component';
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { DetailComponent } from './detail/detail.component';
 import { GraphComponent } from './graph/graph.component';
@@ -72,6 +73,7 @@ import { AdminBulkDataService } from './services/admin.bulk-data.service';
 @NgModule({
   declarations: [
     AppComponent,
+    AppSearchComponent,
     SideNavComponent,
     OverviewComponent,
     SearchResultsComponent,
