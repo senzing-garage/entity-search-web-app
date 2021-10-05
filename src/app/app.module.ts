@@ -25,6 +25,7 @@ import { AboutInfoService } from './services/about.service';
 //import { AdminDataSourcesComponent } from './admin/datasources.component';
 import { AppComponent } from './app.component';
 import { AppSearchComponent } from './search/search.component';
+import { AppSearchByIdComponent } from './search/search-by-id.component';
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { DetailComponent } from './detail/detail.component';
 import { GraphComponent } from './graph/graph.component';
@@ -74,6 +75,7 @@ import { AdminBulkDataService } from './services/admin.bulk-data.service';
   declarations: [
     AppComponent,
     AppSearchComponent,
+    AppSearchByIdComponent,
     SideNavComponent,
     OverviewComponent,
     SearchResultsComponent,

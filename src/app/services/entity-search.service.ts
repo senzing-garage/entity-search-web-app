@@ -16,7 +16,7 @@ import {
   SzEntityRecord,
   SzSearchByIdFormParams
 } from '@senzing/sdk-components-ng';
-import { EntityGraphService, SzEntityNetworkData, SzFeatureMode } from '@senzing/rest-api-client-ng';
+import { EntityGraphService, SzEntityNetworkData, SzFeatureMode, SzResolvedEntity } from '@senzing/rest-api-client-ng';
 import { SpinnerService } from './spinner.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { PrefsManagerService } from './prefs-manager.service';
@@ -83,6 +83,16 @@ export class EntitySearchService {
     this._currentlySelectedEntityId = value;
     this._entityId.next(value);
   }
+  /** currently selected entitities data*/
+  private _currentlySelectedEntityData: SzResolvedEntity | SzEntityData;
+  public get currentlySelectedEntityData(): SzResolvedEntity | SzEntityData | undefined {
+    return this._currentlySelectedEntityData;
+  }
+  public set currentlySelectedEntityData(value: SzResolvedEntity | SzEntityData | undefined) {
+    this._currentlySelectedEntityData = value;
+    //this._entityId.next(value);
+  }
+
   /** the search parameters from the last search performed */
   public currentSearchParameters: SzEntitySearchParams;
   /** the search parameters from the last search-by-id performed */
@@ -115,6 +125,18 @@ export class EntitySearchService {
       if (this.currentSearchParameters.EMAIL_ADDRESS) {
         params.push(this.currentSearchParameters.EMAIL_ADDRESS);
       }
+    } else if(this.currentSearchByIdParameters) {
+      console.log('has currentSearchByIdParameters');
+      if(this.currentSearchByIdParameters.recordId) {
+        //params.push(this.currentSearchByIdParameters.dataSource);
+        //params.push(this.currentSearchByIdParameters.recordId);
+        //retVal = params.join(', ');
+        retVal = '(1) Result for a record with an id matching "' + this.currentSearchByIdParameters.recordId + '" in the "'+ this.currentSearchByIdParameters.dataSource +'" datasource';
+      } else if(this.currentSearchByIdParameters.entityId) {
+        params.push(this.currentSearchByIdParameters.entityId);
+        retVal = params.join(', ');
+        retVal = '(1) Result for a entity with an id matching "' + retVal + '"';
+      }
     } else if(this.currentRecord && this.currentRecord !== undefined) {
       params.push(this.currentRecord.recordId);
       retVal = params.join(', ');
@@ -123,8 +145,11 @@ export class EntitySearchService {
       params.push(this.currentlySelectedEntityId);
       retVal = params.join(', ');
       retVal = '(1) Result for "' + retVal + '"';
-    }
-    if (params && params.length > 0) {
+    } else if(this.currentlySelectedEntityId) {
+      params.push(this._currentlySelectedEntityData);
+      retVal = params.join(', ');
+      retVal = '(1) Result for "' + retVal + '"';
+    } else if (params && params.length > 0) {
       retVal = params.join(', ');
       if(this.currentSearchResults && this.currentSearchResults.length > 0) {
         retVal = '(' + this.currentSearchResults.length + ') Result' + (this.currentSearchResults.length > 1 ? 's' : '') + ' for "' + retVal + '"';

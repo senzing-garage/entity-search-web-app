@@ -1,0 +1,27 @@
+<sz-search-by-id
+    cancelButtonLabel="Clear"
+    (parameterChange)="onSearchParameterChange($event)"
+    (entityChange)="onEntityResult($event)"
+    (resultCleared)="onSearchResultsCleared($event)"
+    (resultChange)="onRecordChange($event)"
+    (searchStart)="onSearchStart($event)"
+    (searchEnd)="onSearchEnd($event)"
+    (exception)="onSearchException($event)"></sz-search-by-id>
+<sz-search-result-card *ngIf="entitySearchService.currentlySelectedEntityData"
+      class="matches"
+      (click)="onSearchResultClick(entitySearchService.currentlySelectedEntityData.entityId)"
+      [searchResult]="entitySearchService.currentlySelectedEntityData"
+      [cardTitle]="'Matches'"
+      [showDataSources]="true">
+</sz-search-result-card>
+<div *ngIf="entitySearchService.currentRecord">
+    <!-- start record results -->
+    <div class="search-results">
+        <sz-entity-record-viewer [record]="entitySearchService.currentRecord"></sz-entity-record-viewer>
+    </div>
+    <!-- end record results -->
+</div>
+<div *ngIf="noResults" class="no-results">
+    No Results found for <span class="criteria">{{currentSearchParametersHumanReadable}}</span>
+</div>
+<!-- end search results -->

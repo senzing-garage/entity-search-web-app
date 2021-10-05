@@ -1,0 +1,47 @@
+:host {
+    display: block;
+    padding: 0;
+
+    sz-search-by-id { 
+        padding: 0 0 0 20px;
+        background-color: #E1E2ED;
+    }
+
+    sz-search-results-total-summary, .sz-search-results-total-summary {
+        color: var(--sz-search-results-header-color);
+        font-weight: 300;
+        display: block;
+        justify-content: space-between;
+        margin: 10px 0 0 20px;
+        font-size: 1.5em;
+        
+    }
+
+    sz-search-result-card, .sz-search-result-card {
+        margin: 0;
+        padding-top: 0px;
+        --sz-search-results-card-margin: 0;
+        --sz-search-results-card-padding: 20px 20px 40px 20px;
+        
+    }
+    sz-entity-record-viewer {
+        position: relative;
+        background-color: #e1e2ed;
+        margin: 0;
+        padding-top: 0px;
+    }
+
+    .no-results {
+        display: block;
+        height: 500px;
+        /*text-align: center;*/
+        font-family: var(--sz-search-results-font-family);
+        color: var(--sz-search-results-header-color);
+        font-size: 1.5em;
+        font-weight: 500;
+        padding: 20px 0 0 20px;
+        span.criteria {
+            font-weight: 600;
+        }
+    }
+}
