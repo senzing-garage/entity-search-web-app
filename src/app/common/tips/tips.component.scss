@@ -1,9 +1,10 @@
 
 :host {
-  color: #333;
-  background-color: #eee;
+  color: #3C3A3C;
+  /*background-color: #eee;*/
   display: block;
   padding: 0 0 0 2em;
+  margin: 20px 0 20px 0px;
 
   .fbox {
     display: flex;
@@ -65,6 +66,11 @@
     flex: 1;
     min-width: 300px;
     margin: 0 0 0 4em;
+    border: 1px solid #eee;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 8px;
 
     p {
       font-weight: 600;

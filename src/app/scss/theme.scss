@@ -54,3 +54,289 @@ $sz-mat-theme: mat-light-theme((
 ));
 
 @include angular-material-theme($sz-mat-theme);
+
+// sdk-components-ng theme
+body {
+  /* all component styles */
+  --sz-font-family: $sz-font-family;
+  --sz-color-matches: #6D7EBD;
+  --sz-color-possible-match: #FFA444;
+  --sz-color-possibly-related: #FFE573;
+  /*--sz-color-name-only-matches: #D3D8ED;*/
+  --sz-color-name-only-matches: #0E8FB0;
+  --sz-color-possible-matches: var(--sz-color-possible-match);
+  --sz-color-disclosed: #0E8FB0;
+  --sz-color-ambiguous: #{$sz-purple};
+  --sz-color-graph-relationships: #{$sz-magenta};
+
+  /* search box vars */
+  --sz-search-button-submit-color: #{$sz-white};
+  --sz-search-button-clear-color: #828396;
+  --sz-search-button-submit-background-color: #263C93;
+  --sz-search-button-clear-background-color: #E1E2ED;
+  --sz-search-button-border: 1px solid #AFB0C4;
+  --sz-search-button-submit-border: 1px outset #263C93;
+  --sz-search-button-clear-padding: 0 37px 0 37px;
+  --sz-search-button-submit-padding: 0 30px 0 30px;
+  --sz-search-button-margin: 0;
+  --sz-search-button-border-radius: 5px;
+  --sz-search-button-submit-font-family: Montserrat;
+  --sz-search-button-submit-font-size: 15px;
+  --sz-search-button-submit-font-weight: 600;
+  --sz-search-button-clear-font-family: Montserrat;
+  --sz-search-button-clear-font-size: 14px;
+  --sz-search-button-clear-font-weight: 600;
+
+  --sz-search-button-filter-color: #{$sz-white};
+  --sz-search-button-filter-background-color: #263C93;
+  --sz-search-button-filter-border-color: #263C93; // #0c9bf4
+  --sz-search-button-filter-border-style: outset;
+  --sz-search-button-filter-border-radius: 50%;
+  --sz-search-button-filter-border-width: 1px;
+  --sz-search-button-filter-font-size: 18px;
+  --sz-search-button-filter-width: 18px;
+  --sz-search-button-filter-height: 18px;
+  --sz-search-button-filter-padding: 2px 3px 2px 2px;
+  --sz-search-button-filter-margin-top: 7px;
+
+  --sz-search-input-color: #{$sz-input-font-color};
+  --sz-search-input-background-color: #{$sz-input-background-color};
+  --sz-search-input-display: inline-block;
+  --sz-search-input-font-size: 13px;
+  --sz-search-input-padding:  .25em .5em;
+  --sz-search-input-margin: 5px;
+  --sz-search-input-placeholder-color: #{$sz-input-placeholder-color};
+  --sz-search-input-border: 1px solid #{$sz-input-border-color};
+  --sz-search-input-border-radius: 6px;
+  --sz-search-input-hover-border: 1px solid #{$sz-input-active-border-color};
+  --sz-search-input-focus-border: var(--sz-search-input-hover-border);
+
+  --sz-search-label-color: #{$sz-font-color-1};
+  --sz-search-label-padding: 4px;
+  --sz-search-label-margin: 0 0 10px 4px;
+  --sz-search-label-font-size: 11px;
+  --sz-search-label-display: block;
+
+  --sz-disabled-label-color: rgb(175, 175, 175);
+  --sz-disabled-input-color: var(--sz-disabled-label-color);
+  --sz-disabled-input-background-color: rgb(238, 238, 238);
+  --sz-disabled-input-border-color: var(--sz-disabled-label-color);
+  --sz-disabled-input-pointer-events: none;
+  --sz-disabled-input-cursor: default;
+
+  --sz-search-button-disabled-border-color: rgb(133, 133, 133);
+  --sz-search-button-disabled-background-color: var(--sz-search-button-submit-background-color);
+  --sz-search-button-disabled-color: var(--sz-search-button-submit-color);
+  --sz-clear-button-disabled-border-color: var(--sz-search-button-disabled-border-color);
+  --sz-clear-button-disabled-background-color: var(--sz-search-button-clear-background-color);
+  --sz-clear-button-disabled-color: var(--sz-search-button-disabled-color);
+
+  /* search results vars */
+  --sz-search-results-padding: 20px 20px 20px 0;
+  --sz-search-results-color: #{$sz-font-color-1};
+  --sz-search-results-font-family: #{$sz-font-family};
+  --sz-search-results-a-color: inherit;
+  --sz-search-results-a-hover-color: inherit;
+  --sz-search-results-name-hover-color: inherit;
+  --sz-search-results-a-cursor: pointer;
+  --sz-search-results-a-font-size: 1.8em;
+  --sz-search-results-col-name-min-width: 300px;
+  --sz-search-results-col-margin-right: 2em;
+  --sz-search-results-datasources-spacing: 8px;
+
+  --sz-search-results-header-width: calc(100% - 40px);
+  --sz-search-results-header-display: block;
+  --sz-search-results-header-padding: 0;
+  --sz-search-results-header-margin: 20px 170px 30px 0;
+  --sz-search-results-header-font-size: 1.5em;
+  --sz-search-results-header-color: #{$sz-font-color-1};
+  --sz-search-results-header-parameter-value-color: var(--sz-search-results-a-color);
+
+  /* match key colors */
+  --sz-search-results-section-header-color: #3C3A3C;
+  --sz-search-results-section-header-text-opacity: .6;
+  --sz-search-results-section-header-padding: 2px 20px;
+  --sz-search-results-matches-header-background-color: var(--sz-color-matches);
+  --sz-search-results-possible-match-header-background-color: var(--sz-color-possible-match);
+  --sz-search-results-possibly-related-header-background-color: var(--sz-color-possibly-related);
+  --sz-search-results-name-only-matches-header-background-color: var(--sz-color-name-only-matches);
+
+  --sz-search-results-card-cursor: pointer;
+  --sz-search-results-card-hover-cursor: pointer;
+  --sz-search-results-card-hover-color: #AFB0C4;
+  --sz-search-results-matches-card-hover-color: var(--sz-color-matches);
+  --sz-search-results-possible-match-card-hover-color: var(--sz-color-possible-match);
+  --sz-search-results-possibly-related-card-hover-color: var(--sz-color-possibly-related);
+  --sz-search-results-disclosed-card-hover-color: var(--sz-color-disclosed);
+  --sz-search-results-name-only-matches-card-hover-color: var(--sz-color-name-only-matches);
+
+  --sz-search-results-matches-card-border-left: var(--sz-search-results-matches-header-background-color) 10px solid;
+  --sz-search-results-possible-match-card-border-left: var(--sz-search-results-possible-match-header-background-color) 10px solid;
+  --sz-search-results-possibly-related-card-border-left: var(--sz-search-results-possibly-related-header-background-color) 10px solid;
+  --sz-search-results-disclosed-card-border-left: var(--sz-color-disclosed) 10px solid;
+  --sz-search-results-name-only-matches-card-border-left: var(--sz-search-results-name-only-matches-header-background-color) 10px solid;
+
+  /* entity detail vars */
+    /* start header vars */
+    --sz-entity-detail-header-font-size: 1em;
+    --sz-entity-detail-header-font-family: var(--sz-font-family);
+    --sz-entity-detail-header-color: #{$sz-font-color-1};
+    --sz-entity-detail-header-display: flex;
+
+    --sz-entity-detail-icon-display: block;
+    --sz-entity-detail-icon-height: 175px;
+    --sz-entity-detail-icon-width: 175px;
+    /*--sz-entity-detail-icon-border: 3px solid #82848647;*/
+    --sz-entity-detail-icon-border: 3px solid #60616f; //#60616F
+    --sz-entity-detail-icon-border-radius: 50%;
+    --sz-entity-detail-icon-person-fill: #E1E2ED;
+    --sz-entity-detail-icon-company-fill: #E1E2ED;
+    --sz-entity-detail-icon-background-color: #60616F;
+    --sz-entity-detail-icon-margin: 0 30px 0 20px;
+
+    --sz-entity-detail-header-entity-name-font-size: 34px;
+    --sz-entity-detail-header-entity-name-font-weight: 600;
+
+    
+
+    --sz-entity-detail-header-section-totals-margin: 0 10px 0 0;
+    --sz-entity-detail-header-section-totals-padding: 0 0 .5em 0;
+    --sz-entity-detail-header-section-totals-display: flex;
+
+    --sz-entity-detail-header-section-totals-border: 1px solid #828396;
+    --sz-entity-detail-header-section-totals-border-radius: 5px;
+    --sz-entity-detail-header-section-totals-color: #FFFFFF;
+    --sz-entity-detail-header-section-totals-opacity: .80;
+    
+    /*--sz-entity-detail-header-section-totals-color: #3C3A3C;*/
+    --sz-entity-detail-header-section-totals-font-size: 60px;
+    --sz-entity-detail-header-section-totals-width: 200px;
+    --sz-entity-detail-header-section-totals-height: 100px;
+    --sz-entity-detail-header-section-totals-icon-width: 48px;
+    /* end header vars */
+
+    /* start relationship section list vars */
+    --sz-entity-detail-name-font-size: 1.7em;
+    --sz-entity-detail-name-line-height: 1.7em;
+    --sz-entity-detail-name-margin: 0 0 14px 0;
+    --sz-entity-detail-name-display: block;
+    --sz-entity-detail-name-hover-color: #979797;
+    --sz-entity-detail-section-header-margin: 1em 0 0;
+    --sz-entity-detail-section-header-padding: .4em 1em;
+    --sz-entity-detail-section-header-color: #FFFFFF;
+    --sz-entity-detail-section-header-font-size: 18px;
+    --sz-entity-detail-section-header-count-label-font-size: 18px;
+    --sz-entity-detail-section-header-count-font-size: 24px;
+
+    --sz-entity-detail-section-header-font-family: Montserrat;
+    --sz-entity-detail-section-header-border-radius: 4px 4px 0 0;
+    --sz-entity-detail-section-graph-height: 500px;
+    --sz-entity-detail-section-graph-collapsed-height: 70px;
+    --sz-entity-detail-section-color: #2e2e2d;
+    --sz-entity-detail-section-font-size: 18px;
+    --sz-entity-detail-section-line-height: 20px;
+    --sz-entity-detail-section-background: #F4F5FC;
+    --sz-entity-detail-section-graph-background: #f8f7f5;
+    --sz-entity-detail-section-by-matches-background: #F4F5FC;
+    --sz-entity-detail-section-border: 1px solid #AFB0C4;
+    --sz-entity-detail-section-border-radius: 0 0 6px 6px;
+    --sz-entity-detail-section-border-left: var(--sz-entity-detail-section-border);
+    --sz-entity-detail-section-border-right: var(--sz-entity-detail-section-border);
+    --sz-entity-detail-section-border-top: var(--sz-entity-detail-section-border);
+    --sz-entity-detail-section-border-bottom: var(--sz-entity-detail-section-border);
+    --sz-entity-detail-section-title-font-size: 20px;
+    --sz-entity-detail-section-padding: 0 24px;
+    --sz-entity-detail-section-record-card-display: block;
+    --sz-entity-detail-section-record-card-background-color: #FFFFFF;
+    --sz-entity-detail-section-record-card-margin: 8px 0 8px 0;
+    --sz-entity-detail-section-record-card-padding: 15px;
+    --sz-entity-detail-section-record-card-border-radius: 5px;
+    --sz-entity-detail-section-record-card-border: 1px solid #dedede;
+    --sz-entity-detail-section-record-card-one-cols-min-width: 80%;
+    --sz-entity-detail-section-record-card-two-cols-min-width: 40%;
+    --sz-entity-detail-section-record-card-three-cols-min-width: 30%;
+    --sz-entity-detail-section-record-card-four-cols-min-width: 20%;
+
+    --sz-entity-detail-pill-display: inline-block;
+    --sz-entity-detail-pill-font-family: Montserrat;
+    --sz-entity-detail-pill-font-size: 12px;
+    --sz-entity-detail-pill-text-transform: uppercase;
+    --sz-entity-detail-pill-padding: 4px 15px 4px 15px;
+    --sz-entity-detail-pill-margin: 0 10px 0 0;
+    --sz-entity-detail-pill-background-color: #{$sz-dark-grey};
+    --sz-entity-detail-pill-color: #{$sz-white};
+    --sz-entity-detail-pill-border-radius: 20px;
+    /* special overrides for component view since it coexists with primary detail view */
+    --sz-entity-detail-section-header-lo-rail-font-size: 12px;
+    --sz-entity-detail-section-header-lo-rail-font-weight: 400px;
+    --sz-entity-detail-section-lo-rail-border: none;
+    --sz-entity-detail-section-lo-rail-font-size: 14px;
+    --sz-entity-detail-section-lo-rail-font-weight: normal;
+    --sz-entity-detail-section-lo-rail-border-radius: 0;
+    --sz-entity-detail-section-lo-rail-border-left: var(--sz-entity-detail-section-lo-rail-border);
+    --sz-entity-detail-section-lo-rail-border-right: var(--sz-entity-detail-section-lo-rail-border);
+    --sz-entity-detail-section-lo-rail-border-top: var(--sz-entity-detail-section-lo-rail-border);
+    --sz-entity-detail-section-lo-rail-border-bottom: 1px solid #ddd;
+    --sz-entity-detail-header-lo-rail-totals-font-size: 9px;
+    --sz-entity-detail-header-lo-rail-totals-number-font-size: 26px;
+    --sz-entity-detail-header-lo-rail-padding: 0 0 0 20px;
+    --sz-entity-detail-header-lo-rail-border: none;
+    --sz-entity-detail-header-lo-rail-name-font-size: 2em;
+    --sz-entity-detail-header-lo-rail-name-font-weight: 600;
+    --sz-entity-detail-header-lo-rail-name-padding: var(--sz-entity-detail-header-lo-rail-padding);
+    --sz-entity-detail-pill-lo-rail-font-size: 11px;
+    --sz-entity-detail-pill-lo-rail-border-radius: 5px;
+    --sz-entity-detail-pill-lo-rail-padding: 2px 5px;
+
+
+    /* end relationship section list vars */
+
+    /* graph */
+    --sz-entity-graph-control-border: 1px solid #d3d3d3;
+    --sz-entity-graph-control-position: absolute;
+    --sz-entity-graph-control-display: block;
+    --sz-entity-graph-control-cursor: default;
+    --sz-entity-graph-control-z-index : 200;
+    --sz-entity-graph-control-top: auto;
+    --sz-entity-graph-control-left: auto;
+    --sz-entity-graph-control-right: 0px;
+    --sz-entity-graph-control-bottom: 0px;
+    --sz-entity-graph-control-font-size: 13px;
+    --sz-entity-graph-control-color: #979797;
+    --sz-entity-graph-control-background-color: #fff;
+    --sz-entity-graph-control-padding-top: 1px;
+    --sz-entity-graph-control-padding-right: 3px;
+    --sz-entity-graph-control-padding-bottom: 0px;
+    --sz-entity-graph-control-padding-left: 3px;
+    --sz-entity-graph-overlay-color: #9d9d9d;
+    
+    /* tooltip */
+    --sz-graph-tooltip-font-size: 10px;
+    --sz-graph-tooltip-background-color: #fff;
+    --sz-graph-tooltip-max-width: 200px;
+    --sz-graph-tooltip-padding: 10px;
+    --sz-graph-tooltip-border-radius: 4px;
+    --sz-graph-tooltip-border: 1px solid rgb(214, 214, 214);
+    /* large graph */
+    --sz-large-graph-height: 100%;
+
+    /* control borders */
+    --sz-entity-graph-control-border-top: 1px solid #d3d3d3;
+    --sz-entity-graph-control-border-right: none;
+    --sz-entity-graph-control-border-bottom: none;
+    --sz-entity-graph-control-border-left: 1px solid #d3d3d3;
+    --sz-entity-graph-control-border-top-left-radius: 7px;
+    --sz-entity-graph-control-border-top-right-radius: 0;
+    --sz-entity-graph-control-border-bottom-left-radius: 0;
+    --sz-entity-graph-control-border-bottom-right-radius: 0;
+
+    --sz-entity-graph-control-item-cursor: pointer;
+    --sz-entity-graph-control-item-background-color: var(--sz-graph-filter-control-background-color);
+    --sz-entity-graph-control-item-margin: 0;
+
+    /* graph filters */
+    --sz-graph-filter-control-background-color: transparent;
+
+  /* end entity detail vars */
+
+}

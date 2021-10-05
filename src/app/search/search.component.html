@@ -1,5 +1,7 @@
 <sz-search 
     showIdentifierTypesPicker="true"
+    cancelButtonLabel="Clear"
+    cancelButtonLabelShort="Clear"
     (resultsChange)="onSearchResults($event)"
     (resultsCleared)="onSearchResultsCleared($event)"
     (parameterChange)="onSearchParameterChange($event)"
@@ -15,6 +17,12 @@
         <mat-icon color="secondary" class="graph" aria-hidden="false" aria-label="Open Results in Graph">bubble_chart</mat-icon>
         </button>
     </button>
-    <sz-search-results [results]="currentSearchResults" (resultClick)="onSearchResultClick($event)"></sz-search-results>
+    <sz-search-results 
+        [parameters]="currentSearchParameters"
+        [results]="currentSearchResults" 
+        (resultClick)="onSearchResultClick($event)"></sz-search-results>
 </div>
 <!-- end search results -->
+<!-- start search tips -->
+<app-tips *ngIf="!currentSearchResults"></app-tips>
+<!-- end search tips -->

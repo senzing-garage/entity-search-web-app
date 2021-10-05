@@ -2,8 +2,12 @@
 :host {
   position: fixed;
   display: block;
-  left: 0;
-  top: 42px;
+  left: 72px;
+  top: 0;
+  /*
+  right: 0;
+  bottom: 0;
+  top: 0;*/
   width: 100vw;
   margin: 0px;
   padding: 0px;
@@ -13,7 +17,7 @@
     position: absolute;
     top: 0px;
     width: 100vw;
-    height: calc(100vh - 42px);
+    height: 100vh;
     margin: 0px;
     padding: 0px;
   }

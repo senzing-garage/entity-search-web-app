@@ -36,6 +36,8 @@ export class AppSearchComponent implements OnInit {
     /** the search parameters from the last search performed */
     public currentSearchParameters: SzEntitySearchParams;
 
+    public currentSearchResultsHumanReadable: string | undefined;
+
     constructor(
         private configService: SzWebAppConfigService,
         private entitySearchService: EntitySearchService,
@@ -68,6 +70,7 @@ export class AppSearchComponent implements OnInit {
             this.search.currentlySelectedEntityId = undefined;
             // set page title
             this.titleService.setTitle( this.search.searchTitle );
+            this.currentSearchResultsHumanReadable = this.search.searchTitle;
         });
 
         // listen for global search data
@@ -75,6 +78,7 @@ export class AppSearchComponent implements OnInit {
             this.currentSearchResults = results;
             // set page title
             this.titleService.setTitle( this.search.searchTitle );
+            this.currentSearchResultsHumanReadable = this.search.searchTitle;
             // stop spinner (jic)
             this.spinner.hide();
         });
@@ -140,6 +144,7 @@ export class AppSearchComponent implements OnInit {
     }
     if (!isByIdParams) {
       this.entitySearchService.currentSearchParameters = (searchParams as SzEntitySearchParams);
+      this.currentSearchParameters = this.entitySearchService.currentSearchParameters;
     } else {
       this.entitySearchService.currentSearchByIdParameters = (searchParams as SzSearchByIdFormParams);
     }

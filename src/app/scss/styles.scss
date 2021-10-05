@@ -24,6 +24,8 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 // sdk theme overrides
 body {
+  background-color: #fafafa;
+  
   /* default theme overrides */
   --sz-search-button-clear-background-color: transparent;
   --sz-search-label-font-size: .8em;
@@ -34,6 +36,8 @@ body {
   --sz-search-button-filter-height: 10px;
   --sz-search-button-filter-font-size: 10px;
   --sz-search-button-filter-margin-left: 2px;
+
+  --sz-search-results-matches-header-background-color: #6D7EBD;
   
   &.graph-open {
     overflow: hidden;
