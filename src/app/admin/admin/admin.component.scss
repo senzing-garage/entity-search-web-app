@@ -1,11 +1,13 @@
 :host {
-  .admin {
+  margin-top: 20px;
+  display: block;
+
+  /*.admin {
     height: 100%;
-  }
+  }*/
   mat-sidenav-container {
     min-height: 100%;
     overflow: unset;
-    background-color: #fff;
     .mat-drawer-content {
       padding: 0px 25px 30px 30px;
       height: unset;

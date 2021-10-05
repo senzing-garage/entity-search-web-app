@@ -99,8 +99,12 @@
     <ol class="subnav-list" *ngIf="showSubNav"
         (mouseenter)="onMouseEnterSubNav()">
         <!-- start search subnav -->
-        <li class="selected-search" routerLink="search/by-attribute">By Attribute(s)</li>
-        <li class="selected-search" routerLink="search/by-id">By Record/Entity Id</li>
+        <li class="selected-search" routerLinkActive="active" routerLink="search/by-attribute">
+            By Attribute(s)
+        </li>
+        <li class="selected-search" routerLinkActive="active" routerLink="search/by-id">
+            By Record/Entity Id
+        </li>
         <!-- end search subnav -->
         <!-- start admin subnav -->
         <li class="selected-datasources" routerLinkActive="active" routerLink="/admin/datasources">
@@ -110,5 +114,19 @@
             Import Data
         </li>
         <!-- end admin subnav -->
+        <!-- start settings subnav -->
+        <li class="selected-settings" routerLinkActive="active" routerLink="/settings/search">
+            Searches
+        </li>
+        <li class="selected-settings" routerLinkActive="active" routerLink="/settings/detail">
+            Entity Detail
+        </li>
+        <li class="selected-settings" routerLinkActive="active" routerLink="/settings/graph">
+            Graph
+        </li>
+        <li class="selected-settings" routerLinkActive="active" routerLink="/settings/session">
+            Behavior
+        </li>
+        <!-- end settings subnav -->
     </ol>
 </div>

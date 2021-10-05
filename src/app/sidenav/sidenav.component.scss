@@ -186,6 +186,15 @@
             }
         }
     }
+    /* make only settings subnav items visible when selected */
+    &.subnav-settings-visible {
+        ul.subnav-list, ol.subnav-list {
+            margin-top: calc(56px * 6 + 1px) !important;
+            li.selected-settings {
+                display: block;
+            }
+        }
+    }
 
     &.expanded {
         width: 255px;
@@ -198,9 +207,11 @@
             }
             ul.subnav-list, ol.subnav-list {
                 background-color: transparent;
-                width: calc(240px - 17px);
-                color: #E1E2ED;
-                padding-left: 17px;
+                /*width: calc(240px - 17px);*/
+                width: 240px;
+                color: #CACBDE;
+                /* padding-left: 17px; */
+                padding-left: 0px;
                 /* Label / Medium Label */
                 font-family: Montserrat;
                 font-style: normal;
@@ -211,6 +222,26 @@
                 li {
                     background-color: transparent;
                     text-align: left;
+                    padding-left: 17px;
+
+                    &:active, &.active {
+                        color: #E1E2ED;
+                        padding-left: 16px;
+                        border-top: 1px solid #3FD0F5;
+                        border-right: 1px solid #3FD0F5;
+                        border-bottom: 1px solid #3FD0F5;
+                        border-left: 1px solid #3FD0F5;
+                        line-height: calc(56px - 2px);
+
+                        &:hover {
+                            cursor: default;
+                            color: #E1E2ED;
+                        }
+                    }
+                    &:hover {
+                        cursor: pointer;
+                        color: #E1E2ED;
+                    }
                 }
             }
         }
