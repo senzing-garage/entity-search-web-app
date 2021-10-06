@@ -108,8 +108,8 @@ export class SideNavComponent {
     'settings': {
       name: 'Settings',
       key: 'settings',
-      order: 6,
-      submenuItems: [
+      order: 6
+      /*submenuItems: [
         {
           name: 'Search',
           key: 'settings-search-results',
@@ -125,7 +125,7 @@ export class SideNavComponent {
           key: 'settings-graph',
           order: 2
         }
-      ]
+      ]*/
     },
     'admin': {
       name: 'Admin',

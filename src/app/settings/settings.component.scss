@@ -1,0 +1,56 @@
+:host {
+    margin: 20px 0 0 20px;
+    display: block;
+
+    .row {
+        display: flex;
+        flex-direction: row;
+        /*justify-content: space-between;*/
+    
+        /*display: inline-block;*/
+        width: 100%;
+        position: relative;
+    }
+
+    #toolbar-col1 {
+        width: auto;
+        display: inline-flex;
+    }
+    #toolbar-col2 {
+        display: inline-flex;
+        flex-direction: column;
+        padding: 20px 20px 0 0;
+
+        small {
+            display: block;
+            margin-left: 20px;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            margin: .75em 0 0 0;
+            &.mat-primary {
+                background-color: #b09a84;
+                color: #232323;
+            }
+            &.mat-warn {
+                background-color: #a2544e;
+                color: #232323;
+            }
+        }
+
+        .actions {
+            border-top: 1px solid #636363;
+            margin-top: 3em;
+            padding-top: 1em;
+        }
+    }
+    h4.title {
+        border-bottom: 1px inset #999;
+        font-size: 1em;
+        font-weight: 600;
+        margin: 0 0 7px;
+        padding: 0 0 10px;
+    }
+}

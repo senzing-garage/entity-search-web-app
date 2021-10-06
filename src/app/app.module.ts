@@ -34,11 +34,14 @@ import { SideNavComponent } from './sidenav/sidenav.component';
 import { OverviewComponent } from './overview/overview.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { UiService } from './services/ui.service';
-import { PrefsManagerService } from './services/prefs-manager.service';
 import { TipsComponent } from './common/tips/tips.component';
 import { BlankComponent } from './common/blank/blank.component';
 import { NoResultsComponent } from './errors/no-results/no-results.component';
 import { AboutComponent } from './about/about.component';
+// prefs
+import { PrefsManagerService } from './services/prefs-manager.service';
+import { AppSettingsComponent } from './settings/settings.component'
+
 // admin dialog components that "FREAK-OUT" for no good reason
 import { AdminStreamLoadQueueInfoComponent } from './common/stream-load-queue-dialog/stream-load-queue-info.component';
 import { AdminStreamLoadQueueDialogComponent } from './common/stream-load-queue-dialog/stream-load-queue-dialog.component';
@@ -76,6 +79,7 @@ import { AdminBulkDataService } from './services/admin.bulk-data.service';
     AppComponent,
     AppSearchComponent,
     AppSearchByIdComponent,
+    AppSettingsComponent,
     SideNavComponent,
     OverviewComponent,
     SearchResultsComponent,

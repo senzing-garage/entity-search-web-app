@@ -80,7 +80,8 @@
             <span *ngIf="primaryExpanded">Data Sources</span>
         </li>
         <li class="separator"></li>
-        <li (click)="selectMenuItem('settings')" (mouseenter)="onMouseEnterMenuItem('settings')">
+        <li routerLinkActive="active" routerLink="settings"
+            (click)="selectMenuItem('settings')" (mouseenter)="onMouseEnterMenuItem('settings')">
             <mat-icon>settings</mat-icon>
             <span *ngIf="primaryExpanded">Settings</span>
         </li>
@@ -115,6 +116,7 @@
         </li>
         <!-- end admin subnav -->
         <!-- start settings subnav -->
+        <!--
         <li class="selected-settings" routerLinkActive="active" routerLink="/settings/search">
             Searches
         </li>
@@ -126,7 +128,7 @@
         </li>
         <li class="selected-settings" routerLinkActive="active" routerLink="/settings/session">
             Behavior
-        </li>
+        </li>-->
         <!-- end settings subnav -->
     </ol>
 </div>

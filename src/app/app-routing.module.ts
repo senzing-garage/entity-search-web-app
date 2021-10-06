@@ -23,6 +23,7 @@ import { UnknownErrorComponent } from './errors/uknown/uknown.component';
 import { AboutComponent } from './about/about.component';
 import { BlankComponent } from './common/blank/blank.component';
 import { OverviewComponent } from './overview/overview.component';
+import { AppSettingsComponent } from './settings/settings.component'
 
 export const routes: Routes = [
   { path: 'debug', component: BlankComponent},
@@ -40,6 +41,9 @@ export const routes: Routes = [
 
   { path: 'graph/:entityId', component: GraphComponent, resolve: { networkData: GraphEntityNetworkResolverService, entityData: EntityDetailResolverService }, data: { animation: 'search-detail' } },
   { path: 'graph/:entityId/:detailId', component: GraphComponent, resolve: { networkData: GraphEntityNetworkResolverService, entityData: EntityDetailResolverService }, data: { animation: 'search-detail' } },
+
+  { path: 'settings', component: AppSettingsComponent},
+
   { path: 'errors/no-results', component: NoResultsComponent, data: { animation: 'search-detail' } },
   { path: 'errors/404', component: PageNotFoundComponent, data: { animation: 'search-detail' } },
   { path: 'errors/500', component: ServerErrorComponent, data: { animation: 'search-detail' } },
