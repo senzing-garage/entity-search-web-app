@@ -55,6 +55,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     return false;
   }
+  public drawerExpanded: boolean = false;
 
   sub: Subscription;
   overlayRef: OverlayRef | null;
@@ -304,7 +305,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     this.uiService.createPdfClicked.subscribe((entityId: number) => {
       this.createPDF();
     });
-    //this.uiService.graphOpen = true;
+    this.uiService.graphOpen = true;
 
     // set up search hooks
     this.route.data

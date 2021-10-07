@@ -38,6 +38,16 @@ export class AppSearchComponent implements OnInit {
 
     public currentSearchResultsHumanReadable: string | undefined;
 
+    private _openResultLinksInGraph = false;
+    private _openSearchResultsInGraph = false;
+
+    public get openResultLinksInGraph() {
+      return this._openResultLinksInGraph;
+    }
+    public get openSearchResultsInGraph() {
+      return this._openSearchResultsInGraph;
+    }
+
     constructor(
         private configService: SzWebAppConfigService,
         private entitySearchService: EntitySearchService,
@@ -53,6 +63,17 @@ export class AppSearchComponent implements OnInit {
     ) {
         // get "/config/api" for immutable api path configuration
         this.configService.getRuntimeApiConfig();
+        this.route
+          .data
+          .subscribe((params) => {
+            console.log("route params",params);
+            if(params && params.openResultLinksInGraph !== undefined) {
+              this._openResultLinksInGraph = params.openResultLinksInGraph;
+            }
+            if(params && params.openSearchResultsInGraph !== undefined) {
+              this._openSearchResultsInGraph = params.openSearchResultsInGraph;
+            }
+          });
     }
 
     ngOnInit() {
@@ -103,17 +124,11 @@ export class AppSearchComponent implements OnInit {
     onSearchResults(evt: SzAttributeSearchResult[]) {
         console.info('onSearchResultsChange: ', evt);
         this.spinner.hide();
-        if (this.uiService.graphOpen) {
+        this.entitySearchService.currentSearchResults = evt;
+
+        if (this.openSearchResultsInGraph) {
             // show results in graph
-            this.entitySearchService.currentSearchResults = evt;
-        } else {
-            /*
-            // show results
-            this.router.navigate(['search/results'], {
-                queryParams: {refresh: new Date().getTime()}
-            });
-            */
-            this.entitySearchService.currentSearchResults = evt;
+            this.onOpenInGraph();
         }
     }
 
@@ -160,10 +175,14 @@ export class AppSearchComponent implements OnInit {
   }
   /** when user clicks on a search result item */
   onSearchResultClick(param) {
-    this.router.navigate(['search/by-attribute/entity/' + param.entityId]);
+    if(!this._openResultLinksInGraph){
+      this.router.navigate(['search/by-attribute/entity/' + param.entityId]);
+    } else {
+      this.router.navigate(['graph/' + param.entityId]);
+    }
   }
   /** when user clicks the "open results in graph" button */
-  onOpenInGraph($event) {
+  onOpenInGraph($event?) {
     const entityIds = this.currentSearchResults.map( (ent) => {
       return ent.entityId;
     });

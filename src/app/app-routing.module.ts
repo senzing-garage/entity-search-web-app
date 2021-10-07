@@ -37,8 +37,10 @@ export const routes: Routes = [
   { path: 'search/by-attribute/entity/:entityId', component: DetailComponent, resolve: { entityData: EntityDetailResolverService }, data: { animation: 'search-detail' } },
   { path: 'search/by-id/entitities/:entityId', component: DetailComponent, resolve: { entityData: EntityDetailResolverService }, data: { animation: 'search-detail' } },
   { path: 'search/by-id/datasources/:datasource/records/:recordId', component: SearchRecordComponent, resolve: { params: SearchByIdParamsResolverService, result: RecordResolverService }, data: { animation: 'search-detail' } },
+  
   { path: 'entity/:entityId', component: DetailComponent, resolve: { entityData: EntityDetailResolverService }, data: { animation: 'search-detail' } },
 
+  { path: 'graph', pathMatch: 'full', component: AppSearchComponent, resolve: {entityId: CurrentEntityUnResolverService, params: SearchParamsResolverService}, data: { animation: 'search-results', openResultLinksInGraph: true, openSearchResultsInGraph: true } },
   { path: 'graph/:entityId', component: GraphComponent, resolve: { networkData: GraphEntityNetworkResolverService, entityData: EntityDetailResolverService }, data: { animation: 'search-detail' } },
   { path: 'graph/:entityId/:detailId', component: GraphComponent, resolve: { networkData: GraphEntityNetworkResolverService, entityData: EntityDetailResolverService }, data: { animation: 'search-detail' } },
 

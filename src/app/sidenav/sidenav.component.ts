@@ -8,6 +8,8 @@ import { Subject } from 'rxjs';
 import {Overlay } from '@angular/cdk/overlay';
 import { AboutInfoService } from '../services/about.service';
 import { Timer } from 'd3-timer';
+import { SzFoliosService, SzPrefsService, SzSearchHistoryFolio, SzSearchHistoryFolioItem } from '@senzing/sdk-components-ng';
+import { takeUntil } from 'rxjs/operators';
 
 export interface NavItem {
   key: string;
@@ -41,6 +43,9 @@ export class SideNavComponent {
       // add specifically selected subnav class
       retVal.push('subnav-'+ this.selectedPrimaryNavItem.key.toLowerCase() +'-visible' );
     }
+    if(this.showGraphFilters) {
+      retVal.push('graph-open')
+    }
     return retVal;
   };
 
@@ -73,25 +78,42 @@ export class SideNavComponent {
         }
       ]
     },
-    'statistics': {
-      name: 'search',
-      key: 'search',
-      order: 2
+    'graph': {
+      name: 'graph',
+      key: 'graph',
+      order: 2,
+      submenuItems: [
+        {
+          name: 'Filters',
+          key: 'filters',
+          order: 0
+        },
+        {
+          name: 'Quick View',
+          key: 'quick-view',
+          order: 1
+        }
+      ]
     },
-    'composition': {
+    'statistics': {
       name: 'search',
       key: 'search',
       order: 3
     },
-    'review': {
+    'composition': {
       name: 'search',
       key: 'search',
       order: 4
     },
+    'review': {
+      name: 'search',
+      key: 'search',
+      order: 5
+    },
     'datasources': {
       name: 'Data Sources',
       key: 'datasources',
-      order: 5,
+      order: 6,
       submenuItems: [
         {
           name: 'List',
@@ -108,7 +130,7 @@ export class SideNavComponent {
     'settings': {
       name: 'Settings',
       key: 'settings',
-      order: 6
+      order: 7
       /*submenuItems: [
         {
           name: 'Search',
@@ -130,19 +152,30 @@ export class SideNavComponent {
     'admin': {
       name: 'Admin',
       key: 'admin',
-      order: 7
+      order: 8
     },
     'license': {
       name: 'License Information',
       key: 'license',
-      order: 8
+      order: 9
     }
   }
 
+  /** the folio items that holds last "X" searches performed */
+  public search_history: SzSearchHistoryFolioItem[];
+
   private selectedPrimaryNavItem: NavItem = this.getDefaultMenuItem();
   public get showSubNav(): boolean {
-    return (this.selectedPrimaryNavItem && this.selectedPrimaryNavItem.submenuItems && this.selectedPrimaryNavItem.submenuItems.length > 0)
+    //let showGraphOptions = this.selectedPrimaryNavItem.key === 'graph' && this.uiService.graphOpen;
+    //return (this.selectedPrimaryNavItem && this.selectedPrimaryNavItem.submenuItems && this.selectedPrimaryNavItem.submenuItems.length > 0) || showGraphOptions;
+    let showGraphOptions = (this.selectedPrimaryNavItem && this.selectedPrimaryNavItem.key === 'graph' && this.showGraphFilters);
+    return (showGraphOptions || (this.selectedPrimaryNavItem && this.selectedPrimaryNavItem.submenuItems && this.selectedPrimaryNavItem.submenuItems.length > 0));
     //return false;
+  }
+
+  
+  public get showGraphFilters(): boolean {
+    return this.uiService.graphOpen;
   }
   
   constructor(
@@ -152,8 +185,30 @@ export class SideNavComponent {
     private search: EntitySearchService,
     private spinner: SpinnerService,
     private titleService: Title,
-    public uiService: UiService
-  ) { }
+    public uiService: UiService,
+    private prefs: SzPrefsService,
+    private foliosService: SzFoliosService
+  ) {
+    console.log('the fuck? ', this.uiService.graphOpen);
+  }
+
+  /**
+   * reusable method for getting search history lists deduped, ordered,
+   * mapped from "search_history" property
+   */
+   public getHistoryOptions(fieldName: string): string[] {
+    let retVal = [];
+    if(this.search_history && this.search_history.map) {
+      retVal = this.search_history.filter( (folio: SzSearchHistoryFolioItem) => {
+        return folio && folio.data && folio.data[fieldName] && folio.data[fieldName] !== undefined && folio.data[fieldName] !== null;
+      }).map( (folio: SzSearchHistoryFolioItem ) => {
+        return folio.data[fieldName];
+      }).filter(function(elem, index, self) {
+        return index == self.indexOf(elem);
+      });
+    }
+    return retVal;
+  }
 
   /**
    * unsubscribe when component is destroyed

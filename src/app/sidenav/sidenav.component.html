@@ -41,6 +41,13 @@
             <mat-icon>search</mat-icon>
             <span *ngIf="primaryExpanded">Entity Search</span>
         </li>
+        <li routerLinkActive="active" routerLink="/graph" 
+            (click)="selectMenuItem('graph')"
+            (mouseenter)="onMouseEnterMenuItem('graph')"
+            >
+            <mat-icon>insert_chart</mat-icon>
+            <span *ngIf="primaryExpanded">Graph</span>
+        </li>
         <li (click)="selectMenuItem('statistics')" (mouseenter)="onMouseEnterMenuItem('statistics')">
             <svg width="13" height="15" viewBox="0 0 13 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M0 5H3V15H0V5ZM0 0H3V4H0V0ZM10 11H13V15H10V11ZM10 8H13V10H10V8ZM5 8H8V15H5V8ZM5 4H8V7H5V4Z"/>
@@ -113,6 +120,9 @@
         </li>
         <li class="selected-datasources" routerLinkActive="active" routerLink="/admin/load">
             Import Data
+        </li>
+        <li class="selected-graph">
+            Show Graph Filters? {{showGraphFilters}}
         </li>
         <!-- end admin subnav -->
         <!-- start settings subnav -->
