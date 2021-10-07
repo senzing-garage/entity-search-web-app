@@ -46,6 +46,11 @@
             margin: 0;
             padding: 0;
         }
+        ul.subnav-list, ol.subnav-list {
+            display: none;
+            opacity: 0;
+            transition: 400ms linear opacity;
+        }
     }
     ul.nav-list, ol.nav-list,
     ul.subnav-list, ol.subnav-list {
@@ -198,7 +203,7 @@
     /* make only settings subnav items visible when selected */
     &.subnav-graph-visible {
         ol.subnav-list {
-            margin-top: calc(56px * 2 + 1px) !important;
+            margin-top: -120px !important;
             li.selected-graph {
                 display: block;
             }
@@ -208,6 +213,7 @@
     &.expanded {
         width: 255px;
         overflow: hidden;
+
         
         &.subnav-expanded {
             width: calc(255px + 240px);
@@ -215,6 +221,8 @@
                 width: 255px;
             }
             ul.subnav-list, ol.subnav-list {
+                display: block;
+                opacity: 1;
                 background-color: transparent;
                 /*width: calc(240px - 17px);*/
                 width: 240px;
@@ -232,6 +240,19 @@
                     background-color: transparent;
                     text-align: left;
                     padding-left: 17px;
+
+                    &.graph-filters {
+                        border: none !important;
+                        line-height: unset !important;
+
+                        &:active, &.active {
+                            line-height: unset !important;
+                        }
+                        &:hover {
+                            cursor: inherit;
+                            line-height: unset !important;
+                        }
+                    }
 
                     &:active, &.active {
                         color: #E1E2ED;

@@ -264,4 +264,16 @@ export class SideNavComponent {
       this.selectedPrimaryNavItem = undefined
     }, 1000);
   }
+
+  public get showGraphDataSources(): string [] {
+    return this.uiService.graphFilterDataSources;
+  }
+  public onGraphOptionChange(event: {name: string, value: any}) {
+    console.log('GraphComponent.onOptionChange: ', event);
+    switch(event.name) {
+      case 'showLinkLabels':
+        //this.showMatchKeys = event.value;
+        break;
+    }
+  }
 }

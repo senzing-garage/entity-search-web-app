@@ -121,8 +121,15 @@
         <li class="selected-datasources" routerLinkActive="active" routerLink="/admin/load">
             Import Data
         </li>
-        <li class="selected-graph">
-            Show Graph Filters? {{showGraphFilters}}
+        <li class="selected-graph graph-filters">
+            <!-- start filters control -->
+            <sz-entity-detail-graph-filter #graphFilter
+            *ngIf="showGraphFilters"
+            class="sz-entity-detail-graph-filter"
+            [showDataSources]="showGraphDataSources"
+            (optionChanged)="onGraphOptionChange($event)"
+            ></sz-entity-detail-graph-filter>
+            <!--  end filters control  -->
         </li>
         <!-- end admin subnav -->
         <!-- start settings subnav -->

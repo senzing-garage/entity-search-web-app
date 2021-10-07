@@ -270,6 +270,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
   /** handler for graph components dataSourcesChange event */
   onDataSourcesChange(evt: any) {
       this._showDataSourcesInFilter = evt;
+      this.uiService.graphFilterDataSources = evt;
   }
   onSearchException(err: Error) {
     throw (err.message);

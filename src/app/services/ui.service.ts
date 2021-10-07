@@ -14,6 +14,7 @@ export class UiService {
   public createPdfClicked = new Subject<number>();
   private _graphOpen = false;
   private _resultsViewType = 'default';
+  private _graphFilterDataSources: string[] = [];
 
   public get searchExpanded(): boolean {
     return this._searchExpanded;
@@ -51,6 +52,12 @@ export class UiService {
   }
   public set graphOpen(value: boolean) {
     this._graphOpen = value;
+  }
+  public get graphFilterDataSources(): string[] {
+    return this._graphFilterDataSources;
+  }
+  public set graphFilterDataSources(value: string[]) {
+    this._graphFilterDataSources = value;
   }
 
   public get spinnerActive(): boolean {

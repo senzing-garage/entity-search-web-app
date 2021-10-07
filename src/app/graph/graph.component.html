@@ -26,15 +26,7 @@
       ></sz-standalone-graph>
     </mat-sidenav-content>
     <mat-sidenav #graphDrawer mode="side" [(opened)]="drawerExpanded" position="end" fixedInViewport="true" mode="side">
-      <!-- start filters control -->
-      <sz-entity-detail-graph-filter #graphFilter
-      *ngIf="showFilters"
-      class="sz-entity-detail-graph-filter"
-      [showLinkLabels]="_showMatchKeys"
-      [showDataSources]="_showDataSourcesInFilter"
-      (optionChanged)="onOptionChange($event)"
-      ></sz-entity-detail-graph-filter>
-      <!--  end filters control  -->
+      
       <!-- start entity detail -->
       <sz-entity-detail
         *ngIf="showEntityDetail"
