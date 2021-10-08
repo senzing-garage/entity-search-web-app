@@ -23,6 +23,7 @@
           (requestComplete)="onRequestComplete($event)"
           (dataLoaded)="onDataLoaded($event)"
           (dataSourcesChange)="onDataSourcesChange($event)"
+          (contextMenuClick)="onGraphContextClick($event)"
       ></sz-standalone-graph>
       <button (click)="toggleDrawerExpanded()">toggle detail view</button>
     </mat-drawer-content>

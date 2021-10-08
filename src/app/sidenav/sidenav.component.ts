@@ -188,9 +188,7 @@ export class SideNavComponent {
     public uiService: UiService,
     private prefs: SzPrefsService,
     private foliosService: SzFoliosService
-  ) {
-    console.log('the fuck? ', this.uiService.graphOpen);
-  }
+  ) {}
 
   /**
    * reusable method for getting search history lists deduped, ordered,

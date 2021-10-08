@@ -7,7 +7,7 @@
 
   .graph-context-menu {
     border: 1px solid #686868;
-    z-index: 5;
+    z-index: 5000;
   }
 
   sz-standalone-graph {
@@ -22,6 +22,7 @@
   }
   mat-drawer {
     padding: 0;
+    background-color: #CACBDE;
     .mat-drawer-inner-container {
       padding: 20px 10px 0 10px;
     }
