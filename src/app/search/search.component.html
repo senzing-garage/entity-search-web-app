@@ -7,10 +7,6 @@
     (parameterChange)="onSearchParameterChange($event)"
     (searchStart)="onSearchStart($event)"
     (searchEnd)="onSearchEnd($event)"></sz-search>
-
-<h2>openResultLinksInGraph: {{openResultLinksInGraph}}</h2>
-<h2>openSearchResultsInGraph: {{openSearchResultsInGraph}}</h2>
-
 <!-- start search results -->
 <div class="search-results" *ngIf="currentSearchResults && !openSearchResultsInGraph">
     <button mat-stroked-button (click)="onOpenInGraph($event)" class="open-in-graph">

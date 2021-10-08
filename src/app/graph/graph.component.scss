@@ -3,16 +3,31 @@
   display: block;
   position: relative;
   height: 100%;
+  z-index: 0;
 
   .graph-context-menu {
     border: 1px solid #686868;
+    z-index: 5;
   }
 
   sz-standalone-graph {
     width: calc( 100% - 0px);
     transition: all .2s linear;
+    z-index: 0;
   }
 
+  mat-drawer-content {
+    overflow: hidden;
+    height: 100vh;
+  }
+  mat-drawer {
+    padding: 0;
+    .mat-drawer-inner-container {
+      padding: 20px 10px 0 10px;
+    }
+  }
+
+  /*
   .tab-container {
     width: 250px;
     height: 24px;
@@ -20,7 +35,6 @@
     top: -40px;
     right: -226px;
     transition: right .2s linear;
-    /*background-color: #f8f7f5;*/
 
     .tab {
       background-color: #a9a9a9;
@@ -30,7 +44,7 @@
       border-bottom: 1px solid #cfcfcf;
       border-radius: 0;
       padding: 4px 0px;
-      width: calc(50% - 25px); /* accounting for the toggle button */
+      width: calc(50% - 25px);
       color: #fff;
       cursor: pointer;
 
@@ -56,8 +70,9 @@
         font-size: 16px;
       }
     }
-  }
+  }*/
 
+  /*
   .right-rail {
     display: block;
     width: 0px;
@@ -72,8 +87,6 @@
     .embedded-detail-viewer,
     .embedded-filters {
       border: none;
-      /*height: 100%;
-      overflow: hidden;*/
       padding-top: 16px;
     }
 
@@ -84,7 +97,7 @@
       font-weight: 500;
       font-size: 14px;
     }
-  }
+  }*/
 
   .content-container {
     position: relative;
@@ -110,6 +123,7 @@
     }
   }
 
+  /*
   &.right-rail-open {
     sz-standalone-graph {
       width: calc( 100% - 340px);
@@ -121,5 +135,5 @@
       width: 340px;
       overflow: scroll;
     }
-  }
+  }*/
 }

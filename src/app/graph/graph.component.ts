@@ -55,7 +55,15 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     return false;
   }
-  public drawerExpanded: boolean = false;
+  public get drawerExpanded(): boolean {
+    return this.showEntityDetail;
+  }
+  public set drawerExpanded(value: boolean) {
+    this.showEntityDetail = value;
+  }
+  public toggleDrawerExpanded() {
+    this.showEntityDetail = !this.showEntityDetail;
+  }
 
   sub: Subscription;
   overlayRef: OverlayRef | null;
@@ -452,9 +460,22 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public onGraphEntityClick(event: any): void {
     console.log('clicked on graph entity #' + event.entityId);
+    if(this.currentlySelectedEntityId && this.currentlySelectedEntityId == event.entityId && this.showEntityDetail) {
+      // toggle detail drawer view
+      this.showEntityDetail = false;
+      return;
+    }
     this.currentlySelectedEntityId = event.entityId;
     this.showEntityDetail = true;
-    this.showFilters = false;
+
+    if(event && event.stopPropagation) { event.stopPropagation(); }
+    if(event && event.cancelBubble !== undefined) { event.cancelBubble = true; }
+
+    //this.showFilters = false;
+  }
+
+  public onCanvasClick(event: any){
+    console.log('onCanvasClick: ', event);
   }
 
   public toggleSpinner() {

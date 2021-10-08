@@ -6,8 +6,8 @@
       </ul>
   </ng-template>
 
-  <mat-sidenav-container>
-    <mat-sidenav-content [class.nav-expanded]="drawerExpanded">
+  <mat-drawer-container [hasBackdrop]="false">
+    <mat-drawer-content [class.detail-visible]="drawerExpanded" (click)="onCanvasClick($event)">
       <sz-standalone-graph data-html2canvas-ignore
           #graphComponent
           *ngIf="showSearchResults"
@@ -24,9 +24,10 @@
           (dataLoaded)="onDataLoaded($event)"
           (dataSourcesChange)="onDataSourcesChange($event)"
       ></sz-standalone-graph>
-    </mat-sidenav-content>
-    <mat-sidenav #graphDrawer mode="side" [(opened)]="drawerExpanded" position="end" fixedInViewport="true" mode="side">
-      
+      <button (click)="toggleDrawerExpanded()">toggle detail view</button>
+    </mat-drawer-content>
+    <mat-drawer id="graph-drawer" #graphDrawer 
+      mode="over" [(opened)]="drawerExpanded" position="end" fixedInViewport="true">
       <!-- start entity detail -->
       <sz-entity-detail
         *ngIf="showEntityDetail"
@@ -38,8 +39,8 @@
         [entityId]="currentlySelectedEntityId"></sz-entity-detail>
       <!-- end entity detail -->
 
-    </mat-sidenav>
-  </mat-sidenav-container>
+    </mat-drawer>
+  </mat-drawer-container>
 
   <!--<div class="tab-container">
     <button (click)="onToggleFilters($event)" class="tab toggle">

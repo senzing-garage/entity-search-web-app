@@ -109,8 +109,20 @@ button.graph {
 
 // override material inline style to allow mini nav state
 mat-sidenav[style] {
-  visibility: visible !important;
+  &#primary-sidenav {
+    visibility: visible !important;
+  }
 }
 .mat-drawer {
-  transform: none !important;
+  &#primary-sidenav {
+    transform: none !important;
+  }
+  &#graph-drawer {
+    /*overflow: hidden;*/
+    .mat-drawer-inner-container {
+      padding: 20px 10px 0 10px;
+      overflow: unset;
+      width: auto;
+    }
+  }
 }
