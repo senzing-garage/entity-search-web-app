@@ -7,7 +7,7 @@ import { Router, ActivatedRoute, UrlSegment, NavigationEnd } from '@angular/rout
   providedIn: 'root'
 })
 export class UiService {
-  private _navExpanded = true;
+  private _navExpanded = false;
   private _subNavExpanded = true;
   private _searchExpanded = true;
   private _searchType = 'default';

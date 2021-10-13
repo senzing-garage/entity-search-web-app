@@ -40,11 +40,12 @@ export const routes: Routes = [
   
   { path: 'entity/:entityId', component: DetailComponent, resolve: { entityData: EntityDetailResolverService }, data: { animation: 'search-detail' } },
 
-  { path: 'graph', pathMatch: 'full', component: AppSearchComponent, resolve: {entityId: CurrentEntityUnResolverService, params: SearchParamsResolverService}, data: { animation: 'search-results', openResultLinksInGraph: true, openSearchResultsInGraph: true } },
+  { path: 'graph', pathMatch: 'full', component: AppSearchComponent, resolve: {entityId: CurrentEntityUnResolverService, params: SearchParamsResolverService}, data: { animation: 'search-results', openResultLinksInGraph: true, openSearchResultsInGraph: false } },
   { path: 'graph/:entityId', component: GraphComponent, resolve: { networkData: GraphEntityNetworkResolverService, entityData: EntityDetailResolverService }, data: { animation: 'search-detail' } },
   { path: 'graph/:entityId/:detailId', component: GraphComponent, resolve: { networkData: GraphEntityNetworkResolverService, entityData: EntityDetailResolverService }, data: { animation: 'search-detail' } },
 
   { path: 'settings', component: AppSettingsComponent},
+  { path: 'statistics', component: BlankComponent},
 
   { path: 'errors/no-results', component: NoResultsComponent, data: { animation: 'search-detail' } },
   { path: 'errors/404', component: PageNotFoundComponent, data: { animation: 'search-detail' } },
@@ -52,7 +53,7 @@ export const routes: Routes = [
   { path: 'errors/504', component: GatewayTimeoutErrorComponent, data: { animation: 'search-detail' } },
   { path: 'errors/unknown', component: UnknownErrorComponent, data: { animation: 'search-detail' } },
   { path: 'about', component: AboutComponent, data: { animation: 'search-detail'} },
-  { path: '',   redirectTo: 'overview', pathMatch: 'full' },
+  { path: '',   redirectTo: 'search/by-attribute', pathMatch: 'full' },
   { path: 'overview',  component: OverviewComponent },
   { path: '**', component: PageNotFoundComponent }
 ];
