@@ -31,8 +31,9 @@
   mat-drawer {
     padding: 0;
     background-color: #757686;
-    transition: width .2s linear;
-    min-width: 408px;
+    transition: width .2s linear, right .2s linear;
+    width: 408px;
+    right: 0px;
     overflow: visible;
 
     .mat-drawer-inner-container {
@@ -187,6 +188,25 @@
     .graph-container {
       height: var(--sz-large-graph-height);
 
+    }
+  }
+
+  &.right-rail-closed {
+    mat-drawer {
+      width: 15px;
+      right: 15px;
+    }
+    .drawer-handle {
+      .toggle {
+        mat-icon {
+          transform: rotate(0deg) scaleX(-1);
+        }
+      }
+    }
+    .drawer-container {
+      .drawer-content {
+        display: none;
+      }
     }
   }
 
