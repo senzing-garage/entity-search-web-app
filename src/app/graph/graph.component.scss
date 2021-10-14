@@ -119,10 +119,12 @@
       border-top-right-radius: 4px;
       padding: 4px 0px;
       width: calc(50% - 25px);
+      height: 100%;
       color: #fff;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 12px;
       font-family: 'Montserrat';
+      text-transform: capitalize;
 
       &.active {
         background-color: #757686;
