@@ -43,7 +43,7 @@ export class SideNavComponent {
       // add specifically selected subnav class
       retVal.push('subnav-'+ this.selectedPrimaryNavItem.key.toLowerCase() +'-visible' );
     }
-    if(this.showGraphFilters) {
+    if(this.graphOpen) {
       retVal.push('graph-open')
     }
     return retVal;
@@ -81,19 +81,7 @@ export class SideNavComponent {
     'graph': {
       name: 'graph',
       key: 'graph',
-      order: 2,
-      submenuItems: [
-        {
-          name: 'Filters',
-          key: 'filters',
-          order: 0
-        },
-        {
-          name: 'Quick View',
-          key: 'quick-view',
-          order: 1
-        }
-      ]
+      order: 2
     },
     'statistics': {
       name: 'search',
@@ -166,15 +154,11 @@ export class SideNavComponent {
 
   private selectedPrimaryNavItem: NavItem = this.getDefaultMenuItem();
   public get showSubNav(): boolean {
-    //let showGraphOptions = this.selectedPrimaryNavItem.key === 'graph' && this.uiService.graphOpen;
-    //return (this.selectedPrimaryNavItem && this.selectedPrimaryNavItem.submenuItems && this.selectedPrimaryNavItem.submenuItems.length > 0) || showGraphOptions;
-    let showGraphOptions = (this.selectedPrimaryNavItem && this.selectedPrimaryNavItem.key === 'graph' && this.showGraphFilters);
-    return (showGraphOptions || (this.selectedPrimaryNavItem && this.selectedPrimaryNavItem.submenuItems && this.selectedPrimaryNavItem.submenuItems.length > 0));
-    //return false;
+    return (this.selectedPrimaryNavItem && this.selectedPrimaryNavItem.submenuItems && this.selectedPrimaryNavItem.submenuItems.length > 0);
   }
 
   
-  public get showGraphFilters(): boolean {
+  public get graphOpen(): boolean {
     return this.uiService.graphOpen;
   }
   
