@@ -8,7 +8,7 @@
   </ng-template>
 
   <mat-drawer-container [hasBackdrop]="false">
-    <mat-drawer-content [class.detail-visible]="drawerExpanded" (click)="onCanvasClick($event)">
+    <mat-drawer-content [class.detail-visible]="showRightRail" (click)="onCanvasClick($event)">
       <sz-standalone-graph data-html2canvas-ignore
           #graphComponent
           *ngIf="showSearchResults"
@@ -26,33 +26,42 @@
           (dataSourcesChange)="onDataSourcesChange($event)"
           (contextMenuClick)="onGraphContextClick($event)"
       ></sz-standalone-graph>
-      <button (click)="toggleDrawerExpanded()">toggle detail view</button>
     </mat-drawer-content>
     <mat-drawer id="graph-drawer" #graphDrawer 
-      mode="over" [(opened)]="drawerExpanded" position="end" fixedInViewport="true">
-      <div class="tab-container">
-        <button (click)="onTabClick('detail')" class="tab" [class.active]="showEntityDetail">details</button>
-        <button (click)="onTabClick('filters')" class="tab" [class.active]="showFilters">filters</button>
+      mode="over" [(opened)]="showRightRail" position="end" fixedInViewport="true">
+      <div class="drawer-container">
+        <div class="drawer-handle col" (click)="onToggleFilters($event)">
+          <button class="toggle">
+            <mat-icon *ngIf="this.showRightRail" aria-hidden="false" aria-label="Show Filters">double_arrow</mat-icon>
+            <mat-icon *ngIf="!this.showRightRail" aria-hidden="false" aria-label="Show Filters">visibility</mat-icon>
+          </button>
+        </div>
+        <div class="drawer-content col">
+          <div class="tab-container">
+            <button (click)="onTabClick('detail')" class="tab" [class.active]="showEntityDetail">details</button>
+            <button (click)="onTabClick('filters')" class="tab" [class.active]="showFilters">filters</button>
+          </div>
+          <!-- start entity detail -->
+          <sz-entity-detail
+            *ngIf="showEntityDetail"
+            class="embedded-detail-viewer"
+            #entityDetailComponent
+            [updatePrefsOnChange]="false"
+            [showGraphSection]="false"
+            [forceLayout]="'layout-rail'"
+            [entityId]="currentlySelectedEntityId"></sz-entity-detail>
+          <!-- end entity detail -->
+          <!-- start filters control -->
+          <sz-entity-detail-graph-filter #graphFilter
+          *ngIf="showFilters"
+          class="sz-entity-detail-graph-filter"
+          [showLinkLabels]="showMatchKeys"
+          [showDataSources]="showDataSourcesInFilters"
+          (optionChanged)="onFilterOptionChange($event)"
+          ></sz-entity-detail-graph-filter>
+          <!--  end filters control  -->
+        </div>
       </div>
-      <!-- start entity detail -->
-      <sz-entity-detail
-        *ngIf="showEntityDetail"
-        class="embedded-detail-viewer"
-        #entityDetailComponent
-        [updatePrefsOnChange]="false"
-        [showGraphSection]="false"
-        [forceLayout]="'layout-rail'"
-        [entityId]="currentlySelectedEntityId"></sz-entity-detail>
-      <!-- end entity detail -->
-      <!-- start filters control -->
-      <sz-entity-detail-graph-filter #graphFilter
-      *ngIf="showFilters"
-      class="sz-entity-detail-graph-filter"
-      [showLinkLabels]="showMatchKeys"
-      [showDataSources]="showDataSourcesInFilters"
-      (optionChanged)="onFilterOptionChange($event)"
-      ></sz-entity-detail-graph-filter>
-      <!--  end filters control  -->
     </mat-drawer>
   </mat-drawer-container>
 <!-- end entity detail -->

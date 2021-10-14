@@ -32,7 +32,8 @@
     padding: 0;
     background-color: #757686;
     transition: width .2s linear;
-    min-width: 404px;
+    min-width: 408px;
+    overflow: visible;
 
     .mat-drawer-inner-container {
       padding: 0;
@@ -42,6 +43,61 @@
     }
   }
 
+  .drawer-container {
+    display: flex;
+    flex-direction: row;
+
+    .drawer-handle {
+      width: 5px;
+      background-color: #757686;
+      cursor: pointer;
+      &:hover {
+        /*background-color: #E1E2ED;*/
+        .toggle {
+          /*background-color: #E1E2ED;*/
+          background-color: #3d3b3d;
+          border-color: #3d3b3d;
+          mat-icon {
+            /*color: #333;*/
+          }
+        }
+      }
+      .toggle {
+        position: absolute;
+        top: calc(50vh + 28px - 16px/2);
+        left: -6px;
+        width: 19px;
+        height: 30px;
+        background-color: #9B9CB0;
+        cursor: pointer;
+        border-radius: 4px;
+        border: 2px solid #757686;
+        /*&:hover {
+          background-color: #E1E2ED;
+          mat-icon {
+            color: #333;
+          }
+        }*/
+        &:focus, &:focus-visible {
+          outline: none;
+        }
+  
+        mat-icon {
+          width: 16px;
+          height: 16px;
+          font-size: 16px;
+          left: -7px;
+          top: 2px;
+          position: relative;
+          color: #757686;
+        }
+      }
+    }
+    .drawer-content {
+      width: calc(100% - 5px);
+      background-color: #757686;
+    }
+  }
   
   .tab-container {
     width: 100%;
@@ -59,8 +115,8 @@
       border-left: none;
       border-bottom: 1px solid #cfcfcf;
       border-radius: 0;
-      border-top-left-radius: 6px;
-      border-top-right-radius: 6px;
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
       padding: 4px 0px;
       width: calc(50% - 25px);
       color: #fff;
@@ -77,18 +133,6 @@
       }
       &:active, &:focus, &:visited {
         outline: none !important;
-      }
-    }
-    .toggle {
-      width: 24px;
-      background-color: #333;
-      border-top: none;
-      border-right: none;
-
-      mat-icon {
-        width: 16px;
-        height: 16px;
-        font-size: 16px;
       }
     }
   }

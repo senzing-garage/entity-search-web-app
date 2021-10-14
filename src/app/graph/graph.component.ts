@@ -55,16 +55,6 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     return false;
   }
-  public get drawerExpanded(): boolean {
-    return this.showEntityDetail || this.showFilters;
-  }
-  public set drawerExpanded(value: boolean) {
-    this._showEntityDetail = value;
-    this._showFilters = value;
-  }
-  public toggleDrawerExpanded() {
-    this.showEntityDetail = !this.showEntityDetail;
-  }
 
   public get showFilters(): boolean {
     return this._showFilters;
@@ -133,6 +123,9 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
   get showRightRail() { return this._showRightRail; }
   @HostBinding('class.right-rail-closed')
   get hideFilters() { return !this._showRightRail; }
+  set showRightRail(value: boolean) {
+    this._showRightRail = value;
+  }
 
   @ViewChild('graphContainer') graphContainerEle: ElementRef;
   // @ViewChild(SzEntityDetailGraphControlComponent) graphControlComponent: SzEntityDetailGraphControlComponent;
@@ -490,10 +483,12 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     if(this.currentlySelectedEntityId && this.currentlySelectedEntityId == event.entityId && this.showEntityDetail) {
       // toggle detail drawer view
       this.showEntityDetail = false;
+      this.showRightRail = false;
       return;
     }
     this.currentlySelectedEntityId = event.entityId;
     this.showEntityDetail = true;
+    this.showRightRail = true;
 
     if(event && event.stopPropagation) { event.stopPropagation(); }
     if(event && event.cancelBubble !== undefined) { event.cancelBubble = true; }
