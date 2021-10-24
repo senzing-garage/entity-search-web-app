@@ -24,6 +24,7 @@
           (requestComplete)="onRequestComplete($event)"
           (dataLoaded)="onDataLoaded($event)"
           (dataSourcesChange)="onDataSourcesChange($event)"
+          (matchKeysChange)="onMatchKeysChange($event)"
           (contextMenuClick)="onGraphContextClick($event)"
       ></sz-standalone-graph>
     </mat-drawer-content>
@@ -57,6 +58,7 @@
           class="sz-entity-detail-graph-filter"
           [showLinkLabels]="showMatchKeys"
           [showDataSources]="showDataSourcesInFilters"
+          [showMatchKeys]="showMatchKeysInFilters"
           (optionChanged)="onFilterOptionChange($event)"
           ></sz-entity-detail-graph-filter>
           <!--  end filters control  -->

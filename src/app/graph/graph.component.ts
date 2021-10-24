@@ -80,6 +80,9 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     return this._showDataSourcesInFilter;
     //return this.uiService.graphFilterDataSources;
   }
+  public get showMatchKeysInFilters(): string [] {
+    return this._showMatchKeysInFilter;
+  }
 
   sub: Subscription;
   overlayRef: OverlayRef | null;
@@ -117,6 +120,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /** array of data sources to limit "filter by datasource" to. */
   public _showDataSourcesInFilter: string[];
+  public _showMatchKeysInFilter: string[];
   /** whether or not to show the right-rail element */
   private _showRightRail = true;
   @HostBinding('class.right-rail-open')
@@ -299,6 +303,10 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
   onDataSourcesChange(evt: any) {
       this._showDataSourcesInFilter = evt;
       //this.uiService.graphFilterDataSources = evt;
+  }
+  onMatchKeysChange(data: string[]) {
+    console.warn('onMatchKeysChange: ', data);
+    this._showMatchKeysInFilter = data;
   }
   onSearchException(err: Error) {
     throw (err.message);
@@ -570,14 +578,15 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log('GraphComponent.onOptionChange: ', event);
     switch(event.name) {
       case 'showLinkLabels':
-        this._showMatchKeys = event.value;
+        //this._showMatchKeys = event.value;
+        this.prefs.graph.showMatchKeys = event.value;
         break;
     }
   }
 
   /** proxy handler for when prefs have changed externally */
   private onPrefsChange(prefs: any) {
-    // console.log('@senzing/sdk-components-ng/sz-entity-detail-graph.onPrefsChange(): ', prefs, this.prefs.graph);
+    console.log('GraphComponent.onPrefsChange(): ', prefs, this.prefs.graph);
     this._showMatchKeys = prefs.showMatchKeys;
     this.maxDegrees = prefs.maxDegreesOfSeparation;
     this.maxEntities = prefs.maxEntities;

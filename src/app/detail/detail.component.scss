@@ -1,6 +1,18 @@
 :host {
   padding: 20px 20px 30px 20px;
   display: block;
+  
+  /*
+  --sz-color-matches: rgb(109 126 189 / 65%);
+  --sz-color-possible-matches: rgb(255 164 68 / 75%);
+  --sz-color-possibly-related: rgb(255 229 115 / 75%);
+  --sz-color-disclosed: rgb(14 143 176 / 65%);
+  */
+  --sz-color-matches: #6d7ebda6;
+  --sz-color-possible-matches: #ffa444bf;
+  --sz-color-possibly-related: #ffe573bf;
+  --sz-color-disclosed: #60b4ca;
+  --sz-entity-detail-header-section-totals-color: #60616F;
 
   .graph-context-menu {
     border: 1px solid #686868;
