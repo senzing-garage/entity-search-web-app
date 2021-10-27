@@ -908,7 +908,7 @@ export class AdminBulkDataService {
             )
             .subscribe(sendChunks);
         // 
-        let _onStreamRecordParserListener = this.getChunksFromFile(file, (status) => {
+        let _onStreamChunkReadListener = this.getChunksFromFile(file, (status) => {
             // on stream complete, do thing
             console.log('SzBulkDataService.streamAnalyze: file stream read complete.', status);
             readStreamComplete = true;
@@ -980,8 +980,8 @@ export class AdminBulkDataService {
             if(_onStreamAnalysisCompleteListener && _onStreamAnalysisCompleteListener.unsubscribe) {
                 _onStreamAnalysisCompleteListener.unsubscribe();
             }
-            if(_onStreamRecordParserListener && _onStreamRecordParserListener.unsubscribe) {
-                _onStreamRecordParserListener.unsubscribe();
+            if(_onStreamChunkReadListener && _onStreamChunkReadListener.unsubscribe) {
+                _onStreamChunkReadListener.unsubscribe();
             }
             if(_onAdminStreamAnalysisSummaryChangedListener && _onAdminStreamAnalysisSummaryChangedListener.unsubscribe) {
                 _onAdminStreamAnalysisSummaryChangedListener.unsubscribe();
@@ -1127,12 +1127,333 @@ export class AdminBulkDataService {
         });
         return retObs;
     }
+
+    streamLoad(file?: File, dataSourceMap?: { [key: string]: string }, entityTypeMap?: { [key: string]: string }, analysis?: SzBulkDataAnalysis): Observable<AdminStreamLoadSummary> {
+        // file related
+        file = file ? file : this.currentFile;
+        let fileSize = file && file.size ? file.size : 0;
+        let fileType = getFileTypeFromName(file);
+        let fileName = (file && file.name) ? file.name : undefined;
+
+        // beep BEEP RITCHY!!!
+        if(fileType === validImportFileTypes.CSV) {
+            return this.streamLoadByChunks(file, dataSourceMap, entityTypeMap);
+        } else if(fileType === validImportFileTypes.JSON || fileType === validImportFileTypes.JSONL) {
+            return this.streamLoadByRecords(file, dataSourceMap, entityTypeMap);
+        }
+    }
+
+    streamLoadByChunks(file?: File, dataSourceMap?: { [key: string]: string }, entityTypeMap?: { [key: string]: string }, analysis?: SzBulkDataAnalysis): Observable<AdminStreamLoadSummary> {
+        // parameter related
+        dataSourceMap = dataSourceMap ? dataSourceMap : this.dataSourceMap;
+        entityTypeMap = entityTypeMap ? entityTypeMap : this.entityTypeMap;
+        //console.log('SzBulkDataService.streamLoadByChunks: ', file, this.streamConnectionProperties, dataSourceMap, entityTypeMap);
+
+        // event streams
+        let retSubject      = new Subject<AdminStreamLoadSummary>();
+        let retObs          = retSubject.asObservable();
+
+        // set up subject used for aborting in progress subscriptions
+        if(!this.streamLoadAbort$ || this.streamLoadAbort$ === undefined || (this.streamLoadAbort$ && this.streamLoadAbort$.closed)){
+            this.streamLoadAbort$ = new Subject();
+        }
+
+        // file related
+        file = file ? file : this.currentFile;
+        let fileSize = file && file.size ? file.size : 0;
+        let fileType = getFileTypeFromName(file);
+        let fileName = (file && file.name) ? file.name : undefined;
+        // how many records to send per 200 milliseconds
+        // config value is per 1000ms, but .2s are better for UI draw
+        let bulkRecordSendRate          = this.streamLoadConfig.uploadRate ? Math.floor(this.streamLoadConfig.uploadRate / 5) : -1;
+        // record queues
+        let readChunks                  = [];
+        let readStreamComplete          = false;
+        let sendStreamComplete          = false;
+        // socket related
+        let streamSocketEndpoint        = "/bulk-data/load";
+        let qsChar                      = '?';
+        if(dataSourceMap) {
+            streamSocketEndpoint        += `${qsChar}mapDataSources=${encodeURIComponent(JSON.stringify(dataSourceMap))}`;
+            qsChar = '&';
+        }
+        if(entityTypeMap) {
+            streamSocketEndpoint        += `${qsChar}mapEntityTypes=${encodeURIComponent(JSON.stringify(entityTypeMap))}`;
+            qsChar = '&';
+        }
+        streamSocketEndpoint            += `${qsChar}eofSendTimeout=8&progressPeriod=60`;
+        this.webSocketService.reconnect(streamSocketEndpoint, "POST");
+
+
+        // construct summary object that we can report 
+        // statistics to
+        let summary: AdminStreamLoadSummary = {
+            fileType: fileType,
+            mediaType: fileType,
+            fileName: fileName,
+            fileSize: fileSize,
+            fileLineEndingStyle: lineEndingStyle.unknown,
+            characterEncoding: 'utf-8',
+            recordCount: 0,
+            loadedRecordCount: 0,
+            incompleteRecordCount: 0,
+            recordsWithRecordIdCount: 0,
+            recordsWithDataSourceCount: 0,
+            recordsWithEntityTypeCount: 0,
+            sentRecordCount: 0,
+            receivedRecordCount: 0,
+            unsentRecordCount: 0,
+            failedRecordCount: 0,
+            missingDataSourceCount: 0,
+            missingEntityTypeCount: 0,
+            missingRecordIdCount: 0,
+            resultsByDataSource: [],
+            resultsByEntityType: [],
+            bytesRead: 0,
+            bytesSent: 0,
+            bytesQueued: 0,
+            fileColumns: [],
+            dataSources: [],
+            status: 'INCOMPLETE',
+            complete: false,
+            isStreamResponse: true
+        }
+        let _onWSMessageRecievedListener = this.webSocketService.onMessageRecieved.pipe(
+            tap( data => { console.warn('_onWSMessageRecievedListener: ', data); }),
+            filter( data => { return data !== undefined}),
+            map( data => { return (data as AdminStreamLoadSummary) })
+        ).subscribe((data: AdminStreamLoadSummary) => {
+            // we change responses "recordCount" to "sentRecordCount" because that's what it really is
+            // and re-assert our internal "recordCount" which includes all records read so far
+            summary = Object.assign(summary, data);
+            console.warn('AdminBulkDataService.streamLoadByChunks.webSocketService.onMessageRecieved: ', summary, data);
+            if(data && data.topErrors && data.topErrors.length > 0) {
+                this._onStreamLoadErrors.next( summary.topErrors );
+            }
+            if(data && data.status === 'COMPLETED') {
+            //if(data && data.status === 'COMPLETED' && summary.sentRecordCount === summary.recordCount) {
+                // all data sent
+                summary.complete = true;
+            } else {
+                summary.complete = false;
+            }
+            if(readStreamComplete && sendStreamComplete && summary.complete === true) {
+                console.warn('sending _onStreamLoadComplete: ', summary, data);
+                this._onStreamLoadComplete.next(summary);
+            } else {
+                console.log('stream not complete', readStreamComplete, sendStreamComplete, summary.complete);
+            }
+        });
+
+        // initialize behavior subjects with base info
+        this._onStreamLoadStarted.next(summary); // singleton
+        this._onStreamLoadFileReadStarted.next(summary); // singleton
+        retSubject.next(summary); // local
+
+        // first create missing datasources and entity types
+        let dataSourcesCreated      = false;
+        let entityTypesCreated      = false;
+        let onAllDataSourcesAndEntityTypesCreated   = new Subject<boolean>();
+        let afterDataSourcesCreated = this.createNewDataSourcesFromMap(this.dataSourceMap);
+        let afterEntityTypesCreated = this.createNewEntityTypesFromMap(this.entityTypeMap);
+        // now create entity types
+        afterDataSourcesCreated.pipe(
+            takeUntil(this.streamLoadAbort$),
+            take(1)
+        ).subscribe((result: string[] | Error) => {
+            if((result as string[]).length >= 0) {
+                dataSourcesCreated = true;
+                //console.log('SzBulkDataService.streamLoadByChunks: all data sources created', dataSourcesCreated);
+                if(dataSourcesCreated && entityTypesCreated) {
+                    onAllDataSourcesAndEntityTypesCreated.next(true);
+                }
+            }
+        });
+        afterEntityTypesCreated.pipe(
+            takeUntil(this.streamLoadAbort$),
+            take(1)
+        ).subscribe((result) => {
+            if((result as string[]).length >= 0) {
+                entityTypesCreated = true;
+                //console.log('SzBulkDataService.streamLoadByChunks: all entity types created', entityTypesCreated);
+                if(dataSourcesCreated && entityTypesCreated) {
+                    onAllDataSourcesAndEntityTypesCreated.next(true);
+                }
+            }
+        });
+
+        // read file contents as stream
+        // parse to array of chunks
+        let _onStreamChunkReadListener = this.getChunksFromFile(file, (status) => {
+            // on stream complete, do thing
+            console.warn('SzBulkDataService.streamLoadByChunks: file stream read complete.', status);
+            readStreamComplete = true;
+            this._onStreamLoadProgress.next(summary);
+            this._onStreamLoadFileReadComplete.next(summary);
+            retSubject.next(summary); // local
+        }).pipe(
+            takeUntil(this.streamLoadAbort$)
+        ).subscribe(
+            (chunks) => {
+                // do count inc before we add to summary otherwise well double
+                //summary.recordCount         = summary.recordCount + records.length;
+                // now concat
+                //readRecords                 = readRecords.concat(records);
+                //summary.unsentRecordCount   = readRecords.length;
+                readChunks                    = readChunks.concat(chunks);
+                console.log(`SzBulkDataService.streamAnalyze: csv chunks`, chunks);
+
+                this._onStreamLoadProgress.next(summary);
+                this._onStreamLoadFileReadProgress.next(summary);
+                retSubject.next(summary); // local
+            }
+        );
+        
+        // this is the main fn that actually sends the read records
+        // to the websocket service
+        let sendChunks = (chunks?: any) => {
+            console.warn('sendChunks: ', chunks, readChunks);
+            if(readChunks && readChunks.length > 0) {
+                // slice off a batch of records to send
+                //let currQueuePush   = readRecords && readRecords.length < bulkRecordSendRate || bulkRecordSendRate < 0 ? readRecords : readRecords.slice(0, bulkRecordSendRate);
+                //readRecords         = readRecords.slice(currQueuePush.length);
+
+                // push them in to websocket (as quick as we read them - so cool)
+                this.webSocketService.sendChunksAsMessages(readChunks);
+
+                // clear out sent chunks
+                readChunks = [];
+
+                // update metadata
+                //summary.sentRecordCount     = summary.sentRecordCount + currQueuePush.length;
+                //summary.unsentRecordCount   = readRecords.length;
+
+                // check if everything has been sent
+                if(readStreamComplete) {
+                    // all messages sent
+                    console.warn('stream load complete 1', summary);
+                    sendStreamComplete = true;
+                    if(summary.complete === true) {
+                        console.warn('sending _onStreamLoadComplete 2: ', summary);
+                        this._onStreamLoadComplete.next(summary);
+                    }
+                } else {
+                    retSubject.next(summary); // local
+                    this._onStreamLoadProgress.next(summary);
+                }
+            } else if(readChunks && readChunks.length <= 0) {
+                // according to this we sent all the records, what went wrong
+                console.log('batch should be over. why is it still going?', readStreamComplete, summary.complete);
+            }
+        }
+        // quick wrapper fn so we can (re)use this in a evt pipe
+        let waitUntilDataSourcesAreValid = (): boolean => {
+            return dataSourcesCreated;
+        }
+        // quick wrapper fn so we can (re)use this in a evt pipe
+        let waitUntilEntityTypesCreated = (): boolean => {
+            return entityTypesCreated;
+        }
+
+        // ------------ monitor status of queue, batch send records to socket ------------
+        //if(bulkRecordSendRate > 0) {
+            // set up an interval that expires once all records read have been sent
+            let streamSendMon = timer(100, 200);
+            streamSendMon.pipe(
+                takeUntil(this.streamLoadAbort$),
+                map(() => {
+                    return summary;
+                }),
+                takeWhile( (summary: AdminStreamLoadSummary) => {
+                    return (summary && !summary.complete) ? true : false;
+                }),
+                /*filter((summary: AdminStreamLoadSummary) => {
+                    return summary && summary.recordCount > 0;
+                }),*/
+                filter( () => { return !this._streamLoadPaused; }),
+                filter( waitUntilDataSourcesAreValid ),
+                filter( waitUntilEntityTypesCreated )
+            ).subscribe( sendChunks );
+        //}
+        
+        // when ANYTHING changes, update the singleton "currentLoadResult" var so components can read status
+        let _onAdminStreamLoadSummaryChangedListener = retObs.subscribe((summary: AdminStreamLoadSummary) => {
+            this.currentLoadResult = summary;
+        });
+
+        // ---------------------------- on complete evt handlers ----------------------------
+        /** after we have sent all data subscribe to the next socket message */
+        /*
+        //onAllStreamDataSent.pipe(
+        //     take(1)
+        //).subscribe((allSent) => {
+            this.webSocketService.onMessageRecieved.pipe(
+                filter( data => { return data !== undefined}),
+            ).subscribe((data: AdminStreamLoadSummary) => {
+                // we change responses "recordCount" to "sentRecordCount" because that's what it really is
+                // and re-assert our internal "recordCount" which includes all records read so far
+                summary = Object.assign(summary, data, {recordCount: summary.recordCount, sentRecordCount: data.recordCount});
+
+                if(data && data.status === 'COMPLETED' && summary.sentRecordCount === summary.recordCount) {
+                    // all data sent
+                    summary.complete = true;
+                }
+                if(readStreamComplete && sendStreamComplete && summary.complete === true) {
+                    this._onStreamLoadComplete.next(summary);
+                }
+            });
+        //});*/
+
+        // on end of read double-check if whole thing is complete
+        /*
+        this._onStreamLoadFileReadComplete.pipe(
+            takeUntil(this.streamLoadAbort$),
+            filter((summary: AdminStreamLoadSummary) => { return summary !== undefined;}),
+            take(1),
+            delay(5000)
+        ).subscribe((summary: AdminStreamLoadSummary) => {
+            if(readStreamComplete && summary && summary.sentRecordCount === summary.recordCount) {
+                // set this to true to end batching loop Observeable
+                summary.complete = true;
+                this._onStreamLoadComplete.next(summary);
+            }
+            //console.log('_onStreamLoadReadComplete: ',readStreamComplete, summary);
+        });*/
+
+        // on end of records queue double-check if whole thing is complete
+        let _onStreamLoadCompleteListener = this._onStreamLoadComplete.pipe(
+            takeUntil(this.streamLoadAbort$),
+            filter((summary: AdminStreamLoadSummary) => { return summary !== undefined;}),
+            take(5),
+            delay(2000)
+        ).subscribe((summary: AdminStreamLoadSummary) => {
+            // close connection
+            //setTimeout(() => {
+                console.log('closing connection: all data sent', summary);
+                this.webSocketService.disconnect();
+                if(_onWSMessageRecievedListener && _onWSMessageRecievedListener.unsubscribe) {
+                    _onWSMessageRecievedListener.unsubscribe();
+                }
+                if(_onStreamLoadCompleteListener && _onStreamLoadCompleteListener.unsubscribe) {
+                    _onStreamLoadCompleteListener.unsubscribe();
+                }
+                if(_onStreamChunkReadListener && _onStreamChunkReadListener.unsubscribe) {
+                    _onStreamChunkReadListener.unsubscribe();
+                }
+                if(_onAdminStreamLoadSummaryChangedListener && _onAdminStreamLoadSummaryChangedListener.unsubscribe) {
+                    _onAdminStreamLoadSummaryChangedListener.unsubscribe();
+                }                
+            //}, 3000)
+        });
+
+        return retObs;
+    }
    /** perform streaming import of records over websocket interface 
      * takes a file as argument, stream reads file, parses records,
      * then batch chunks to websocket connection. 
      * @returns Observeable<AdminStreamLoadSummary>
     */
-    streamLoad(file?: File, dataSourceMap?: { [key: string]: string }, entityTypeMap?: { [key: string]: string }, analysis?: SzBulkDataAnalysis): Observable<AdminStreamLoadSummary> {
+    streamLoadByRecords(file?: File, dataSourceMap?: { [key: string]: string }, entityTypeMap?: { [key: string]: string }, analysis?: SzBulkDataAnalysis): Observable<AdminStreamLoadSummary> {
         // parameter related
         dataSourceMap = dataSourceMap ? dataSourceMap : this.dataSourceMap;
         entityTypeMap = entityTypeMap ? entityTypeMap : this.entityTypeMap;
@@ -1209,7 +1530,7 @@ export class AdminBulkDataService {
             // we need to reopen connection
         //    console.log('SzBulkDataService.streamLoad: websocket needs to be opened: ', this.webSocketService.connected, this.streamConnectionProperties);
             //console.log(`SzBulkDataService.streamLoad: ws to be opened: ${streamSocketEndpoint}`, this.streamConnectionProperties);
-            this.webSocketService.reconnect(streamSocketEndpoint, "POST");
+        this.webSocketService.reconnect(streamSocketEndpoint, "POST");
         //} else {
         //    console.log('SzBulkDataService.streamLoad: websocket thinks its still connected: ', this.webSocketService.connected, this.streamConnectionProperties);
         //}
