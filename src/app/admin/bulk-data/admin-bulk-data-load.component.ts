@@ -62,12 +62,15 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
   @Input() public set useSocketStream(value: boolean) {
     this.adminBulkDataService.useStreaming = value;
     if(this.adminBulkDataService.useStreaming) {
+      /*
       this._supportedFileTypes = [
         '.JSON',
         '.json',
         '.jsonl',
-        '.JSONL'
-      ]
+        '.JSONL',
+        '.CSV',
+        '.csv'
+      ]*/
     }
   }
   /** whether or not to use streaming sockets for analysis and loading */
@@ -153,10 +156,10 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
   private _supportedFileTypes = [
     '.JSON',
     '.json',
-    '.csv',
-    '.CSV',
     '.jsonl',
-    '.JSONL'
+    '.JSONL',
+    '.CSV',
+    '.csv'
   ]
   public get supportedFileTypes(): string {
     return this._supportedFileTypes.join(',');

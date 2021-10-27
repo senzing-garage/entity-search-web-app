@@ -18,7 +18,7 @@ import {
 } from '../common/import-utilities';
 
 import { WebSocketService } from './websocket.service';
-import { SzStreamingFileRecordParser } from '../common/streaming-file-record-parser';
+import { SzStreamingFileRecordParser, SzStreamingFileChunkReader } from '../common/streaming-file-record-parser';
 import { 
     BulkDataService, 
     AdminService as SdkAdminService,
@@ -29,7 +29,8 @@ import {
     SzDataSourceRecordAnalysis, 
     SzDataSourceBulkLoadResult, 
     SzEntityTypeBulkLoadResult, 
-    SzEntityTypeRecordAnalysis } from '@senzing/rest-api-client-ng';
+    SzEntityTypeRecordAnalysis, 
+    SzBulkDataStatus} from '@senzing/rest-api-client-ng';
 import { AboutInfoService } from './about.service';
 
 export interface AdminStreamSummaryBase {
@@ -75,6 +76,7 @@ export interface AdminStreamSummaryError {
 }
 
 export interface AdminStreamAnalysisSummary extends AdminStreamSummaryBase {
+    status?: SzBulkDataStatus,
     analysisByDataSource?: Array<SzDataSourceRecordAnalysis>;
     analysisByEntityType?: Array<SzEntityTypeRecordAnalysis>;
 }
@@ -762,9 +764,234 @@ export class AdminBulkDataService {
     public sendWebSocketMessage(message: string): Observable<boolean> {
         return this.webSocketService.sendMessage(message);
     }
+
+    public streamAnalyze(file: File): Observable<AdminStreamAnalysisSummary> {
+        // file related
+        file = file ? file : this.currentFile;
+        let fileSize = file && file.size ? file.size : 0;
+        let fileType = getFileTypeFromName(file);
+        let fileName = (file && file.name) ? file.name : undefined;
+
+        // beep BEEP RITCHY!!!
+        if(fileType === validImportFileTypes.CSV) {
+            return this.streamAnalyzeByChunks(file);
+        } else if(fileType === validImportFileTypes.JSON || fileType === validImportFileTypes.JSONL) {
+            return this.streamAnalyzeByRecords(file);
+        }
+    }
+
+    /** takes a JSON file and analyze it */
+    public streamAnalyzeByChunks(file: File): Observable<AdminStreamAnalysisSummary> {
+        //console.log('SzBulkDataService.streamAnalyze: ', file);
+        // event streams
+        let retSubject  = new Subject<AdminStreamAnalysisSummary>();
+        let retObs      = retSubject.asObservable();
+        // set up subject used for aborting in progress subscriptions
+        if(!this.streamAnalysisAbort$ || this.streamAnalysisAbort$ === undefined || (this.streamAnalysisAbort$ && this.streamAnalysisAbort$.closed)){
+            this.streamAnalysisAbort$ = new Subject();
+        }
+
+        // file related
+        file = file ? file : this.currentFile;
+        let fileSize = file && file.size ? file.size : 0;
+        let fileType = getFileTypeFromName(file);
+        let fileName = (file && file.name) ? file.name : undefined;
+        // record queues
+        let readChunks                  = [];
+        let readStreamComplete          = false;
+        let sendStreamComplete          = false;
+
+        // socket related
+        
+        let streamSocketEndpoint        = "/bulk-data/analyze";
+        let qsChar                      = '?';
+        streamSocketEndpoint            += `${qsChar}eofSendTimeout=5&progressPeriod=60`;
+
+        if(!this.webSocketService.connected){
+            // we need to reopen connection
+            console.log('SzBulkDataService.streamAnalyze: websocket needs to be opened: ', this.webSocketService.connected, this.streamConnectionProperties);
+            this.webSocketService.reconnect(streamSocketEndpoint, "POST");
+        } else {
+            console.log('SzBulkDataService.streamAnalyze: websocket thinks its still connected: ', this.webSocketService.connected, this.streamConnectionProperties);
+        }
+
+        // construct summary object that we can report 
+        // statistics to
+        let summary: AdminStreamAnalysisSummary = {
+            fileType: fileType,
+            mediaType: fileType,
+            fileName: fileName,
+            fileSize: fileSize,
+            fileLineEndingStyle: lineEndingStyle.unknown,
+            characterEncoding: 'utf-8',
+            recordCount: 0,
+            recordsWithRecordIdCount: 0,
+            recordsWithDataSourceCount: 0,
+            recordsWithEntityTypeCount: 0,
+            missingDataSourceCount: 0,
+            missingEntityTypeCount: 0,
+            missingRecordIdCount: 0,
+            bytesRead: 0,
+            bytesSent: 0,
+            bytesQueued: 0,
+            fileColumns: [],
+            dataSources: [],
+            entityTypes: [],
+            complete: false,
+            isStreamResponse: true
+        }
+
+        // this is the main fn that actually sends the read records
+        // to the websocket service
+        let sendChunks = (chunks?: any) => {
+            console.warn('sendChunks: ', chunks, readChunks, readStreamComplete);
+            if(readChunks && readChunks.length > 0) {
+                // push them in to websocket (as quick as we read them - so cool)
+                this.webSocketService.sendChunksAsMessages(readChunks);
+
+                // clear out sent chunks
+                readChunks = [];
+
+                // update metadata
+                //summary.sentRecordCount     = summary.sentRecordCount + currQueuePush.length;
+                //summary.unsentRecordCount   = readRecords.length;
+
+                // check if everything has been sent
+                if(readStreamComplete) {
+                    // all messages sent
+                    console.warn('stream load complete 1', summary);
+                    sendStreamComplete = true;
+                    if(summary.complete === true) {
+                        console.warn('sending _onStreamLoadComplete 2: ', summary);
+                        this._onStreamAnalysisComplete.next(summary);
+                    }
+                } else {
+                    retSubject.next(summary); // local
+                    this._onStreamAnalysisProgress.next(summary);
+                }
+            } else if(readChunks && readChunks.length <= 0) {
+                // according to this we sent all the records, what went wrong
+                console.log('batch should be over. why is it still going?', readStreamComplete, summary.complete);
+            }
+        }
+        // ------------- when socket gets a response message
+        let _onWSMessageRecievedListener = this.webSocketService.onMessageRecieved.pipe(
+            filter( data => { return data !== undefined}),
+            map( data => { return (data as AdminStreamAnalysisSummary) })
+        ).subscribe((data: AdminStreamAnalysisSummary) => {
+            // we change responses "recordCount" to "sentRecordCount" because that's what it really is
+            // and re-assert our internal "recordCount" which includes all records read so far
+            //summary = Object.assign(summary, data, {recordCount: summary.recordCount, receivedRecordCount: data.recordCount});
+            summary = Object.assign(summary, data);
+            console.warn('AdminBulkDataService.streamAnalysis.webSocketService.onMessageRecieved: ', summary, data);
+            if(data && data.topErrors && data.topErrors.length > 0) {
+                //this._onStreamAnalysisErrors.next( summary.topErrors );
+            }
+            if(data && data.status === 'COMPLETED') {
+            //if(data && data.status === 'COMPLETED' && summary.sentRecordCount === summary.recordCount) {
+                // all data sent
+                summary.complete = true;
+            } else {
+                summary.complete = false;
+            }
+            if(readStreamComplete && sendStreamComplete && summary.complete === true) {
+                console.warn('sending _onStreamLoadComplete: ', summary, data);
+                this._onStreamAnalysisComplete.next(summary);
+            } else {
+                console.log('stream not complete', readStreamComplete, sendStreamComplete, summary.complete);
+            }
+        });
+        // ------------- read file stream
+        this._onStreamAnalysisFileReadProgress
+            .pipe(
+                delay(500)
+            )
+            .subscribe(sendChunks);
+        // 
+        let _onStreamRecordParserListener = this.getChunksFromFile(file, (status) => {
+            // on stream complete, do thing
+            console.log('SzBulkDataService.streamAnalyze: file stream read complete.', status);
+            readStreamComplete = true;
+            this._onStreamAnalysisProgress.next(summary);
+            retSubject.next(summary); // local
+            this._onStreamAnalysisFileReadComplete.next(summary);
+        }).pipe(
+            takeUntil(this.streamAnalysisAbort$)
+        ).subscribe(
+            (chunks) => {
+                //this.updateStatsFromRecords(summary, records);
+                // do count inc before we add to summary otherwise well double
+                //summary.recordCount         = summary.recordCount + records.length;
+                
+                // now concat
+                //readRecords                 = readRecords.concat(records);
+                readChunks                    = readChunks.concat(chunks);
+                console.log(`SzBulkDataService.streamAnalyze: csv chunks`, chunks);
+                
+                //this._onStreamAnalysisProgress.next(summary);
+                this._onStreamAnalysisFileReadProgress.next(summary);
+                retSubject.next(summary); // local
+            }
+        );
+
+        // when ANYTHING changes, update the singleton "currentAnalysisResult" var so components can read status
+        let _onAdminStreamAnalysisSummaryChangedListener = retObs.subscribe((summary: AdminStreamAnalysisSummary) => {
+            this.currentAnalysisResult = summary;
+        });
+
+        // ---------------------------- on complete evt handlers ----------------------------
+        // proxy "onStreamAnalysisReadComplete" to "onStreamAnalysisComplete"
+        // since this is the only phase of this function
+        this._onStreamAnalysisFileReadComplete.pipe(
+            takeUntil(this.streamAnalysisAbort$),
+            filter((summary: AdminStreamAnalysisSummary) => { return summary !== undefined;}),
+            take(1),
+            delay(2000)
+        ).subscribe((summary: AdminStreamAnalysisSummary) => {
+            //summary.complete = true;
+            //this._onStreamAnalysisComplete.next(summary);
+        });
+
+        // on end of records queue double-check if whole thing is complete
+        let _onStreamAnalysisCompleteListener = this.onStreamAnalysisComplete.pipe(
+            takeUntil(this.streamAnalysisAbort$),
+            filter((summary: AdminStreamAnalysisSummary) => { return summary !== undefined;}),
+            take(1),
+            tap( (summary: AdminStreamAnalysisSummary) => {
+                this.analyzingFile.next(false);
+                this.dataSourceMap = this.getDataSourceMapFromAnalysis( summary.analysisByDataSource );
+                this.entityTypeMap = this.getEntityTypeMapFromAnalysis( summary.analysisByEntityType );
+                this.onDataSourceMapChange.next( this.dataSourceMap );
+                this.onEntityTypeMapChange.next( this.entityTypeMap );
+                //this.onAnalysisChange.next( this.currentAnalysisResult );
+            })
+        ).subscribe((summary: AdminStreamAnalysisSummary) => {
+            //console.log('onStreamAnalysisComplete: ', summary);
+            if(readStreamComplete && summary) {
+                // set this to true to end batching loop Observeable
+                //console.warn('stream load complete 2', summary);
+                summary.complete = true;
+            } else {
+                //console.warn('stream analysis complete 2', readStreamComplete, summary);
+            }
+            if(_onWSMessageRecievedListener && _onWSMessageRecievedListener.unsubscribe) {
+                _onWSMessageRecievedListener.unsubscribe();
+            }
+            if(_onStreamAnalysisCompleteListener && _onStreamAnalysisCompleteListener.unsubscribe) {
+                _onStreamAnalysisCompleteListener.unsubscribe();
+            }
+            if(_onStreamRecordParserListener && _onStreamRecordParserListener.unsubscribe) {
+                _onStreamRecordParserListener.unsubscribe();
+            }
+            if(_onAdminStreamAnalysisSummaryChangedListener && _onAdminStreamAnalysisSummaryChangedListener.unsubscribe) {
+                _onAdminStreamAnalysisSummaryChangedListener.unsubscribe();
+            }
+        });
+        return retObs;
+    }
     
     /** takes a JSON file and analyze it */
-    public streamAnalyze(file: File): Observable<AdminStreamAnalysisSummary> {
+    public streamAnalyzeByRecords(file: File): Observable<AdminStreamAnalysisSummary> {
         //console.log('SzBulkDataService.streamAnalyze: ', file);
         // event streams
         let retSubject  = new Subject<AdminStreamAnalysisSummary>();
@@ -1221,6 +1448,29 @@ export class AdminBulkDataService {
 
         streamReader.onStreamChunkParsed.subscribe((records: any[]) => {
             _readRecords.push(records);
+            retSubject.next(records);
+        });
+        if(onComplete){
+            //console.warn('SzBulkDataService.parseRecordsFromFile: onComplete handler passed to fn', _readRecords);
+            streamReader.onStreamClosed.subscribe(onComplete);
+        }
+        streamReader.onStreamClosed.subscribe((state) => {
+            //console.warn('SzBulkDataService.parseRecordsFromFile: stream closed.', state);
+        });
+        streamReader.read();
+        return retObs;
+    }
+    /** read records in csv file via web worker through service
+     * this is a hi-perf stream reader interface for parsing large json files
+     */
+    public getChunksFromFile(file: File, onComplete?: StreamReaderComplete): Observable<any[]> {
+        let _readChunks    = [];
+        let retSubject      = new Subject<any[]>();
+        let retObs          = retSubject.asObservable();
+        let streamReader    = new SzStreamingFileChunkReader(file);
+
+        streamReader.onStreamChunkParsed.subscribe((records: any[]) => {
+            _readChunks.push(records);
             retSubject.next(records);
         });
         if(onComplete){
