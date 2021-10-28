@@ -126,6 +126,13 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
     this._streamAnalysisComplete = value;
   }
 
+  public get streamLoadComplete(): boolean {
+    return this._streamImportComplete;
+  }
+  public set streamLoadComplete(value: boolean) {
+    this._streamImportComplete = value;
+  }
+
   public get currentStreamLoadStats(): AdminStreamLoadSummary {
     return this._currentStreamLoadStats;
   }

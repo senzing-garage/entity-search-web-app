@@ -18,13 +18,16 @@
   <li>streamAnalysisInProgress: {{streamAnalysisInProgress}}</li>
   <li>streamImportInProgress: {{streamImportInProgress}}</li>
   <li>streamImportComplete: {{streamImportComplete}}</li>
+  <li>streamLoadComplete: {{streamLoadComplete}}</li>
   <li>streamAnalysisComplete: {{streamAnalysisComplete}}</li>
+  <li>streamResult: {{result ? true : false}}</li>
 </div>-->
 <!-- end streaming interface -->
 <!-- start tabular display -->
 <admin-bulk-data-stream-analysis-report *ngIf="analysis && streamAnalysisComplete && !result && useSocketStream"></admin-bulk-data-stream-analysis-report>
 <admin-bulk-data-analysis-report *ngIf="analysis && !result && !useSocketStream"></admin-bulk-data-analysis-report>
 <admin-bulk-data-load-report *ngIf="result && !useSocketStream"></admin-bulk-data-load-report>
+<admin-bulk-data-stream-load-report *ngIf="result && streamLoadComplete && useSocketStream"></admin-bulk-data-stream-load-report>
 <!--  end tabular display  -->
 <!-- start spinner overlay -->
 <div class="mat-background" *ngIf="analyzingFile || loadingFile">

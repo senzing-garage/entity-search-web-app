@@ -425,7 +425,7 @@ export class WebSocketService {
   public reconnect(path?: string, method?: "POST" | "PUT" | "GET"){
     if(this.ws$) {
       let onWSExists = () => {
-        //console.log('WebSocketService.reconnect: ', this.connectionProperties, this.ws$);
+        console.log('WebSocketService.reconnect: ', this.connectionProperties, this.ws$);
         this.ws$.pipe(
           catchError( (error: Error) => {
             console.log('WebSocketService.reconnect: error: ', error, this.ws$.error.toString());
@@ -452,7 +452,7 @@ export class WebSocketService {
 
       if(this.connectionProperties && path && this.connectionProperties.path !== path){
         // kill con
-        //console.log('calling ws$.complete');
+        console.log('calling ws$.complete');
         this.disconnect();
         // re-init with new path
         this.open(undefined, undefined, path, method).subscribe( onWSExists )
@@ -461,7 +461,7 @@ export class WebSocketService {
       }
       
     } else if(this.connectionProperties && this.connectionProperties.connectionTest) {
-      //console.log('WebSocketService.reconnect -> WebSocketService.open', this.ws$, this.connectionProperties);
+      console.log('WebSocketService.reconnect -> WebSocketService.open', this.ws$, this.connectionProperties);
       this.open(undefined, undefined, path, method);
     } else {
       // should we try to connect something that hasnt been flagged as valid?
