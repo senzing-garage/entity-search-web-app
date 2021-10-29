@@ -59,6 +59,7 @@
           type="text" placeholder="Data Source to map to" #targetDS
           [value]="element.dataSource"
           [attr.list]="getDataSourceInputName(l)"
+          [disabled]="isInProgress"
           matBadgeOverlap="true"
           (change)="handleDataSourceChange(element.dataSource, targetDS.value)">
         </mat-form-field>

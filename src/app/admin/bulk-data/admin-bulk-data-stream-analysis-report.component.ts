@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
-import { SzPrefsService, SzAdminService } from '@senzing/sdk-components-ng';
+import { AfterViewInit, Component, ChangeDetectorRef, OnDestroy, OnInit } from '@angular/core';
+import { SzAdminService, SzPrefsService } from '@senzing/sdk-components-ng';
 
 import {
   SzBulkDataAnalysis,
@@ -48,6 +48,9 @@ export class AdminBulkDataStreamAnalysisReportComponent implements OnInit, OnDes
   public get analysis(): AdminStreamAnalysisSummary {
     return (this.adminBulkDataService.currentAnalysisResult as AdminStreamAnalysisSummary);
   }
+  public get isInProgress(): boolean {
+    return this.adminBulkDataService.isStreamAnalysisInProgress? true : false;
+  }
   /** get result of load operation from service */
   /*
   public get result(): SzBulkLoadResult {
@@ -93,7 +96,8 @@ export class AdminBulkDataStreamAnalysisReportComponent implements OnInit, OnDes
   }
   constructor( public prefs: SzPrefsService,
     private adminService: SzAdminService,
-    private adminBulkDataService: AdminBulkDataService) {}
+    private adminBulkDataService: AdminBulkDataService,
+    private changeDetectorRefs: ChangeDetectorRef) {}
 
     public get isMoreThanOneDataSource() {
       return (this.analysis && this.analysis.dataSources && this.analysis.dataSources.length > 1) ? true : false;
@@ -127,6 +131,13 @@ export class AdminBulkDataStreamAnalysisReportComponent implements OnInit, OnDes
         takeUntil(this.unsubscribe$)
       ).subscribe((summary: AdminStreamAnalysisSummary) => {
         //console.log('AdminBulkDataAnalysisReportComponent.onStreamAnalysisComplete', this.adminBulkDataService.currentAnalysisResult);
+        this.changeDetectorRefs.detectChanges();
+      });
+      this.adminBulkDataService.onStreamAnalysisProgress.pipe(
+        takeUntil(this.unsubscribe$)
+      ).subscribe((summary: AdminStreamAnalysisSummary) => {
+        //console.log('AdminBulkDataAnalysisReportComponent.onStreamAnalysisComplete', this.adminBulkDataService.currentAnalysisResult);
+        this.changeDetectorRefs.detectChanges();
       });
     }
 

@@ -239,6 +239,8 @@ export class AdminBulkDataService {
     public analyzingFile = new Subject<boolean>();
     /** when a file is being analyzed */
     public isAnalyzingFile = false;
+    public isStreamAnalysisInProgress = false;
+    
     /** when a file is being analyzed in the current thread */
     public loadingFile = new Subject<boolean>();
     /** when a file is being loaded in to the engine on thread*/
@@ -426,6 +428,16 @@ export class AdminBulkDataService {
                     console.warn('analyzing of file threw..', err);
                 });
             }
+        });
+        this.onStreamAnalysisStarted.pipe(
+            takeUntil( this.unsubscribe$ )
+        ).subscribe( () => {
+            this.isStreamAnalysisInProgress = true;
+        });
+        this.onStreamAnalysisComplete.pipe(
+            takeUntil( this.unsubscribe$ )
+        ).subscribe( () => {
+            this.isStreamAnalysisInProgress = false;
         });
         this.analyzingFile.pipe(
             takeUntil( this.unsubscribe$ )
@@ -840,6 +852,11 @@ export class AdminBulkDataService {
             complete: false,
             isStreamResponse: true
         }
+
+        // initialize behavior subjects with base info
+        this._onStreamAnalysisStarted.next(summary); // singleton
+        this._onStreamAnalysisFileReadStarted.next(summary); // singleton
+        retSubject.next(summary); // local
 
         // this is the main fn that actually sends the read records
         // to the websocket service
