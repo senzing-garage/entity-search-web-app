@@ -52,7 +52,7 @@ export class SzStreamingFileChunkReader {
             takeUntil(this.unsubscribe$)
         ).subscribe( (chunks: any[] ) => {
             this.readStreamReadChunks = this._readStreamReadChunks.concat(chunks);
-            console.log('SzStreamingFileChunkReader.onStreamChunkRead: ', chunks, this._readStreamReadChunks);
+            //console.log('SzStreamingFileChunkReader.onStreamChunkRead: ', chunks, this._readStreamReadChunks);
         });
         
         this.onStreamClosed.subscribe((status) => {

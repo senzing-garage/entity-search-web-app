@@ -3,7 +3,7 @@
 <admin-bulk-data-load-summary *ngIf="result"></admin-bulk-data-load-summary>
 <!--  end summary data  -->
 <!-- start streaming interface -->
-<div *ngIf="(streamImportInProgress && !streamAnalysisInProgress) || streamImportPaused || streamImportComplete" class="stream-job-status">
+<!--<div *ngIf="(streamImportInProgress && !streamAnalysisInProgress) || streamImportPaused || streamImportComplete" class="stream-job-status">
   <div *ngIf="streamImportInProgress || streamImportPaused" class="stream-controls">
     <button *ngIf="streamImportPaused" mat-raised-button (click)="resumeStreamImport()"><mat-icon aria-hidden="false" aria-label="resume icon">play_arrow</mat-icon>Resume</button>
     <button *ngIf="!streamImportPaused" mat-raised-button (click)="pauseStreamImport()"><mat-icon aria-hidden="false" aria-label="pause icon">pause</mat-icon>Pause</button>
@@ -12,7 +12,7 @@
          [mode]="streamImportProgressBarMode" 
          [value]="streamImportProgressBarValue"
          [text]="streamStatusMessage"></sz-progress-bar>
-</div>
+</div>-->
 <!--<div>
   <li>useSocketStream: {{useSocketStream}}</li>
   <li>streamAnalysisInProgress: {{streamAnalysisInProgress}}</li>

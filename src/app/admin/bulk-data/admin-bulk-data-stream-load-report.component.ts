@@ -1,8 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
 import { SzBulkDataService } from '@senzing/sdk-components-ng';
 import { SzBulkDataAnalysis, SzBulkLoadResult } from '@senzing/rest-api-client-ng';
 import { Subject } from 'rxjs';
 import { AdminBulkDataService, AdminStreamLoadSummary, AdminStreamAnalysisSummary } from '../../services/admin.bulk-data.service';
+import { takeUntil } from 'rxjs/operators';
 
 /**
  * show tabular results for an analytics operation.
@@ -50,9 +51,24 @@ export class AdminBulkDataStreamLoadReportComponent implements OnInit, OnDestroy
     return [this.streamResult];
   }
 
-  constructor(private adminBulkDataService: AdminBulkDataService) {}
+  constructor(
+    private adminBulkDataService: AdminBulkDataService,
+    private changeDetectorRefs: ChangeDetectorRef) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.adminBulkDataService.onStreamLoadComplete.pipe(
+      takeUntil(this.unsubscribe$)
+    ).subscribe((summary: AdminStreamLoadSummary) => {
+      //console.log('AdminBulkDataStreamLoadReportComponent.onStreamLoadComplete', this.adminBulkDataService.currentAnalysisResult);
+      this.changeDetectorRefs.detectChanges();
+    });
+    this.adminBulkDataService.onStreamLoadProgress.pipe(
+      takeUntil(this.unsubscribe$)
+    ).subscribe((summary: AdminStreamLoadSummary) => {
+      //console.log('AdminBulkDataStreamLoadReportComponent.onStreamLoadProgress', this.adminBulkDataService.currentAnalysisResult);
+      this.changeDetectorRefs.detectChanges();
+    });
+  }
   /**
    * unsubscribe when component is destroyed
    */

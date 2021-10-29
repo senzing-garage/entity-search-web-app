@@ -72,7 +72,7 @@
   </div>
 </div>
 <!-- start Stream Summary -->
-<div *ngIf="streamResult && streamResult.complete == true && streamResult.resultsByDataSource && streamResult.resultsByDataSource.length > 0" class="mat-elevation-z8">
+<div *ngIf="streamResult && streamResult.resultsByDataSource && streamResult.resultsByDataSource.length > 0" class="mat-elevation-z8">
   <table mat-table [dataSource]="streamResult.resultsByDataSource" class="mat-table-full-width mat-elevation-z8">
     <!--- Note that these columns can be defined in any order.
           The actual rendered columns are set as a property on the row definition" -->
@@ -106,7 +106,7 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumnsForStream;" ></tr>
   </table>
 </div>
-<div *ngIf="streamResult && streamResult.complete != true && streamResult.resultsByDataSource && streamResult.resultsByDataSource.length <= 0" class="mat-table-error mat-elevation-z8">
+<div *ngIf="streamResult && streamResult.resultsByDataSource && streamResult.resultsByDataSource.length <= 0" class="mat-table-error mat-elevation-z8">
   <table mat-table [dataSource]="streamResult.resultsByDataSource" class="mat-table-full-width mat-elevation-z8">
     <!--- Note that these columns can be defined in any order.
           The actual rendered columns are set as a property on the row definition" -->

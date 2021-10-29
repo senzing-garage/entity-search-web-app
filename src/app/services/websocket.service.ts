@@ -425,8 +425,8 @@ export class WebSocketService {
   public reconnect(path?: string, method?: "POST" | "PUT" | "GET"){
     if(this.ws$) {
       let onWSExists = () => {
-        console.log('WebSocketService.reconnect: ', this.connectionProperties, this.ws$);
-        this.ws$.pipe(
+        console.log('WebSocketService.reconnect.onWSExists: ', this.connectionProperties, this.ws$);
+        let reconnectListener = this.ws$.pipe(
           catchError( (error: Error) => {
             console.log('WebSocketService.reconnect: error: ', error, this.ws$.error.toString());
             if(error && !error.message) {
@@ -442,7 +442,8 @@ export class WebSocketService {
           map( WebSocketService.statusChangeEvtToConnectionBool ),
           filter((status: boolean) => {
             return status;
-          })
+          }),
+          take(1)
         ).subscribe((reconnected) => {
           //this.status$.next(true);
           this._reconnectionAttemptsIncrement = 0;
@@ -455,7 +456,13 @@ export class WebSocketService {
         console.log('calling ws$.complete');
         this.disconnect();
         // re-init with new path
-        this.open(undefined, undefined, path, method).subscribe( onWSExists )
+        this.open(undefined, undefined, path, method).pipe(
+          /** 
+           * this will trigger for any message/event so we only care about the first one.
+           * alternatively maybe using "debounce" might be a better solution
+           */
+          take(1)
+        ).subscribe( onWSExists )
       } else {
         onWSExists();
       }

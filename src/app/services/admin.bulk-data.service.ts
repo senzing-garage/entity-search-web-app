@@ -240,7 +240,7 @@ export class AdminBulkDataService {
     /** when a file is being analyzed */
     public isAnalyzingFile = false;
     public isStreamAnalysisInProgress = false;
-    
+
     /** when a file is being analyzed in the current thread */
     public loadingFile = new Subject<boolean>();
     /** when a file is being loaded in to the engine on thread*/
@@ -824,7 +824,7 @@ export class AdminBulkDataService {
             console.log('SzBulkDataService.streamAnalyze: websocket needs to be opened: ', this.webSocketService.connected, this.streamConnectionProperties);
             this.webSocketService.reconnect(streamSocketEndpoint, "POST");
         } else {
-            console.log('SzBulkDataService.streamAnalyze: websocket thinks its still connected: ', this.webSocketService.connected, this.streamConnectionProperties);
+            //console.log('SzBulkDataService.streamAnalyze: websocket thinks its still connected: ', this.webSocketService.connected, this.streamConnectionProperties);
         }
 
         // construct summary object that we can report 
@@ -876,10 +876,10 @@ export class AdminBulkDataService {
                 // check if everything has been sent
                 if(readStreamComplete) {
                     // all messages sent
-                    console.warn('stream load complete 1', summary);
+                    //console.warn('stream load complete 1', summary);
                     sendStreamComplete = true;
                     if(summary.complete === true) {
-                        console.warn('sending _onStreamLoadComplete 2: ', summary);
+                        //console.warn('sending _onStreamLoadComplete 2: ', summary);
                         this._onStreamAnalysisComplete.next(summary);
                     }
                 } else {
@@ -888,7 +888,9 @@ export class AdminBulkDataService {
                 }
             } else if(readChunks && readChunks.length <= 0) {
                 // according to this we sent all the records, what went wrong
-                console.log('batch should be over. why is it still going?', readStreamComplete, summary.complete);
+                if(readStreamComplete) {
+                    console.log("read stream complete. all data sent, but server hasn't processed all data", readStreamComplete, summary.complete);
+                }
             }
         }
         // ------------- when socket gets a response message
@@ -900,7 +902,7 @@ export class AdminBulkDataService {
             // and re-assert our internal "recordCount" which includes all records read so far
             //summary = Object.assign(summary, data, {recordCount: summary.recordCount, receivedRecordCount: data.recordCount});
             summary = Object.assign(summary, data);
-            console.warn('AdminBulkDataService.streamAnalysis.webSocketService.onMessageRecieved: ', summary, data);
+            //console.warn('AdminBulkDataService.streamAnalysis.webSocketService.onMessageRecieved: ', summary, data);
             if(data && data.topErrors && data.topErrors.length > 0) {
                 //this._onStreamAnalysisErrors.next( summary.topErrors );
             }
@@ -912,10 +914,10 @@ export class AdminBulkDataService {
                 summary.complete = false;
             }
             if(readStreamComplete && sendStreamComplete && summary.complete === true) {
-                console.warn('sending _onStreamLoadComplete: ', summary, data);
+                console.log('sending _onStreamAnalysisComplete: ', summary, data);
                 this._onStreamAnalysisComplete.next(summary);
             } else {
-                console.log('stream not complete', readStreamComplete, sendStreamComplete, summary.complete);
+                //console.log('stream not complete', readStreamComplete, sendStreamComplete, summary.complete);
             }
         });
         // ------------- read file stream
@@ -943,7 +945,7 @@ export class AdminBulkDataService {
                 // now concat
                 //readRecords                 = readRecords.concat(records);
                 readChunks                    = readChunks.concat(chunks);
-                console.log(`SzBulkDataService.streamAnalyze: csv chunks`, chunks);
+                //console.log(`SzBulkDataService.streamAnalyze: csv chunks`, chunks);
                 
                 //this._onStreamAnalysisProgress.next(summary);
                 this._onStreamAnalysisFileReadProgress.next(summary);
