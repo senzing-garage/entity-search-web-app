@@ -1190,7 +1190,7 @@ export class AdminBulkDataService {
         let readStreamComplete          = false;
         let sendStreamComplete          = false;
         // socket related
-        let streamSocketEndpoint        = "/bulk-data/load";
+        let streamSocketEndpoint        = "/load-queue/bulk-data/records";
         let qsChar                      = '?';
         if(dataSourceMap) {
             streamSocketEndpoint        += `${qsChar}mapDataSources=${encodeURIComponent(JSON.stringify(dataSourceMap))}`;
