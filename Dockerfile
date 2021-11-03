@@ -23,7 +23,8 @@ COPY package.json /app/package.json
 COPY package-lock.json /app/package-lock.json
 WORKDIR /app
 
-RUN npm config set loglevel warn \
+RUN npm config set update-notifier false \
+ && npm config set loglevel warn \
  && npm install --silent \
  && npm install --silent -g @angular/cli@10.0.0
 
@@ -41,7 +42,8 @@ COPY ./run /app/run
 COPY --from=0 /app/dist /app/dist
 COPY --from=0 /app/package.json /app/package.json
 
-RUN npm config set loglevel warn \
+RUN npm config set update-notifier false \
+ && npm config set loglevel warn \
  && npm install --silent --production
 
 #COPY . /app
