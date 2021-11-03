@@ -1,0 +1,146 @@
+<!-- start AdminBulkDataStreamLoadReportComponent -->
+<!--<h3>admin-bulk-data-stream-load-report: {{result && result.resultsByDataSource.length > 0}}</h3>-->
+
+<table *ngIf="result && result.resultsByDataSource.length > 0" mat-table [dataSource]="result.resultsByDataSource" class="mat-table-full-width mat-elevation-z8">
+  <!--- Note that these columns can be defined in any order.
+        The actual rendered columns are set as a property on the row definition" -->
+  <!-- Id Column -->
+  <ng-container matColumnDef="dataSource">
+    <th mat-header-cell *matHeaderCellDef>Data Source</th>
+    <td mat-cell *matCellDef="let element"> {{ element.dataSource && element.dataSource.trim().length > 0 ? element.dataSource : '[NONE]' }} </td>
+  </ng-container>
+  <!-- number of records Column -->
+  <ng-container matColumnDef="recordCount">
+    <th mat-header-cell *matHeaderCellDef > Number of Records </th>
+    <td mat-cell *matCellDef="let element"> {{element.recordCount}} </td>
+  </ng-container>
+  <!-- number of loaded records Column -->
+  <ng-container matColumnDef="loadedRecordCount">
+    <th mat-header-cell *matHeaderCellDef > Number of Loaded Records </th>
+    <td mat-cell *matCellDef="let element"> {{ element.loadedRecordCount }} </td>
+  </ng-container>
+  <!-- number of failed records Column -->
+  <ng-container matColumnDef="failedRecordCount">
+    <th mat-header-cell *matHeaderCellDef > Number of Failed Records </th>
+    <td mat-cell *matCellDef="let element"> {{element.failedRecordCount}} </td>
+  </ng-container>
+  <!-- number of incomplete records -->
+  <ng-container matColumnDef="incompleteRecordCount">
+    <th mat-header-cell *matHeaderCellDef > Number of Incomplete Records </th>
+    <td mat-cell *matCellDef="let element"> {{element.incompleteRecordCount}} </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns" ></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;" ></tr>
+</table>
+
+<div *ngIf="result && result.resultsByDataSource.length <= 0" class="mat-table-error mat-elevation-z8">
+  <table mat-table [dataSource]="result.resultsByDataSource" class="mat-table-full-width mat-elevation-z8">
+    <!--- Note that these columns can be defined in any order.
+          The actual rendered columns are set as a property on the row definition" -->
+    <!-- Id Column -->
+    <ng-container matColumnDef="dataSource">
+      <th mat-header-cell *matHeaderCellDef >Data Source</th>
+      <td mat-cell *matCellDef="let element"> {{ element.dataSource && element.dataSource.trim().length > 0 ? element.dataSource : '[NONE]' }}</td>
+    </ng-container>
+    <!-- number of records Column -->
+    <ng-container matColumnDef="recordCount">
+      <th mat-header-cell *matHeaderCellDef > Number of Records </th>
+      <td mat-cell *matCellDef="let element"> {{element.recordCount}} </td>
+    </ng-container>
+    <!-- number of records Column -->
+    <ng-container matColumnDef="loadedRecordCount">
+      <th mat-header-cell *matHeaderCellDef > Number of Loaded Records </th>
+      <td mat-cell *matCellDef="let element"> {{element.loadedRecordCount}} </td>
+    </ng-container>
+    <!-- Records with Record ID Column -->
+    <ng-container matColumnDef="failedRecordCount">
+      <th mat-header-cell *matHeaderCellDef > Number of Failed Records </th>
+      <td mat-cell *matCellDef="let element"> {{element.failedRecordCount}} </td>
+    </ng-container>
+    <!-- number of incomplete records -->
+    <ng-container matColumnDef="incompleteRecordCount">
+      <th mat-header-cell *matHeaderCellDef > Number of Incomplete Records </th>
+      <td mat-cell *matCellDef="let element"> {{element.incompleteRecordCount}} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns" ></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;" ></tr>
+  </table>
+  <div class="message">
+    No Results
+  </div>
+</div>
+<!-- start Stream Summary -->
+<div *ngIf="streamResult && streamResult.resultsByDataSource && streamResult.resultsByDataSource.length > 0" class="mat-elevation-z8">
+  <table mat-table [dataSource]="streamResult.resultsByDataSource" class="mat-table-full-width mat-elevation-z8">
+    <!--- Note that these columns can be defined in any order.
+          The actual rendered columns are set as a property on the row definition" -->
+    <!-- Id Column -->
+    <ng-container matColumnDef="dataSource">
+      <th mat-header-cell *matHeaderCellDef >Data Source</th>
+      <td mat-cell *matCellDef="let element"> {{ element.dataSource && element.dataSource.trim().length > 0 ? element.dataSource : '[NONE]' }}</td>
+    </ng-container>
+    <!-- number of records Column -->
+    <ng-container matColumnDef="recordCount">
+      <th mat-header-cell *matHeaderCellDef > Number of Records </th>
+      <td mat-cell *matCellDef="let element"> {{element.recordCount}} </td>
+    </ng-container>
+    <!-- number of records Column -->
+    <ng-container matColumnDef="loadedRecordCount">
+      <th mat-header-cell *matHeaderCellDef > Number of Loaded Records </th>
+      <td mat-cell *matCellDef="let element"> {{element.loadedRecordCount}} </td>
+    </ng-container>
+    <!-- Records with Record ID Column -->
+    <ng-container matColumnDef="failedRecordCount">
+      <th mat-header-cell *matHeaderCellDef > Number of Failed Records </th>
+      <td mat-cell *matCellDef="let element"> {{element.failedRecordCount}} </td>
+    </ng-container>
+    <!-- number of incomplete records -->
+    <ng-container matColumnDef="incompleteRecordCount">
+      <th mat-header-cell *matHeaderCellDef > Number of Incomplete Records </th>
+      <td mat-cell *matCellDef="let element"> {{element.incompleteRecordCount}} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumnsForStream" ></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumnsForStream;" ></tr>
+  </table>
+</div>
+<div *ngIf="streamResult && streamResult.resultsByDataSource && streamResult.resultsByDataSource.length <= 0" class="mat-table-error mat-elevation-z8">
+  <table mat-table [dataSource]="streamResult.resultsByDataSource" class="mat-table-full-width mat-elevation-z8">
+    <!--- Note that these columns can be defined in any order.
+          The actual rendered columns are set as a property on the row definition" -->
+    <!-- Id Column -->
+    <ng-container matColumnDef="dataSource">
+      <th mat-header-cell *matHeaderCellDef >Data Source</th>
+      <td mat-cell *matCellDef="let element"> {{ element.dataSource && element.dataSource.trim().length > 0 ? element.dataSource : '[NONE]' }}</td>
+    </ng-container>
+    <!-- number of records Column -->
+    <ng-container matColumnDef="recordCount">
+      <th mat-header-cell *matHeaderCellDef > Number of Records </th>
+      <td mat-cell *matCellDef="let element"> {{element.recordCount}} </td>
+    </ng-container>
+    <!-- number of records Column -->
+    <ng-container matColumnDef="loadedRecordCount">
+      <th mat-header-cell *matHeaderCellDef > Number of Loaded Records </th>
+      <td mat-cell *matCellDef="let element"> {{element.loadedRecordCount}} </td>
+    </ng-container>
+    <!-- Records with Record ID Column -->
+    <ng-container matColumnDef="failedRecordCount">
+      <th mat-header-cell *matHeaderCellDef > Number of Failed Records </th>
+      <td mat-cell *matCellDef="let element"> {{element.failedRecordCount}} </td>
+    </ng-container>
+    <!-- number of incomplete records -->
+    <ng-container matColumnDef="incompleteRecordCount">
+      <th mat-header-cell *matHeaderCellDef > Number of Incomplete Records </th>
+      <td mat-cell *matCellDef="let element"> {{element.incompleteRecordCount}} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumnsForStream" ></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumnsForStream;" ></tr>
+  </table>
+  <div class="message">
+    No Results
+  </div>
+</div>
+<!--  end AdminBulkDataStreamLoadReportComponent  -->

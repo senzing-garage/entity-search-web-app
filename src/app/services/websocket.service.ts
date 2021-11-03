@@ -192,6 +192,47 @@ export class WebSocketService {
     return retObs;
   }
 
+  public sendChunksAsMessages(chunks: any[] | string[]): Observable<boolean> {
+    let retSub = new Subject<boolean>();
+    let retObs = retSub.asObservable();
+    if((this.connectionProperties && !this._connected) || this.ws$ === undefined) {
+      //console.log('queueing messages..', this._offlineMessageQueue.length, this._connected, this.ws$.closed);
+      this._offlineMessageQueue = this._offlineMessageQueue.concat(
+        (chunks as any).map((message: any | string) => {
+          let msgStr = message;
+          //if(msgStr && !(msgStr.lastIndexOf('\n') >= (msgStr.length > 2 ? msgStr.length - 2 : msgStr.length))) {
+            // add line ending
+          //  msgStr  = msgStr +'\n';
+          //}
+          return {data: msgStr}
+        })
+      );
+    } else if(this.ws$) {
+      //console.log('sending message..', message, this._connected);
+      this.ws$.pipe(
+        take(1)
+      ).subscribe((res) => {
+        // does message match
+        retSub.next(true); // for now just pub true
+        //retSub.unsubscribe();
+        //retSub.complete();
+      });
+      chunks.forEach((message: any | string) => {
+        let msgStr = message;
+        //if(msgStr && !(msgStr.lastIndexOf('\n') >= (msgStr.length > 2 ? msgStr.length - 2 : msgStr.length))) {
+          // add line ending
+        //  msgStr  = msgStr +'\n';
+        //}
+        // send message
+        this.ws$.next( msgStr );
+      });
+      retSub.next(true);
+    } else {
+      console.warn('catastrophic premise. no ws$ object or not enough info to create one..');
+    }
+    return retObs;
+  }
+
   constructor(
     public configService: SzWebAppConfigService
   ) {  
@@ -384,8 +425,8 @@ export class WebSocketService {
   public reconnect(path?: string, method?: "POST" | "PUT" | "GET"){
     if(this.ws$) {
       let onWSExists = () => {
-        //console.log('WebSocketService.reconnect: ', this.connectionProperties, this.ws$);
-        this.ws$.pipe(
+        console.log('WebSocketService.reconnect.onWSExists: ', this.connectionProperties, this.ws$);
+        let reconnectListener = this.ws$.pipe(
           catchError( (error: Error) => {
             console.log('WebSocketService.reconnect: error: ', error, this.ws$.error.toString());
             if(error && !error.message) {
@@ -401,7 +442,8 @@ export class WebSocketService {
           map( WebSocketService.statusChangeEvtToConnectionBool ),
           filter((status: boolean) => {
             return status;
-          })
+          }),
+          take(1)
         ).subscribe((reconnected) => {
           //this.status$.next(true);
           this._reconnectionAttemptsIncrement = 0;
@@ -411,16 +453,22 @@ export class WebSocketService {
 
       if(this.connectionProperties && path && this.connectionProperties.path !== path){
         // kill con
-        //console.log('calling ws$.complete');
+        console.log('calling ws$.complete');
         this.disconnect();
         // re-init with new path
-        this.open(undefined, undefined, path, method).subscribe( onWSExists )
+        this.open(undefined, undefined, path, method).pipe(
+          /** 
+           * this will trigger for any message/event so we only care about the first one.
+           * alternatively maybe using "debounce" might be a better solution
+           */
+          take(1)
+        ).subscribe( onWSExists )
       } else {
         onWSExists();
       }
       
     } else if(this.connectionProperties && this.connectionProperties.connectionTest) {
-      //console.log('WebSocketService.reconnect -> WebSocketService.open', this.ws$, this.connectionProperties);
+      console.log('WebSocketService.reconnect -> WebSocketService.open', this.ws$, this.connectionProperties);
       this.open(undefined, undefined, path, method);
     } else {
       // should we try to connect something that hasnt been flagged as valid?

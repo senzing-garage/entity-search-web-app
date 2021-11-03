@@ -31,6 +31,7 @@ import { AdminBulkDataStreamAnalysisReportComponent } from './bulk-data/admin-bu
 import { AdminBulkDataAnalysisSummaryComponent } from './bulk-data/admin-bulk-data-analysis-summary.component';
 import { AdminBulkDataLoadComponent } from './bulk-data/admin-bulk-data-load.component';
 import { AdminBulkDataLoadReportComponent } from './bulk-data/admin-bulk-data-load-report.component';
+import { AdminBulkDataStreamLoadReportComponent } from './bulk-data/admin-bulk-data-stream-load-report.component';
 import { AdminBulkDataLoadSummaryComponent } from './bulk-data/admin-bulk-data-load-summary.component';
 import { SzProgressBarComponent } from '../common/progress-bar/progress-bar.component';
 import { AppFileDragAndDrop as AdminFileDragAndDrop } from '../common/file-drag-and-drop/file-drag-and-drop.directive';
@@ -54,6 +55,7 @@ import { SzWebAppConfigService } from '../services/config.service';
     AdminBulkDataLoadReportComponent,
     AdminBulkDataLoadSummaryComponent,
     AdminBulkDataStreamAnalysisReportComponent,
+    AdminBulkDataStreamLoadReportComponent,
     AdminFileDragAndDrop,
     AdminOAuthTokensComponent,
     AdminErrorNoAdminModeComponent,
