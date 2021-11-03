@@ -1,6 +1,6 @@
-ARG BUILD_IMAGE=node:lts-buster-slim
-ARG PROD_IMAGE=node:lts-alpine
-ARG TEST_IMAGE=node:lts-buster-slim
+ARG BUILD_IMAGE=node:14-buster-slim
+ARG PROD_IMAGE=node:14-alpine
+ARG TEST_IMAGE=node:14-buster-slim
 
 FROM ${BUILD_IMAGE}
 ENV REFRESHED_AT=2021-07-26
@@ -25,8 +25,8 @@ WORKDIR /app
 
 RUN npm config set update-notifier false \
  && npm config set loglevel warn \
- && npm install --silent \
- && npm install --silent -g @angular/cli@10.0.0
+ && npm install \
+ && npm install -g @angular/cli@10.0.0
 
 # Build app
 COPY . /app
@@ -44,7 +44,7 @@ COPY --from=0 /app/package.json /app/package.json
 
 RUN npm config set update-notifier false \
  && npm config set loglevel warn \
- && npm install --silent --production
+ && npm install --production
 
 #COPY . /app
 COPY --chown=1001:1001 ./proxy.conf.json /app
