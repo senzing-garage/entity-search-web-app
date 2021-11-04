@@ -46,14 +46,42 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() public set showGraphMatchKeys( value: boolean ) {
     this._showGraphMatchKeys = value;
   }
-  public showEntityDetail: boolean = false;
+  public _showEntityDetail: boolean = false;
+  public _showFilters: boolean = true;
 
-  public showFilters: boolean = true;
   public get showSearchResultDetail(): boolean {
     if (this.currentlySelectedEntityId && this.currentlySelectedEntityId > 0) {
       return true;
     }
     return false;
+  }
+
+  public get showFilters(): boolean {
+    return this._showFilters;
+  }
+  public set showFilters(value: boolean) {
+    this._showFilters = value;
+    if(value) {
+      this._showEntityDetail = false;
+    } else {
+      this.showEntityDetail = true;
+    }
+  }
+  public get showEntityDetail(): boolean {
+    return this._showEntityDetail;
+  }
+  public set showEntityDetail(value: boolean) {
+    this._showEntityDetail = value;
+    if(value && this._showFilters) {
+      this._showFilters = false;
+    }
+  }
+  public get showDataSourcesInFilters(): string [] {
+    return this._showDataSourcesInFilter;
+    //return this.uiService.graphFilterDataSources;
+  }
+  public get showMatchKeysInFilters(): string [] {
+    return this._showMatchKeysInFilter;
   }
 
   sub: Subscription;
@@ -81,7 +109,8 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
   /** sets the visibility of edge labels on the node links */
   @Input() public set showMatchKeys(value: boolean) {
     this._showMatchKeys = value;
-    // console.log('@senzing/sdk-components-ng:sz-entity-detail-graph.showMatchKeys: ', value);
+    let prefsVal = this.prefs.graph.showMatchKeys;
+    console.log('@senzing/sdk-components-ng:sz-entity-detail-graph.showMatchKeys: ', value, prefsVal);
   }
 
   @Input() sectionIcon: string;
@@ -91,12 +120,16 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /** array of data sources to limit "filter by datasource" to. */
   public _showDataSourcesInFilter: string[];
+  public _showMatchKeysInFilter: string[];
   /** whether or not to show the right-rail element */
   private _showRightRail = true;
   @HostBinding('class.right-rail-open')
   get showRightRail() { return this._showRightRail; }
   @HostBinding('class.right-rail-closed')
   get hideFilters() { return !this._showRightRail; }
+  set showRightRail(value: boolean) {
+    this._showRightRail = value;
+  }
 
   @ViewChild('graphContainer') graphContainerEle: ElementRef;
   // @ViewChild(SzEntityDetailGraphControlComponent) graphControlComponent: SzEntityDetailGraphControlComponent;
@@ -180,15 +213,6 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  public onOptionChange(event: {name: string, value: any}) {
-    console.log('GraphComponent.onOptionChange: ', event);
-    switch(event.name) {
-      case 'showLinkLabels':
-        this.showMatchKeys = event.value;
-        break;
-    }
-  }
-
   /** toggle the visibility of the right rail section */
   public onToggleFilters(event) {
     this._showRightRail = !this._showRightRail;
@@ -269,6 +293,11 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
   /** handler for graph components dataSourcesChange event */
   onDataSourcesChange(evt: any) {
       this._showDataSourcesInFilter = evt;
+      //this.uiService.graphFilterDataSources = evt;
+  }
+  onMatchKeysChange(data: string[]) {
+    //console.warn('onMatchKeysChange: ', data);
+    this._showMatchKeysInFilter = data;
   }
   onSearchException(err: Error) {
     throw (err.message);
@@ -522,9 +551,19 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  public onFilterOptionChange(event: {name: string, value: any}) {
+    console.log('GraphComponent.onFilterOptionChange: ', event);
+    switch(event.name) {
+      case 'showLinkLabels':
+        //this._showMatchKeys = event.value;
+        this.prefs.graph.showMatchKeys = event.value;
+        break;
+    }
+  }
+
   /** proxy handler for when prefs have changed externally */
   private onPrefsChange(prefs: any) {
-    // console.log('@senzing/sdk-components-ng/sz-entity-detail-graph.onPrefsChange(): ', prefs, this.prefs.graph);
+    console.log('GraphComponent.onPrefsChange(): ', prefs, this.prefs.graph);
     this._showMatchKeys = prefs.showMatchKeys;
     this.maxDegrees = prefs.maxDegreesOfSeparation;
     this.maxEntities = prefs.maxEntities;
