@@ -1,0 +1,75 @@
+:host {
+    h1.mat-dialog-title {
+        width: auto;
+        background-color: #333;
+        color: #fff;
+        font-size: 1em;
+        margin: 0;
+        padding: 5px 10px;
+        font-weight: normal;
+    }
+
+    .mat-dialog-content {
+        margin: 20px -24px 0 -24px;
+    }
+    
+    .section-instructions {
+        margin: 20px 0;
+        font-size: .8rem;
+    }
+
+    .stream-parameters {
+        border: 1px solid rgb(41, 41, 41);
+        margin: 20px 0 20px 0;
+
+        
+        .parameters-body {
+            padding: 20px;
+        }
+    }
+    .mat-dialog-actions {
+        justify-content: flex-end;
+    }
+
+    .row {
+        display: block;
+    }
+    .sc-row-1 {
+        mat-form-field {
+            margin-right: 2rem;
+        }
+    }
+    .sc-row-2 {
+        mat-form-field {
+            width: 182px;
+            margin-right: 2rem;
+            /*font-size: 13px;*/
+        }
+    }
+    .sc-row-3 {
+        mat-form-field {
+            margin-right: 2rem;
+            /*font-size: 13px;*/
+        }
+    }
+    .sc-row-5 {
+        mat-form-field {
+            margin-left: 1rem;
+        }
+    }
+
+    .test-status {
+        border-radius: 5px;
+        border: 1px solid rgb(53, 53, 53);
+        background-color: #bababa;
+        padding: 8px;
+        font-size: .7rem;
+        color: #373737;
+        -ms-user-select:none;
+        -moz-user-select:none;
+        -webkit-user-select:none;
+        -webkit-touch-callout: none;
+        -khtml-user-select: none;
+        user-select:none;
+    }
+}
