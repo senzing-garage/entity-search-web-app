@@ -18,6 +18,8 @@ import { SpinnerService } from './services/spinner.service';
 import { UiService } from './services/ui.service';
 import { PrefsManagerService } from './services/prefs-manager.service';
 import { SzWebAppConfigService } from './services/config.service';
+import { MatDialog } from '@angular/material/dialog';
+import { AlertDialogComponent } from './common/alert-dialog/alert-dialog.component';
 
  @Component({
   selector: 'app-root',
@@ -103,6 +105,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor(
     private configService: SzWebAppConfigService,
+    public dialog: MatDialog,
     private entitySearchService: EntitySearchService,
     private router: Router,
     private route: ActivatedRoute,
@@ -207,6 +210,51 @@ export class AppComponent implements OnInit, OnDestroy {
         queryParams: {refresh: new Date().getTime()}
       });
       this.entitySearchService.currentSearchResults = evt;
+    }
+  }
+  /**
+   * When the Search-by-id form performs a query but throws 
+   * an exception(99% of the time its because the entity doesnt exist)
+   * This handler is called.
+   */
+  onSearchByIdException(evt){
+    console.log('onSearchByIdException: ', evt);
+    if(evt && ((evt.status && evt.status === 404) || (evt.statusCode && evt.statusCode === 404))) {
+      let dialogRef = this.dialog.open(AlertDialogComponent, {
+        height: '200px',
+        width: '400px',
+        data: {
+          title: 'Entity Not Found',
+          message: 'The entity specified by search criteria could not be found'
+        }
+      });
+    } else if(evt && evt.statusMessage) {
+      let dialogRef = this.dialog.open(AlertDialogComponent, {
+        height: '200px',
+        width: '400px',
+        data: {
+          title: 'Search Exception',
+          message: evt.statusMessage + (evt.url ? ':\n' + evt.url : '')
+        }
+      });
+    } else if(evt && evt.statusText) {
+      let dialogRef = this.dialog.open(AlertDialogComponent, {
+        height: '200px',
+        width: '400px',
+        data: {
+          title: 'Search Exception',
+          message: evt.statusText + (evt.url ? ':\n' + evt.url : '')
+        }
+      });
+    } else {
+      let dialogRef = this.dialog.open(AlertDialogComponent, {
+        height: '200px',
+        width: '400px',
+        data: {
+          title: 'Unknown Exception',
+          message: 'An unknown exception has occurred.'
+        }
+      });
     }
   }
 
