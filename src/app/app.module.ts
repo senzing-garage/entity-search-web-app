@@ -24,6 +24,7 @@ import { AboutInfoService } from './services/about.service';
 //import { AdminComponent } from './admin/admin.component';
 //import { AdminDataSourcesComponent } from './admin/datasources.component';
 import { AppComponent } from './app.component';
+import { AlertDialogComponent } from './common/alert-dialog/alert-dialog.component';
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { DetailComponent } from './detail/detail.component';
 import { GraphComponent } from './graph/graph.component';
@@ -69,6 +70,7 @@ import { AdminBulkDataService } from './services/admin.bulk-data.service';
 
 @NgModule({
   declarations: [
+    AlertDialogComponent,
     AppComponent,
     SearchResultsComponent,
     SearchRecordComponent,
@@ -106,7 +108,7 @@ import { AdminBulkDataService } from './services/admin.bulk-data.service';
     SpinnerModule,
     environment.test ? HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService, { delay: 100 }) : []
   ],
-  entryComponents: [ AdminStreamConnDialogComponent, AdminStreamAbortDialogComponent, AdminStreamLoadErrorsDialogComponent, AdminStreamLoadQueueDialogComponent, AdminStreamLoadQueueInfoComponent ],
+  entryComponents: [ AlertDialogComponent, AdminStreamConnDialogComponent, AdminStreamAbortDialogComponent, AdminStreamLoadErrorsDialogComponent, AdminStreamLoadQueueDialogComponent, AdminStreamLoadQueueInfoComponent ],
   providers: [
     SzWebAppConfigService,
     EntitySearchService,

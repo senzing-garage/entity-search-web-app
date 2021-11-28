@@ -1,0 +1,6 @@
+<h1 mat-dialog-title>{{title}}</h1>
+<div mat-dialog-content>{{message}}</div>
+<div mat-dialog-actions>
+  <button *ngIf="showOkButton" mat-stroked-button color="primary" cdkFocusInitial (click)="onOkClick()">{{okButtonText}}</button>
+  <button *ngIf="showCancelButton" mat-stroked-button color="secondary" cdkFocusInitial (click)="onNoClick()">{{cancelButtonText}}</button>
+</div>

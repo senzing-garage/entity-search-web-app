@@ -16,6 +16,7 @@
         (entityChange)="onEntityResult($event)"
         (resultCleared)="onSearchResultsCleared($event)"
         (resultChange)="onRecordChange($event)"
+        (exception)="onSearchByIdException($event)"
       ></sz-search-by-id>
     </div>
     <div id="toolbar-col2" class="column" *ngIf="showPrefs">
