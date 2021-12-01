@@ -24,6 +24,19 @@
             "tsConfig": "tsconfig.app.json",
             "aot": true,
             "allowedCommonJsDependencies": [
+              "core-js/modules/es.promise.js",
+              "core-js/modules/es.regexp.to-string.js",
+              "core-js/modules/es.array.reverse.js",
+              "core-js/modules/es.array.index-of.js",
+              "core-js/modules/es.string.includes.js",
+              "core-js/modules/es.string.trim.js",
+              "core-js/modules/es.string.split.js",
+              "core-js/modules/es.string.ends-with.js",
+              "core-js/modules/es.array.reduce.js",
+              "core-js/modules/web.dom-collections.iterator.js",
+              "core-js/modules/es.string.starts-with.js",
+              "core-js/modules/es.string.replace.js",
+              "core-js/modules/es.string.match.js",
               "@babel/runtime-corejs3/core-js-stable/instance/starts-with",
               "@babel/runtime-corejs3/core-js-stable/map",
               "@babel/runtime-corejs3/core-js-stable/instance/slice",
@@ -276,7 +289,7 @@
           "builder": "@angular-devkit/build-ng-packagr:build",
           "options": {
             "tsConfig": "sdk-components-ng/src/tsconfig.lib.json",
-            "project":  "sdk-components-ng/src/subrepo.ng-package.json"
+            "project": "sdk-components-ng/src/subrepo.ng-package.json"
           }
         },
         "lint": {
@@ -294,5 +307,8 @@
       }
     }
   },
-  "defaultProject": "entity-search-web-app"
+  "defaultProject": "entity-search-web-app",
+  "cli": {
+    "analytics": false
+  }
 }
