@@ -6,7 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.3.3] - TBD
+## [2.3.4] - 2021-12-01
+### Added
+- The ability to filter graph elements by "match keys" present on the links between graph entities. #215
+- The ability to import CSV files when using SQS stream loading. #217
+- *Zoom* and *Pan* controls added to embedded and standalone Network Graph components. #216
+- Ability to filter by *Match Keys* present on the links between graph entities in the dataset added to standalone Network Graph component. #215
+- List of _ALL_ command line flags and environment variables for configuration of the docker container. see [docs/Environment Variables](https://github.com/Senzing/entity-search-web-app/blob/master/docs/Environment%20Variables.md) #218
+
+### Modified
+- "Search By Record Id" now returns full entity NOT just "record". #220
+- bugfix for #222. introduced by #215
+- bugfix for #226. introduced by #220
+- dependencies updated
+
+relevant tickets #226 #222 #220 #218 #216 #217 #215
+
+## [2.3.3] - 2021-10-14
 
 - Added multi-stage build to `Dockerfile` so that only production dependencies and 
 compiled code is present in immutable container.
