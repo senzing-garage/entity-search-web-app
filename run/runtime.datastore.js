@@ -283,7 +283,7 @@ class inMemoryConfig extends EventEmitter {
       }).bind(this));
 
     }).bind(this)).on('error', error => {
-      console.log('checking if api server up yet: '+ error.code);
+      console.log('checking if api server up yet: '+ error.code +' | ['+ reqUrl +']');
       //console.log(error)
     })
   }
