@@ -7,7 +7,7 @@ import {
 import { Observable, interval, from, of, EMPTY, Subject, BehaviorSubject } from 'rxjs';
 import { AdminService, SzBaseResponse, SzMeta, SzVersionResponse, SzVersionInfo } from '@senzing/rest-api-client-ng';
 import { switchMap, tap, takeWhile, map, take } from 'rxjs/operators';
-import { version as appVersion, dependencies as appDependencies } from '../../../package.json';
+//import { version as appVersion, dependencies as appDependencies } from '../../../package.json';
 import { SzAdminService, SzServerInfo } from '@senzing/sdk-components-ng';
 import { SzWebAppConfigService } from './config.service';
 
@@ -28,13 +28,13 @@ export class AboutInfoService {
   /** version of the OAS senzing-rest-api spec being used in the POC server*/
   public pocApiVersion: string;
   /** release version of the ui app */
-  public appVersion: string;
+  public appVersion: string = 'unknown';
   /** release version of the @senzing/sdk-components-ng package*/
-  public sdkComponentsVersion: string;
+  public sdkComponentsVersion: string = 'unknown';
   /** version of the @senzing/sdk-graph-components package being used */
-  public graphComponentsVersion: string;
+  public graphComponentsVersion: string = 'unknown';
   /** version of the @senzing/rest-api-client-ng package */
-  public restApiClientVersion: string;
+  public restApiClientVersion: string = 'unknown';
 
   /** The maximum size for inbound text or binary messages when invoking end-points via Web Sockets `ws://` protocol. */
   public webSocketsMessageMaxSize?: number;
@@ -82,7 +82,12 @@ export class AboutInfoService {
     private adminService: SzAdminService, 
     private configService: SzWebAppConfigService,
     private router: Router) {
-    this.appVersion = appVersion;
+    /*
+    @TODO some idiot decided we shouldn't be able to pull named properties out of 
+    json files in webpack@5.0.0 so now I have to create a node script to import the package.json
+    and expose it as a api endpoint. .. like just wow. what a !@#$-%^&*
+    
+    this.appVersion = appVersion ? appVersion : 'unknown';
     if(appDependencies) {
       // check to see if we can pull sdk-components-ng and sdk-graph-components
       // versions from the package json
@@ -96,6 +101,7 @@ export class AboutInfoService {
         this.restApiClientVersion = this.getVersionFromLocalTarPath( appDependencies['@senzing/rest-api-client-ng'], 'senzing-rest-api-client-ng-' );
       }
     }
+    */
 
     // get version info from SzAdminService
     this.getVersionInfo().pipe(take(1)).subscribe( this.setVersionInfo.bind(this) );
