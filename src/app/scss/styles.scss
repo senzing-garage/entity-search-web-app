@@ -2,7 +2,7 @@
 @import "~@fontsource/roboto/300.css"; // Weight 300.
 @import "~@fontsource/roboto/400.css"; // Weight 400.
 @import "~@fontsource/roboto/500.css"; // Weight 500.
-@import "~@angular/cdk/overlay-prebuilt.css";
+@import "@angular/cdk/overlay-prebuilt.css";
 
 /* You can add global styles to this file, and also import other style files */
 html, body { height: 100%; }
