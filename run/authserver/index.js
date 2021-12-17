@@ -176,7 +176,7 @@ if(authOptions) {
 
 const ExpressSrvInstance = app.listen(SENZING_AUTH_SERVER_PORT);
 
-console.log('Express Server started on port '+ SENZING_AUTH_SERVER_PORT);
+console.log('Auth Server started on port '+ SENZING_AUTH_SERVER_PORT);
 console.log('');
 console.log( STARTUP_MSG );
 console.log('');

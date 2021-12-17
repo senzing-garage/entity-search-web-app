@@ -16,6 +16,13 @@
   <div *ngIf="aboutService.graphComponentsVersion" class="key">Graph Components: </div>
   <div *ngIf="aboutService.graphComponentsVersion" class="value">{{ aboutService.graphComponentsVersion }}</div>
   <hr>
+  <div *ngIf="aboutService.angularVersion" class="key">Angular: </div>
+  <div *ngIf="aboutService.angularVersion" class="value">{{ aboutService.angularVersion }}</div>
+  <div *ngIf="aboutService.materialVersion" class="key">Material: </div>
+  <div *ngIf="aboutService.materialVersion" class="value">{{ aboutService.materialVersion }}</div>
+  <div *ngIf="aboutService.d3Version" class="key">D3: </div>
+  <div *ngIf="aboutService.d3Version" class="value">{{ aboutService.d3Version }}</div>
+  <hr>
   <div class="key">Admin Mode:</div>
   <div class="value" *ngIf="!aboutService.isAdminEnabled">Disabled</div>
   <div class="value " style="flex-basis: unset; width: 100%;" *ngIf="aboutService.isAdminEnabled">

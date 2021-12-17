@@ -1,8 +1,10 @@
 import { NgModule, InjectionToken } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClientModule } from "@angular/common/http";
+
 import { MaterialModule } from '../material.module';
 import { FormsModule } from '@angular/forms';
-import { JwtModule } from '@auth0/angular-jwt';
+import { JwtModule, JwtConfig } from '@auth0/angular-jwt';
 import { ApiModule as SenzingDataServiceModule } from '@senzing/rest-api-client-ng';
 import { SenzingSdkModule } from '@senzing/sdk-components-ng';
 import { SenzingSdkGraphModule } from '@senzing/sdk-graph-components';
@@ -66,20 +68,21 @@ import { SzWebAppConfigService } from '../services/config.service';
     SzProgressBarComponent
   ],
   imports: [
-    CommonModule,
-    MaterialModule,
-    FormsModule,
-    SenzingSdkModule.forRoot( SzRestConfigurationFactory ),
-    SenzingSdkGraphModule.forRoot( SzRestConfigurationFactory ),
-    SenzingDataServiceModule.forRoot( SzRestConfigurationFactory ),
     AdminRoutingModule,
+    CommonModule,
+    FormsModule,
+    HttpClientModule,
     JwtModule.forRoot({
       config: {
         tokenGetter: tokenGetter,
-        whitelistedDomains: ['localhost:8000'],
-        blacklistedRoutes: ['localhost:8000/authsdfsdf']
+        allowedDomains: ['localhost:8000'],
+        disallowedRoutes: ['localhost:8000/authsdfsdf']
       }
-    })
+    }),
+    MaterialModule,
+    SenzingSdkModule.forRoot( SzRestConfigurationFactory ),
+    SenzingSdkGraphModule.forRoot( SzRestConfigurationFactory ),
+    SenzingDataServiceModule.forRoot( SzRestConfigurationFactory )
   ],
   entryComponents: [ NewDataSourceDialogComponent ],
   providers: [

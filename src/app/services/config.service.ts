@@ -32,6 +32,16 @@ export interface POCStreamConfig {
   target: string;
   protocol?: string;
 }
+export interface WebAppPackageInfo {
+  'name': string,
+  'version':              string,
+  'angular':              string,
+  'material':             string,
+  'sdk-components-ng':    string,
+  'sdk-graph-components': string,
+  'rest-api-client-ng':   string,
+  'd3':                   string
+}
 
 /**
  * A service used to provide methods and services
@@ -45,7 +55,8 @@ export class SzWebAppConfigService {
   private _apiConfig: SzRestConfigurationParameters;
   private _pocStreamConfig: POCStreamConfig;
   private _serverInfo: SzServerInfo;
-  private _serverInfoMetadata: SzMeta
+  private _serverInfoMetadata: SzMeta;
+  private _packageInfo: WebAppPackageInfo;
   private pollingInterval = 60 * 1000;
 
   public get authConfig(): AuthConfig {
@@ -80,6 +91,12 @@ export class SzWebAppConfigService {
   }
   public get isPocServerInstance(): boolean {
     return this._serverInfoMetadata && this._serverInfoMetadata.pocApiVersion !== undefined ? true : false;
+  }
+  public get packageInfo(): WebAppPackageInfo {
+    return this._packageInfo;
+  }
+  public set packageInfo(value: WebAppPackageInfo) {
+    this._packageInfo = value;
   }
 
   /** provide a event subject to notify listeners of updates */
@@ -226,6 +243,23 @@ export class SzWebAppConfigService {
       catchError((err) => {
         // return default payload for local developement when "/config/api" not available
         return of(undefined);
+      })
+    );
+  }
+  public getAppPackageInfo(): Observable<WebAppPackageInfo> {
+    return this.http.get<WebAppPackageInfo>('./config/package').pipe(
+      catchError((err) => {
+        // return default payload for local developement when "/config/package" not available
+        return of({
+          'name':                 'entity-search-webapp',
+          'version':              'unknown',
+          'angular':              'unknown',
+          'material':             'unknown',
+          'sdk-components-ng':    'unknown',
+          'sdk-graph-components': 'unknown',
+          'rest-api-client-ng':   'unknown',
+          'd3':                   'unknown'
+        });
       })
     );
   }
