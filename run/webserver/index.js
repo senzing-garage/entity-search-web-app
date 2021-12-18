@@ -226,6 +226,9 @@ const authRes = (req, res, next) => {
   app.get('*/conf/csp', (req, res, next) => {
       res.status(200).json( cspOptions );
   });
+  app.get('*/conf/package', (req, res, next) => {
+    res.status(200).json( packageInfo );
+  });
   app.get('*/conf/streams', (req, res, next) => {
       res.status(200).json( streamOptions );
   });
