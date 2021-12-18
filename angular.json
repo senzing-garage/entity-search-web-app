@@ -272,6 +272,7 @@
   },
   "defaultProject": "entity-search-web-app",
   "cli": {
-    "analytics": false
+    "analytics": false,
+    "defaultCollection": "@angular-eslint/schematics"
   }
 }

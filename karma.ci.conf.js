@@ -13,34 +13,34 @@ module.exports = function (config) {
       require('karma-brief-reporter'),
       require('karma-chrome-launcher'),
       require('karma-jasmine-html-reporter'),
-      require('karma-coverage-istanbul-reporter'),
-      require('@angular-devkit/build-angular/plugins/karma'),
-      require('karma-junit-reporter')
+      require('karma-coverage'),
+      require('@angular-devkit/build-angular/plugins/karma')
     ],
     client: {
-      clearContext: false
+      jasmine: {
+        // you can add configuration options for Jasmine here
+        // the possible options are listed at https://jasmine.github.io/api/edge/Configuration.html
+        // for example, you can disable the random execution with `random: false`
+        // or set a specific seed with `seed: 4321`
+      },
+      clearContext: false // leave Jasmine Spec Runner output visible in browser
     },
-    coverageIstanbulReporter: {
-      dir: require('path').join(__dirname, './coverage/example'),
-      reports: ['html', 'lcovonly', 'text-summary'],
-      fixWebpackSourcePaths: true
+    jasmineHtmlReporter: {
+      suppressAll: true // removes the duplicated traces
     },
-    angularCli: {
-      environment: 'dev'
+    coverageReporter: {
+      dir: require('path').join(__dirname, './coverage/entity-search-webapp'),
+      subdir: '.',
+      reporters: [
+        { type: 'html' },
+        { type: 'text-summary' }
+      ]
     },
-    reporters: ['progress', 'kjhtml', 'junit'],
+    reporters: ['progress','kjhtml','brief'],
     port: 9876,
-    colors: true,
-    autoWatch: false,
+    colors: false,
     logLevel: config.LOG_DISABLE,
-    reporters: config.angularCli && config.angularCli.codeCoverage
-              ? ['brief', 'coverage-istanbul', 'junit']
-              : ['brief'],
-    junitReporter: {
-      outputDir: 'coverage/unit-test',
-      outputFile: 'test-results.xml',
-      useBrowserName: false
-    },
+    autoWatch: false,
     browsers: ['ChromeHeadless'],
     customLaunchers: {
       'ChromeHeadless': {
@@ -53,7 +53,7 @@ module.exports = function (config) {
           '--remote-debugging-port=9222'
         ]
       }
-    },
+    },    
     singleRun: true,
     restartOnFileChange: true
   });
