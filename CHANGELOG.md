@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.0] - 2021-12-20
+### Modified
+- Angular Framework Updated to version 13. As of 3.0.0 release this package now requires `@angular@~13.0.0` to compile and run. Updating to angular 13 resolves major dependency compatibility issues so we can apply the latest security patches. 
+- Small bugfix to properly clip the graph scale ui control when graph section in entity detail is collapsed.
+- All dependencies updated to latest versions
+- Docker container now based off of `lts-alpine`(nodejs@16) instead of `14-alpine`(nodejs@14)
+- Docker container now gets `npm` itself deleted from container after build phase since it is not needed for runtime to minimize security exposure.
+
+
+relevant tickets: #230 #231
+
 ## [2.3.4] - 2021-12-01
 ### Added
 - The ability to filter graph elements by "match keys" present on the links between graph entities. #215
