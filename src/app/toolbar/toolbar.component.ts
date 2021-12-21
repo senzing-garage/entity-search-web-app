@@ -5,7 +5,7 @@ import { EntitySearchService } from '../services/entity-search.service';
 import { Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
-import {Overlay, CdkOverlayOrigin, OverlayConfig, OverlayRef} from '@angular/cdk/overlay';
+import { Overlay, CdkOverlayOrigin, OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { AboutComponent } from '../about/about.component';
 import { SzAttributeSearchResult } from '@senzing/sdk-components-ng';
@@ -168,10 +168,13 @@ export class ToolbarComponent implements OnInit, OnDestroy {
       } else {
         // create
         const strategy = this.overlay.position()
-        .connectedTo(
-            this._overlayOrigin.elementRef,
-            {originX: 'end', originY: 'bottom'},
-            {overlayX: 'end', overlayY: 'top'} );
+        .flexibleConnectedTo(this._overlayOrigin.elementRef)
+        .withPositions([
+          {
+            overlayX: 'end', overlayY: 'top',
+            originX: 'end', originY: 'bottom'
+          }
+        ]);
 
         const config = new OverlayConfig({
           positionStrategy: strategy,

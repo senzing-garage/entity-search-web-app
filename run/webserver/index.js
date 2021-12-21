@@ -42,6 +42,9 @@ let streamOptions = runtimeOptions.config.stream;
 // test options
 let testOptions   = runtimeOptions.config.testing;
 
+// package info
+const packageInfo = require('../package-info').asJSON();
+
 // write proxy conf to file? (we need this for DEV mode)
 if(inMemoryConfigFromInputs.proxyServerOptions.writeToFile) {
   runtimeOptions.writeProxyConfigToFile("../","proxy.conf.json");
@@ -202,6 +205,9 @@ const authRes = (req, res, next) => {
   app.get(_confBasePath+'/conf/csp', (req, res, next) => {
       res.status(200).json( cspOptions );
   });
+  app.get(_confBasePath+'/conf/package', (req, res, next) => {
+    res.status(200).json( packageInfo );
+  });
 
   app.get(_confBasePath+'/conf/streams', (req, res, next) => {
       res.status(200).json( streamOptions );
@@ -219,6 +225,9 @@ const authRes = (req, res, next) => {
   });
   app.get('*/conf/csp', (req, res, next) => {
       res.status(200).json( cspOptions );
+  });
+  app.get('*/conf/package', (req, res, next) => {
+    res.status(200).json( packageInfo );
   });
   app.get('*/conf/streams', (req, res, next) => {
       res.status(200).json( streamOptions );

@@ -1,13 +1,13 @@
 ARG BUILD_IMAGE=node:14-buster-slim
-ARG PROD_IMAGE=node:14-alpine
+ARG PROD_IMAGE=node:lts-alpine
 ARG TEST_IMAGE=node:14-buster-slim
 
 FROM ${BUILD_IMAGE}
-ENV REFRESHED_AT=2021-07-26
+ENV REFRESHED_AT=2021-12-20
 
 LABEL Name="senzing/entity-search-web-app" \
       Maintainer="support@senzing.com" \
-      Version="2.3.3"
+      Version="2.4.0"
 
 HEALTHCHECK CMD ["/app/healthcheck.sh"]
 
@@ -25,8 +25,8 @@ WORKDIR /app
 
 RUN npm config set update-notifier false \
  && npm config set loglevel warn \
- && npm install \
- && npm install -g @angular/cli@10.0.0
+ && npm ci \
+ && npm install -g @angular/cli@13
 
 # Build app
 COPY . /app
@@ -39,12 +39,17 @@ WORKDIR /app
 # Copy files from repository.
 COPY ./rootfs /
 COPY ./run /app/run
+COPY package.json /app/package.json
+COPY package-lock.json /app/package-lock.json
 COPY --from=0 /app/dist /app/dist
-COPY --from=0 /app/package.json /app/package.json
 
 RUN npm config set update-notifier false \
  && npm config set loglevel warn \
- && npm install --production
+ && npm ci --production
+
+# update npm vulnerabilites
+RUN npm -g uninstall npm
+RUN rm -fr /usr/local/lib/node_modules/npm
 
 #COPY . /app
 COPY --chown=1001:1001 ./proxy.conf.json /app
@@ -54,5 +59,5 @@ COPY --chown=1001:1001 ./proxy.conf.json /app
 # Runtime execution.
 
 WORKDIR /app
-ENTRYPOINT [ "npm", "run" ]
-CMD ["start:docker"]
+ENTRYPOINT [ "node" ]
+CMD ["./run/webserver"]

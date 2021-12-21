@@ -1,14 +1,14 @@
-@import '~@angular/material/theming';
+@use '@angular/material' as mat;
 @import "variables";
 @import "mixins";
 
-@include mat-core();
+@include mat.core();
 
-$my-app-primary: mat-palette($mat-amber);
-$my-app-accent:  mat-palette($mat-blue-gray, 500, 900, A100);
-$my-app-warn:    mat-palette($mat-deep-orange);
+$my-app-primary: mat.define-palette(mat.$amber-palette);
+$my-app-accent:  mat.define-palette(mat.$blue-gray-palette, 500, 900, A100);
+$my-app-warn:    mat.define-palette(mat.$deep-orange-palette);
 
-$my-app-theme: mat-light-theme($my-app-primary, $my-app-accent, $my-app-warn);
+$my-app-theme: mat.define-light-theme($my-app-primary, $my-app-accent, $my-app-warn);
 
 // --------------------- ANGULAR MATERIAL THEME
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
@@ -20,32 +20,32 @@ $sz-mat-colors: (
   SECONDARY: #{$sz-blue},
   WARNING: #{$sz-red},
   contrast: (
-    50: $dark-primary-text,
-    100: $dark-primary-text,
-    200: $dark-primary-text,
-    300: $dark-primary-text,
-    400: $dark-primary-text,
-    500: $light-primary-text,
-    600: $light-primary-text,
-    700: $light-primary-text,
-    800: $light-primary-text,
-    900: $light-primary-text,
-    A100: $dark-primary-text,
-    A200: $light-primary-text,
-    A400: $light-primary-text,
-    A700: $light-primary-text,
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: rgba(black, 0.87),
+    400: rgba(black, 0.87),
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+    A100: rgba(black, 0.87),
+    A200: white,
+    A400: white,
+    A700: white,
   )
 );
 
 // $default: 500, $lighter: 100, $darker: 700, $text: $default
-$sz-mat-primary: mat-palette($sz-mat-colors, PRIMARY, PRIMARY, PRIMARY);
-$sz-mat-accent:  mat-palette($sz-mat-colors, SECONDARY, SECONDARY, SECONDARY);
+$sz-mat-primary: mat.define-palette($sz-mat-colors, PRIMARY, PRIMARY, PRIMARY);
+$sz-mat-accent:  mat.define-palette($sz-mat-colors, SECONDARY, SECONDARY, SECONDARY);
 // The warn palette is optional (defaults to red).
-$sz-mat-warn:    mat-palette($sz-mat-colors, WARNING, WARNING, WARNING);
+$sz-mat-warn:    mat.define-palette($sz-mat-colors, WARNING, WARNING, WARNING);
 
 // Create the theme object. A theme consists of configurations for individual
 // theming systems such as `color` or `typography`.
-$sz-mat-theme: mat-light-theme((
+$sz-mat-theme: mat.define-light-theme((
   color: (
     primary: $sz-mat-primary,
     accent: $sz-mat-accent,
@@ -53,4 +53,4 @@ $sz-mat-theme: mat-light-theme((
   )
 ));
 
-@include angular-material-theme($sz-mat-theme);
+@include mat.all-component-themes($sz-mat-theme);

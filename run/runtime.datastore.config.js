@@ -157,7 +157,7 @@ function createCspConfigFromInput() {
     directives: {
       'default-src': [`'self'`],
       'connect-src': [`'self'`],
-      'script-src':  [`'self'`, `'unsafe-eval'`],
+      'script-src':  [`'self'`, `'unsafe-eval'`,`'unsafe-inline'`],
       'img-src':     [`'self'`, `data:`],
       'style-src':   [`'self'`, `'unsafe-inline'`,'https://fonts.googleapis.com'],
       'font-src':    [`'self'`, `https://fonts.gstatic.com`,`https://fonts.googleapis.com`]
@@ -393,6 +393,21 @@ function createAuthConfigFromInput() {
   //console.log('Write to Directory: ', __dirname);
 
   return retConfig;
+}
+function getConfigServerOptionsFromInput() {
+  let retOpts = {
+    port: 4200
+  }
+  if(env){
+    retOpts.port        = env.SENZING_WEB_SERVER_PORT ? env.SENZING_WEB_SERVER_PORT   : retOpts.port;
+    retOpts.port        = env.SENZING_CONF_SERVER_PORT ? env.SENZING_CONF_SERVER_PORT : retOpts.port;
+  }
+  let cmdLineOpts = getCommandLineArgsAsJSON();
+  if(cmdLineOpts && cmdLineOpts !== undefined) {
+    retOpts.port        = cmdLineOpts.webServerPortNumber ?   cmdLineOpts.webServerPortNumber   : retOpts.port;
+    retOpts.port        = cmdLineOpts.confServerPortNumber ?  cmdLineOpts.confServerPortNumber  : retOpts.port;
+  }
+  return retOpts;
 }
 function getWebServerOptionsFromInput() {
   let retOpts = {
@@ -682,7 +697,15 @@ function createProxyConfigFromInput() {
       "pathRewrite": {
         "^/config/csp": ""
       }
-    },  
+    },
+    "/config/package": {
+      "target": proxyOpts.configPath + "/conf/package",
+      "secure": true,
+      "logLevel": proxyOpts.logLevel,
+      "pathRewrite": {
+        "^/config/package": ""
+      }
+    },
     "/config/server": {
       "target": proxyOpts.configPath + "/conf/server/",
       "secure": true,
@@ -829,5 +852,6 @@ module.exports = {
   "testing": getTestingOptionsFromInput(),
   "proxyServerOptions": getProxyServerOptionsFromInput(),
   "webServerOptions": getWebServerOptionsFromInput(),
+  "configServerOptions": getConfigServerOptionsFromInput(),
   "getCommandLineArgsAsJSON": getCommandLineArgsAsJSON
 }

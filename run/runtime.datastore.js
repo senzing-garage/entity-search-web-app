@@ -45,7 +45,7 @@ class inMemoryConfig extends EventEmitter {
     directives: {
       'default-src': [`'self'`],
       'connect-src': [`'self'`],
-      'script-src':  [`'self'`, `'unsafe-eval'`],
+      'script-src':  [`'self'`, `'unsafe-eval'`,`'unsafe-inline'`],
       'img-src':     [`'self'`, `data:`],
       'style-src':   [`'self'`, `'unsafe-inline'`, 'https://fonts.googleapis.com'],
       'font-src':    [`'self'`, `https://fonts.gstatic.com`, `https://fonts.googleapis.com`]
@@ -64,6 +64,11 @@ class inMemoryConfig extends EventEmitter {
 
   // initial timer for checking if API Server is up
   apiServerInitializedTimer = undefined;
+
+  // options used for package information
+  configServerOptions = {
+    port: 8080
+  };
 
   // options used for testing purposes
   testOptionsConfiguration = undefined;
@@ -116,7 +121,9 @@ class inMemoryConfig extends EventEmitter {
     if(this.testOptionsConfiguration && this.testOptionsConfiguration !== undefined && this.testOptionsConfiguration !== null) {
       retValue.testing = this.testOptionsConfiguration;
     }
-    
+    if(this.configServerOptions && this.configServerOptions !== undefined && this.configServerOptions !== null) {
+      retValue.configServer = this.configServerOptions;
+    }    
     return retValue;
   }
   // set the configuration objects representing
@@ -210,7 +217,7 @@ class inMemoryConfig extends EventEmitter {
           directives: {
             'default-src': [`'self'`],
             'connect-src': [`'self'`],
-            'script-src':  [`'self'`, `'unsafe-eval'`],
+            'script-src':  [`'self'`, `'unsafe-eval'`,`'unsafe-inline'`],
             'style-src':   [`'self'`, `'unsafe-inline'`, 'https://fonts.googleapis.com'],
             'font-src':    [`'self'`, `https://fonts.gstatic.com`, `https://fonts.googleapis.com`]
           },
@@ -222,6 +229,9 @@ class inMemoryConfig extends EventEmitter {
       }
       if(value.testing) {
         this.testOptionsConfiguration = value.testing;
+      }
+      if(value.configServerOptions) {
+        this.configServerOptions = value.configServerOptions;
       }
     }
   }
@@ -283,7 +293,7 @@ class inMemoryConfig extends EventEmitter {
       }).bind(this));
 
     }).bind(this)).on('error', error => {
-      console.log('checking if api server up yet: '+ error.code);
+      console.log('checking if api server up yet: '+ error.code +' | ['+ reqUrl +']');
       //console.log(error)
     })
   }

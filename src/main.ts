@@ -1,4 +1,3 @@
-import 'hammerjs';
 import "@fontsource/material-icons";
 import "@fontsource/roboto";
 import { enableProdMode } from '@angular/core';

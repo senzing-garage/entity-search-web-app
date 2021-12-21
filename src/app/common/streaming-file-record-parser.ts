@@ -120,7 +120,7 @@ export class SzStreamingFileChunkReader {
         console.log('SzStreamingFileChunkReader.read: ', file);
 
         if (typeof Worker !== 'undefined') {
-            const worker = new Worker('../workers/stream-reader.worker', { type: 'module' });
+            const worker = new Worker(new URL('../workers/stream-reader.worker', import.meta.url), { type: 'module' });
             worker.onmessage = ({ data }) => {
                 data = (data && data.trim) ? data.trim() : data;
                 //console.log('\tread: ', data);
@@ -272,7 +272,7 @@ export class SzStreamingFileRecordParser {
         console.log('SzStreamingFileRecordParser.read: ', file);
 
         if (typeof Worker !== 'undefined') {
-            const worker = new Worker('../workers/stream-reader.worker', { type: 'module' });
+            const worker = new Worker(new URL('../workers/stream-reader.worker', import.meta.url), { type: 'module' });
             worker.onmessage = ({ data }) => {
                 data = (data && data.trim) ? data.trim() : data;
                 //console.log('\tread: ', data);

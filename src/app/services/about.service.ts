@@ -7,9 +7,9 @@ import {
 import { Observable, interval, from, of, EMPTY, Subject, BehaviorSubject } from 'rxjs';
 import { AdminService, SzBaseResponse, SzMeta, SzVersionResponse, SzVersionInfo } from '@senzing/rest-api-client-ng';
 import { switchMap, tap, takeWhile, map, take } from 'rxjs/operators';
-import { version as appVersion, dependencies as appDependencies } from '../../../package.json';
+//import { version as appVersion, dependencies as appDependencies } from '../../../package.json';
 import { SzAdminService, SzServerInfo } from '@senzing/sdk-components-ng';
-import { SzWebAppConfigService } from './config.service';
+import { SzWebAppConfigService, WebAppPackageInfo } from './config.service';
 
 /**
  * Service to provide package and release versions of key
@@ -27,14 +27,22 @@ export class AboutInfoService {
   public restApiVersion: string;
   /** version of the OAS senzing-rest-api spec being used in the POC server*/
   public pocApiVersion: string;
+  /** version of app in package.json */
+  public appName: string                = 'entity-search-webapp';
   /** release version of the ui app */
-  public appVersion: string;
+  public appVersion: string             = 'unknown';
   /** release version of the @senzing/sdk-components-ng package*/
-  public sdkComponentsVersion: string;
+  public sdkComponentsVersion: string   = 'unknown';
   /** version of the @senzing/sdk-graph-components package being used */
-  public graphComponentsVersion: string;
+  public graphComponentsVersion: string = 'unknown';
   /** version of the @senzing/rest-api-client-ng package */
-  public restApiClientVersion: string;
+  public restApiClientVersion: string   = 'unknown';
+  /** version of angular being used */
+  public angularVersion: string         = 'unknown';
+  /** version of angular material being used */
+  public materialVersion                = 'unknown';
+  /** version of D3 library being used */
+  public d3Version: string              = 'unknown';
 
   /** The maximum size for inbound text or binary messages when invoking end-points via Web Sockets `ws://` protocol. */
   public webSocketsMessageMaxSize?: number;
@@ -82,21 +90,6 @@ export class AboutInfoService {
     private adminService: SzAdminService, 
     private configService: SzWebAppConfigService,
     private router: Router) {
-    this.appVersion = appVersion;
-    if(appDependencies) {
-      // check to see if we can pull sdk-components-ng and sdk-graph-components
-      // versions from the package json
-      if (appDependencies['@senzing/sdk-components-ng']) {
-        this.sdkComponentsVersion = this.getVersionFromLocalTarPath( appDependencies['@senzing/sdk-components-ng'], 'senzing-sdk-components-ng-' );
-      }
-      if (appDependencies['@senzing/sdk-graph-components']) {
-        this.graphComponentsVersion = this.getVersionFromLocalTarPath( appDependencies['@senzing/sdk-graph-components'], 'senzing-sdk-graph-components-' );
-      }
-      if (appDependencies['@senzing/rest-api-client-ng']) {
-        this.restApiClientVersion = this.getVersionFromLocalTarPath( appDependencies['@senzing/rest-api-client-ng'], 'senzing-rest-api-client-ng-' );
-      }
-    }
-
     // get version info from SzAdminService
     this.getVersionInfo().pipe(take(1)).subscribe( this.setVersionInfo.bind(this) );
     this.getServerInfo().pipe(take(1)).subscribe( this.setServerInfo.bind(this) );
@@ -111,6 +104,8 @@ export class AboutInfoService {
       this.getServerInfo().pipe(take(1)).subscribe( this.setServerInfo.bind(this) );
       this.getServerInfoMetadata().pipe(take(1)).subscribe( this.setPocServerInfo.bind(this) );
     });
+    // pull package info
+    this.getPackageInfo().pipe(take(1)).subscribe( this.setPackageInfo.bind(this) );
   }
 
   /** get heartbeat information from the rest-api-server host */
@@ -130,23 +125,25 @@ export class AboutInfoService {
   public getServerInfoMetadata(): Observable<SzMeta> {
     return this.adminService.getServerInfoMetadata();
   }
-  public getVersionFromLocalTarPath(packagePath: string | undefined, packagePrefix?: string | undefined ): undefined | string {
-    let retVal = packagePath;
-    if (packagePath && packagePath.indexOf && packagePath.indexOf('file:') === 0) {
-      const pathArr = packagePath.split('/');
-      const fileName = pathArr.pop();
-      if (fileName && fileName.indexOf && fileName.indexOf('.tgz') > -1) {
-        let startAt = 0;
-        if(packagePrefix && fileName.indexOf(packagePrefix) > -1) {
-          startAt = fileName.indexOf(packagePrefix) + packagePrefix.length;
-        }
-        retVal = fileName.substring(startAt, fileName.indexOf('.tgz'));
-      } else if (fileName) {
-        retVal = fileName;
-      }
-    }
-    return retVal;
+  /** get information about the packages listed in the package.json */
+  public getPackageInfo(): Observable<WebAppPackageInfo> {
+    return this.configService.getAppPackageInfo();
   }
+  /** set properties retrieved from the package.json */
+  private setPackageInfo(value: WebAppPackageInfo) {
+    this.appName                = value.name;
+    this.appVersion             = value.version;
+    this.angularVersion         = value.angular;
+    this.materialVersion        = value.material;
+    this.d3Version              = value.d3;
+    this.sdkComponentsVersion   = value['sdk-components-ng'];
+    this.restApiClientVersion   = value['rest-api-client-ng'];
+    this.graphComponentsVersion = value['sdk-graph-components'];
+  }
+  /** 
+   * set health related info 
+   * @todo make this do something
+   **/
   private setHeartbeatInfo(resp: SzMeta) {
     //
   }
