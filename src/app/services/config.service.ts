@@ -57,6 +57,7 @@ export class SzWebAppConfigService {
   private _serverInfo: SzServerInfo;
   private _serverInfoMetadata: SzMeta;
   private _packageInfo: WebAppPackageInfo;
+  private _isStreamingConfigured: boolean = false;
   private pollingInterval = 60 * 1000;
 
   public get authConfig(): AuthConfig {
@@ -98,6 +99,12 @@ export class SzWebAppConfigService {
   public set packageInfo(value: WebAppPackageInfo) {
     this._packageInfo = value;
   }
+  public set isStreamingConfigured(value: boolean) {
+    this._isStreamingConfigured = value;
+  }
+  public get isStreamingConfigured(): boolean {
+    return this._isStreamingConfigured;
+  }
 
   /** provide a event subject to notify listeners of updates */
   private _onAuthConfigChange: Subject<AuthConfig>                    = new Subject<AuthConfig>();
@@ -134,10 +141,16 @@ export class SzWebAppConfigService {
       // get updated stream config
       this.getRuntimeStreamConfig().pipe(
         take(1)
-      ).subscribe((pocConf: POCStreamConfig) => {
-        this._pocStreamConfig = pocConf;
-        this._onPocStreamConfigChange.next( this._pocStreamConfig );
-        //console.warn('POC STREAM CONFIG!', this._pocStreamConfig);
+      ).subscribe((resp: POCStreamConfig | Error) => {
+        if((resp as POCStreamConfig) && (resp as POCStreamConfig).target){
+          this._isStreamingConfigured = true;
+          this._pocStreamConfig = (resp as POCStreamConfig);
+          if(this._pocStreamConfig && !this.loadQueueConfigured) {
+            this._isStreamingConfigured = false;
+          }
+          this._onPocStreamConfigChange.next( this._pocStreamConfig );
+          //console.warn('POC STREAM CONFIG!', this._pocStreamConfig);
+        }
       });
       // get updated server info if api config has changed
       this.adminService.getServerInfo().pipe(take(1)).subscribe( (resp: SzServerInfo) => {
@@ -162,11 +175,22 @@ export class SzWebAppConfigService {
         filter(() => {
           return this.isPocServerInstance && this.isAdminEnabled;
         }),
-        take(1)
-      ).subscribe((pocConf: POCStreamConfig) => {
-        this._pocStreamConfig = pocConf;
-        this._onPocStreamConfigChange.next( this._pocStreamConfig );
-        console.warn('POC STREAM CONFIG!', this._pocStreamConfig);
+        take(1),
+        catchError((err: Error) => {
+          console.log('could not get stream config. streaming not configured properly.');
+          this._isStreamingConfigured = false;
+          return of(err);
+        })
+      ).subscribe((resp: POCStreamConfig | Error) => {
+        if((resp as POCStreamConfig) && (resp as POCStreamConfig).target){
+          this._isStreamingConfigured = true;
+          this._pocStreamConfig = (resp as POCStreamConfig);
+          if(this._pocStreamConfig && !this.loadQueueConfigured) {
+            this._isStreamingConfigured = false;
+          }
+          this._onPocStreamConfigChange.next( this._pocStreamConfig );
+          console.warn('POC STREAM CONFIG! '+ this._isStreamingConfigured, this._pocStreamConfig);
+        }
       });
     });
 
