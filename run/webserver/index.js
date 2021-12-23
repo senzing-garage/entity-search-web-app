@@ -213,6 +213,7 @@ const authRes = (req, res, next) => {
       if(streamOptions && streamOptions !== undefined) {
         res.status(200).json( streamOptions );
       } else {
+        console.log('stream config: ',streamOptions);
         res.status(503).json();
       }
   });
@@ -237,6 +238,7 @@ const authRes = (req, res, next) => {
       if(streamOptions && streamOptions !== undefined) {
         res.status(200).json( streamOptions );
       } else {
+        console.log('stream config: ',streamOptions);
         res.status(503).json();
       }
   });
