@@ -140,14 +140,8 @@ export class SzWebAppConfigService {
       });
       // get updated stream config
       this.getRuntimeStreamConfig().pipe(
-        take(1),
-        catchError((err: Error) => {
-          console.log('could not get stream config. streaming not configured properly.');
-          this._isStreamingConfigured = false;
-          return of(err);
-        })
+        take(1)
       ).subscribe((resp: POCStreamConfig | Error) => {
-        if((resp as POCStreamConfig) && (resp as POCStreamConfig).target){
           this._isStreamingConfigured = true;
           this._pocStreamConfig = (resp as POCStreamConfig);
           if(this._pocStreamConfig && !this.loadQueueConfigured) {
@@ -155,7 +149,6 @@ export class SzWebAppConfigService {
           }
           this._onPocStreamConfigChange.next( this._pocStreamConfig );
           //console.warn('POC STREAM CONFIG!', this._pocStreamConfig);
-        }
       });
       // get updated server info if api config has changed
       this.adminService.getServerInfo().pipe(take(1)).subscribe( (resp: SzServerInfo) => {
@@ -180,14 +173,9 @@ export class SzWebAppConfigService {
         filter(() => {
           return this.isPocServerInstance && this.isAdminEnabled;
         }),
-        take(1),
-        catchError((err: Error) => {
-          console.log('could not get stream config. streaming not configured properly.');
-          this._isStreamingConfigured = false;
-          return of(err);
-        })
-      ).subscribe((resp: POCStreamConfig | Error) => {
-        if((resp as POCStreamConfig) && (resp as POCStreamConfig).target){
+        take(1)
+      ).subscribe((resp: POCStreamConfig) => {
+        
           this._isStreamingConfigured = true;
           this._pocStreamConfig = (resp as POCStreamConfig);
           if(this._pocStreamConfig && !this.loadQueueConfigured) {
@@ -195,7 +183,6 @@ export class SzWebAppConfigService {
           }
           this._onPocStreamConfigChange.next( this._pocStreamConfig );
           console.warn('POC STREAM CONFIG! '+ this._isStreamingConfigured, this._pocStreamConfig);
-        }
       });
     });
 
@@ -263,22 +250,12 @@ export class SzWebAppConfigService {
       })
     );
   }
-  public getRuntimeStreamConfig(): Observable<POCStreamConfig | undefined | Error> {
+  public getRuntimeStreamConfig(): Observable<POCStreamConfig> {
     // reach out to webserver to get api
     // config. we cant do this with static files
     // directly since container is immutable and
     // doesnt write to file system.
-    return this.http.get<POCStreamConfig | undefined | Error>('./config/streams').pipe(
-      map((resp) => {
-        console.log('streams config resp:', resp);
-        if(!resp || resp === null){
-          throwError(undefined);
-          return Error(undefined)
-        } else {
-          return resp;
-        }
-      })
-    );
+    return this.http.get<POCStreamConfig>('./config/streams');
   }
   public getAppPackageInfo(): Observable<WebAppPackageInfo> {
     return this.http.get<WebAppPackageInfo>('./config/package').pipe(
