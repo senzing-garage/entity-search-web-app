@@ -326,6 +326,8 @@ class inMemoryConfig extends EventEmitter {
           this.streamServerConfiguration = undefined;
           this.webConfiguration.streamLoading = false;
           console.log('--------------------------  onApiServerReady: stream loading disabled #2 --------------------------');
+          console.log(serverInfo.data);
+
           this.emit('streamLoadingChanged',this.webConfiguration.streamLoading);
         }
       } else if(serverInfo.data && !serverInfo.data.adminEnabled) {
