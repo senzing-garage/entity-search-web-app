@@ -213,7 +213,6 @@ const authRes = (req, res, next) => {
       if(streamOptions && streamOptions !== undefined) {
         res.status(200).json( streamOptions );
       } else {
-        console.log('streaming not configured');
         res.status(503).json();
       }
   });
@@ -238,7 +237,6 @@ const authRes = (req, res, next) => {
       if(streamOptions && streamOptions !== undefined) {
         res.status(200).json( streamOptions );
       } else {
-        console.log('streaming not configured');
         res.status(503).json();
       }
   });

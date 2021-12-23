@@ -123,6 +123,16 @@ export class SzWebAppConfigService {
   ) {
 
     // ---------------------------------------  set up event handlers -------------------------------------------
+    
+    let onStreamConfigResponse = (resp: POCStreamConfig) => {
+      this._isStreamingConfigured = true;
+      this._pocStreamConfig = (resp as POCStreamConfig);
+      if(this._pocStreamConfig && !this.loadQueueConfigured) {
+        this._isStreamingConfigured = false;
+      }
+      this._onPocStreamConfigChange.next( this._pocStreamConfig );
+      console.warn('POC STREAM CONFIG!', this._pocStreamConfig);
+    }
 
     // if the api config changes we need to grab a new versions of 
     // stream config and auth config
@@ -141,15 +151,7 @@ export class SzWebAppConfigService {
       // get updated stream config
       this.getRuntimeStreamConfig().pipe(
         take(1)
-      ).subscribe((resp: POCStreamConfig | Error) => {
-          this._isStreamingConfigured = true;
-          this._pocStreamConfig = (resp as POCStreamConfig);
-          if(this._pocStreamConfig && !this.loadQueueConfigured) {
-            this._isStreamingConfigured = false;
-          }
-          this._onPocStreamConfigChange.next( this._pocStreamConfig );
-          //console.warn('POC STREAM CONFIG!', this._pocStreamConfig);
-      });
+      ).subscribe(onStreamConfigResponse);
       // get updated server info if api config has changed
       this.adminService.getServerInfo().pipe(take(1)).subscribe( (resp: SzServerInfo) => {
         this._serverInfo = resp;
@@ -174,16 +176,7 @@ export class SzWebAppConfigService {
           return this.isPocServerInstance && this.isAdminEnabled;
         }),
         take(1)
-      ).subscribe((resp: POCStreamConfig) => {
-        
-          this._isStreamingConfigured = true;
-          this._pocStreamConfig = (resp as POCStreamConfig);
-          if(this._pocStreamConfig && !this.loadQueueConfigured) {
-            this._isStreamingConfigured = false;
-          }
-          this._onPocStreamConfigChange.next( this._pocStreamConfig );
-          console.warn('POC STREAM CONFIG! '+ this._isStreamingConfigured, this._pocStreamConfig);
-      });
+      ).subscribe(onStreamConfigResponse);
     });
 
     // -----------------------------------------  initial requests ---------------------------------------------
