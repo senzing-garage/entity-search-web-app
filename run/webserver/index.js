@@ -25,6 +25,10 @@ console.log(inMemoryConfigFromInputs);
 console.log('--------------------------------------------------------');
 const runtimeOptions = new inMemoryConfig(inMemoryConfigFromInputs);
 
+runtimeOptions.on('streamLoadingChanged', (state) => {
+  console.log('--------------- STREAM LOADING: '+ state +' ---------------');
+})
+
 // auth options
 const authOptions = runtimeOptions.config.auth;
 const auth        = new AuthModule( runtimeOptions.config );
