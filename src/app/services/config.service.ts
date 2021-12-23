@@ -140,7 +140,12 @@ export class SzWebAppConfigService {
       });
       // get updated stream config
       this.getRuntimeStreamConfig().pipe(
-        take(1)
+        take(1),
+        catchError((err: Error) => {
+          console.log('could not get stream config. streaming not configured properly.');
+          this._isStreamingConfigured = false;
+          return of(err);
+        })
       ).subscribe((resp: POCStreamConfig | Error) => {
         if((resp as POCStreamConfig) && (resp as POCStreamConfig).target){
           this._isStreamingConfigured = true;
@@ -272,11 +277,6 @@ export class SzWebAppConfigService {
         } else {
           return resp;
         }
-      }),
-      catchError((err) => {
-        // return default payload for local developement when "/config/api" not available
-        console.warn('streams returned undefined');
-        return of(undefined);
       })
     );
   }
