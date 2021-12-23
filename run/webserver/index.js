@@ -20,6 +20,9 @@ const { getPathFromUrl } = require("../utils");
 const AuthModule = require('../authserver/auth');
 const inMemoryConfig = require("../runtime.datastore");
 const inMemoryConfigFromInputs = require('../runtime.datastore.config');
+console.log('-------------------- RUNTIME CONFIG --------------------');
+console.log(inMemoryConfigFromInputs);
+console.log('--------------------------------------------------------');
 const runtimeOptions = new inMemoryConfig(inMemoryConfigFromInputs);
 
 // auth options
@@ -443,6 +446,7 @@ if( serverOptions && serverOptions.ssl && serverOptions.ssl.enabled ){
           resolve();
         });
       } else {
+        console.log('[disabled] WS Proxy Server');
         resolve();
       }
     }
