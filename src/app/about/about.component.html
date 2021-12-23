@@ -28,9 +28,9 @@
   <div class="value " style="flex-basis: unset; width: 100%;" *ngIf="aboutService.isAdminEnabled">
     <button mat-button color="warn" class="admin-enabled-link" routerLink="/admin">Admin Enabled</button>
   </div>
-  <!--<div class="key">Stream Loading:</div>
-  <div class="value" *ngIf="!aboutService.isAdminEnabled || !aboutService.isPocServerInstance">Disabled</div>
-  <div class="value" *ngIf="aboutService.isAdminEnabled && aboutService.isPocServerInstance">Enabled</div>-->
+  <div class="key">Stream Loading:</div>
+  <div class="value" *ngIf="!aboutService.isAdminEnabled || !aboutService.isPocServerInstance || !configService.isStreamingConfigured">Disabled</div>
+  <div class="value" *ngIf="aboutService.isAdminEnabled && aboutService.isPocServerInstance && configService.isStreamingConfigured">Enabled</div>
   <div class="key" style="flex-basis: auto; flex-grow: 2;">NAPI Version: </div>
   <div class="value" style="flex-basis: unset; width: 100%;">{{ aboutService.nativeApiVersion }}</div>
   <div class="native-group">NAPI Build # {{ aboutService.nativeApiBuildNumber }}</div>

@@ -1,4 +1,5 @@
 import { Component, AfterViewInit } from '@angular/core';
+import { SzWebAppConfigService } from '../services/config.service';
 import { AboutInfoService } from '../services/about.service';
 /**
  * a component to display dependency version info
@@ -13,7 +14,7 @@ import { AboutInfoService } from '../services/about.service';
   styleUrls: ['./about.component.scss']
 })
 export class AboutComponent implements AfterViewInit {
-  constructor(public aboutService: AboutInfoService) {}
+  constructor(public aboutService: AboutInfoService, public configService: SzWebAppConfigService) {}
 
   ngAfterViewInit() {}
 }
