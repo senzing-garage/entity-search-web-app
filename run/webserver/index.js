@@ -210,6 +210,8 @@ const authRes = (req, res, next) => {
   });
 
   app.get(_confBasePath+'/conf/streams', (req, res, next) => {
+      console.log('streams config: '+(_confBasePath+'/conf/streams'));
+      console.log('\n', streamOptions);
       res.status(200).json( streamOptions );
   });
 
