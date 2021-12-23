@@ -14,6 +14,14 @@ import { AboutInfoService } from '../services/about.service';
   styleUrls: ['./about.component.scss']
 })
 export class AboutComponent implements AfterViewInit {
+  public get isStreamLoadingEnabled(): boolean {
+    let isEnabled = this.aboutService.isAdminEnabled && this.aboutService.isPocServerInstance && this.configService.isStreamingConfigured
+    if(isEnabled && !this.configService.loadQueueConfigured) {
+      isEnabled = false;
+    }
+    return isEnabled;
+  }
+
   constructor(public aboutService: AboutInfoService, public configService: SzWebAppConfigService) {}
 
   ngAfterViewInit() {}
