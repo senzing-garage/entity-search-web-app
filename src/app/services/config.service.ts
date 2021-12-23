@@ -234,16 +234,17 @@ export class SzWebAppConfigService {
       })
     );
   }
-  public getRuntimeStreamConfig(): Observable<POCStreamConfig | undefined> {
+  public getRuntimeStreamConfig(): Observable<POCStreamConfig | undefined | Error> {
     // reach out to webserver to get api
     // config. we cant do this with static files
     // directly since container is immutable and
     // doesnt write to file system.
-    return this.http.get<POCStreamConfig | undefined>('./config/streams').pipe(
+    return this.http.get<POCStreamConfig | undefined | Error>('./config/streams').pipe(
       map((resp) => {
         console.log('streams config resp:', resp);
         if(!resp || resp === null){
           throwError(undefined);
+          return Error(undefined)
         } else {
           return resp;
         }
