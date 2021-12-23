@@ -240,6 +240,9 @@ export class SzWebAppConfigService {
     // directly since container is immutable and
     // doesnt write to file system.
     return this.http.get<POCStreamConfig | undefined>('./config/streams').pipe(
+      tap((resp) => {
+        console.log('streams config resp:', resp);
+      }),
       catchError((err) => {
         // return default payload for local developement when "/config/api" not available
         console.warn('streams returned undefined');
@@ -249,9 +252,6 @@ export class SzWebAppConfigService {
   }
   public getAppPackageInfo(): Observable<WebAppPackageInfo> {
     return this.http.get<WebAppPackageInfo>('./config/package').pipe(
-      tap((resp) => {
-        console.log('stream config resp:', resp);
-      }),
       catchError((err) => {
         // return default payload for local developement when "/config/package" not available
         return of({
