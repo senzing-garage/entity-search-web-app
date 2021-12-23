@@ -208,13 +208,14 @@ const authRes = (req, res, next) => {
   app.get(_confBasePath+'/conf/package', (req, res, next) => {
     res.status(200).json( packageInfo );
   });
-  if(streamOptions) {
-    app.get(_confBasePath+'/conf/streams', (req, res, next) => {
-        console.log('streams config: '+(_confBasePath+'/conf/streams'));
-        console.log('\n', streamOptions);
+
+  app.get(_confBasePath+'/conf/streams', (req, res, next) => {
+      if(streamOptions && streamOptions !== undefined) {
         res.status(200).json( streamOptions );
-    });
-  }
+      } else {
+        res.status(503);
+      }
+  });
 
   // ----------------- wildcards -----------------
   // we need a wildcarded version due to 
@@ -232,14 +233,13 @@ const authRes = (req, res, next) => {
   app.get('*/conf/package', (req, res, next) => {
     res.status(200).json( packageInfo );
   });
-  if(streamOptions) {
-    app.get('*/conf/streams', (req, res, next) => {
-      console.log('streams config: '+(_confBasePath+'/conf/streams'));
-      console.log('\n', streamOptions);
-
-      res.status(200).json( streamOptions );
-    });
-  }
+  app.get('*/conf/streams', (req, res, next) => {
+      if(streamOptions && streamOptions !== undefined) {
+        res.status(200).json( streamOptions );
+      } else {
+        res.status(503);
+      }
+  });
 
 // ----------------- end config endpoints -----------------
 
