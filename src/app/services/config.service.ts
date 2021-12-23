@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subject, interval, from } from 'rxjs';
-import { catchError, filter, switchMap, take, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of, Subject, interval, from, throwError } from 'rxjs';
+import { catchError, filter, switchMap, map, take, tap } from 'rxjs/operators';
 import { SzAdminService, SzRestConfigurationParameters, SzConfigurationService, SzServerInfo, SzMeta } from '@senzing/sdk-components-ng';
 import { HttpClient } from '@angular/common/http';
 
@@ -29,7 +29,7 @@ export interface POCStreamConfig {
     protocol?: string;
     path?: string;
   }
-  target: string;
+  target?: string;
   protocol?: string;
 }
 export interface WebAppPackageInfo {
@@ -240,8 +240,13 @@ export class SzWebAppConfigService {
     // directly since container is immutable and
     // doesnt write to file system.
     return this.http.get<POCStreamConfig | undefined>('./config/streams').pipe(
-      tap((resp) => {
+      map((resp) => {
         console.log('streams config resp:', resp);
+        if(!resp || resp === null){
+          throwError(undefined);
+        } else {
+          return resp;
+        }
       }),
       catchError((err) => {
         // return default payload for local developement when "/config/api" not available
