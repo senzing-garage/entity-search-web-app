@@ -729,6 +729,14 @@ function createProxyConfigFromInput() {
       "pathRewrite": {
         "^/config/streams": ""
       }
+    },
+    "/health/proxy": {
+      "target": proxyOpts.configPath + "/status/proxy/",
+      "secure": true,
+      "logLevel": proxyOpts.logLevel,
+      "pathRewrite": {
+        "^/status/proxy": ""
+      }
     }
   });
   retConfig = Object.assign(retConfig, mergeObj);

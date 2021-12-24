@@ -70,6 +70,36 @@ let replaceProtocol = function(protoStr, url) {
     return url;
 }
 
+let replacePortNumber = function(portNumber, url) {
+    if(!url) return;
+    if( url ) {
+        if(url.indexOf && url.indexOf(':') > -1) {
+            let replInd     = 1;
+            let urlTokened  = url.split(':');
+            // does it start with (https|http|ws|wss)
+            if(url.indexOf && url.indexOf('://') > -1) {
+                // has protocol
+                replInd = 2;
+            } else {
+                // no protocol
+                replInd = 1;
+            }
+            let replToken = urlTokened[replInd];
+            if(replToken.indexOf('/') > -1){
+                // just replace the part before teh "/"
+                replToken = portNumber + replToken.substring(replToken.indexOf('/'));
+            } else {
+                replToken = portNumber;
+            }
+            console.log('replacePortNumber: ',urlTokened[replInd], replInd, urlTokened);
+
+            urlTokened[( replInd )] = replToken;
+            url = urlTokened.join(':');
+        }
+    }
+    return url
+}
+
 let getRootFromUrl = function(url) {
     if(!url) return;
     if( url ) {
@@ -112,5 +142,6 @@ module.exports = {
     "getPortFromUrl": getPortFromUrl,
     "getProtocolFromUrl": getProtocolFromUrl,
     "getRootFromUrl": getRootFromUrl,
-    "replaceProtocol": replaceProtocol
+    "replaceProtocol": replaceProtocol,
+    "replacePortNumber": replacePortNumber
 }

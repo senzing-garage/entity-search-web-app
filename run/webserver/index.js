@@ -19,8 +19,10 @@ const { getPathFromUrl } = require("../utils");
 // utils
 const AuthModule = require('../authserver/auth');
 const inMemoryConfig = require("../runtime.datastore");
+const HealthCheckUtility = require("../health");
 const inMemoryConfigFromInputs = require('../runtime.datastore.config');
 const runtimeOptions = new inMemoryConfig(inMemoryConfigFromInputs);
+const healthChecker = new HealthCheckUtility(runtimeOptions);
 
 runtimeOptions.on('streamLoadingChanged', (state) => {
   console.log('--------------- STREAM LOADING: '+ state +' ---------------');
@@ -212,7 +214,6 @@ const authRes = (req, res, next) => {
   app.get(_confBasePath+'/conf/package', (req, res, next) => {
     res.status(200).json( packageInfo );
   });
-
   app.get(_confBasePath+'/conf/streams', (req, res, next) => {
       if(streamOptions && streamOptions !== undefined) {
         res.status(200).json( streamOptions );
@@ -220,6 +221,14 @@ const authRes = (req, res, next) => {
         console.log('stream config: ',streamOptions);
         res.status(503).json();
       }
+  });
+  app.get(_confBasePath+'/health', (req, res, next) => {
+    let currentStatus = healthChecker.status;
+    console.log('status check on "'+ (_confBasePath+'/health') +'"', currentStatus);
+    res.status(200).json( currentStatus );
+  });
+  app.get(_confBasePath+'/status/proxy', (req, res, next) => {
+    res.status(200).json({});
   });
 
   // ----------------- wildcards -----------------
@@ -245,6 +254,14 @@ const authRes = (req, res, next) => {
         console.log('stream config: ',streamOptions);
         res.status(503).json();
       }
+  });
+  app.get('*/health', (req, res, next) => {
+    let currentStatus = healthChecker.status;
+    console.log('status check on "'+ (_confBasePath+'/health') +'"', currentStatus);
+    res.status(200).json( currentStatus );
+  });
+  app.get('*/status/proxy', (req, res, next) => {
+    res.status(200).json({});
   });
 
 // ----------------- end config endpoints -----------------
