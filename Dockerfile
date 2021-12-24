@@ -58,7 +58,7 @@ COPY --chown=1001:1001 ./proxy.conf.json /app
 
 # Health Check
 HEALTHCHECK --interval=12s --timeout=12s --start-period=30s \  
-    CMD node /run/health/healthcheck.js
+    CMD node /run/health/check.js
 
 # Runtime execution.
 WORKDIR /app
