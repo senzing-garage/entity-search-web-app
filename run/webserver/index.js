@@ -225,7 +225,13 @@ const authRes = (req, res, next) => {
   app.get(_confBasePath+'/health', (req, res, next) => {
     let currentStatus = healthChecker.status;
     console.log('status check on "'+ (_confBasePath+'/health') +'"', currentStatus);
-    res.status(200).json( currentStatus );
+    let retCode = 500;
+    if(currentStatus && Object.values(currentStatus)){
+      let allHealthy = Object.values(currentStatus).every((value) => value);
+      retCode = allHealthy ? 200 : 500;
+    }
+    console.log('/health ('+ retCode +')');
+    res.status(retCode).json( currentStatus );
   });
   app.get(_confBasePath+'/status/proxy', (req, res, next) => {
     res.status(200).json({});
@@ -258,7 +264,13 @@ const authRes = (req, res, next) => {
   app.get('*/health', (req, res, next) => {
     let currentStatus = healthChecker.status;
     console.log('status check on "'+ (_confBasePath+'/health') +'"', currentStatus);
-    res.status(200).json( currentStatus );
+    let retCode = 500;
+    if(currentStatus && Object.values(currentStatus)){
+      let allHealthy = Object.values(currentStatus).every((value) => value);
+      retCode = allHealthy ? 200 : 500;
+    }
+    console.log('/health ('+ retCode +')');
+    res.status(retCode).json( currentStatus );
   });
   app.get('*/status/proxy', (req, res, next) => {
     res.status(200).json({});
