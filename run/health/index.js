@@ -108,7 +108,7 @@ class HealthCheckerUtility extends EventEmitter {
             //}).bind(this));
       
         }).bind(this)).on('error', (error => {
-            console.log('checkIfProxyServerAlive: '+ error.code +' | ['+ reqUrl +']');
+            //console.log('checkIfProxyServerAlive: '+ error.code +' | ['+ reqUrl +']');
             if(this.isProxyAlive == true) {
                 this.isProxyAlive = false;
                 this.emit('statusChange', this.status);
