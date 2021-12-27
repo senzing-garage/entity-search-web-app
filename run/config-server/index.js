@@ -18,6 +18,7 @@ const sanitize = require("sanitize-filename");
 const AuthModule                = require('../authserver/auth');
 const inMemoryConfig            = require("../runtime.datastore");
 const inMemoryConfigFromInputs  = require('../runtime.datastore.config');
+const HealthCheckUtility        = require("../health");
 const runtimeOptions            = new inMemoryConfig(inMemoryConfigFromInputs);
 const packageInfo               = require('../package-info').asJSON();
 
@@ -39,6 +40,10 @@ let streamOptions = runtimeOptions.config.stream;
 
 // config options
 let configOptions = runtimeOptions.config.configServer;
+
+// health checker
+let healthChecker = new HealthCheckUtility(runtimeOptions);
+
 /*
 console.log('-------------------------------------');
 console.log(inMemoryConfigFromInputs)
@@ -77,6 +82,12 @@ app.get(_confBasePath+'/conf/server', (req, res, next) => {
 // stream config
 app.get(_confBasePath+'/conf/streams', (req, res, next) => {
     res.status(200).json( streamOptions );
+});
+app.get(_confBasePath+'/health', (req, res, next) => {
+    res.status(200).json( healthChecker.status );
+});
+app.get(_confBasePath+'/status/proxy', (req, res, next) => {
+    res.status(200).json({"status": healthChecker.status.isProxyAlive});
 });
 // ----------------- start config endpoints -----------------
 
