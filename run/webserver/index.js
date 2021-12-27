@@ -28,6 +28,10 @@ runtimeOptions.on('streamLoadingChanged', (state) => {
   console.log('--------------- STREAM LOADING: '+ state +' ---------------');
 })
 
+runtimeOptions.on('streamLoadingChanged', (state) => {
+  console.log('--------------- STREAM LOADING: '+ state +' ---------------');
+})
+
 // auth options
 const authOptions = runtimeOptions.config.auth;
 const auth        = new AuthModule( runtimeOptions.config );
