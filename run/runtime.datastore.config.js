@@ -510,6 +510,8 @@ function getProxyServerOptionsFromInput() {
   let retOpts = {
     authServerHostName: "localhost",
     authServerPortNumber: 8080,
+    confServerHostName: "localhost",
+    confServerPortNumber: 8080,
     logLevel: "error",
     apiServerUrl: "",
     configPath: "",
@@ -528,10 +530,13 @@ function getProxyServerOptionsFromInput() {
     }
     if(env.SENZING_AUTH_SERVER_HOSTNAME || env.SENZING_WEB_SERVER_HOSTNAME) {
       retOpts.authServerHostName    = (env.SENZING_AUTH_SERVER_HOSTNAME) ? env.SENZING_AUTH_SERVER_HOSTNAME : env.SENZING_WEB_SERVER_HOSTNAME;
+      retOpts.confServerHostName    = retOpts.authServerHostName;
     }
     if(env.SENZING_AUTH_SERVER_PORT || env.SENZING_WEB_SERVER_PORT) {
       retOpts.authServerPortNumber  = (env.SENZING_AUTH_SERVER_PORT) ? env.SENZING_AUTH_SERVER_PORT : env.SENZING_WEB_SERVER_PORT;
+      retOpts.confServerPortNumber  = retOpts.authServerPortNumber;
       retOpts.adminAuthPath         = "http://"+ retOpts.authServerHostName +":"+ retOpts.authServerPortNumber;
+      retOpts.configPath            = "http://"+ retOpts.confServerHostName +":"+ retOpts.confServerPortNumber;
     }
     if(env.SENZING_WEB_SERVER_AUTH_PATH) {
       retOpts.adminAuthPath = env.SENZING_WEB_SERVER_AUTH_PATH;
@@ -574,7 +579,10 @@ function getProxyServerOptionsFromInput() {
   if(cmdLineOpts && cmdLineOpts !== undefined) {
     if(cmdLineOpts.authServerPortNumber) {
       retOpts.authServerPortNumber  = cmdLineOpts.authServerPortNumber;
-      retOpts.adminAuthPath         = "http://localhost:"+ retOpts.authServerPortNumber;
+      retOpts.confServerPortNumber  = retOpts.authServerPortNumber;
+
+      retOpts.adminAuthPath         = "http://"+ retOpts.authServerHostName +":"+ retOpts.authServerPortNumber;
+      retOpts.configPath            = "http://"+ retOpts.confServerHostName +":"+ retOpts.confServerPortNumber;
     }
     if(cmdLineOpts.proxyLogLevel) {
       retOpts.logLevel = cmdLineOpts.proxyLogLevel;

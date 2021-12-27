@@ -25,12 +25,12 @@
   <hr>
   <div class="key">Admin Mode:</div>
   <div class="value" *ngIf="!aboutService.isAdminEnabled">Disabled</div>
-  <div class="value " style="flex-basis: unset; width: 100%;" *ngIf="aboutService.isAdminEnabled">
+  <div class="value " style="flex-basis: unset; width: 100%; margin-bottom: 4px" *ngIf="aboutService.isAdminEnabled">
     <button mat-button color="warn" class="admin-enabled-link" routerLink="/admin">Admin Enabled</button>
   </div>
-  <!--<div class="key">Stream Loading:</div>
-  <div class="value" *ngIf="!aboutService.isAdminEnabled || !aboutService.isPocServerInstance">Disabled</div>
-  <div class="value" *ngIf="aboutService.isAdminEnabled && aboutService.isPocServerInstance">Enabled</div>-->
+  <div class="key">Stream Loading:</div>
+  <div class="value" *ngIf="!isStreamLoadingEnabled">Disabled</div>
+  <div class="value" *ngIf="isStreamLoadingEnabled">Enabled</div>
   <div class="key" style="flex-basis: auto; flex-grow: 2;">NAPI Version: </div>
   <div class="value" style="flex-basis: unset; width: 100%;">{{ aboutService.nativeApiVersion }}</div>
   <div class="native-group">NAPI Build # {{ aboutService.nativeApiBuildNumber }}</div>

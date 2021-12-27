@@ -1,4 +1,5 @@
 import { Component, AfterViewInit } from '@angular/core';
+import { SzWebAppConfigService } from '../services/config.service';
 import { AboutInfoService } from '../services/about.service';
 /**
  * a component to display dependency version info
@@ -13,7 +14,15 @@ import { AboutInfoService } from '../services/about.service';
   styleUrls: ['./about.component.scss']
 })
 export class AboutComponent implements AfterViewInit {
-  constructor(public aboutService: AboutInfoService) {}
+  public get isStreamLoadingEnabled(): boolean {
+    let isEnabled = this.aboutService.isAdminEnabled && this.aboutService.isPocServerInstance && this.configService.isStreamingConfigured
+    if(isEnabled && !this.configService.loadQueueConfigured) {
+      isEnabled = false;
+    }
+    return isEnabled;
+  }
+
+  constructor(public aboutService: AboutInfoService, public configService: SzWebAppConfigService) {}
 
   ngAfterViewInit() {}
 }

@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subject, interval, from } from 'rxjs';
-import { catchError, filter, switchMap, take, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of, Subject, interval, from, throwError } from 'rxjs';
+import { catchError, filter, switchMap, map, take, tap } from 'rxjs/operators';
 import { SzAdminService, SzRestConfigurationParameters, SzConfigurationService, SzServerInfo, SzMeta } from '@senzing/sdk-components-ng';
 import { HttpClient } from '@angular/common/http';
 
@@ -29,7 +29,7 @@ export interface POCStreamConfig {
     protocol?: string;
     path?: string;
   }
-  target: string;
+  target?: string;
   protocol?: string;
 }
 export interface WebAppPackageInfo {
@@ -57,6 +57,7 @@ export class SzWebAppConfigService {
   private _serverInfo: SzServerInfo;
   private _serverInfoMetadata: SzMeta;
   private _packageInfo: WebAppPackageInfo;
+  private _isStreamingConfigured: boolean = false;
   private pollingInterval = 60 * 1000;
 
   public get authConfig(): AuthConfig {
@@ -98,6 +99,12 @@ export class SzWebAppConfigService {
   public set packageInfo(value: WebAppPackageInfo) {
     this._packageInfo = value;
   }
+  public set isStreamingConfigured(value: boolean) {
+    this._isStreamingConfigured = value;
+  }
+  public get isStreamingConfigured(): boolean {
+    return this._isStreamingConfigured;
+  }
 
   /** provide a event subject to notify listeners of updates */
   private _onAuthConfigChange: Subject<AuthConfig>                    = new Subject<AuthConfig>();
@@ -116,6 +123,16 @@ export class SzWebAppConfigService {
   ) {
 
     // ---------------------------------------  set up event handlers -------------------------------------------
+    
+    let onStreamConfigResponse = (resp: POCStreamConfig) => {
+      this._isStreamingConfigured = true;
+      this._pocStreamConfig = (resp as POCStreamConfig);
+      if(this._pocStreamConfig && !this.loadQueueConfigured) {
+        this._isStreamingConfigured = false;
+      }
+      this._onPocStreamConfigChange.next( this._pocStreamConfig );
+      console.warn('POC STREAM CONFIG!', this._pocStreamConfig);
+    }
 
     // if the api config changes we need to grab a new versions of 
     // stream config and auth config
@@ -134,11 +151,7 @@ export class SzWebAppConfigService {
       // get updated stream config
       this.getRuntimeStreamConfig().pipe(
         take(1)
-      ).subscribe((pocConf: POCStreamConfig) => {
-        this._pocStreamConfig = pocConf;
-        this._onPocStreamConfigChange.next( this._pocStreamConfig );
-        //console.warn('POC STREAM CONFIG!', this._pocStreamConfig);
-      });
+      ).subscribe(onStreamConfigResponse);
       // get updated server info if api config has changed
       this.adminService.getServerInfo().pipe(take(1)).subscribe( (resp: SzServerInfo) => {
         this._serverInfo = resp;
@@ -163,11 +176,7 @@ export class SzWebAppConfigService {
           return this.isPocServerInstance && this.isAdminEnabled;
         }),
         take(1)
-      ).subscribe((pocConf: POCStreamConfig) => {
-        this._pocStreamConfig = pocConf;
-        this._onPocStreamConfigChange.next( this._pocStreamConfig );
-        console.warn('POC STREAM CONFIG!', this._pocStreamConfig);
-      });
+      ).subscribe(onStreamConfigResponse);
     });
 
     // -----------------------------------------  initial requests ---------------------------------------------
@@ -234,17 +243,12 @@ export class SzWebAppConfigService {
       })
     );
   }
-  public getRuntimeStreamConfig(): Observable<POCStreamConfig | undefined> {
+  public getRuntimeStreamConfig(): Observable<POCStreamConfig> {
     // reach out to webserver to get api
     // config. we cant do this with static files
     // directly since container is immutable and
     // doesnt write to file system.
-    return this.http.get<POCStreamConfig | undefined>('./config/streams').pipe(
-      catchError((err) => {
-        // return default payload for local developement when "/config/api" not available
-        return of(undefined);
-      })
-    );
+    return this.http.get<POCStreamConfig>('./config/streams');
   }
   public getAppPackageInfo(): Observable<WebAppPackageInfo> {
     return this.http.get<WebAppPackageInfo>('./config/package').pipe(

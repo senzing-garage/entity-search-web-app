@@ -22,6 +22,10 @@ const inMemoryConfig = require("../runtime.datastore");
 const inMemoryConfigFromInputs = require('../runtime.datastore.config');
 const runtimeOptions = new inMemoryConfig(inMemoryConfigFromInputs);
 
+runtimeOptions.on('streamLoadingChanged', (state) => {
+  console.log('--------------- STREAM LOADING: '+ state +' ---------------');
+})
+
 // auth options
 const authOptions = runtimeOptions.config.auth;
 const auth        = new AuthModule( runtimeOptions.config );
@@ -210,7 +214,12 @@ const authRes = (req, res, next) => {
   });
 
   app.get(_confBasePath+'/conf/streams', (req, res, next) => {
-      res.status(200).json( streamOptions );
+      if(streamOptions && streamOptions !== undefined) {
+        res.status(200).json( streamOptions );
+      } else {
+        console.log('stream config: ',streamOptions);
+        res.status(503).json();
+      }
   });
 
   // ----------------- wildcards -----------------
@@ -230,7 +239,12 @@ const authRes = (req, res, next) => {
     res.status(200).json( packageInfo );
   });
   app.get('*/conf/streams', (req, res, next) => {
-      res.status(200).json( streamOptions );
+      if(streamOptions && streamOptions !== undefined) {
+        res.status(200).json( streamOptions );
+      } else {
+        console.log('stream config: ',streamOptions);
+        res.status(503).json();
+      }
   });
 
 // ----------------- end config endpoints -----------------

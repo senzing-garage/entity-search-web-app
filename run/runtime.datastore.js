@@ -318,19 +318,23 @@ class inMemoryConfig extends EventEmitter {
           // poc server supports adding datasources and importing data
           this.streamServerConfiguration = undefined;
           this.webConfiguration.streamLoading = false;
+          this.emit('streamLoadingChanged',this.webConfiguration.streamLoading);
         }
         if(!serverInfo.data.loadQueueConfigured) {
           // poc server does not support loading through stream socket
           this.streamServerConfiguration = undefined;
           this.webConfiguration.streamLoading = false;
+          this.emit('streamLoadingChanged',this.webConfiguration.streamLoading);
         }
       } else if(serverInfo.data && !serverInfo.data.adminEnabled) {
         // standard rest server that supports loading data
         this.streamServerConfiguration = undefined;
         this.webConfiguration.streamLoading = false;
+        this.emit('streamLoadingChanged',this.webConfiguration.streamLoading);
       }
     } else {
       this.webConfiguration.streamLoading = false;
+      this.emit('streamLoadingChanged',this.webConfiguration.streamLoading);
     }
     // now notify any listeners that we fully have the data we need
     this._apiServerIsReady = true;
