@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.4.0] - 2021-12-28
 ### Added
-- `/health` route that returns a model shape of `{}`
+- `/health` route that returns a model shape of `{"isProxyAlive": true, "isApiServerAlive": true, "isWebserverAlive": true}`
 - `/health/proxy` route that returns the status of the proxy
 - [HealthCheckerUtility](https://github.com/Senzing/entity-search-web-app/blob/master/run/health/index.js) that provides state management for health status checks.
 
