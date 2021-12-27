@@ -62,7 +62,15 @@
     "pathRewrite": {
       "^/config/csp": ""
     }
-  },  
+  },
+  "/config/package": {
+    "target": "http://localhost:4201/conf/package/",
+    "secure": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/config/package": ""
+    }
+  },
   "/config/server": {
     "target": "http://localhost:4201/conf/server/",
     "secure": true,
