@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.1] - 2022-1-22
+### Modified
+- dependency updates to resolve security bulletins
+relevant tickets #243
+
 ## [2.4.0] - 2021-12-28
 ### Added
 - `/health` route that returns a model shape of `{"isProxyAlive": true, "isApiServerAlive": true, "isWebserverAlive": true}`
