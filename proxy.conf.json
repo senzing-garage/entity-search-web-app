@@ -47,6 +47,14 @@
       "^/config/auth": ""
     }
   },
+  "/config/console": {
+    "target": "http://localhost:4201/conf/console/",
+    "secure": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/config/console": ""
+    }
+  },
   "/config/cors": {
     "target": "http://localhost:4201/conf/cors/",
     "secure": true,
