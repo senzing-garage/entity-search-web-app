@@ -52,6 +52,10 @@ class inMemoryConfig extends EventEmitter {
     },
     reportOnly: false
   };
+  // xterm console options
+  consoleConfiguration = {
+    enabled: false
+  }
   // reverse proxy configuration
   // the reverse proxy allows pointing at resources
   // that are local to the webserver, but are then passed
@@ -78,16 +82,18 @@ class inMemoryConfig extends EventEmitter {
   _apiServerIsReady   = false;
   _initialized        = false;
 
-  constructor(options) {
+  constructor(options, noApiServerConfirmation) {
     super();
     if(options) {
       this.config = options;
     }
-
-    this.on('apiServerReady', this.onApiServerReady.bind(this));
-    this.apiServerInitializedTimer = setInterval(this.checkIfApiServerInitialized.bind(this), 2000);
-    this.checkIfApiServerInitialized();
-    //console.info("inMemoryConfig.constructor: ", "\n\n", JSON.stringify(this.config, undefined, 2));
+    let waitForApiServerConfirmation = noApiServerConfirmation ? false : true;
+    if(waitForApiServerConfirmation) {
+      this.on('apiServerReady', this.onApiServerReady.bind(this));
+      this.apiServerInitializedTimer = setInterval(this.checkIfApiServerInitialized.bind(this), 2000);
+      this.checkIfApiServerInitialized();
+      //console.info("inMemoryConfig.constructor: ", "\n\n", JSON.stringify(this.config, undefined, 2));
+    }
   }
 
   get apiServerIsReady() {
@@ -102,6 +108,9 @@ class inMemoryConfig extends EventEmitter {
   get config() {
     let retValue = {
       auth: this.authConfiguration
+    }
+    if(this.consoleConfiguration && this.consoleConfiguration !== undefined && this.consoleConfiguration !== null) {
+      retValue.console = this.consoleConfiguration;
     }
     if(this.corsConfiguration && this.corsConfiguration !== undefined && this.corsConfiguration !== null) {
       retValue.cors = this.corsConfiguration;
@@ -205,6 +214,9 @@ class inMemoryConfig extends EventEmitter {
         }
 
         //this.authConfiguration = value.auth;
+      }
+      if(value.console) {
+        this.consoleConfiguration = value.console;
       }
       if(value.cors) {
         this.authConfiguration  = value.cors;

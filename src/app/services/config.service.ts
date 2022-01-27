@@ -3,6 +3,8 @@ import { BehaviorSubject, Observable, of, Subject, interval, from, throwError } 
 import { catchError, filter, switchMap, map, take, tap } from 'rxjs/operators';
 import { SzAdminService, SzRestConfigurationParameters, SzConfigurationService, SzServerInfo, SzMeta } from '@senzing/sdk-components-ng';
 import { HttpClient } from '@angular/common/http';
+import { SocketIoConfig } from '../common/console-config';
+import { getBasePathFromUrl, getPathFromUrl } from '../common/url-utilities';
 
 export interface AuthConfig {
   hostname?: string;
@@ -42,6 +44,11 @@ export interface WebAppPackageInfo {
   'rest-api-client-ng':   string,
   'd3':                   string
 }
+export interface SzConsoleConfig {
+  url?: string,
+  enabled: boolean,
+  options?: SocketIoConfig["options"]
+}
 
 /**
  * A service used to provide methods and services
@@ -57,7 +64,10 @@ export class SzWebAppConfigService {
   private _serverInfo: SzServerInfo;
   private _serverInfoMetadata: SzMeta;
   private _packageInfo: WebAppPackageInfo;
+  private _consoleConfig: SzConsoleConfig;
   private _isStreamingConfigured: boolean = false;
+  private _isConsoleConfigured: boolean = false;
+  private _isConsoleEnabled: boolean = false;
   private pollingInterval = 60 * 1000;
 
   public get authConfig(): AuthConfig {
@@ -77,6 +87,12 @@ export class SzWebAppConfigService {
   }
   public set pocStreamConfig(value: POCStreamConfig) {
     this._pocStreamConfig = value;
+  }
+  public get consoleConfig(): SzConsoleConfig {
+    return this._consoleConfig;
+  }
+  public set consoleConfig(value: SzConsoleConfig) {
+    this._consoleConfig = value;
   }
   public get isReadOnly(): boolean {
     return this._serverInfo && this._serverInfo.readOnly;
@@ -105,6 +121,19 @@ export class SzWebAppConfigService {
   public get isStreamingConfigured(): boolean {
     return this._isStreamingConfigured;
   }
+  public set isConsoleConfigured(value: boolean) {
+    this._isConsoleConfigured = value;
+  }
+  public get isConsoleConfigured(): boolean {
+    return this._isConsoleConfigured;
+  }
+  /*
+  public set isConsoleEnabled(value: boolean) {
+    this._isConsoleEnabled = value;
+  }*/
+  public get isConsoleEnabled(): boolean {
+    return this._isConsoleEnabled;
+  }
 
   /** provide a event subject to notify listeners of updates */
   private _onAuthConfigChange: Subject<AuthConfig>                    = new Subject<AuthConfig>();
@@ -115,6 +144,8 @@ export class SzWebAppConfigService {
   public onPocStreamConfigChange                                      = this._onPocStreamConfigChange.asObservable();
   private _onServerInfoUpdated: BehaviorSubject<SzServerInfo>         = new BehaviorSubject<SzServerInfo>(undefined);
   public onServerInfoUpdated                                          = this._onServerInfoUpdated.asObservable();
+  private _onConsoleConfigChange: BehaviorSubject<SzConsoleConfig>    = new BehaviorSubject<SzConsoleConfig>(undefined);
+  public onConsoleConfigChange                                        = this._onConsoleConfigChange.asObservable().pipe(filter( (value) => { return value ? true : false; }));
 
   constructor( 
     private adminService: SzAdminService, 
@@ -132,6 +163,14 @@ export class SzWebAppConfigService {
       }
       this._onPocStreamConfigChange.next( this._pocStreamConfig );
       console.warn('POC STREAM CONFIG!', this._pocStreamConfig);
+    }
+    let onConsoleConfigResponse = (resp: SzConsoleConfig) => {
+      this._isConsoleConfigured = true;
+      this._consoleConfig = (resp as SzConsoleConfig);
+      if(resp && resp.enabled !== undefined) {
+        this._isConsoleEnabled = resp.enabled;
+      }
+      this._onConsoleConfigChange.next( this._consoleConfig );
     }
 
     // if the api config changes we need to grab a new versions of 
@@ -177,6 +216,28 @@ export class SzWebAppConfigService {
         }),
         take(1)
       ).subscribe(onStreamConfigResponse);
+      this.getRuntimeConsoleConfig().pipe(
+        filter(() => {
+          return this.isAdminEnabled;
+        }),
+        take(1),
+        map( (cfg) => {
+          if(cfg && cfg.url) {
+            // check if the url has a "/path" in it
+            let _urlDomain = getBasePathFromUrl(cfg.url);
+            let _urlPath = getPathFromUrl(cfg.url);
+            if(_urlPath) {
+              // main url should not have the "/path/to/namespace" 
+              // in the options.url field
+              // move it to cft.options.path as a namespace
+              cfg.url = _urlDomain;
+              cfg.options.path = _urlPath;
+            }
+          }
+
+          return cfg
+        })
+      ).subscribe(onConsoleConfigResponse)
     });
 
     // -----------------------------------------  initial requests ---------------------------------------------
@@ -249,6 +310,15 @@ export class SzWebAppConfigService {
     // directly since container is immutable and
     // doesnt write to file system.
     return this.http.get<POCStreamConfig>('./config/streams');
+  }
+  public getRuntimeConsoleConfig(): Observable<SzConsoleConfig> {
+    // reach out to webserver to get xterm
+    // config. we cant do this with static files
+    // directly since container is immutable and
+    // doesnt write to file system.
+    return this.http.get<SzConsoleConfig>('./config/console').pipe(
+      tap(cfg => console.warn('getRuntimeConsoleConfig result: ', cfg) )
+    )
   }
   public getAppPackageInfo(): Observable<WebAppPackageInfo> {
     return this.http.get<WebAppPackageInfo>('./config/package').pipe(
