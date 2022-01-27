@@ -1,0 +1,19 @@
+:host {
+  display: block;
+  overflow: hidden;
+
+  h2 {
+    margin-top: 0;
+  }
+  .section-instructions {
+    font-size: 0.7em;
+    line-height: 1.5em;
+  }
+  sz-xterm {
+    width: calc(100vw - 220px - 80px);
+    height: calc(100vh - 470px);
+    &.taller {
+      height: calc(100vh - 240px);
+    }
+  }
+}

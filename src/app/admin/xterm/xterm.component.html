@@ -1,0 +1,6 @@
+<div class="xterm-wrapper">
+    <div *ngIf="!isConnected" class="xterm-console-shade" [class.xtermConsoleDisconnected]="!isConnected">
+        <span class="xterm-console-shade-center">Disconnected</span>
+    </div>
+    <div class="xterm-container" #myTerminal></div>
+</div>

@@ -33,8 +33,7 @@ export class SzXtermSocket {
   private _onReconnectionFailure: Subject<any>  = new Subject();
   public onReconnectionFailure = this._onReconnectionFailure.asObservable();
   private _onReconnectionError: Subject<any>  = new Subject();
-  public onReconnectionError = this._onReconnectionError.asObservable();
-  
+  public onReconnectionError = this._onReconnectionError.asObservable();  
   private _hasEverSuccesfullyConnected = false;
 
   /** grab the default socket.io-client default export for socket init */

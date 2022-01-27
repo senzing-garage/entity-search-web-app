@@ -10,6 +10,7 @@ import { switchMap, tap, takeWhile, map, take } from 'rxjs/operators';
 //import { version as appVersion, dependencies as appDependencies } from '../../../package.json';
 import { SzAdminService, SzServerInfo } from '@senzing/sdk-components-ng';
 import { SzWebAppConfigService, WebAppPackageInfo } from './config.service';
+import { SzXtermSocket } from './xterm.socket.service';
 
 /**
  * Service to provide package and release versions of key
@@ -89,6 +90,7 @@ export class AboutInfoService {
   constructor(
     private adminService: SzAdminService, 
     private configService: SzWebAppConfigService,
+    private socket: SzXtermSocket,
     private router: Router) {
     // get version info from SzAdminService
     this.getVersionInfo().pipe(take(1)).subscribe( this.setVersionInfo.bind(this) );

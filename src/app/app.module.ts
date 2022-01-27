@@ -36,6 +36,7 @@ import { TipsComponent } from './common/tips/tips.component';
 import { BlankComponent } from './common/blank/blank.component';
 import { NoResultsComponent } from './errors/no-results/no-results.component';
 import { AboutComponent } from './about/about.component';
+
 // admin dialog components that "FREAK-OUT" for no good reason
 import { AdminStreamLoadQueueInfoComponent } from './common/stream-load-queue-dialog/stream-load-queue-info.component';
 import { AdminStreamLoadQueueDialogComponent } from './common/stream-load-queue-dialog/stream-load-queue-dialog.component';
@@ -43,6 +44,9 @@ import { AdminStreamConnDialogComponent } from './common/stream-conn-dialog/stre
 import { AdminStreamAbortDialogComponent } from './common/stream-abort-dialog/stream-abort-dialog.component';
 import { AdminStreamLoadErrorsDialogComponent } from './common/stream-load-errors-dialog/stream-load-errors-dialog.component';
 import { AdminStreamLoadCollapseableErrorComponent } from './common/stream-load-errors-dialog/stream-load-error-collapseable.component';
+
+// services
+import { SzXtermSocket } from './services/xterm.socket.service';
 
 // errors
 import { PageNotFoundComponent } from './errors/page-not-found/page-not-found.component';
@@ -118,7 +122,8 @@ import { AdminBulkDataService } from './services/admin.bulk-data.service';
     PrefsManagerService,
     AboutInfoService,
     AdminBulkDataService,
-    Title
+    Title,
+    SzXtermSocket
   ],
   bootstrap: [ AppComponent ]
 })
