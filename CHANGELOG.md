@@ -6,10 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.4.1] - 2022-1-22
+## [2.5.0] - 2022-29-22
+
+![EDA Tools Console](docs/img/release/151086453-a276b67c-fad7-411e-a540-f0252a50fe28.png?raw=true "EDA Tools Console")
+
 ### Modified
 - dependency updates to resolve security bulletins
-relevant tickets #243
+
+### Added
+- Optional Web Console Access to the senzing-web-app-console container. Users can now run popular 
+shell tools like G2Explorer.py, G2Snapshot.py and G2Audit.py from within the context of the container 
+through the web interface.
+
+relevant tickets #243 #246 #242
 
 ## [2.4.0] - 2021-12-28
 ### Added
