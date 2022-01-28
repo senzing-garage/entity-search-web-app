@@ -25,6 +25,7 @@ import { AdminErrorNoAdminModeComponent } from './errors/no-admin.component';
 import { AdminServerInfoComponent } from './server-info/server-info.component';
 import { AdminLicenseInfoComponent } from './license-info/license-info.component';
 import { AdminLoginComponent } from './login/login.component';
+import { AdminConsoleComponent } from './admin-console/admin-console.component';
 
 /** injection token for external redirects */
 const externalUrlProvider = new InjectionToken('externalUrlRedirectResolver');
@@ -70,6 +71,10 @@ const routes: Routes = [
           {
             path: 'error/admin-mode-disabled',
             component: AdminErrorNoAdminModeComponent
+          },
+          {
+            path: 'console',
+            component: AdminConsoleComponent
           },
           {
             path: 'externalRedirect',

@@ -22,6 +22,7 @@ import { AdminLoginComponent } from './login/login.component';
 import { AdminServerInfoComponent } from './server-info/server-info.component';
 import { AdminLicenseInfoComponent } from './license-info/license-info.component';
 import { WebSocketService } from '../services/websocket.service';
+import { XtermComponent } from './xterm/xterm.component';
 
 /**
  * bulk data components. these are workaround clones.
@@ -37,6 +38,8 @@ import { AdminBulkDataStreamLoadReportComponent } from './bulk-data/admin-bulk-d
 import { AdminBulkDataLoadSummaryComponent } from './bulk-data/admin-bulk-data-load-summary.component';
 import { SzProgressBarComponent } from '../common/progress-bar/progress-bar.component';
 import { AppFileDragAndDrop as AdminFileDragAndDrop } from '../common/file-drag-and-drop/file-drag-and-drop.directive';
+import { AdminConsoleComponent } from './admin-console/admin-console.component';
+
 // ...
 export function tokenGetter() {
   return localStorage.getItem('access_token');
@@ -47,6 +50,7 @@ import { SzWebAppConfigService } from '../services/config.service';
 @NgModule({
   declarations: [
     AdminComponent,
+    AdminConsoleComponent,
     AdminDataSourcesComponent,
     AdminEntityTypesComponent,
     AdminDataLoaderComponent,
@@ -65,7 +69,8 @@ import { SzWebAppConfigService } from '../services/config.service';
     AdminLoginComponent,
     AdminServerInfoComponent,
     NewDataSourceDialogComponent,
-    SzProgressBarComponent
+    SzProgressBarComponent,
+    XtermComponent
   ],
   imports: [
     AdminRoutingModule,
@@ -84,7 +89,7 @@ import { SzWebAppConfigService } from '../services/config.service';
     SenzingSdkGraphModule.forRoot( SzRestConfigurationFactory ),
     SenzingDataServiceModule.forRoot( SzRestConfigurationFactory )
   ],
-  entryComponents: [ NewDataSourceDialogComponent ],
+  entryComponents: [ NewDataSourceDialogComponent, XtermComponent ],
   providers: [
     {  provide: HTTP_INTERCEPTORS,
        useClass: OAuthInterceptor,

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { SpinnerService } from './spinner.service';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, delay, Observable, Subject } from 'rxjs';
 import { Router, ActivatedRoute, UrlSegment, NavigationEnd } from '@angular/router';
 
 @Injectable({
@@ -12,12 +12,19 @@ export class UiService {
   public createPdfClicked = new Subject<number>();
   private _graphOpen = false;
   private _resultsViewType = 'default';
+  /** when the search tray expansion state changes */
+  private _onSearchExpanded: BehaviorSubject<boolean>   = new BehaviorSubject<boolean>(this._searchExpanded);
+  /** delay the observeable by time of tray animation */
+  public onSearchExpanded: Observable<boolean>          = this._onSearchExpanded.asObservable().pipe(
+    delay(1000)
+  );
 
   public get searchExpanded(): boolean {
     return this._searchExpanded;
   }
   public set searchExpanded(value) {
     this._searchExpanded = value;
+    this._onSearchExpanded.next( this._searchExpanded );
   }
   public get searchType(): string {
     return this._searchType;

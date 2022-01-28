@@ -57,6 +57,18 @@ export function getProtocolFromUrl(url: string) {
     }
 }
 
+export function getBasePathFromUrl(url: string) {
+    if(!url) return;
+    if( url ) {
+        let _path    = getPathFromUrl(url);
+        if(_path) {
+            // remove path string from url
+            url = url.replace(_path, "");
+        }
+        return url;
+    }
+}
+
 export function getPathFromUrl(url: string) {
     if(!url) return;
     if( url ) {

@@ -23,26 +23,28 @@ const runtimeOptions            = new inMemoryConfig(inMemoryConfigFromInputs);
 const packageInfo               = require('../package-info').asJSON();
 
 // auth options
-const authOptions = runtimeOptions.config.auth;
-const auth        = new AuthModule( runtimeOptions.config );
+const authOptions   = runtimeOptions.config.auth;
+const auth          = new AuthModule( runtimeOptions.config );
+// console options
+let consoleOptions  = runtimeOptions.config.console;
 // cors
-var corsOptions   = runtimeOptions.config.cors;
+var corsOptions     = runtimeOptions.config.cors;
 // csp
-var cspOptions    = runtimeOptions.config.csp;
+var cspOptions      = runtimeOptions.config.csp;
 // proxy config
-var proxyOptions  = runtimeOptions.config.proxy;
+var proxyOptions    = runtimeOptions.config.proxy;
 
 // web server config
-let serverOptions = runtimeOptions.config.web;
+let serverOptions   = runtimeOptions.config.web;
 
 // stream options
-let streamOptions = runtimeOptions.config.stream;
+let streamOptions   = runtimeOptions.config.stream;
 
 // config options
-let configOptions = runtimeOptions.config.configServer;
+let configOptions   = runtimeOptions.config.configServer;
 
 // health checker
-let healthChecker = new HealthCheckUtility(runtimeOptions);
+let healthChecker   = new HealthCheckUtility(runtimeOptions);
 
 /*
 console.log('-------------------------------------');
@@ -66,6 +68,10 @@ app.get(_confBasePath+'/conf/package', (req, res, next) => {
 // auth config
 app.get(_confBasePath+'/conf/auth', (req, res, next) => {
     res.status(200).json( authOptions );
+});
+// console options
+app.get(_confBasePath+'/conf/console', (req, res, next) => {
+    res.status(200).json( consoleOptions );
 });
 // cors config
 app.get(_confBasePath+'/conf/cors', (req, res, next) => {

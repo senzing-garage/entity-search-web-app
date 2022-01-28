@@ -10,6 +10,7 @@ import { ComponentPortal } from '@angular/cdk/portal';
 import { AboutComponent } from '../about/about.component';
 import { SzAttributeSearchResult } from '@senzing/sdk-components-ng';
 import { AboutInfoService } from '../services/about.service';
+import { SzWebAppConfigService } from '../services/config.service';
 
 @Component({
   selector: 'app-toolbar',
@@ -37,6 +38,7 @@ export class ToolbarComponent implements OnInit, OnDestroy {
     public overlay: Overlay,
     private router: Router,
     private search: EntitySearchService,
+    private configService: SzWebAppConfigService,
     private spinner: SpinnerService,
     private titleService: Title,
     public uiService: UiService
@@ -60,6 +62,11 @@ export class ToolbarComponent implements OnInit, OnDestroy {
   /** whether or not to show menu options specific to detail view */
   public get showEntityOptions() {
     return (this.search.currentlySelectedEntityId && this.search.currentlySelectedEntityId >= 0) ? true : false;
+  }
+
+  /** whether or not the eda tools console is enabled */
+  public get consoleEnabled(): boolean {
+    return this.configService.isConsoleEnabled;
   }
 
   /** whether or not to show menu options specific to detail view */

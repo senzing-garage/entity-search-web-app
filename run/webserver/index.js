@@ -4,7 +4,8 @@ const http = require('http');
 const https = require('https');
 const serveStatic = require('serve-static');
 const cors = require('cors');
-const apiProxy = require('http-proxy-middleware');
+//const apiProxy = require('http-proxy-middleware');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 const httpProxy = require('http-proxy');
 // authentication
 const authBasic = require('express-basic-auth');
@@ -48,6 +49,9 @@ let serverOptions = runtimeOptions.config.web;
 
 // stream options
 let streamOptions = runtimeOptions.config.stream;
+
+// xterm console server options
+var consoleOptions = runtimeOptions.config.console;
 
 // test options
 let testOptions   = runtimeOptions.config.testing;
@@ -139,7 +143,8 @@ if(proxyConfig) {
     if(proxyOptions.logLevel === 'debug') {
       STARTUP_MSG = STARTUP_MSG + '\n'+' ['+proxyPath+'] ~> '+ proxyTargetOptions.target +' ('+ JSON.stringify(proxyTargetOptions.pathRewrite) +')';
     }
-    app.use(proxyPath, apiProxy(proxyTargetOptions));
+//    app.use(proxyPath, apiProxy(proxyTargetOptions));
+    app.use(proxyPath, createProxyMiddleware(proxyTargetOptions));
   }
 } else {
   STARTUP_MSG = STARTUP_MSG + '\n'+'-- REVERSE PROXY TUNNELS COULD NOT BE ENABLED --';
@@ -208,6 +213,9 @@ const authRes = (req, res, next) => {
   app.get(_confBasePath+'/conf/auth/operator', (req, res, next) => {
     res.status(200).json( authOptions.operator );
   });
+  app.get(_confBasePath+'/conf/console', (req, res, next) => {
+    res.status(200).json( consoleOptions );
+  });
   app.get(_confBasePath+'/conf/cors', (req, res, next) => {
       res.status(200).json( corsOptions );
   });
@@ -245,6 +253,9 @@ const authRes = (req, res, next) => {
   // and any number of SPA routes on top of that
   app.get('*/conf/auth', (req, res, next) => {
     res.status(200).json( authOptions );
+  });
+  app.get('*/conf/console', (req, res, next) => {
+    res.status(200).json( consoleOptions );
   });
   app.get('*/conf/cors', (req, res, next) => {
     res.status(200).json( corsOptions );
@@ -407,6 +418,10 @@ let VIEW_VARIABLES = {
     runtimeOptions.config.web.path.substring((runtimeOptions.config.web.path.length - 1)) !== '/'
   ) ? (runtimeOptions.config.web.path + '/') : runtimeOptions.config.web.path,
   "VIEW_CSP_DIRECTIVES":""
+}
+if(consoleOptions && consoleOptions.enabled) {
+  // add socket-io server for xterm communication
+  
 }
 if(cspOptions && cspOptions.directives) {
   // we have to dynamically serve the html

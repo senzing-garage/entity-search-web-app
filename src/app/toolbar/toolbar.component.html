@@ -60,6 +60,7 @@
   <mat-menu #adminMenu="matMenu">
     <button routerLink="/admin/datasources" mat-menu-item><mat-icon>account_tree</mat-icon>Data Sources</button>
     <button routerLink="/admin/load" mat-menu-item><mat-icon>upload_file</mat-icon>Load Data</button>
+    <button *ngIf="consoleEnabled" routerLink="/admin/console" mat-menu-item><mat-icon>terminal</mat-icon>Console</button>
     <button routerLink="/admin/license/info" mat-menu-item><mat-icon>vpn_key</mat-icon>License</button>
   </mat-menu>
 </mat-toolbar>

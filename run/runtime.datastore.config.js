@@ -149,8 +149,9 @@ function getStreamServerOptionsFromInput() {
 }
 
 function createCspConfigFromInput() {
-  let retConfig = undefined;
-  let streamCfg = getStreamServerOptionsFromInput();
+  let retConfig   = undefined;
+  let streamCfg   = getStreamServerOptionsFromInput();
+  let consoleCfg  = getConsoleServerOptionsFromInput();
 
   // ------------- set sane defaults
   retConfigDefaults = {
@@ -231,6 +232,11 @@ function createCspConfigFromInput() {
   if( streamCfg && streamCfg.proxy && streamCfg.proxy.url ) {
     retConfig.directives['connect-src'].push(streamCfg.proxy.url);
     retConfig.directives['connect-src'].push( getRootFromUrl( streamCfg.proxy.url ) );
+  }
+  // ------------- add console stream socket to connect src
+  if( consoleCfg && consoleCfg.enabled && consoleCfg.url ) {
+    retConfig.directives['connect-src'].push(consoleCfg.url);
+    retConfig.directives['connect-src'].push( getRootFromUrl( consoleCfg.url ) );
   }
 
   return retConfig;
@@ -409,6 +415,43 @@ function getConfigServerOptionsFromInput() {
   }
   return retOpts;
 }
+
+function createConsoleServerOptionsFromInput() {
+  let retOpts = getConsoleServerOptionsFromInput();
+  return retOpts;
+}
+
+function getConsoleServerOptionsFromInput() {
+  let retOpts = {
+    port: 4200,
+    enabled: false,
+    options: {
+      transports: ['websocket'],
+      reconnectionAttempts: 50,
+      reconnectionDelay: 10000
+    }
+  }
+  if(env){
+    retOpts.port        = env.SENZING_WEB_SERVER_PORT ? env.SENZING_WEB_SERVER_PORT   : retOpts.port;
+    retOpts.port        = env.SENZING_CONSOLE_SERVER_PORT ? env.SENZING_CONSOLE_SERVER_PORT : retOpts.port;
+    if(env.SENZING_CONSOLE_SERVER_URL) {
+      retOpts.url       = env.SENZING_CONSOLE_SERVER_URL? env.SENZING_CONSOLE_SERVER_URL : retOpts.url;
+      retOpts.enabled   = true;
+    }
+  }
+  let cmdLineOpts = getCommandLineArgsAsJSON();
+  if(cmdLineOpts && cmdLineOpts !== undefined) {
+    retOpts.port        = cmdLineOpts.webServerPortNumber ?       cmdLineOpts.webServerPortNumber   : retOpts.port;
+    retOpts.port        = cmdLineOpts.consoleServerPortNumber ?   cmdLineOpts.consoleServerPortNumber  : retOpts.port;
+    if(cmdLineOpts.consoleServerUrl) {
+      retOpts.url       = cmdLineOpts.consoleServerUrl ?      cmdLineOpts.consoleServerUrl : retOpts.url;
+      retOpts.port      = getPortFromUrl(retOpts.url);
+      retOpts.enabled   = true;
+    }
+  }
+  return retOpts;
+}
+
 function getWebServerOptionsFromInput() {
   let retOpts = {
     protocol: 'http',
@@ -690,6 +733,14 @@ function createProxyConfigFromInput() {
   // ------------------------ config endpoints 
   retConfig = retConfig !== undefined ? retConfig : {};
   let mergeObj = appendBasePathToKeys({
+    "/config/console": {
+      "target": proxyOpts.configPath + "/conf/console/",
+      "secure": true,
+      "logLevel": proxyOpts.logLevel,
+      "pathRewrite": {
+        "^/config/console": ""
+      }
+    },
     "/config/cors": {
       "target": proxyOpts.configPath + "/conf/cors/",
       "secure": true,
@@ -861,6 +912,7 @@ function createProxyConfigFromInput() {
 module.exports = {
   "web": createWebServerConfigFromInput(),
   "auth": createAuthConfigFromInput(),
+  "console": createConsoleServerOptionsFromInput(),
   "cors": createCorsConfigFromInput(),
   "csp": createCspConfigFromInput(),
   "proxy": createProxyConfigFromInput(),
@@ -869,5 +921,6 @@ module.exports = {
   "proxyServerOptions": getProxyServerOptionsFromInput(),
   "webServerOptions": getWebServerOptionsFromInput(),
   "configServerOptions": getConfigServerOptionsFromInput(),
+  "consoleServerOptions": getConsoleServerOptionsFromInput(),
   "getCommandLineArgsAsJSON": getCommandLineArgsAsJSON
 }
