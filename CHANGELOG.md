@@ -14,11 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - dependency updates to resolve security bulletins
 
 ### Added
-- Optional Web Console Access to the senzing-web-app-console container. Users can now run popular 
-shell tools like G2Explorer.py, G2Snapshot.py and G2Audit.py from within the context of the container 
+- Optional Web Console Access to the [senzing-web-app-console](https://github.com/Senzing/entity-search-web-app-console) container. Users can now run popular 
+shell tools like [G2Explorer.py](https://senzing.zendesk.com/hc/en-us/articles/360051768234-Exploratory-Data-Analysis-2-Basic-exploration), [G2Snapshot.py](https://senzing.zendesk.com/hc/en-us/articles/360051874294-Exploratory-Data-Analysis-3-Taking-a-snapshot) and [G2Audit.py](https://senzing.zendesk.com/hc/en-us/articles/360050643034-Exploratory-Data-Analysis-4-Comparing-ER-results) from within the context of the container 
 through the web interface.
 
-relevant tickets #243 #246 #242
+relevant tickets: #242 #243 #246
 
 ## [2.4.0] - 2021-12-28
 ### Added
