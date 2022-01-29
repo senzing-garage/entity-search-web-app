@@ -1,4 +1,4 @@
-<div class="xterm-wrapper">
+<div class="xterm-wrapper" [class.fullscreen]="_isFullScreen">
     <div *ngIf="!isConnected" class="xterm-console-shade" [class.xtermConsoleDisconnected]="!isConnected">
         <span class="xterm-console-shade-center">Disconnected</span>
     </div>

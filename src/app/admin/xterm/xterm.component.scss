@@ -24,6 +24,22 @@
         position: relative;
         width: calc(100vw - 220px - 80px);
         height: calc(100vh - 470px);
+        &.fullscreen {
+            width: calc(100vw - 0px) !important;
+            height: calc(100vh - 0px) !important;
+            .xterm-viewport, 
+            .xterm-screen,
+            .xterm-console-shade {
+                width: calc(100vw - 0px) !important;
+                height: calc(100vh - 0px) !important;
+            }
+            .xterm-console-shade {
+                width: calc(100vw - 0px) !important;
+            }
+            .xterm-screen {
+                margin: 0;
+            }
+        }
     }
     .xterm-console-shade {
         position: absolute;
@@ -49,4 +65,19 @@
         width: 100%;
         height: 100%;
     }
+    
+    /* I have no idea why but this doesnt work
+       maybe something to do with ShadowDom 
+    */
+    /*
+    &.fullscreen {
+        border: 2px dashed darkblue;
+        .xterm-viewport, 
+        .xterm-screen,
+        .xterm-wrapper,
+        .xterm-console-shade {
+            width: 100vw !important;
+            height: 100vh !important;
+        }
+    }*/
 }

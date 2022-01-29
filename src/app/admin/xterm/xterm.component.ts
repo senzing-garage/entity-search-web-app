@@ -1,9 +1,11 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostBinding, OnDestroy, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Terminal } from 'xterm';
 import { WebLinksAddon } from 'xterm-addon-web-links';
 import { FitAddon } from 'xterm-addon-fit';
-import { debounce, interval, fromEvent, Observable, Subject, Subscription, takeUntil, take, filter } from 'rxjs';
+import { fromEvent, Observable, Subject, Subscription, takeUntil, take, filter } from 'rxjs';
 import { SzXtermSocket } from '../../services/xterm.socket.service';
+import { UiService } from '../../services/ui.service';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   encapsulation: ViewEncapsulation.ShadowDom,
@@ -17,11 +19,13 @@ export class XtermComponent implements AfterViewInit, OnDestroy {
   /** observable to watch for window resize events (allows us to debounce)*/
   resizeObservable$: Observable<Event>
   resizeSubscription$: Subscription
-  
+  /** if fullscreen max width/height */
+  @HostBinding('class.fullscreen') get _isFullScreen() {
+    return this.uiService.noDecoration;
+  }
   /** native html element for xterm to bind to */
   @ViewChild('myTerminal')
   terminalDiv: ElementRef;
-
   /** terminal instance */
   public term: Terminal;
   /** is the console component connected to the socket-io server */
@@ -34,12 +38,20 @@ export class XtermComponent implements AfterViewInit, OnDestroy {
   public get reconnecting(): boolean {
     return this._reconnecting
   }
+  /** console can be popped out of page
+   * when it is this flag is "true"
+   */
+  public get isFullScreen(): boolean {
+    return this.uiService.noDecoration;
+  }
 
   /** fit addon responsible for resizing xterm to container size */
   private fitAddon: FitAddon;
   
-  constructor(private socket: SzXtermSocket) {}
-
+  constructor(private socket: SzXtermSocket, 
+    private titleService: Title,
+    private uiService: UiService) {}
+  
   ngAfterViewInit(): void {
     console.log('XtermComponent.ngAfterViewInit');    
     // initialize terminal
@@ -54,6 +66,10 @@ export class XtermComponent implements AfterViewInit, OnDestroy {
       console.log('terminal resized: ', evt);
       this.fitAddon.fit();
     });
+
+    if(this.isFullScreen) {
+      this.titleService.setTitle('Senzing EDA Tools Web Console');
+    }
   }
   private initializeTerminal() {
     if(this.term) {
@@ -81,10 +97,11 @@ export class XtermComponent implements AfterViewInit, OnDestroy {
       this._reconnectionAttempt = 0;
 
       this.term.clear();
-      this.term.writeln('Welcome to senzing eda-tools console');
+      //this.term.writeln('Welcome to senzing eda-tools console');
+      this.term.writeln('');
       this.socket.emit("input", String.fromCharCode(13));
     } else {
-      this.term.writeln('Connecting to console..');
+      //this.term.writeln('Connecting to console..');
     }
     this.term.focus();
 
@@ -127,7 +144,8 @@ export class XtermComponent implements AfterViewInit, OnDestroy {
       this._reconnecting = false;
       this._reconnectionAttempt = 0;
       this.term.clear();
-      this.term.writeln('Welcome to senzing eda-tools console');
+      this.term.writeln('');
+      //this.term.writeln('Welcome to senzing eda-tools console');
     });
 
     this.socket.onConnected.pipe(
@@ -136,7 +154,7 @@ export class XtermComponent implements AfterViewInit, OnDestroy {
       this._hasEverConnected = true;
       this._reconnecting = false;
       this._reconnectionAttempt = 0;
-      console.warn('socket connected..', data);
+      //console.warn('socket connected..', data);
     });
 
     if(this.socket.disconnected){
@@ -153,6 +171,17 @@ export class XtermComponent implements AfterViewInit, OnDestroy {
   }
   /** resize the console interface */
   fit() {
-    this.fitAddon.fit();
+    if(this.fitAddon && this.fitAddon.fit) {
+      this.fitAddon.fit();
+    }
+  }
+  /** do a quick disconnect and reconnect */
+  refresh() {
+    this.socket.disconnect();
+    this.socket.reconnect();
+  }
+  /** pass disconnect through to socket-io */
+  disconnect() {
+    this.socket.disconnect();
   }
 }

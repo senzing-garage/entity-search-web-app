@@ -16,4 +16,27 @@
       height: calc(100vh - 240px);
     }
   }
+  .xterm-rel-wrapper {
+    position: relative;
+    .pop-out-icon {
+      position: absolute;
+      bottom: 25px;
+      right: 30px;
+      color: #fff;
+      z-index: 20;
+      cursor: pointer;
+    }
+    .button-connect,
+    .button-disconnect {
+      position: absolute;
+      bottom: 20px;
+      right: 60px;
+      z-index: 22;
+      cursor: pointer;
+      color: #fff;
+      .mat-icon {
+        margin-right: 8px;
+      }
+    }
+  }
 }
