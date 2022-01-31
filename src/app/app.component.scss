@@ -6,13 +6,6 @@ sz-powered-by {
   position: absolute;
 }
 
-/* pop-ups use a different router-outlet 
- * inside the top-level AppComponent. 
- * Other elements are hidden.
- */
-.popup-wrapper {
-  display: block;
-}
 
 .tool-tray {
   display: flex;
@@ -178,6 +171,14 @@ app-spinner {
   &.expanded {
       height: calc(100vh - 116px);
   }
+}
+
+/* pop-ups use a different router-outlet 
+ * inside the top-level AppComponent. 
+ * Other elements are hidden.
+ */
+ .popup-wrapper {
+  display: block;
 }
 
 // spinner animations
