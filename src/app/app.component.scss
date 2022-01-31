@@ -146,7 +146,7 @@ sz-powered-by {
     height: unset;
   }
 }
-:host.layout-super-narrow, {
+:host.layout-super-narrow {
   .tool-tray.expanded {
     height: 520px;
   }
@@ -154,8 +154,7 @@ sz-powered-by {
     height: unset;
   }
 }
-:host.layout-medium, {
-
+:host.layout-medium {
   .tool-tray.expanded.prefs-showing {
     height: unset;
   }
@@ -172,6 +171,14 @@ app-spinner {
   &.expanded {
       height: calc(100vh - 116px);
   }
+}
+
+/* pop-ups use a different router-outlet 
+ * inside the top-level AppComponent. 
+ * Other elements are hidden.
+ */
+ .popup-wrapper {
+  display: block;
 }
 
 // spinner animations

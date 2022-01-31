@@ -53,6 +53,9 @@ export class AppComponent implements OnInit, OnDestroy {
       return 'memory';
     }
   }
+  public get noDecoration(): boolean {
+    return this.uiService.noDecoration;
+  }
 
   /** subscription to notify subscribers to unbind */
   public unsubscribe$ = new Subject<void>();

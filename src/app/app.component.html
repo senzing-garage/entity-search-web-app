@@ -1,7 +1,10 @@
-<app-toolbar
+<app-toolbar *ngIf="!noDecoration"
   (showSection)="onToolBarSectionChange($event)"
   [prefsIsShowing]="showPrefs"></app-toolbar>
-<div class="tool-tray" [class.expanded]="searchExpanded" [class.graph-open]="isGraphOpen" [class.prefs-showing]="showPrefs">
+<div *ngIf="!noDecoration" class="tool-tray" 
+  [class.expanded]="searchExpanded" 
+  [class.graph-open]="isGraphOpen" 
+  [class.prefs-showing]="showPrefs">
     <div id="toolbar-col1" class="column">
       <sz-preferences *ngIf="showPrefs"
         showControls="true"></sz-preferences>
@@ -55,7 +58,9 @@
     <mat-icon (click)="toggleRibbonState($event)"*ngIf="searchExpanded && !showPrefs" class="toggle-icon">expand_less</mat-icon>
 </div>
 <app-spinner></app-spinner>
-<div class="view-primary" [class.expanded]="!this.uiService.searchExpanded" [@routeAnimation]="getAnimationData(routerOutlet)">
+<div *ngIf="!noDecoration" class="view-primary" [class.expanded]="!this.uiService.searchExpanded" [@routeAnimation]="getAnimationData(routerOutlet)">
   <router-outlet #routerOutlet="outlet"></router-outlet>
 </div>
-<router-outlet name="popup"></router-outlet>
+<div *ngIf="noDecoration" class="popup-wrapper">
+  <router-outlet name="popup"></router-outlet>
+</div>

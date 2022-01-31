@@ -26,6 +26,7 @@ import { AdminServerInfoComponent } from './server-info/server-info.component';
 import { AdminLicenseInfoComponent } from './license-info/license-info.component';
 import { AdminLoginComponent } from './login/login.component';
 import { AdminConsoleComponent } from './admin-console/admin-console.component';
+import { XtermComponent } from './xterm/xterm.component';
 
 /** injection token for external redirects */
 const externalUrlProvider = new InjectionToken('externalUrlRedirectResolver');
@@ -74,6 +75,7 @@ const routes: Routes = [
           },
           {
             path: 'console',
+            pathMatch: 'full',
             component: AdminConsoleComponent
           },
           {

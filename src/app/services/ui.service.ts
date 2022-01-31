@@ -7,11 +7,13 @@ import { Router, ActivatedRoute, UrlSegment, NavigationEnd } from '@angular/rout
   providedIn: 'root'
 })
 export class UiService {
-  private _searchExpanded = true;
-  private _searchType = 'default';
-  public createPdfClicked = new Subject<number>();
-  private _graphOpen = false;
-  private _resultsViewType = 'default';
+  private _searchExpanded     = true;
+  private _searchType         = 'default';
+  public createPdfClicked     = new Subject<number>();
+  private _graphOpen          = false;
+  private _noDecoration       = false;
+  private _consolePopOutOpen  = false;
+  private _resultsViewType    = 'default';
   /** when the search tray expansion state changes */
   private _onSearchExpanded: BehaviorSubject<boolean>   = new BehaviorSubject<boolean>(this._searchExpanded);
   /** delay the observeable by time of tray animation */
@@ -38,7 +40,15 @@ export class UiService {
   public set resultsViewType(value: string) {
     this._resultsViewType = value;
   }
-
+  public get noDecoration(): boolean {
+    return this._noDecoration;
+  }
+  public get consolePopOutOpen(): boolean {
+    return this._consolePopOutOpen;
+  }
+  public set consolePopOutOpen(value: boolean) {
+    this._consolePopOutOpen = value;
+  }
   public get graphOpen(): boolean {
     return this._graphOpen;
   }
@@ -73,11 +83,15 @@ export class UiService {
     // because there is also an embedded graph
     route.url.subscribe( (url: UrlSegment[]) => {
       const urlStr = url.join();
-      this._graphOpen = (urlStr && urlStr.indexOf && urlStr.indexOf('/graph/') >= 0);
+      this._graphOpen         = (urlStr && urlStr.indexOf && urlStr.indexOf('/graph/') >= 0);
+      this._noDecoration      = (urlStr && urlStr.indexOf && urlStr.indexOf('/no-decorator') >= 0);
+      //this._consolePopOutOpen = (urlStr && urlStr.indexOf && urlStr.indexOf('/no-decorator(popup:console)') >= 0);
     });
     router.events.subscribe((event) => {
       if (event instanceof NavigationEnd ) {
-        this._graphOpen = (event && event.urlAfterRedirects && event.urlAfterRedirects.indexOf('/graph/') >= 0);
+        this._graphOpen         = (event && event.urlAfterRedirects && event.urlAfterRedirects.indexOf('/graph/') >= 0);
+        this._noDecoration      = (event && event.urlAfterRedirects && event.urlAfterRedirects.indexOf('/no-decorator') >= 0);
+        //this._consolePopOutOpen = (event && event.urlAfterRedirects && event.urlAfterRedirects.indexOf('/no-decorator(popup:console)') >= 0);
       }
     });
   }

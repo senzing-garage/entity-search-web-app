@@ -20,8 +20,11 @@ import { GatewayTimeoutErrorComponent } from './errors/timeout/timeout.component
 import { UnknownErrorComponent } from './errors/uknown/uknown.component';
 import { AboutComponent } from './about/about.component';
 import { BlankComponent } from './common/blank/blank.component';
+import { XtermComponent } from './admin/xterm/xterm.component';
+import { NoDecorationComponent } from './common/no-decoration/no-decoration.component';
 
 export const routes: Routes = [
+  { path: 'no-decorator', component: NoDecorationComponent},
   { path: 'debug', component: BlankComponent},
   { path: 'search', component: TipsComponent, resolve:  {entityId: CurrentEntityUnResolverService}, data: { animation: 'search-results' }},
   { path: 'search/results', component: SearchResultsComponent, resolve: { params: SearchParamsResolverService, results: SearchResultsResolverService }, data: { animation: 'search-results' } },
@@ -35,6 +38,12 @@ export const routes: Routes = [
   { path: 'errors/504', component: GatewayTimeoutErrorComponent, data: { animation: 'search-detail' } },
   { path: 'errors/unknown', component: UnknownErrorComponent, data: { animation: 'search-detail' } },
   { path: 'about', component: AboutComponent, data: { animation: 'search-detail'} },
+  {
+    path: 'console',
+    outlet: 'popup',
+    component: XtermComponent,
+    data: { fullscreen: true }
+  },
   { path: '',   redirectTo: 'search', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent }
 ];

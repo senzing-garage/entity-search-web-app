@@ -34,6 +34,7 @@ import { UiService } from './services/ui.service';
 import { PrefsManagerService } from './services/prefs-manager.service';
 import { TipsComponent } from './common/tips/tips.component';
 import { BlankComponent } from './common/blank/blank.component';
+import { NoDecorationComponent } from './common/no-decoration/no-decoration.component';
 import { NoResultsComponent } from './errors/no-results/no-results.component';
 import { AboutComponent } from './about/about.component';
 
@@ -83,6 +84,7 @@ import { AdminBulkDataService } from './services/admin.bulk-data.service';
     ToolbarComponent,
     ErrorPageComponent,
     PageNotFoundComponent,
+    NoDecorationComponent,
     NoResultsComponent,
     GatewayTimeoutErrorComponent,
     ServerErrorComponent,
