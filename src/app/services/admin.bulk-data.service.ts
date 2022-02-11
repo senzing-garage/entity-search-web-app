@@ -788,7 +788,7 @@ export class AdminBulkDataService {
         if(fileType === validImportFileTypes.CSV) {
             return this.streamAnalyzeByChunks(file);
         } else if(fileType === validImportFileTypes.JSON || fileType === validImportFileTypes.JSONL) {
-            return this.streamAnalyzeByRecords(file);
+            return this.streamAnalyzeByChunks(file);
         }
     }
 
@@ -1158,7 +1158,7 @@ export class AdminBulkDataService {
         if(fileType === validImportFileTypes.CSV) {
             return this.streamLoadByChunks(file, dataSourceMap, entityTypeMap);
         } else if(fileType === validImportFileTypes.JSON || fileType === validImportFileTypes.JSONL) {
-            return this.streamLoadByRecords(file, dataSourceMap, entityTypeMap);
+            return this.streamLoadByChunks(file, dataSourceMap, entityTypeMap);
         }
     }
 

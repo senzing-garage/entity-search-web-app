@@ -68,16 +68,14 @@ addEventListener('message', ({ data }) => {
     if(fileType === validImportFileTypes.JSONL || fileType === validImportFileTypes.JSON) { 
         let recordsReadFromStream = [];
 
-        console.log(`StreamReaderWorker.onMessage: reading ${fileName}`);
-        //postMessage(_readRecords);
-        
-        getRecordsFromFileStream(file, reader, summary).subscribe((records: string[]) => {
+        console.log(`StreamReaderWorker.onMessage: reading json/json-lines ${fileName}`);
+        getChunksFromFileStream(file, reader, summary).subscribe((chunk: string) => {
             // records read from stream read
-            //_readRecords = records;
-            postMessage(records);
+            _readChunks = _readChunks.concat(chunk);
+            postMessage(chunk);
             //summary.recordCount = _readRecords.length;
             //this.onLoadResult.next( summary );
-            //console.log(`StreamReaderWorker.onRecordRead() read ${_readRecords.length} records`);
+            console.log(`StreamReaderWorker.onChunkRead() read ${_readChunks.length} chunks`);
         });
 
         //return retStreamSummary;
