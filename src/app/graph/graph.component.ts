@@ -298,6 +298,13 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
   onMatchKeysChange(data: string[]) {
     //console.warn('onMatchKeysChange: ', data);
     this._showMatchKeysInFilter = data;
+    // QUICK HACK to temporarily disable "filter by match key"
+    // filtering option
+    // what were basically doing here is setting the match keys filter to all 
+    // match keys that we detecting from the input data set
+    //
+    // @TODO remove after fixing match key filtering
+    this.prefs.graph.matchKeysIncluded = data;
   }
   onSearchException(err: Error) {
     throw (err.message);

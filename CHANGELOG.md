@@ -6,19 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.5.0] - 2022-1-29
+## [2.5.0] - 2022-2-28
 
 ![EDA Tools Console](docs/img/release/151086453-a276b67c-fad7-411e-a540-f0252a50fe28.png?raw=true "EDA Tools Console")
 
 ### Modified
 - dependency updates to resolve security bulletins
+- bugfix for json/json-lines analyze functions switched from `streamAnalyzeByRecords` to `streamAnalyzeByChunks`
+- bugfix for json/json-lines loading functions switched from `streamLoadByRecords` to `streamLoadByChunks`
 
 ### Added
 - Optional Web Console Access to the [senzing-web-app-console](https://github.com/Senzing/entity-search-web-app-console) container. Users can now run popular 
 shell tools like [G2Explorer.py](https://senzing.zendesk.com/hc/en-us/articles/360051768234-Exploratory-Data-Analysis-2-Basic-exploration), [G2Snapshot.py](https://senzing.zendesk.com/hc/en-us/articles/360051874294-Exploratory-Data-Analysis-3-Taking-a-snapshot) and [G2Audit.py](https://senzing.zendesk.com/hc/en-us/articles/360050643034-Exploratory-Data-Analysis-4-Comparing-ER-results) from within the context of the container 
 through the web interface.
 
-relevant tickets: #242 #243 #246
+### Removed
+- "Filter By Match Key" removed from the large graph display due to _usability_ issues on large datasets. _(It will return once a better approach can be implemented)_
+
+relevant tickets: #242 #243 #246 #252 #256
 
 ## [2.4.0] - 2021-12-28
 ### Added
