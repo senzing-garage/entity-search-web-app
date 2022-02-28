@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Modified
 - dependency updates to resolve security bulletins
+- bugfix for json/json-lines analyze functions switched from `streamAnalyzeByRecords` to `streamAnalyzeByChunks`
+- bugfix for json/json-lines loading functions switched from `streamLoadByRecords` to `streamLoadByChunks`
 
 ### Added
 - Optional Web Console Access to the [senzing-web-app-console](https://github.com/Senzing/entity-search-web-app-console) container. Users can now run popular 
@@ -21,7 +23,7 @@ through the web interface.
 ### Removed
 - "Filter By Match Key" removed from the large graph display due to _usability_ issues on large datasets. _(It will return once a better approach can be implemented)_
 
-relevant tickets: #242 #243 #246 #256
+relevant tickets: #242 #243 #246 #252 #256
 
 ## [2.4.0] - 2021-12-28
 ### Added
