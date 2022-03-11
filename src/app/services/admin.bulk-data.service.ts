@@ -3,7 +3,7 @@ import { CanActivate, Router } from '@angular/router';
 import { ActivatedRouteSnapshot } from '@angular/router';
 import { Observable, of, from, interval, Subject, BehaviorSubject, timer } from 'rxjs';
 import { map, catchError, tap, switchMap, takeUntil, take, filter, takeWhile, delay } from 'rxjs/operators';
-import { SzAdminService, SzEntityTypesService, SzPrefsService, SzBulkDataService, SzDataSourcesService } from '@senzing/sdk-components-ng';
+import { SzAdminService, SzPrefsService, SzBulkDataService, SzDataSourcesService } from '@senzing/sdk-components-ng';
 import { AuthConfig, POCStreamConfig, SzWebAppConfigService } from './config.service';
 import { getHostnameFromUrl, getPortFromUrl, getProtocolFromUrl, getPathFromUrl } from '../common/url-utilities';
 import { AdminStreamConnProperties, AdminStreamAnalysisConfig, AdminStreamLoadConfig } from '../common/models/AdminStreamConnection';
@@ -28,8 +28,6 @@ import {
     SzBulkLoadResult, 
     SzDataSourceRecordAnalysis, 
     SzDataSourceBulkLoadResult, 
-    SzEntityTypeBulkLoadResult, 
-    SzEntityTypeRecordAnalysis, 
     SzBulkDataStatus} from '@senzing/rest-api-client-ng';
 import { AboutInfoService } from './about.service';
 
@@ -44,15 +42,15 @@ export interface AdminStreamSummaryBase {
     recordCount: number,
     recordsWithRecordIdCount?: number,
     recordsWithDataSourceCount?: number,
-    recordsWithEntityTypeCount?: number,
+    /*recordsWithEntityTypeCount?: number,*/
     missingDataSourceCount?: number,
-    missingEntityTypeCount?: number,
+    /*missingEntityTypeCount?: number,*/
     missingRecordIdCount?: number,
     bytesRead?: number,
     bytesSent?: number,
     bytesQueued?: number,
     dataSources?: string[],
-    entityTypes?: string[],
+    /*entityTypes?: string[],*/
     complete?: boolean,
     isStreamResponse: boolean,
     topErrors?: [{error?: AdminStreamSummaryError, occurrenceCount?: number}]
@@ -66,8 +64,7 @@ export interface AdminStreamLoadSummary extends AdminStreamSummaryBase {
     receivedRecordCount: number,
     incompleteRecordCount: number,
     status: string,
-    resultsByDataSource: Array<SzDataSourceBulkLoadResult>;
-    resultsByEntityType: Array<SzEntityTypeBulkLoadResult>;
+    resultsByDataSource: Array<SzDataSourceBulkLoadResult>
 }
 
 export interface AdminStreamSummaryError {
@@ -78,7 +75,7 @@ export interface AdminStreamSummaryError {
 export interface AdminStreamAnalysisSummary extends AdminStreamSummaryBase {
     status?: SzBulkDataStatus,
     analysisByDataSource?: Array<SzDataSourceRecordAnalysis>;
-    analysisByEntityType?: Array<SzEntityTypeRecordAnalysis>;
+    /*analysisByEntityType?: Array<SzEntityTypeRecordAnalysis>;*/
 }
 
 /*
@@ -144,11 +141,11 @@ export class AdminBulkDataService {
     /** map of current datasource name to new datasource names */
     public dataSourceMap: { [key: string]: string };
     /** map of current entity type name to new entity type names */
-    public entityTypeMap: { [key: string]: string };
+    //public entityTypeMap: { [key: string]: string };
     /** current datasources */
     _dataSources: string[];
     /** current entity types */
-    _entityTypes: string[];
+    //_entityTypes: string[];
     /** when the file input changes this subject is broadcast */
     public onCurrentFileChange = new Subject<File>();
     /** when the analysis result changes this behavior subject is broadcast */
@@ -159,11 +156,11 @@ export class AdminBulkDataService {
     /** when the datasources change this behavior subject is broadcast */
     public onDataSourcesChange          = new BehaviorSubject<string[]>(undefined);
     /** when the entity types change this behavior subject is broadcast */
-    public onEntityTypesChange          = new BehaviorSubject<string[]>(undefined);
+    //public onEntityTypesChange          = new BehaviorSubject<string[]>(undefined);
     /** when a datasrc destination changes this subject is broadcast */
     public onDataSourceMapChange        = new Subject<{ [key: string]: string }>();
     /** when a enity type destination changes this subject is broadcast */
-    public onEntityTypeMapChange        = new Subject<{ [key: string]: string }>();
+    //public onEntityTypeMapChange        = new Subject<{ [key: string]: string }>();
     /** when the result of a load operation changes this behavior subject is broadcast */
     public onLoadResult                 = new BehaviorSubject<SzBulkLoadResult | AdminStreamLoadSummary>(undefined);
     /** when the result of a load operation has been cleared from memory */
@@ -333,9 +330,10 @@ export class AdminBulkDataService {
         return this._dataSources;
     }
     /** the entity types currently present */
+    /*
     private get entityTypes(): string[] {
         return this._entityTypes;
-    }
+    }*/
 
     constructor(
         public prefs: SzPrefsService,
@@ -344,7 +342,7 @@ export class AdminBulkDataService {
         private sdkAdminService: SdkAdminService,
         private bulkDataService: BulkDataService,
         private datasourcesService: SzDataSourcesService,
-        private entityTypesService: SzEntityTypesService,
+        //private entityTypesService: SzEntityTypesService,
         private webSocketService: WebSocketService,
         private aboutService: AboutInfoService,
         private configService: SzWebAppConfigService
@@ -456,11 +454,11 @@ export class AdminBulkDataService {
             this.updateDataSources();
         });
         // update entity types in case new ones were added on load
-        this.onLoadResult.pipe(
+        /*this.onLoadResult.pipe(
             takeUntil( this.unsubscribe$ )
         ).subscribe( (resp: SzBulkLoadResult) => {
             this.updateEntityTypes();
-        });
+        });*/
         this.onError.pipe(
             takeUntil( this.unsubscribe$ )
         ).subscribe( (err: Error) => {
@@ -483,11 +481,11 @@ export class AdminBulkDataService {
         this.onDataSourceMapChange.subscribe((result) => {
             console.warn('onDataSourceMapChange: ', result);
         });
-        this.onEntityTypeMapChange.subscribe((result) => {
+        /*this.onEntityTypeMapChange.subscribe((result) => {
             console.warn('onEntityTypeMapChange: ', result);
-        });
+        });*/
         this.updateDataSources();
-        this.updateEntityTypes();
+        //this.updateEntityTypes();
     }
 
     /** update the internal list of datasources
@@ -506,10 +504,10 @@ export class AdminBulkDataService {
         // ignore errors since this is a auto-req
         });
     }
-    /** update the internal list of datasources
+    /** update the internal list of entity types
      * @internal
      */
-    private updateEntityTypes() {
+    /*private updateEntityTypes() {
         this.entityTypesService.listEntityTypes().pipe(
         takeUntil( this.unsubscribe$ )
         ).subscribe((entityTypes: string[]) => {
@@ -521,17 +519,17 @@ export class AdminBulkDataService {
         (err) => {
         // ignore errors since this is a auto-req
         });
-    }
+    }*/
     /** create a new datasource */
     public createDataSources(dataSources: string[]): Observable<string[]> {
         console.log('SzBulkDataService.createDataSources: ', dataSources);
         return this.datasourcesService.addDataSources(dataSources);
     }
     /** create a new entity type */
-    public createEntityTypes(entityTypes: string[]): Observable<string[]> {
+    /*public createEntityTypes(entityTypes: string[]): Observable<string[]> {
         console.log('SzBulkDataService.createEntityTypes: ', entityTypes);
         return this.entityTypesService.addEntityTypes(entityTypes, "ACTOR");
-    }
+    }*/
 
     /** analze a file and prep for mapping */
     public analyze(file: File): Observable<SzBulkDataAnalysisResponse> {
@@ -548,11 +546,11 @@ export class AdminBulkDataService {
             this.currentAnalysisResult = (result && result.data) ? result.data : {};
             //this.currentAnalysis = (result && result.data) ? result.data : {};
             this.dataSourceMap = this.getDataSourceMapFromAnalysis( this.currentAnalysisResult.analysisByDataSource );
-            this.entityTypeMap = this.getEntityTypeMapFromAnalysis( this.currentAnalysisResult.analysisByEntityType );
+            //this.entityTypeMap = this.getEntityTypeMapFromAnalysis( this.currentAnalysisResult.analysisByEntityType );
             this.onDataSourceMapChange.next( this.dataSourceMap );
-            this.onEntityTypeMapChange.next( this.entityTypeMap );
+            //this.onEntityTypeMapChange.next( this.entityTypeMap );
             this.onAnalysisChange.next( this.currentAnalysisResult );
-            console.log('analyze set analysis respose: ', this.dataSourceMap, this.entityTypeMap, this.currentAnalysisResult);
+            console.log('analyze set analysis respose: ', this.dataSourceMap, this.currentAnalysisResult);
         })
         )
     }
@@ -560,12 +558,12 @@ export class AdminBulkDataService {
      * load a files contents in to a datasource.
      * @TODO show usage example.
      */
-    public load(file?: File, dataSourceMap?: { [key: string]: string }, entityTypeMap?: { [key: string]: string }, analysis?: SzBulkDataAnalysis ): Observable<SzBulkLoadResult> | undefined {
+    public load(file?: File, dataSourceMap?: { [key: string]: string }, analysis?: SzBulkDataAnalysis ): Observable<SzBulkLoadResult> | undefined {
         //console.log('SzBulkDataService.load: ', dataSourceMap, entityTypeMap, file, this.currentFile);
         file = file ? file : this.currentFile;
         this.currentError = undefined;
         dataSourceMap = dataSourceMap ? dataSourceMap : this.dataSourceMap;
-        entityTypeMap = entityTypeMap ? entityTypeMap : this.entityTypeMap;
+        //entityTypeMap = entityTypeMap ? entityTypeMap : this.entityTypeMap;
         analysis      = analysis ?      analysis      : this.currentAnalysisResult;
 
         if(file && dataSourceMap && analysis) {
@@ -575,12 +573,12 @@ export class AdminBulkDataService {
             }).map( (b) => {
                 return this.dataSourceMap[(b.dataSource === null || b.dataSource === undefined ? "" :  b.dataSource)];
             });
-            const newEntityTypes = this.currentAnalysisResult.analysisByEntityType.filter(a => {
+            /*const newEntityTypes = this.currentAnalysisResult.analysisByEntityType.filter(a => {
                 const targetET = this.entityTypeMap[((a.entityType === null || a.entityType === undefined) ? "" : a.entityType )];
                 return (targetET && this._entityTypes.indexOf(targetET) < 0);
             }).map( (b) => {
                 return this.entityTypeMap[(b.entityType === null || b.entityType === undefined ? "" : b.entityType)];
-            });
+            });*/
 
             let promise = Promise.resolve([]);
             const promises = [];
@@ -592,20 +590,17 @@ export class AdminBulkDataService {
                 promises.push( pTemp );
             }
             // create new entity types if needed
-            if (newEntityTypes.length > 0) {
+            /*if (newEntityTypes.length > 0) {
                 //console.log('create new entity types: ', newEntityTypes);
                 const pTemp = this.createEntityTypes(newEntityTypes).toPromise();
                 promises.push( pTemp );
-            }
+            }*/
             promise = Promise.all( promises );
 
             // no new datasources or already avail
             this.loadingFile.next(true);
             promise.then(() => {
-                //this.bulkDataService.loadBulkRecords(file, dataSource?: string, mapDataSources?: string, mapDataSource?: Array<string>, entityType?: string, mapEntityTypes?: string, mapEntityType?: Array<string>, progressPeriod?: string, observe?: 'body', reportProgress?: boolean)
-                //this.bulkDataService.loadBulkRecords(file, dataSource, mapDataSources, mapDataSource, entityType?: string, mapEntityTypes, mapEntityType, progressPeriod, observe, reportProgress)
-                this.bulkDataService.loadBulkRecords  (file, undefined,  JSON.stringify(dataSourceMap),  undefined,     undefined,           JSON.stringify(entityTypeMap)).pipe(
-                //this.bulkDataService.loadBulkRecords(file, dataSourceMap, entityTypeMap ).pipe(
+                this.bulkDataService.loadBulkRecords  (file, undefined,  JSON.stringify(dataSourceMap)).pipe(
                 catchError((err: Error) => {
                     console.warn('Handling error locally and rethrowing it...', err);
                     this.loadingFile.next(false);
@@ -659,6 +654,7 @@ export class AdminBulkDataService {
      * Used to keep a internal map of source type to target entity type names.
      * @internal
      */
+    /*
     public getEntityTypeMapFromAnalysis(analysisArray: SzEntityTypeRecordAnalysis[]): { [key: string]: string } {
         const _etMap: { [key: string]: string } = {};
 
@@ -675,7 +671,7 @@ export class AdminBulkDataService {
         });
         }
         return _etMap;
-    }
+    }*/
     /**
      * change the destination datasource of a file currently being mapped to datasource.
      */
@@ -688,12 +684,12 @@ export class AdminBulkDataService {
     /**
      * change the destination entity type of a file currently being mapped to a entity type.
      */
-    public changeEntityTypeName(fromEntityType: string, toEntityType: string) {
+    /*public changeEntityTypeName(fromEntityType: string, toEntityType: string) {
         fromEntityType = (fromEntityType === null || fromEntityType === undefined) ? "" : fromEntityType;
         //console.log('ET MAP ' + fromEntityType + ' TO ' + toEntityType, this.entityTypeMap);
         this.entityTypeMap = this.entityTypeMap;
         this.entityTypeMap[fromEntityType] = toEntityType;
-    }
+    }*/
     /** subscription to notify subscribers to unbind */
     public abort(): void {
         if(this.streamAnalysisAbort$) {
@@ -722,7 +718,7 @@ export class AdminBulkDataService {
         this.currentAnalysisResult  = undefined;
         this.currentFile            = undefined;
         this.dataSourceMap          = undefined;
-        this.entityTypeMap          = undefined;
+        //this.entityTypeMap          = undefined;
         this.onAnalysisChange.next( this.currentAnalysisResult );
         this.onLoadResult.next( this.currentLoadResult );
         this.onCurrentFileChange.next( this.currentFile );
@@ -839,16 +835,16 @@ export class AdminBulkDataService {
             recordCount: 0,
             recordsWithRecordIdCount: 0,
             recordsWithDataSourceCount: 0,
-            recordsWithEntityTypeCount: 0,
+            /*recordsWithEntityTypeCount: 0,*/
             missingDataSourceCount: 0,
-            missingEntityTypeCount: 0,
+            /*missingEntityTypeCount: 0,*/
             missingRecordIdCount: 0,
             bytesRead: 0,
             bytesSent: 0,
             bytesQueued: 0,
             fileColumns: [],
             dataSources: [],
-            entityTypes: [],
+            /*entityTypes: [],*/
             complete: false,
             isStreamResponse: true
         }
@@ -979,9 +975,9 @@ export class AdminBulkDataService {
             tap( (summary: AdminStreamAnalysisSummary) => {
                 this.analyzingFile.next(false);
                 this.dataSourceMap = this.getDataSourceMapFromAnalysis( summary.analysisByDataSource );
-                this.entityTypeMap = this.getEntityTypeMapFromAnalysis( summary.analysisByEntityType );
+                //this.entityTypeMap = this.getEntityTypeMapFromAnalysis( summary.analysisByEntityType );
                 this.onDataSourceMapChange.next( this.dataSourceMap );
-                this.onEntityTypeMapChange.next( this.entityTypeMap );
+                //this.onEntityTypeMapChange.next( this.entityTypeMap );
                 //this.onAnalysisChange.next( this.currentAnalysisResult );
             })
         ).subscribe((summary: AdminStreamAnalysisSummary) => {
@@ -1051,16 +1047,16 @@ export class AdminBulkDataService {
             recordCount: 0,
             recordsWithRecordIdCount: 0,
             recordsWithDataSourceCount: 0,
-            recordsWithEntityTypeCount: 0,
+            //recordsWithEntityTypeCount: 0,
             missingDataSourceCount: 0,
-            missingEntityTypeCount: 0,
+            //missingEntityTypeCount: 0,
             missingRecordIdCount: 0,
             bytesRead: 0,
             bytesSent: 0,
             bytesQueued: 0,
             fileColumns: [],
             dataSources: [],
-            entityTypes: [],
+            //entityTypes: [],
             complete: false,
             isStreamResponse: true
         }
@@ -1120,9 +1116,9 @@ export class AdminBulkDataService {
             tap( (summary: AdminStreamAnalysisSummary) => {
                 this.analyzingFile.next(false);
                 this.dataSourceMap = this.getDataSourceMapFromAnalysis( summary.analysisByDataSource );
-                this.entityTypeMap = this.getEntityTypeMapFromAnalysis( summary.analysisByEntityType );
+                //this.entityTypeMap = this.getEntityTypeMapFromAnalysis( summary.analysisByEntityType );
                 this.onDataSourceMapChange.next( this.dataSourceMap );
-                this.onEntityTypeMapChange.next( this.entityTypeMap );
+                //this.onEntityTypeMapChange.next( this.entityTypeMap );
                 //this.onAnalysisChange.next( this.currentAnalysisResult );
             })
         ).subscribe((summary: AdminStreamAnalysisSummary) => {
@@ -1162,10 +1158,11 @@ export class AdminBulkDataService {
         }
     }
 
-    streamLoadByChunks(file?: File, dataSourceMap?: { [key: string]: string }, entityTypeMap?: { [key: string]: string }, analysis?: SzBulkDataAnalysis): Observable<AdminStreamLoadSummary> {
+    //streamLoadByChunks(file?: File, dataSourceMap?: { [key: string]: string }, entityTypeMap?: { [key: string]: string }, analysis?: SzBulkDataAnalysis): Observable<AdminStreamLoadSummary> {
+    streamLoadByChunks(file?: File, dataSourceMap?: { [key: string]: string }, analysis?: SzBulkDataAnalysis): Observable<AdminStreamLoadSummary> {
         // parameter related
         dataSourceMap = dataSourceMap ? dataSourceMap : this.dataSourceMap;
-        entityTypeMap = entityTypeMap ? entityTypeMap : this.entityTypeMap;
+        //entityTypeMap = entityTypeMap ? entityTypeMap : this.entityTypeMap;
         //console.log('SzBulkDataService.streamLoadByChunks: ', file, this.streamConnectionProperties, dataSourceMap, entityTypeMap);
 
         // event streams
@@ -1196,10 +1193,11 @@ export class AdminBulkDataService {
             streamSocketEndpoint        += `${qsChar}mapDataSources=${encodeURIComponent(JSON.stringify(dataSourceMap))}`;
             qsChar = '&';
         }
+        /*
         if(entityTypeMap) {
             streamSocketEndpoint        += `${qsChar}mapEntityTypes=${encodeURIComponent(JSON.stringify(entityTypeMap))}`;
             qsChar = '&';
-        }
+        }*/
         streamSocketEndpoint            += `${qsChar}eofSendTimeout=8&progressPeriod=60`;
         this.webSocketService.reconnect(streamSocketEndpoint, "POST");
 
@@ -1218,16 +1216,15 @@ export class AdminBulkDataService {
             incompleteRecordCount: 0,
             recordsWithRecordIdCount: 0,
             recordsWithDataSourceCount: 0,
-            recordsWithEntityTypeCount: 0,
+            //recordsWithEntityTypeCount: 0,
             sentRecordCount: 0,
             receivedRecordCount: 0,
             unsentRecordCount: 0,
             failedRecordCount: 0,
             missingDataSourceCount: 0,
-            missingEntityTypeCount: 0,
+            //missingEntityTypeCount: 0,
             missingRecordIdCount: 0,
             resultsByDataSource: [],
-            resultsByEntityType: [],
             bytesRead: 0,
             bytesSent: 0,
             bytesQueued: 0,
@@ -1271,10 +1268,10 @@ export class AdminBulkDataService {
 
         // first create missing datasources and entity types
         let dataSourcesCreated      = false;
-        let entityTypesCreated      = false;
+        //let entityTypesCreated      = false;
         let onAllDataSourcesAndEntityTypesCreated   = new Subject<boolean>();
         let afterDataSourcesCreated = this.createNewDataSourcesFromMap(this.dataSourceMap);
-        let afterEntityTypesCreated = this.createNewEntityTypesFromMap(this.entityTypeMap);
+        //let afterEntityTypesCreated = this.createNewEntityTypesFromMap(this.entityTypeMap);
         // now create entity types
         afterDataSourcesCreated.pipe(
             takeUntil(this.streamLoadAbort$),
@@ -1283,12 +1280,13 @@ export class AdminBulkDataService {
             if((result as string[]).length >= 0) {
                 dataSourcesCreated = true;
                 //console.log('SzBulkDataService.streamLoadByChunks: all data sources created', dataSourcesCreated);
-                if(dataSourcesCreated && entityTypesCreated) {
+                if(dataSourcesCreated) {
                     onAllDataSourcesAndEntityTypesCreated.next(true);
                 }
             }
         });
-        afterEntityTypesCreated.pipe(
+
+        /*afterEntityTypesCreated.pipe(
             takeUntil(this.streamLoadAbort$),
             take(1)
         ).subscribe((result) => {
@@ -1299,7 +1297,7 @@ export class AdminBulkDataService {
                     onAllDataSourcesAndEntityTypesCreated.next(true);
                 }
             }
-        });
+        });*/
 
         // read file contents as stream
         // parse to array of chunks
@@ -1370,9 +1368,9 @@ export class AdminBulkDataService {
             return dataSourcesCreated;
         }
         // quick wrapper fn so we can (re)use this in a evt pipe
-        let waitUntilEntityTypesCreated = (): boolean => {
+        /*let waitUntilEntityTypesCreated = (): boolean => {
             return entityTypesCreated;
-        }
+        }*/
 
         // ------------ monitor status of queue, batch send records to socket ------------
         //if(bulkRecordSendRate > 0) {
@@ -1391,7 +1389,7 @@ export class AdminBulkDataService {
                 }),*/
                 filter( () => { return !this._streamLoadPaused; }),
                 filter( waitUntilDataSourcesAreValid ),
-                filter( waitUntilEntityTypesCreated )
+                //filter( waitUntilEntityTypesCreated )
             ).subscribe( sendChunks );
         //}
         
@@ -1472,10 +1470,11 @@ export class AdminBulkDataService {
      * then batch chunks to websocket connection. 
      * @returns Observeable<AdminStreamLoadSummary>
     */
-    streamLoadByRecords(file?: File, dataSourceMap?: { [key: string]: string }, entityTypeMap?: { [key: string]: string }, analysis?: SzBulkDataAnalysis): Observable<AdminStreamLoadSummary> {
+    //streamLoadByRecords(file?: File, dataSourceMap?: { [key: string]: string }, entityTypeMap?: { [key: string]: string }, analysis?: SzBulkDataAnalysis): Observable<AdminStreamLoadSummary> {
+    streamLoadByRecords(file?: File, dataSourceMap?: { [key: string]: string }, analysis?: SzBulkDataAnalysis): Observable<AdminStreamLoadSummary> {            
         // parameter related
         dataSourceMap = dataSourceMap ? dataSourceMap : this.dataSourceMap;
-        entityTypeMap = entityTypeMap ? entityTypeMap : this.entityTypeMap;
+        //entityTypeMap = entityTypeMap ? entityTypeMap : this.entityTypeMap;
         //console.log('SzBulkDataService.streamLoad: ', file, this.streamConnectionProperties, dataSourceMap, entityTypeMap);
 
         // event streams
@@ -1506,10 +1505,10 @@ export class AdminBulkDataService {
             streamSocketEndpoint        += `${qsChar}mapDataSources=${encodeURIComponent(JSON.stringify(dataSourceMap))}`;
             qsChar = '&';
         }
-        if(entityTypeMap) {
+        /*if(entityTypeMap) {
             streamSocketEndpoint        += `${qsChar}mapEntityTypes=${encodeURIComponent(JSON.stringify(entityTypeMap))}`;
             qsChar = '&';
-        }
+        }*/
         streamSocketEndpoint            += `${qsChar}eofSendTimeout=20&progressPeriod=60`;
 
         // construct summary object that we can report 
@@ -1526,16 +1525,15 @@ export class AdminBulkDataService {
             incompleteRecordCount: 0,
             recordsWithRecordIdCount: 0,
             recordsWithDataSourceCount: 0,
-            recordsWithEntityTypeCount: 0,
+            //recordsWithEntityTypeCount: 0,
             sentRecordCount: 0,
             receivedRecordCount: 0,
             unsentRecordCount: 0,
             failedRecordCount: 0,
             missingDataSourceCount: 0,
-            missingEntityTypeCount: 0,
+            //missingEntityTypeCount: 0,
             missingRecordIdCount: 0,
             resultsByDataSource: [],
-            resultsByEntityType: [],
             bytesRead: 0,
             bytesSent: 0,
             bytesQueued: 0,
@@ -1589,7 +1587,7 @@ export class AdminBulkDataService {
         let entityTypesCreated      = false;
         let onAllDataSourcesAndEntityTypesCreated   = new Subject<boolean>();
         let afterDataSourcesCreated = this.createNewDataSourcesFromMap(this.dataSourceMap);
-        let afterEntityTypesCreated = this.createNewEntityTypesFromMap(this.entityTypeMap);
+        //let afterEntityTypesCreated = this.createNewEntityTypesFromMap(this.entityTypeMap);
         // now create entity types
         afterDataSourcesCreated.pipe(
             takeUntil(this.streamLoadAbort$),
@@ -1603,7 +1601,7 @@ export class AdminBulkDataService {
                 }
             }
         });
-        afterEntityTypesCreated.pipe(
+        /*afterEntityTypesCreated.pipe(
             takeUntil(this.streamLoadAbort$),
             take(1)
         ).subscribe((result) => {
@@ -1614,7 +1612,7 @@ export class AdminBulkDataService {
                     onAllDataSourcesAndEntityTypesCreated.next(true);
                 }
             }
-        });
+        });*/
 
         // read file contents as stream
         // parse to array of records
@@ -1679,9 +1677,9 @@ export class AdminBulkDataService {
             return dataSourcesCreated;
         }
         // quick wrapper fn so we can (re)use this in a evt pipe
-        let waitUntilEntityTypesCreated = (): boolean => {
+        /*let waitUntilEntityTypesCreated = (): boolean => {
             return entityTypesCreated;
-        }
+        }*/
 
         // ------------ monitor status of queue, batch send records to socket ------------
         //if(bulkRecordSendRate > 0) {
@@ -1700,7 +1698,7 @@ export class AdminBulkDataService {
                 }),
                 filter( () => { return !this._streamLoadPaused; }),
                 filter( waitUntilDataSourcesAreValid ),
-                filter( waitUntilEntityTypesCreated )
+                //filter( waitUntilEntityTypesCreated )
             ).subscribe( sendQueuedRecords );
         //}
         
@@ -1843,6 +1841,7 @@ export class AdminBulkDataService {
         return retVal;
     }
     /** get an array of entity types specified in a set of records */
+    /*
     private getEntityTypesFromRecords(records: any[] | undefined): any[] | undefined {
         let retVal = undefined;
         if(records && (records as any[]).length > 0) {
@@ -1859,7 +1858,7 @@ export class AdminBulkDataService {
             }
         }
         return retVal;
-    }
+    }*/
     /** helper method to determine if the "analysisByDataSource" collection in a stream summary
      * has a particular datasource.
      */
@@ -1872,18 +1871,6 @@ export class AdminBulkDataService {
                 } else {
                     return (analysisRow.dataSource && analysisRow.dataSource === dataSource) ? true : false;
                 }
-            });
-        }
-        return retValue;
-    }
-    /** helper method to determine if the "analysisByEntityTypes" collection in a stream summary
-     * has a particular datasource
-     */
-    private analysisByEntityTypeHasEntityType(dataset: Array<SzEntityTypeRecordAnalysis>, entityType: string): boolean {
-        let retValue = false;
-        if(dataset && dataset.length) {
-            retValue = dataset.some((analysisRow: SzEntityTypeRecordAnalysis) => {
-                return (analysisRow.entityType && analysisRow.entityType === entityType) ? true : false;
             });
         }
         return retValue;
@@ -1908,7 +1895,7 @@ export class AdminBulkDataService {
             let recordsArray                = (records as any[]);
             let isAnalysisSummary   = (summary as AdminStreamLoadSummary).sentRecordCount !== undefined ? false : true; // only "AdminStreamLoadSummary" has "sentRecordCount"
             let summaryDsKey        = isAnalysisSummary ? 'analysisByDataSource' : 'resultsByDataSource';
-            let summaryEtKey        = isAnalysisSummary ? 'analysisByEntityType' : 'resultsByEntityType';
+            //let summaryEtKey        = isAnalysisSummary ? 'analysisByEntityType' : 'resultsByEntityType';
 
             /**
              * This is what an "analysisByDataSource" node for records with no DS's defined looks like
@@ -1989,6 +1976,7 @@ export class AdminBulkDataService {
                 }
                 if(record && record.ENTITY_TYPE) {
                     recordsWithEntityTypeCount++;
+                    /*
                     if(summary[summaryEtKey] && this.analysisByEntityTypeHasEntityType(summary[summaryEtKey], record.ENTITY_TYPE)) {
                         // just append
                         let sourceIndex = summary[summaryEtKey].findIndex((analysisRow: SzEntityTypeRecordAnalysis) => {
@@ -2013,8 +2001,9 @@ export class AdminBulkDataService {
                             recordsWithRecordIdCount: (record && record.RECORD_ID) ? 1 : 0,
                             recordsWithDataSourceCount: (record && record.DATA_SOURCE) ? 1 : 0
                         });
-                    }
+                    }*/
                 } else if(record){
+                    /*
                     summary[summaryEtKey] = summary[summaryEtKey] ? summary[summaryEtKey] : [];
                     let sourceIndex = summary[summaryEtKey].findIndex((analysisRow: SzEntityTypeRecordAnalysis) => {
                         return (analysisRow.entityType === null) ? true : false;
@@ -2043,6 +2032,7 @@ export class AdminBulkDataService {
                         })
                         //console.warn('NO EntityType for record. created "null" ', summary[summaryEtKey].length, summary[summaryEtKey][0]);
                     }
+                    */
                 }
                 if(record && (!record.RECORD_ID || record.RECORD_ID === undefined)) {
                     missingRecordIds++;
@@ -2053,24 +2043,26 @@ export class AdminBulkDataService {
             });
 
             summary.missingDataSourceCount  = summary.missingDataSourceCount + missingDataSources;
-            summary.missingEntityTypeCount  = summary.missingEntityTypeCount + missingEntityTypes;
+            //summary.missingEntityTypeCount  = summary.missingEntityTypeCount + missingEntityTypes;
             summary.missingRecordIdCount    = summary.missingRecordIdCount + missingRecordIds;
             dataSources                     = this.getDataSourcesFromRecords(recordsArray);
-            entityTypes                     = this.getEntityTypesFromRecords(recordsArray);
+            //entityTypes                     = this.getEntityTypesFromRecords(recordsArray);
             
             if(dataSources && dataSources.length > 0) {
                 summary.dataSources      = summary.dataSources.concat(dataSources).filter((dataSource, index, self) => {
                     return self.indexOf(dataSource) === index;
                 });
             }
+            /*
             if(entityTypes && entityTypes.length > 0) {
                 summary.entityTypes      = summary.entityTypes.concat(entityTypes).filter((entityType, index, self) => {
                     return self.indexOf(entityType) === index;
                 });
-            }
+            }*/
         }
     }
     /** helper method for creating new entity types from the entityTypeMap attribute set during the analysis mapping phase */
+    /*
     private createNewEntityTypesFromMap(entityTypeMap?: { [key: string]: string }, analysis?: AdminStreamAnalysisSummary | SzBulkDataAnalysis): Observable<string[] | Error> {
         let _retVal     = new Subject<string[] | Error>();
         let retVal      = _retVal.asObservable();
@@ -2085,16 +2077,11 @@ export class AdminBulkDataService {
         }).filter((entityType, index, self) => {
             return self.indexOf(entityType) === index;
         });
+
         if (newEntityTypes.length > 0) {
             //console.log('create new entity types: ', newEntityTypes);
             let simResp = false;
             const pTemp = this.createEntityTypes(newEntityTypes).toPromise();
-            /*const pTemp   = new Promise((resolve, reject) =>{
-                setTimeout(() => {
-                    console.log('resolving entity creation promise for: ', newEntityTypes );
-                    resolve(newEntityTypes);
-                }, 3000);
-            });*/
             promises.push( pTemp );
         }
         let promise = Promise.resolve([]);
@@ -2108,7 +2095,7 @@ export class AdminBulkDataService {
             _retVal.next(err);
         }));
         return retVal;
-    }
+    }*/
     /** helper method for creating new datasources from the dataSourcesMap attribute set during the analysis mapping phase */
     private createNewDataSourcesFromMap(dataSourceMap?: { [key: string]: string }, analysis?: AdminStreamAnalysisSummary | SzBulkDataAnalysis): Observable<string[] | Error> {
         let _retVal     = new Subject<string[] | Error>();

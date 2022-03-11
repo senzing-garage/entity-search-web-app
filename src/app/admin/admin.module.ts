@@ -12,7 +12,7 @@ import { SenzingSdkGraphModule } from '@senzing/sdk-graph-components';
 import { AdminRoutingModule } from './admin-routing.module';
 import { AdminComponent } from './admin/admin.component';
 import { AdminDataSourcesComponent, NewDataSourceDialogComponent } from './datasources/datasources.component';
-import { AdminEntityTypesComponent } from './entity-types/entity-types.component';
+//import { AdminEntityTypesComponent } from './entity-types/entity-types.component';
 import { AdminDataLoaderComponent } from './load/load.component';
 import { AdminOAuthTokensComponent } from './tokens/tokens.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -52,7 +52,7 @@ import { SzWebAppConfigService } from '../services/config.service';
     AdminComponent,
     AdminConsoleComponent,
     AdminDataSourcesComponent,
-    AdminEntityTypesComponent,
+    /*AdminEntityTypesComponent,*/
     AdminDataLoaderComponent,
     AdminBulkDataAnalysisComponent,
     AdminBulkDataAnalysisReportComponent,

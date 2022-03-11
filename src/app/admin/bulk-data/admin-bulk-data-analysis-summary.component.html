@@ -4,7 +4,7 @@
     <tr><th>Total Number of Records:</th><td>{{ analysis.recordCount }}</td></tr>
     <tr><th>Number of Records with Data Source:</th><td>{{ analysis.recordsWithDataSourceCount }}</td></tr>
     <tr><th>Number of Records with Record ID:</th><td>{{ analysis.recordsWithRecordIdCount }}</td></tr>
-    <tr><th>Number of Records with Entity Type:</th><td>{{ analysis.recordsWithEntityTypeCount }}</td></tr>
+    <!--<tr><th>Number of Records with Entity Type:</th><td>{{ analysis.recordsWithEntityTypeCount }}</td></tr>-->
   </table>
   <table class="stats-col">
     <tr><th *ngIf="file && file?.name">File Name:</th><td>{{ file?.name }}</td></tr>
@@ -14,23 +14,11 @@
   </table>
 </div>
 <div class="general-stats-reflow" *ngIf="streamAnalysis">
-  <!--<table class="stats-col">
-    <tr><th>Total Number of Records:</th><td>{{ streamAnalysis.recordCount }}</td></tr>
-    <tr><th>Number of Records Missing Data Source:</th><td>{{ streamAnalysis.missingDataSourceCount }}</td></tr>
-    <tr><th>Number of Records with Record ID:</th><td>{{ streamAnalysis.recordCount - streamAnalysis.missingRecordIdCount }}</td></tr>
-    <tr><th>Number of Records Missing Entity Types:</th><td>{{ streamAnalysis.missingEntityTypeCount }}</td></tr>
-    <tr *ngIf="streamAnalysis && streamAnalysis.dataSources">
-      <th>Data Sources:</th>
-      <td>
-        <div class="datasources-overflow" [matTooltip]="streamAnalysis.dataSources.join(', ')">{{ streamAnalysis.dataSources.join(', ') }}</div>
-      </td>
-    </tr>
-  </table>-->
   <table class="stats-col">
     <tr><th>Total Number of Records:</th><td>{{ streamAnalysis.recordCount }}</td></tr>
     <tr><th>Number of Records with Data Source:</th><td>{{ streamAnalysis.recordsWithDataSourceCount }}</td></tr>
     <tr><th>Number of Records with Record ID:</th><td>{{ streamAnalysis.recordsWithRecordIdCount }}</td></tr>
-    <tr><th>Number of Records with Entity Type:</th><td>{{ streamAnalysis.recordsWithEntityTypeCount }}</td></tr>
+    <!--<tr><th>Number of Records with Entity Type:</th><td>{{ streamAnalysis.recordsWithEntityTypeCount }}</td></tr>-->
   </table>
   <table class="stats-col">
     <tr><th *ngIf="file && file?.name">File Name:</th><td>{{ file?.name }}</td></tr>
