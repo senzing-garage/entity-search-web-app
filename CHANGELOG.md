@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.0] - 2022-3-15
+
+This update brings the models in line with the changes for the `3.0.0` release of the [senzing rest api server](https://github.com/Senzing/senzing-api-server)
+and [rest api specification](https://github.com/Senzing/senzing-rest-api-specification/blob/caceres.version-3.0.0/senzing-rest-api.yaml).
+
+### Modified
+- Major refactoring done under the hood inside the admin area and data importing functionality due to the removal of entity types/classes.
+- `@senzing/rest-api-client-ng` updated to `4.0.0`
+- `@senzing/sdk-graph-components` updated to `4.0.0`
+- `@senzing/sdk-components-ng` updated to `4.0.0-beta.4`
+
+### Removed
+- Any and all functionality surrounding _Entity Type's_ and _Entity Classes_. Management of these features has been removed in the 3.0 version of the senzing sdk.
+
 ## [2.5.0] - 2022-2-28
 
 ![EDA Tools Console](docs/img/release/151086453-a276b67c-fad7-411e-a540-f0252a50fe28.png?raw=true "EDA Tools Console")
