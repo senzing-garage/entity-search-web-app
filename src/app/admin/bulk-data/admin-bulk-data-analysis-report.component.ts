@@ -4,7 +4,7 @@ import { SzPrefsService, SzAdminService } from '@senzing/sdk-components-ng';
 import {
   SzBulkDataAnalysis,
   SzBulkLoadResult,
-  SzEntityTypeRecordAnalysis
+  /*SzEntityTypeRecordAnalysis*/
 } from '@senzing/rest-api-client-ng';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -35,7 +35,7 @@ export class AdminBulkDataAnalysisReportComponent implements OnInit, OnDestroy, 
     }
     return retVal;
   }
-  public entityTypeColumns: string[] = ['entityType', 'recordCount', 'recordsWithRecordIdCount', 'entityTypeCode'];
+  //public entityTypeColumns: string[] = ['entityType', 'recordCount', 'recordsWithRecordIdCount', 'entityTypeCode'];
 
   /** get the file reference currently loaded in the the bulk data service */
   public get file(): File {
@@ -63,9 +63,10 @@ export class AdminBulkDataAnalysisReportComponent implements OnInit, OnDestroy, 
   public getDataSourceInputName(index: number): string {
     return 'ds-name-' + index;
   }
+  /*
   public getEntityTypeInputName(index: number): string {
     return 'et-name-' + index;
-  }
+  }*/
   public getIsNew(value: boolean): boolean | undefined {
     return (value === true) ? value : false;
   }
@@ -73,10 +74,11 @@ export class AdminBulkDataAnalysisReportComponent implements OnInit, OnDestroy, 
     //return true;
     return value && (value.trim().length > 0) && (this.dataSources.indexOf(value) < 0);
   }
+  /*
   public isNewEntityType(value: string): boolean {
     //return true;
     return value && (value.trim().length > 0) && (this.entityTypes.indexOf(value) < 0);
-  }
+  }*/
   public get currentError(): Error {
     return this.adminBulkDataService.currentError;
   }
@@ -100,9 +102,10 @@ export class AdminBulkDataAnalysisReportComponent implements OnInit, OnDestroy, 
     public get isMoreThanOneDataSource() {
       return (this.analysis && this.analysis.analysisByDataSource && this.analysis.analysisByDataSource.length > 1);
     }
+    /*
     public get isMoreThanOneEntityType() {
       return (this.analysis && this.analysis.analysisByEntityType && this.analysis.analysisByEntityType.length > 1);
-    }
+    }*/
 
     /** check whether or not the analyzed file has any records with no datasource */
     public get hasBlankDataSource() {
@@ -148,12 +151,13 @@ export class AdminBulkDataAnalysisReportComponent implements OnInit, OnDestroy, 
     }
 
     /** get the current entity types from the service */
+    /*
     public get entityTypes(): string[] {
       if(this.adminBulkDataService && this.adminBulkDataService._entityTypes) {
         return this.adminBulkDataService._entityTypes;
       }
       return undefined;
-    }
+    }*/
 
     /** when user changes the destination for a datasource */
     public handleDataSourceChange(fromDataSource: string, toDataSource: string) {
@@ -161,9 +165,9 @@ export class AdminBulkDataAnalysisReportComponent implements OnInit, OnDestroy, 
     }
 
     /** when user changes the destination for a datasource */
-    public handleEntityTypeChange(fromEntityType: string, toEntityType: string) {
+    /*public handleEntityTypeChange(fromEntityType: string, toEntityType: string) {
       this.adminBulkDataService.changeEntityTypeName(fromEntityType, toEntityType);
-    }
+    }*/
     /** return a default value if value is undefined or null */
     public defaultIfUndefined(value: any, defaultValue: string): string | undefined {
       return (value && value !== undefined && value !== null) ? value : defaultValue;

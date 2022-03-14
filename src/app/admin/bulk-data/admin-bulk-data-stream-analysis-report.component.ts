@@ -4,7 +4,6 @@ import { SzAdminService, SzPrefsService } from '@senzing/sdk-components-ng';
 import {
   SzBulkDataAnalysis,
   SzBulkLoadResult,
-  SzEntityTypeRecordAnalysis
 } from '@senzing/rest-api-client-ng';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -35,7 +34,7 @@ export class AdminBulkDataStreamAnalysisReportComponent implements OnInit, OnDes
     }
     return retVal;
   }
-  public entityTypeColumns: string[] = ['entityType', 'recordCount', 'recordsWithRecordIdCount', 'entityTypeCode'];
+  //public entityTypeColumns: string[] = ['entityType', 'recordCount', 'recordsWithRecordIdCount', 'entityTypeCode'];
 
   /** get the file reference currently loaded in the the bulk data service */
   public get file(): File {
@@ -64,9 +63,9 @@ export class AdminBulkDataStreamAnalysisReportComponent implements OnInit, OnDes
   public getDataSourceInputName(index: number): string {
     return 'ds-name-' + index;
   }
-  public getEntityTypeInputName(index: number): string {
+  /*public getEntityTypeInputName(index: number): string {
     return 'et-name-' + index;
-  }
+  }*/
   public getIsNew(value: boolean): boolean | undefined {
     return (value === true) ? value : false;
   }
@@ -74,10 +73,10 @@ export class AdminBulkDataStreamAnalysisReportComponent implements OnInit, OnDes
     //return true;
     return value && (value.trim().length > 0) && (this.dataSources.indexOf(value) < 0);
   }
-  public isNewEntityType(value: string): boolean {
+  /*public isNewEntityType(value: string): boolean {
     //return true;
     return value && (value.trim().length > 0) && (this.entityTypes.indexOf(value) < 0);
-  }
+  }*/
   public get currentError(): Error {
     return this.adminBulkDataService.currentError;
   }
@@ -159,12 +158,12 @@ export class AdminBulkDataStreamAnalysisReportComponent implements OnInit, OnDes
     }
 
     /** get the current entity types from the service */
-    public get entityTypes(): string[] {
+    /*public get entityTypes(): string[] {
       if(this.adminBulkDataService && this.adminBulkDataService._entityTypes) {
         return this.adminBulkDataService._entityTypes;
       }
       return undefined;
-    }
+    }*/
 
     /** when user changes the destination for a datasource */
     public handleDataSourceChange(fromDataSource: string, toDataSource: string) {
@@ -172,9 +171,9 @@ export class AdminBulkDataStreamAnalysisReportComponent implements OnInit, OnDes
     }
 
     /** when user changes the destination for a datasource */
-    public handleEntityTypeChange(fromEntityType: string, toEntityType: string) {
+    /*public handleEntityTypeChange(fromEntityType: string, toEntityType: string) {
       this.adminBulkDataService.changeEntityTypeName(fromEntityType, toEntityType);
-    }
+    }*/
     /** return a default value if value is undefined or null */
     public defaultIfUndefined(value: any, defaultValue: string): string | undefined {
       return (value && value !== undefined && value !== null) ? value : defaultValue;

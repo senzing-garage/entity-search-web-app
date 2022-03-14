@@ -13,7 +13,7 @@ import {
   SzPdfUtilService,
   SzResolvedEntity,
   SzRelatedEntity,
-  SzRelationshipNetworkComponent,
+  /*SzRelationshipNetworkComponent,*/
   SzPrefsService,
   SzSdkPrefsModel,
   SzStandaloneGraphComponent,
@@ -133,7 +133,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('graphContainer') graphContainerEle: ElementRef;
   // @ViewChild(SzEntityDetailGraphControlComponent) graphControlComponent: SzEntityDetailGraphControlComponent;
-  @ViewChild(SzRelationshipNetworkComponent) graph: SzRelationshipNetworkComponent;
+  //@ViewChild(SzRelationshipNetworkComponent) graph: SzRelationshipNetworkComponent;
   // @ViewChild('searchBox') searchBox: SzSearchComponent;
   @ViewChild('graphContextMenu') graphContextMenu: TemplateRef<any>;
     /** entity detail component */
@@ -576,11 +576,11 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     this.maxEntities = prefs.maxEntities;
     this.buildOut = prefs.buildOut;
 
-    if(this.graph) {
+    if(this.graphComponent) {
       // update graph with new properties
-      this.graph.maxDegrees = this.maxDegrees;
-      this.graph.maxEntities = this.maxEntities;
-      this.graph.buildOut = this.buildOut;
+      this.graphComponent.maxDegrees = this.maxDegrees;
+      this.graphComponent.maxEntities = this.maxEntities;
+      this.graphComponent.buildOut = this.buildOut;
       //if(this._graphComponentRendered){
       //  this.reload();
       //}

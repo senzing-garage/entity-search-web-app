@@ -5,7 +5,7 @@
     <tr><th>Number of Loaded Records:</th><td>{{ result.loadedRecordCount }}</td></tr>
     <tr><th>Number of Failed Records:</th><td>{{ result.failedRecordCount }}</td></tr>
     <tr><th>Number of Records Missing Data Sources:</th><td>{{ result.missingDataSourceCount }}</td></tr>
-    <tr><th>Number of Records Missing Entity Types:</th><td>{{ result.missingEntityTypeCount }}</td></tr>
+    <!--<tr><th>Number of Records Missing Entity Types:</th><td>{{ result.missingEntityTypeCount }}</td></tr>-->
   </table>
   <table class="stats-col">
     <tr><th *ngIf="file && file.name">File Name:</th><td>{{ file.name }}</td></tr>
@@ -15,25 +15,12 @@
   </table>
 </div>
 <div class="general-stats-reflow" *ngIf="streamResult">
-  <!--<table class="stats-col">
-    <tr><th>Total Number of Records:</th><td>{{ streamResult.recordCount }}</td></tr>
-    <tr><th>Number of Sent Records:</th><td>{{ streamResultSentRecordCount }}</td></tr>
-    <tr><th>Number of Failed Records:</th><td>{{ streamResult.failedRecordCount }}</td></tr>
-    <tr><th>Number of Records Missing Data Sources:</th><td>{{ streamResult.missingDataSourceCount }}</td></tr>
-    <tr><th>Number of Records Missing Entity Types:</th><td>{{ streamResult.missingEntityTypeCount }}</td></tr>
-    <tr>
-      <th>Data Sources:</th>
-      <td>
-        <div class="datasources-overflow" [matTooltip]="streamResult.dataSources.join(', ')">{{ streamResult.dataSources.join(', ') }}</div>
-      </td>
-    </tr>
-  </table>-->
   <table class="stats-col">
     <tr><th>Total Number of Records:</th><td>{{ streamResult.recordCount }}</td></tr>
     <tr><th>Number of Loaded Records:</th><td>{{ streamResult.loadedRecordCount }}</td></tr>
     <tr><th>Number of Failed Records:</th><td>{{ streamResult.failedRecordCount }}</td></tr>
     <tr><th>Number of Records Missing Data Sources:</th><td>{{ streamResult.missingDataSourceCount }}</td></tr>
-    <tr><th>Number of Records Missing Entity Types:</th><td>{{ streamResult.missingEntityTypeCount }}</td></tr>
+    <!--<tr><th>Number of Records Missing Entity Types:</th><td>{{ streamResult.missingEntityTypeCount }}</td></tr>-->
   </table>
   <table class="stats-col">
     <tr><th *ngIf="file && file.name">File Name:</th><td>{{ file.name }}</td></tr>
