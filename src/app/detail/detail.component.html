@@ -17,6 +17,9 @@
   (graphPopOutClick)="onGraphPopout($event)"
   graphShowZoomControl="true"
   graphZoomControlPosition="top-left"
+  [whySelectionMode]="'SINGLE'"
+  [showEntityWhyFunction]="true"
+  [showRecordWhyUtilities]="true"
   (dataChanged)="onEntityDataChanged($event)"
   ></sz-entity-detail>
 </div>
