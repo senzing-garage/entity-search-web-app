@@ -328,6 +328,7 @@ export class AdminBulkDataLoadComponent implements OnInit, AfterViewInit, OnDest
     public checkLoadQueue() {
       const dialogRef = this.dialog.open(AdminStreamLoadQueueDialogComponent, {
         width: '600px',
+        hasBackdrop: false,
         data: {}
       });
     }

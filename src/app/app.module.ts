@@ -12,6 +12,7 @@ import { InMemoryDataService } from '../../e2e/data/services/in-memory-data.serv
 import { OverlayModule } from '@angular/cdk/overlay';
 import { LayoutModule } from '@angular/cdk/layout';
 import { PlatformModule } from '@angular/cdk/platform';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 // local components and modules
 import { AppRoutingModule } from './app-routing.module';
@@ -106,6 +107,7 @@ import { AdminBulkDataService } from './services/admin.bulk-data.service';
     FormsModule,
     OverlayModule,
     MaterialModule,
+    DragDropModule,
     PlatformModule,
     AdminModule,
     AppRoutingModule,
