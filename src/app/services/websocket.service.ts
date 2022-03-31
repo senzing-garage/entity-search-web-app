@@ -252,11 +252,11 @@ export class WebSocketService {
     this.onConnectionStateChange.subscribe((connected) => {
       if(!this._connected && connected) {
         // clear out any reconnect attempt increment
-        console.warn(`cleared out reconnection increment number: was(${this._reconnectionAttemptsIncrement}) now(0)`);
+        //console.warn(`cleared out reconnection increment number: was(${this._reconnectionAttemptsIncrement}) now(0)`);
         this._reconnectionAttemptsIncrement = 0;
       }
       this._connected = connected;
-      console.warn('WebSocketService.onConnectionStateChange: ', this._connected);
+      //console.warn('WebSocketService.onConnectionStateChange: ', this._connected);
     });
     
     /** when "reconnectOnClose" == true, reconnect socket */
@@ -284,7 +284,7 @@ export class WebSocketService {
    * @internal
    */
   private _onConnectProcessOfflineMessages(){
-    console.log('WebSocketService._onConnectProcessOfflineMessages: ', this._offlineMessageQueue);
+    //console.log('WebSocketService._onConnectProcessOfflineMessages: ', this._offlineMessageQueue);
 
     if(this._offlineMessageQueue && this._offlineMessageQueue.length > 0) {
       this._offlineMessageQueue = this._offlineMessageQueue.filter( (msg, _ind) => {
@@ -322,7 +322,7 @@ export class WebSocketService {
     const openSubject = new Subject<Event>();
     openSubject.pipe(
       tap( s => { 
-        console.log('WebSocketService.open: ', s);
+        //console.log('WebSocketService.open: ', s);
         this._connected = true;
       })
     ).subscribe(this._onStatusChange);
@@ -330,7 +330,7 @@ export class WebSocketService {
     const closeSubject = new Subject<CloseEvent>();
     closeSubject.pipe(
       tap( s => {
-        console.log('WebSocketService.close: ', s);
+        //console.log('WebSocketService.close: ', s);
         this._connected = false;
       })
     ).subscribe(this._onStatusChange);
@@ -394,18 +394,22 @@ export class WebSocketService {
         }
         this._onError(errors);
         return of(errors)
-      } )
-    ).subscribe((msg: any) => {
+      }),
+      // filter out close events (we already have a special observer for that above)
+      filter((msg: any | CloseEvent) => {
+        return !((msg as CloseEvent) && (msg as CloseEvent).type === 'close')
+      })
+    ).subscribe((msg: any | CloseEvent) => {
       //console.log('WebsocketService Message: ', msg);
       this._onMessageRecieved.next(msg);
-    }, this._onError);
+    });
 
     // return observeable
     return this.ws$.asObservable();
   }
 
   private close() {
-    console.warn('WebSocketService.close: ', this.ws$);
+    //console.warn('WebSocketService.close: ', this.ws$);
     
     if(this.ws$) {
       if(this.ws$.complete) this.ws$.complete();
@@ -425,10 +429,10 @@ export class WebSocketService {
   public reconnect(path?: string, method?: "POST" | "PUT" | "GET"){
     if(this.ws$) {
       let onWSExists = () => {
-        console.log('WebSocketService.reconnect.onWSExists: ', this.connectionProperties, this.ws$);
+        //console.log('WebSocketService.reconnect.onWSExists: ', this.connectionProperties, this.ws$);
         let reconnectListener = this.ws$.pipe(
           catchError( (error: Error) => {
-            console.log('WebSocketService.reconnect: error: ', error, this.ws$.error.toString());
+            //console.log('WebSocketService.reconnect: error: ', error.message, this.ws$.error.toString());
             if(error && !error.message) {
               error.message = `Could not connect to Stream interface(${WebSocketService.getSocketUriFromConnectionObject(this.connectionProperties)}) after a disconnect. Will continue to retry connection until reconnection attempt limit(${this._reconnectionAttemptsIncrement} / ${this.connectionProperties.reconnectConsecutiveAttemptLimit}) is reached.`;
             } else if(this.ws$ && this.ws$.hasError && this.ws$.error.toString) {
@@ -496,12 +500,12 @@ export class WebSocketService {
 
     if(connectionProps) {
       let _wsaddr = WebSocketService.getSocketUriFromConnectionObject(connectionProps, "/load-queue/bulk-data/records", "POST");
-      console.warn('testConnection: '+ _wsaddr, connectionProps);
+      //console.warn('testConnection: '+ _wsaddr, connectionProps);
 
       const openSubject = new Subject<Event>();
       openSubject.pipe(
         tap( s => { 
-          console.log('WebSocketService.open: ', s);
+          //console.log('WebSocketService.open: ', s);
           this._connected = true;
           if(this.ws$ && this.close){
             this.close();
@@ -518,7 +522,7 @@ export class WebSocketService {
       const closeSubject = new Subject<CloseEvent>();
       closeSubject.pipe(
         tap( s => {
-          console.log('WebSocketService.close: ', s);
+          //console.log('WebSocketService.close: ', s);
           
           // conn opened then closed successfully
           retSub.next(this._connected);

@@ -1,6 +1,7 @@
 import { Injectable, Inject } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { ActivatedRouteSnapshot } from '@angular/router';
+import { Platform } from '@angular/cdk/platform';
 import { Observable, of, from, interval, Subject, BehaviorSubject, timer } from 'rxjs';
 import { map, catchError, tap, switchMap, takeUntil, take, filter, takeWhile, delay } from 'rxjs/operators';
 import { SzAdminService, SzPrefsService, SzBulkDataService, SzDataSourcesService } from '@senzing/sdk-components-ng';
@@ -342,6 +343,7 @@ export class AdminBulkDataService {
         private sdkAdminService: SdkAdminService,
         private bulkDataService: BulkDataService,
         private datasourcesService: SzDataSourcesService,
+        private platform: Platform,
         //private entityTypesService: SzEntityTypesService,
         private webSocketService: WebSocketService,
         private aboutService: AboutInfoService,
@@ -375,12 +377,13 @@ export class AdminBulkDataService {
             }
         });
 
+        /*
         this.webSocketService.onError.subscribe((error: Error) => {
             //console.warn('AdminBulkDataService.webSocketService.onError: ', error);
             this._onError.next(error);
-        });
+        });*/
         this.webSocketService.onStatusChange.subscribe((statusEvent: CloseEvent | Event) => {
-            console.warn('AdminBulkDataService.webSocketService.onStatusChange: ', statusEvent);
+            //console.warn('AdminBulkDataService.webSocketService.onStatusChange: ', statusEvent);
             this._onStreamStatusChange.next(statusEvent);
         });
         /*
@@ -394,7 +397,7 @@ export class AdminBulkDataService {
                 return (this.currentError !== undefined) && connected && !this.streamConnectionProperties.connected;
             }),
           ).subscribe((status) => {
-            console.warn('AdminBulkDataService.webSocketService.onConnectionStateChange: clear current error:', this.currentError);
+            //console.warn('AdminBulkDataService.webSocketService.onConnectionStateChange: clear current error:', this.currentError);
             // check to see if we should clear the current error
             this.currentError = undefined;
           });
@@ -815,9 +818,24 @@ export class AdminBulkDataService {
         let qsChar                      = '?';
         streamSocketEndpoint            += `${qsChar}eofSendTimeout=5&progressPeriod=60`;
 
+        // firefox has this crazy behavior where even closed connections
+        // send connection errors so we only publish errors if they occur
+        // BEFORE the completion of request for firefox
+        let _onStreamAnalysisErrorListener = this.webSocketService.onError.pipe(
+            filter((error: Error) => {
+                if(this.platform.FIREFOX) {
+                    console.warn(`FIREFOX WS ERROR!! ${summary.complete}`);
+                    return !summary.complete;
+                }
+                return true;
+            })
+        ).subscribe((error: Error) => {
+            console.warn('publishing error on websocket error', error.message);
+            this._onError.next(error);
+        })
+
         if(!this.webSocketService.connected){
             // we need to reopen connection
-            console.log('SzBulkDataService.streamAnalyze: websocket needs to be opened: ', this.webSocketService.connected, this.streamConnectionProperties);
             this.webSocketService.reconnect(streamSocketEndpoint, "POST");
         } else {
             //console.log('SzBulkDataService.streamAnalyze: websocket thinks its still connected: ', this.webSocketService.connected, this.streamConnectionProperties);
@@ -857,7 +875,7 @@ export class AdminBulkDataService {
         // this is the main fn that actually sends the read records
         // to the websocket service
         let sendChunks = (chunks?: any) => {
-            console.warn('sendChunks: ', chunks, readChunks, readStreamComplete);
+            //console.warn('sendChunks: ', chunks, readChunks, readStreamComplete);
             if(readChunks && readChunks.length > 0) {
                 // push them in to websocket (as quick as we read them - so cool)
                 this.webSocketService.sendChunksAsMessages(readChunks);
@@ -988,6 +1006,9 @@ export class AdminBulkDataService {
                 summary.complete = true;
             } else {
                 //console.warn('stream analysis complete 2', readStreamComplete, summary);
+            }
+            if(_onStreamAnalysisErrorListener && _onStreamAnalysisErrorListener.unsubscribe){
+                _onStreamAnalysisErrorListener.unsubscribe();
             }
             if(_onWSMessageRecievedListener && _onWSMessageRecievedListener.unsubscribe) {
                 _onWSMessageRecievedListener.unsubscribe();
@@ -1193,11 +1214,22 @@ export class AdminBulkDataService {
             streamSocketEndpoint        += `${qsChar}mapDataSources=${encodeURIComponent(JSON.stringify(dataSourceMap))}`;
             qsChar = '&';
         }
-        /*
-        if(entityTypeMap) {
-            streamSocketEndpoint        += `${qsChar}mapEntityTypes=${encodeURIComponent(JSON.stringify(entityTypeMap))}`;
-            qsChar = '&';
-        }*/
+        // firefox has this crazy behavior where even closed connections
+        // send connection errors(AFTER the connection is closed) so we 
+        // only publish errors if they occur BEFORE the completion of 
+        // request for firefox
+        let _onStreamLoadErrorListener = this.webSocketService.onError.pipe(
+            filter((error: Error) => {
+                if(this.platform.FIREFOX) {
+                    console.warn(`FIREFOX WS ERROR!! ${summary.complete} | ${summary.status}`, summary);
+                    return !(summary.complete || summary.status === 'COMPLETED');
+                }
+                return true;
+            })
+        ).subscribe((error: Error) => {
+            console.warn('publishing error on websocket error', error.message);
+            this._onError.next(error);
+        })
         streamSocketEndpoint            += `${qsChar}eofSendTimeout=8&progressPeriod=60`;
         this.webSocketService.reconnect(streamSocketEndpoint, "POST");
 
@@ -1235,14 +1267,13 @@ export class AdminBulkDataService {
             isStreamResponse: true
         }
         let _onWSMessageRecievedListener = this.webSocketService.onMessageRecieved.pipe(
-            tap( data => { console.warn('_onWSMessageRecievedListener: ', data); }),
-            filter( data => { return data !== undefined}),
+            filter( data => { return data !== undefined && data !== false }),
             map( data => { return (data as AdminStreamLoadSummary) })
         ).subscribe((data: AdminStreamLoadSummary) => {
             // we change responses "recordCount" to "sentRecordCount" because that's what it really is
             // and re-assert our internal "recordCount" which includes all records read so far
             summary = Object.assign(summary, data);
-            console.warn('AdminBulkDataService.streamLoadByChunks.webSocketService.onMessageRecieved: ', summary, data);
+            //console.warn('AdminBulkDataService.streamLoadByChunks.webSocketService.onMessageRecieved: ', summary, data);
             if(data && data.topErrors && data.topErrors.length > 0) {
                 this._onStreamLoadErrors.next( summary.topErrors );
             }
@@ -1257,7 +1288,7 @@ export class AdminBulkDataService {
                 console.warn('sending _onStreamLoadComplete: ', summary, data);
                 this._onStreamLoadComplete.next(summary);
             } else {
-                console.log('stream not complete', readStreamComplete, sendStreamComplete, summary.complete);
+                //console.log('stream not complete', readStreamComplete, sendStreamComplete, summary.complete, (data && data.status === 'COMPLETED'), data);
             }
         });
 
@@ -1318,7 +1349,7 @@ export class AdminBulkDataService {
                 //readRecords                 = readRecords.concat(records);
                 //summary.unsentRecordCount   = readRecords.length;
                 readChunks                    = readChunks.concat(chunks);
-                console.log(`SzBulkDataService.streamAnalyze: csv chunks`, chunks);
+                //console.log(`SzBulkDataService.streamAnalyze: csv chunks`, chunks);
 
                 this._onStreamLoadProgress.next(summary);
                 this._onStreamLoadFileReadProgress.next(summary);
@@ -1329,7 +1360,7 @@ export class AdminBulkDataService {
         // this is the main fn that actually sends the read records
         // to the websocket service
         let sendChunks = (chunks?: any) => {
-            console.warn('sendChunks: ', chunks, readChunks);
+            //console.warn('sendChunks: ', chunks, readChunks);
             if(readChunks && readChunks.length > 0) {
                 // slice off a batch of records to send
                 //let currQueuePush   = readRecords && readRecords.length < bulkRecordSendRate || bulkRecordSendRate < 0 ? readRecords : readRecords.slice(0, bulkRecordSendRate);
@@ -1348,10 +1379,10 @@ export class AdminBulkDataService {
                 // check if everything has been sent
                 if(readStreamComplete) {
                     // all messages sent
-                    console.warn('stream load complete 1', summary);
+                    //console.warn('stream load complete 1', summary);
                     sendStreamComplete = true;
                     if(summary.complete === true) {
-                        console.warn('sending _onStreamLoadComplete 2: ', summary);
+                        console.warn('sending _onStreamLoadComplete: ', summary);
                         this._onStreamLoadComplete.next(summary);
                     }
                 } else {
@@ -1360,7 +1391,7 @@ export class AdminBulkDataService {
                 }
             } else if(readChunks && readChunks.length <= 0) {
                 // according to this we sent all the records, what went wrong
-                console.log('batch should be over. why is it still going?', readStreamComplete, summary.complete);
+                //console.log('batch should be over. why is it still going?', readStreamComplete, summary.complete);
             }
         }
         // quick wrapper fn so we can (re)use this in a evt pipe
@@ -1447,6 +1478,9 @@ export class AdminBulkDataService {
             // close connection
             //setTimeout(() => {
                 console.log('closing connection: all data sent', summary);
+                if(_onStreamLoadErrorListener && _onStreamLoadErrorListener.unsubscribe){
+                    _onStreamLoadErrorListener.unsubscribe();
+                }
                 this.webSocketService.disconnect();
                 if(_onWSMessageRecievedListener && _onWSMessageRecievedListener.unsubscribe) {
                     _onWSMessageRecievedListener.unsubscribe();
