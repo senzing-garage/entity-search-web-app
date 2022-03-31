@@ -394,11 +394,15 @@ export class WebSocketService {
         }
         this._onError(errors);
         return of(errors)
-      } )
-    ).subscribe((msg: any) => {
+      }),
+      // filter out close events (we already have a special observer for that above)
+      filter((msg: any | CloseEvent) => {
+        return !((msg as CloseEvent) && (msg as CloseEvent).type === 'close')
+      })
+    ).subscribe((msg: any | CloseEvent) => {
       //console.log('WebsocketService Message: ', msg);
       this._onMessageRecieved.next(msg);
-    }, this._onError);
+    });
 
     // return observeable
     return this.ws$.asObservable();
@@ -428,7 +432,7 @@ export class WebSocketService {
         console.log('WebSocketService.reconnect.onWSExists: ', this.connectionProperties, this.ws$);
         let reconnectListener = this.ws$.pipe(
           catchError( (error: Error) => {
-            console.log('WebSocketService.reconnect: error: ', error, this.ws$.error.toString());
+            //console.log('WebSocketService.reconnect: error: ', error.message, this.ws$.error.toString());
             if(error && !error.message) {
               error.message = `Could not connect to Stream interface(${WebSocketService.getSocketUriFromConnectionObject(this.connectionProperties)}) after a disconnect. Will continue to retry connection until reconnection attempt limit(${this._reconnectionAttemptsIncrement} / ${this.connectionProperties.reconnectConsecutiveAttemptLimit}) is reached.`;
             } else if(this.ws$ && this.ws$.hasError && this.ws$.error.toString) {
