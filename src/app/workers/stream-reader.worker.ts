@@ -75,7 +75,7 @@ addEventListener('message', ({ data }) => {
             postMessage(chunk);
             //summary.recordCount = _readRecords.length;
             //this.onLoadResult.next( summary );
-            console.log(`StreamReaderWorker.onChunkRead() read ${_readChunks.length} chunks`);
+            //console.log(`StreamReaderWorker.onChunkRead() read ${_readChunks.length} chunks`);
         });
 
         //return retStreamSummary;
@@ -89,7 +89,7 @@ addEventListener('message', ({ data }) => {
             postMessage(chunk);
             //summary.recordCount = _readRecords.length;
             //this.onLoadResult.next( summary );
-            console.log(`StreamReaderWorker.onChunkRead() read ${_readChunks.length} chunks`);
+            //console.log(`StreamReaderWorker.onChunkRead() read ${_readChunks.length} chunks`);
         });
     } else {
         console.warn('SzBulkDataService.streamLoad: noooooooo', fileType, fileType === validImportFileTypes.CSV);

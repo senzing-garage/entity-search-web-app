@@ -46,7 +46,7 @@ export class SzStreamingFileChunkReader {
         if(file) {
             this._file = file;
         }
-        console.log('SzStreamingFileChunkReader()');
+        //console.log('SzStreamingFileChunkReader()');
         
         this.onStreamChunkRead.asObservable().pipe(
             takeUntil(this.unsubscribe$)
@@ -56,7 +56,7 @@ export class SzStreamingFileChunkReader {
         });
         
         this.onStreamClosed.subscribe((status) => {
-            console.warn('SzStreamingFileChunkReader.closed()');
+            //console.warn('SzStreamingFileChunkReader.closed()');
         });
     }
     /*
@@ -117,7 +117,7 @@ export class SzStreamingFileChunkReader {
         // now we have the file, hand off to webworker
         // this pattern prevents GUI lock up by offloading
         // recursive stream read to separate thread
-        console.log('SzStreamingFileChunkReader.read: ', file);
+        //console.log('SzStreamingFileChunkReader.read: ', file);
 
         if (typeof Worker !== 'undefined') {
             const worker = new Worker(new URL('../workers/stream-reader.worker', import.meta.url), { type: 'module' });
@@ -200,7 +200,7 @@ export class SzStreamingFileRecordParser {
         if(file) {
             this._file = file;
         }
-        console.log('SzStreamingFileRecordParser()');
+        //console.log('SzStreamingFileRecordParser()');
 
         this.onStreamChunkRead.asObservable().pipe(
             map( this.mapStreamChunkToJSON )

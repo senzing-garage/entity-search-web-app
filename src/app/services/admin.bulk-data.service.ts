@@ -383,7 +383,7 @@ export class AdminBulkDataService {
             this._onError.next(error);
         });*/
         this.webSocketService.onStatusChange.subscribe((statusEvent: CloseEvent | Event) => {
-            console.warn('AdminBulkDataService.webSocketService.onStatusChange: ', statusEvent);
+            //console.warn('AdminBulkDataService.webSocketService.onStatusChange: ', statusEvent);
             this._onStreamStatusChange.next(statusEvent);
         });
         /*
@@ -397,7 +397,7 @@ export class AdminBulkDataService {
                 return (this.currentError !== undefined) && connected && !this.streamConnectionProperties.connected;
             }),
           ).subscribe((status) => {
-            console.warn('AdminBulkDataService.webSocketService.onConnectionStateChange: clear current error:', this.currentError);
+            //console.warn('AdminBulkDataService.webSocketService.onConnectionStateChange: clear current error:', this.currentError);
             // check to see if we should clear the current error
             this.currentError = undefined;
           });
@@ -836,7 +836,6 @@ export class AdminBulkDataService {
 
         if(!this.webSocketService.connected){
             // we need to reopen connection
-            console.log('SzBulkDataService.streamAnalyze: websocket needs to be opened: ', this.webSocketService.connected, this.streamConnectionProperties);
             this.webSocketService.reconnect(streamSocketEndpoint, "POST");
         } else {
             //console.log('SzBulkDataService.streamAnalyze: websocket thinks its still connected: ', this.webSocketService.connected, this.streamConnectionProperties);
@@ -876,7 +875,7 @@ export class AdminBulkDataService {
         // this is the main fn that actually sends the read records
         // to the websocket service
         let sendChunks = (chunks?: any) => {
-            console.warn('sendChunks: ', chunks, readChunks, readStreamComplete);
+            //console.warn('sendChunks: ', chunks, readChunks, readStreamComplete);
             if(readChunks && readChunks.length > 0) {
                 // push them in to websocket (as quick as we read them - so cool)
                 this.webSocketService.sendChunksAsMessages(readChunks);
@@ -1268,14 +1267,13 @@ export class AdminBulkDataService {
             isStreamResponse: true
         }
         let _onWSMessageRecievedListener = this.webSocketService.onMessageRecieved.pipe(
-            tap( data => { console.warn('_onWSMessageRecievedListener: ', data); }),
             filter( data => { return data !== undefined && data !== false }),
             map( data => { return (data as AdminStreamLoadSummary) })
         ).subscribe((data: AdminStreamLoadSummary) => {
             // we change responses "recordCount" to "sentRecordCount" because that's what it really is
             // and re-assert our internal "recordCount" which includes all records read so far
             summary = Object.assign(summary, data);
-            console.warn('AdminBulkDataService.streamLoadByChunks.webSocketService.onMessageRecieved: ', summary, data);
+            //console.warn('AdminBulkDataService.streamLoadByChunks.webSocketService.onMessageRecieved: ', summary, data);
             if(data && data.topErrors && data.topErrors.length > 0) {
                 this._onStreamLoadErrors.next( summary.topErrors );
             }
@@ -1290,7 +1288,7 @@ export class AdminBulkDataService {
                 console.warn('sending _onStreamLoadComplete: ', summary, data);
                 this._onStreamLoadComplete.next(summary);
             } else {
-                console.log('stream not complete', readStreamComplete, sendStreamComplete, summary.complete, (data && data.status === 'COMPLETED'), data);
+                //console.log('stream not complete', readStreamComplete, sendStreamComplete, summary.complete, (data && data.status === 'COMPLETED'), data);
             }
         });
 
@@ -1351,7 +1349,7 @@ export class AdminBulkDataService {
                 //readRecords                 = readRecords.concat(records);
                 //summary.unsentRecordCount   = readRecords.length;
                 readChunks                    = readChunks.concat(chunks);
-                console.log(`SzBulkDataService.streamAnalyze: csv chunks`, chunks);
+                //console.log(`SzBulkDataService.streamAnalyze: csv chunks`, chunks);
 
                 this._onStreamLoadProgress.next(summary);
                 this._onStreamLoadFileReadProgress.next(summary);
@@ -1381,10 +1379,10 @@ export class AdminBulkDataService {
                 // check if everything has been sent
                 if(readStreamComplete) {
                     // all messages sent
-                    console.warn('stream load complete 1', summary);
+                    //console.warn('stream load complete 1', summary);
                     sendStreamComplete = true;
                     if(summary.complete === true) {
-                        console.warn('sending _onStreamLoadComplete 2: ', summary);
+                        console.warn('sending _onStreamLoadComplete: ', summary);
                         this._onStreamLoadComplete.next(summary);
                     }
                 } else {
