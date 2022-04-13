@@ -35,6 +35,7 @@
           (dataLoaded)="onDataLoaded($event)"
           (dataSourcesChange)="onDataSourcesChange($event)"
           (matchKeysChange)="onMatchKeysChange($event)"
+          (matchKeyTokensChange)="onMatchKeyTokensChange($event)"
       ></sz-standalone-graph>
     </div>
     <!--  end graph control  -->
@@ -48,6 +49,9 @@
       class="sz-entity-detail-graph-filter"
       [showLinkLabels]="_showMatchKeys"
       [showDataSources]="_showDataSourcesInFilter"
+      [showMatchKeyFilters]="false"
+      [showMatchKeyTokens]="_showMatchKeyTokensInFilter"
+      [showMatchKeyTokenFilters]="true"
       (optionChanged)="onFilterOptionChange($event)"
       ></sz-entity-detail-graph-filter>
       <!--  end filters control  -->

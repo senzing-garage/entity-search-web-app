@@ -23,6 +23,7 @@ import {
 } from '@senzing/sdk-components-ng';
 import { UiService } from '../services/ui.service';
 import { LOCAL_STORAGE, StorageService } from 'ngx-webstorage-service';
+import { SzMatchKeyTokenComposite } from '@senzing/sdk-components-ng/lib/models/graph';
 
 @Component({
   selector: 'app-graph',
@@ -121,6 +122,8 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
   /** array of data sources to limit "filter by datasource" to. */
   public _showDataSourcesInFilter: string[];
   public _showMatchKeysInFilter: string[];
+  public _showMatchKeyTokensInFilter: Array<SzMatchKeyTokenComposite>;
+
   /** whether or not to show the right-rail element */
   private _showRightRail = true;
   @HostBinding('class.right-rail-open')
@@ -288,7 +291,8 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /** handler for graph components dataLoaded event */
   onDataLoaded(evt: any) {
-      //console.log('onDataLoaded: ', evt);
+      console.log('onDataLoaded: ', evt);
+
   }
   /** handler for graph components dataSourcesChange event */
   onDataSourcesChange(evt: any) {
@@ -304,7 +308,15 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     // match keys that we detecting from the input data set
     //
     // @TODO remove after fixing match key filtering
-    this.prefs.graph.matchKeysIncluded = data;
+    //this.prefs.graph.matchKeysIncluded = data;
+  }
+  onMatchKeyTokensChange(data: SzMatchKeyTokenComposite[]) {
+    console.log('onMatchKeyTokensChange: ', data);
+    let allTokens = data.map((mkToken) => {
+      return mkToken.name;
+    });
+    this._showMatchKeyTokensInFilter  = data;
+    this.prefs.graph.matchKeyTokensIncluded = allTokens;
   }
   onSearchException(err: Error) {
     throw (err.message);
