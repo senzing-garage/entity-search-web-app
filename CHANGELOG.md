@@ -6,19 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.6.0] - 2022-3-15
+## [2.6.0] - 2022-4-13
 
 This update brings the models in line with the changes for the `3.0.0` release of the [senzing rest api server](https://github.com/Senzing/senzing-api-server)
 and [rest api specification](https://github.com/Senzing/senzing-rest-api-specification/blob/caceres.version-3.0.0/senzing-rest-api.yaml).
 
+### Added
+- "Filter By Match Key" added back to the large graph display using a more user-friendly approach of a _"Tag Cloud" of match key tokens.
+- Why Entity feature that adds a button to the entity detail page that opens a draggable/resizable window with a horizontal side-by-side view of why records in an entity came together
+- Why Entity feature that adds a button to the entity detail page's record rows that opens a draggable/resizable window with a horizontal side-by-side view of why that particular record in an entity came together
+
 ### Modified
 - Major refactoring done under the hood inside the admin area and data importing functionality due to the removal of entity types/classes.
 - `@senzing/rest-api-client-ng` updated to `4.0.0`
-- `@senzing/sdk-graph-components` updated to `4.0.0`
-- `@senzing/sdk-components-ng` updated to `4.0.0-beta.4`
+- `@senzing/sdk-graph-components` updated to `4.1.0-beta.1`
+- `@senzing/sdk-components-ng` updated to `4.0.0-beta.7`
+- UI fixes (various)
 
 ### Removed
 - Any and all functionality surrounding _Entity Type's_ and _Entity Classes_. Management of these features has been removed in the 3.0 version of the senzing sdk.
+
+relevant tickets: #265 #263 #261 #258
 
 ## [2.5.0] - 2022-2-28
 

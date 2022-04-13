@@ -34,6 +34,11 @@ body {
   --sz-search-button-filter-height: 10px;
   --sz-search-button-filter-font-size: 10px;
   --sz-search-button-filter-margin-left: 2px;
+
+  --sz-graph-filter-match-key-tags-font-size: 13px;
+  --sz-graph-filter-match-key-tags-line-height: 17px;
+  --sz-graph-filter-match-key-tags-flex-direction: row;
+  --sz-graph-filter-match-key-tags-margin-right: 5px;
   
   &.graph-open {
     overflow: hidden;
