@@ -39,6 +39,7 @@ body {
   --sz-graph-filter-match-key-tags-line-height: 17px;
   --sz-graph-filter-match-key-tags-flex-direction: row;
   --sz-graph-filter-match-key-tags-margin-right: 5px;
+  --sz-graph-filter-match-key-tags-display: inline-block;
   
   &.graph-open {
     overflow: hidden;
