@@ -180,6 +180,7 @@ export class DetailComponent implements OnInit {
   }
   onGraphPopout(event) {
     console.log('on graph popout: ', event);
+    if(window && window.scroll){ window.scroll(0,0); console.log('on popout scrolled'); }
     this.router.navigate(['graph/' + this.entityId]);
   }
 }
