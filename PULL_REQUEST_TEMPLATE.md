@@ -2,7 +2,7 @@
 
 ## Which issue does this address
 
-Issue number: #nnn
+resolves #nnn
 
 ## Why was change needed
 
