@@ -1,5 +1,5 @@
 ARG BUILD_IMAGE=node:16-bullseye-slim
-ARG PROD_IMAGE=node:16-alpine-3.15
+ARG PROD_IMAGE=node:16-alpine3.15
 ARG TEST_IMAGE=node:16-bullseye-slim
 
 FROM ${BUILD_IMAGE}
