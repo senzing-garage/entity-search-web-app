@@ -1,6 +1,6 @@
-ARG BUILD_IMAGE=node:14-buster-slim
-ARG PROD_IMAGE=node:lts-alpine
-ARG TEST_IMAGE=node:14-buster-slim
+ARG BUILD_IMAGE=node:16-bullseye-slim
+ARG PROD_IMAGE=node:16-alpine3.15
+ARG TEST_IMAGE=node:16-bullseye-slim
 
 FROM ${BUILD_IMAGE}
 ENV REFRESHED_AT=2022-05-09
