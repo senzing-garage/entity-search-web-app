@@ -446,8 +446,6 @@ function getConsoleServerOptionsFromInput() {
         // reassign to 8273
         retOpts.port    = 8273;
       }
-      // change url to a "local" address
-      retOpts.url = replacePortNumber(retOpts.port, webServerCfg.url)
       // and reassign url to proxy dest
       retOpts.proxy = {
         protocol: (getProtocolFromUrl(env.SENZING_CONSOLE_SERVER_URL) === 'https' || getProtocolFromUrl(env.SENZING_CONSOLE_SERVER_URL) === 'wss' ? 'wss':'ws'),
@@ -455,6 +453,8 @@ function getConsoleServerOptionsFromInput() {
         target: env.SENZING_CONSOLE_SERVER_URL,
         port: env.SENZING_CONSOLE_SERVER_PORT ? env.SENZING_CONSOLE_SERVER_PORT : 8273
       }
+      // change url to a "local" address
+      retOpts.url = replaceProtocol(retOpts.protocol || (retOpts.proxy ? retOpts.proxy.protocol : false) || 'ws', replacePortNumber(retOpts.port, webServerCfg.url));
     }
   }
   let cmdLineOpts = getCommandLineArgsAsJSON();
