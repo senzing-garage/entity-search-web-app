@@ -11,7 +11,10 @@ const inMemoryConfigFromInputs = require('../runtime.datastore.config');
 
 const runtimeOptions = new inMemoryConfig(inMemoryConfigFromInputs);
 runtimeOptions.on('initialized', () => {
-    const streamOptions = runtimeOptions.config.stream;    
+    const streamOptions     = runtimeOptions.config.stream;
+    const consoleOptions    = runtimeOptions.config.console;
+    console.log('--------------- CONSOLE OPTIONS ---------------');
+    console.log(consoleOptions);
 
     if(streamOptions) {
         // create a server
@@ -30,6 +33,16 @@ runtimeOptions.on('initialized', () => {
         proxy.on('error', (err) => {
             console.log('-- WS ERROR: '+ err.message) +' --';
         })
+    }
+    if(consoleOptions && consoleOptions.proxy) {
+        // if user wants to proxy localhost to 
+        var console_proxy   = httpProxy.createServer({ 
+            target: consoleOptions.proxy.target,
+            ws: true 
+        });
+        console_proxy.listen(consoleOptions.port, () => {
+            console.log(`WS Console Proxy Server started on port ${consoleOptions.proxy.port}\nforwarding to ${consoleOptions.proxy.target} :)`);
+        });
     }
 
     if(streamOptions && streamOptions.proxy) {

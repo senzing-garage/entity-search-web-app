@@ -420,8 +420,41 @@ let VIEW_VARIABLES = {
   "VIEW_CSP_DIRECTIVES":""
 }
 if(consoleOptions && consoleOptions.enabled) {
-  // add socket-io server for xterm communication
-  
+  // add socket-io reverse proxy for xterm communication
+  let setupConsoleServerProxy = new Promise((resolve) => {
+    let setupConsoleReverseProxy = function(streamOptions) {
+      if(consoleOptions && consoleOptions.proxy) {
+        // if user wants to proxy localhost to 
+        var console_proxy   = httpProxy.createServer({ 
+          target: consoleOptions.proxy.target,
+          ws: true 
+        });
+        console_proxy.listen(consoleOptions.port || 8273, () => {
+          console.log(`WS Console Reverse Proxy Server started on port ${consoleOptions.proxy.port}\nforwarding to ${consoleOptions.proxy.target} :)`);
+          resolve();
+        });
+      } else {
+        resolve();
+      }
+    }
+
+    if(runtimeOptions.initialized) {
+      // immediately check
+      consoleOptions = runtimeOptions.config.console;
+      setupConsoleReverseProxy(consoleOptions);
+    } else {
+      // wait for initialization
+      runtimeOptions.on('initialized', () => {
+        consoleOptions = runtimeOptions.config.console;
+        setupConsoleReverseProxy(consoleOptions);
+      });
+    }
+  }, (reason) => { 
+    console.log('[error] WS Console Reverse Proxy Server: ', reason);
+    reject(); 
+  });
+
+  StartupPromises.push(consoleServerPromise);
 }
 if(cspOptions && cspOptions.directives) {
   // we have to dynamically serve the html

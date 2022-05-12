@@ -431,12 +431,21 @@ function getConsoleServerOptionsFromInput() {
       reconnectionDelay: 10000
     }
   }
+  let webServerCfg = getWebServerOptionsFromInput();
   if(env){
     retOpts.port        = env.SENZING_WEB_SERVER_PORT ? env.SENZING_WEB_SERVER_PORT   : retOpts.port;
     retOpts.port        = env.SENZING_CONSOLE_SERVER_PORT ? env.SENZING_CONSOLE_SERVER_PORT : retOpts.port;
     if(env.SENZING_CONSOLE_SERVER_URL) {
       retOpts.url       = env.SENZING_CONSOLE_SERVER_URL? env.SENZING_CONSOLE_SERVER_URL : retOpts.url;
       retOpts.enabled   = true;
+      // set up reverse proxy
+      retOpts.url = webServerCfg.url +'/console'
+      retOpts.proxy = {
+        protocol: (getProtocolFromUrl(env.SENZING_CONSOLE_SERVER_URL) === 'https' || getProtocolFromUrl(env.SENZING_CONSOLE_SERVER_URL) === 'wss' ? 'wss':'ws'),
+        hostname: webServerCfg.hostname ? webServerCfg.hostname : 'localhost',
+        target: env.SENZING_CONSOLE_SERVER_URL,
+        port: retOpts.port
+      }
     }
   }
   let cmdLineOpts = getCommandLineArgsAsJSON();
@@ -448,6 +457,17 @@ function getConsoleServerOptionsFromInput() {
       retOpts.port      = getPortFromUrl(retOpts.url);
       retOpts.enabled   = true;
     }
+    if(cmdLineOpts.consoleServerUrl) {
+      retOpts.url = webServerCfg.url +'/console'
+      retOpts.proxy = {
+        protocol: (getProtocolFromUrl(cmdLineOpts.consoleServerUrl) === 'https' || getProtocolFromUrl(cmdLineOpts.consoleServerUrl) === 'wss' ? 'wss':'ws'),
+        hostname: webServerCfg.hostname ? webServerCfg.hostname : 'localhost',
+        target: cmdLineOpts.consoleServerUrl,
+        port: 8273
+      }
+    }
+    //console.log('------------ the fuck? ');
+    //console.log(cmdLineOpts);
   }
   return retOpts;
 }
