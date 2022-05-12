@@ -439,7 +439,14 @@ function getConsoleServerOptionsFromInput() {
       retOpts.url       = env.SENZING_CONSOLE_SERVER_URL? env.SENZING_CONSOLE_SERVER_URL : retOpts.url;
       retOpts.enabled   = true;
       // set up reverse proxy
-      retOpts.url = replacePortNumber(8273, webServerCfg.url)
+      if(retOpts.port === webServerCfg.port){
+        // socket proxy cannot be on same port as web server
+        // reassign to 8273
+        retOpts.port    = 8273;
+      }
+      // change url to a "local" address
+      retOpts.url = replacePortNumber(retOpts.port, webServerCfg.url)
+      // and reassign url to proxy dest
       retOpts.proxy = {
         protocol: (getProtocolFromUrl(env.SENZING_CONSOLE_SERVER_URL) === 'https' || getProtocolFromUrl(env.SENZING_CONSOLE_SERVER_URL) === 'wss' ? 'wss':'ws'),
         hostname: webServerCfg.hostname ? webServerCfg.hostname : 'localhost',
@@ -456,9 +463,14 @@ function getConsoleServerOptionsFromInput() {
       retOpts.url       = cmdLineOpts.consoleServerUrl ?      cmdLineOpts.consoleServerUrl : retOpts.url;
       retOpts.port      = getPortFromUrl(retOpts.url);
       retOpts.enabled   = true;
-    }
-    if(cmdLineOpts.consoleServerUrl) {
-      retOpts.url = replacePortNumber(8273, webServerCfg.url);
+      if(retOpts.port === webServerCfg.port){
+        // socket proxy cannot be on same port as web server
+        // reassign to 8273
+        retOpts.port    = 8273;
+      }
+      // change url to a "local" address
+      retOpts.url = replacePortNumber(retOpts.port, webServerCfg.url);
+      // and reassign url to proxy dest
       retOpts.proxy = {
         protocol: (getProtocolFromUrl(cmdLineOpts.consoleServerUrl) === 'https' || getProtocolFromUrl(cmdLineOpts.consoleServerUrl) === 'wss' ? 'wss':'ws'),
         hostname: webServerCfg.hostname ? webServerCfg.hostname : 'localhost',
