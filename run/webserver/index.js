@@ -428,7 +428,7 @@ var StartupPromises = [];
 // set up xterm console reverse proxy (if enabled)
 if(consoleOptions && consoleOptions.enabled) {
   // add socket-io reverse proxy for xterm communication
-  let setupConsoleServerProxy = new Promise((resolve) => {
+  let consoleServerPromise = new Promise((resolve) => {
     let setupConsoleReverseProxy = function(streamOptions) {
       if(consoleOptions && consoleOptions.proxy) {
         // if user wants to proxy localhost to 
