@@ -235,8 +235,10 @@ function createCspConfigFromInput() {
   }
   // ------------- add console stream socket to connect src
   if( consoleCfg && consoleCfg.enabled && consoleCfg.url ) {
-    retConfig.directives['connect-src'].push(consoleCfg.url);
-    retConfig.directives['connect-src'].push( getRootFromUrl( consoleCfg.url ) );
+    let consoleUrl = replaceProtocol(consoleCfg.protocol, consoleCfg.url);
+    console.log('------------------------ CSP for console:  ', consoleUrl, consoleCfg);
+    retConfig.directives['connect-src'].push(consoleUrl);
+    retConfig.directives['connect-src'].push( getRootFromUrl( consoleUrl ) );
   }
 
   return retConfig;
@@ -439,7 +441,7 @@ function getConsoleServerOptionsFromInput() {
       retOpts.url       = env.SENZING_CONSOLE_SERVER_URL? env.SENZING_CONSOLE_SERVER_URL : retOpts.url;
       retOpts.enabled   = true;
       // set up reverse proxy
-      if(retOpts.port === webServerCfg.port){
+      if(retOpts.port == webServerCfg.port){
         // socket proxy cannot be on same port as web server
         // reassign to 8273
         retOpts.port    = 8273;
@@ -463,7 +465,7 @@ function getConsoleServerOptionsFromInput() {
       retOpts.url       = cmdLineOpts.consoleServerUrl ?      cmdLineOpts.consoleServerUrl : retOpts.url;
       retOpts.port      = getPortFromUrl(retOpts.url);
       retOpts.enabled   = true;
-      if(retOpts.port === webServerCfg.port){
+      if(retOpts.port == webServerCfg.port){
         // socket proxy cannot be on same port as web server
         // reassign to 8273
         retOpts.port    = 8273;
