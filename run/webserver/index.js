@@ -419,6 +419,13 @@ let VIEW_VARIABLES = {
   ) ? (runtimeOptions.config.web.path + '/') : runtimeOptions.config.web.path,
   "VIEW_CSP_DIRECTIVES":""
 }
+
+// set up server(s) instance(s)
+var ExpressSrvInstance;
+var WebSocketProxyInstance;
+var StartupPromises = [];
+
+// set up xterm console reverse proxy (if enabled)
 if(consoleOptions && consoleOptions.enabled) {
   // add socket-io reverse proxy for xterm communication
   let setupConsoleServerProxy = new Promise((resolve) => {
@@ -477,10 +484,6 @@ app.get('*', (req, res) => {
   res.render('index', VIEW_VARIABLES);
 });
 
-// set up server(s) instance(s)
-var ExpressSrvInstance;
-var WebSocketProxyInstance;
-var StartupPromises = [];
 if( serverOptions && serverOptions.ssl && serverOptions.ssl.enabled ){
   // https
   const ssl_opts = {
