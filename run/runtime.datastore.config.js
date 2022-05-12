@@ -451,7 +451,7 @@ function getConsoleServerOptionsFromInput() {
         protocol: (getProtocolFromUrl(env.SENZING_CONSOLE_SERVER_URL) === 'https' || getProtocolFromUrl(env.SENZING_CONSOLE_SERVER_URL) === 'wss' ? 'wss':'ws'),
         hostname: webServerCfg.hostname ? webServerCfg.hostname : 'localhost',
         target: env.SENZING_CONSOLE_SERVER_URL,
-        port: retOpts.port
+        port: env.SENZING_CONSOLE_SERVER_PORT ? env.SENZING_CONSOLE_SERVER_PORT : 8273
       }
     }
   }
@@ -475,7 +475,7 @@ function getConsoleServerOptionsFromInput() {
         protocol: (getProtocolFromUrl(cmdLineOpts.consoleServerUrl) === 'https' || getProtocolFromUrl(cmdLineOpts.consoleServerUrl) === 'wss' ? 'wss':'ws'),
         hostname: webServerCfg.hostname ? webServerCfg.hostname : 'localhost',
         target: cmdLineOpts.consoleServerUrl,
-        port: 8273
+        port: cmdLineOpts.consoleServerPortNumber ?   cmdLineOpts.consoleServerPortNumber  : 8273
       }
     }
     //console.log('------------ the fuck? ');
