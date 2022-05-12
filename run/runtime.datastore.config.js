@@ -1,6 +1,6 @@
 //const { calcProjectFileAndBasePath } = require("@angular/compiler-cli");
 const { env } = require("process");
-const { getHostnameFromUrl, getPortFromUrl, getProtocolFromUrl, getRootFromUrl, replaceProtocol, getPathFromUrl } = require("./utils");
+const { getHostnameFromUrl, getPortFromUrl, getProtocolFromUrl, getRootFromUrl, replaceProtocol, replacePortNumber, getPathFromUrl } = require("./utils");
 
 function getCommandLineArgsAsJSON() {
   // grab cmdline args
@@ -439,7 +439,7 @@ function getConsoleServerOptionsFromInput() {
       retOpts.url       = env.SENZING_CONSOLE_SERVER_URL? env.SENZING_CONSOLE_SERVER_URL : retOpts.url;
       retOpts.enabled   = true;
       // set up reverse proxy
-      retOpts.url = webServerCfg.url +'/console'
+      retOpts.url = replacePortNumber(8273, webServerCfg.url)
       retOpts.proxy = {
         protocol: (getProtocolFromUrl(env.SENZING_CONSOLE_SERVER_URL) === 'https' || getProtocolFromUrl(env.SENZING_CONSOLE_SERVER_URL) === 'wss' ? 'wss':'ws'),
         hostname: webServerCfg.hostname ? webServerCfg.hostname : 'localhost',
@@ -458,7 +458,7 @@ function getConsoleServerOptionsFromInput() {
       retOpts.enabled   = true;
     }
     if(cmdLineOpts.consoleServerUrl) {
-      retOpts.url = webServerCfg.url +'/console'
+      retOpts.url = replacePortNumber(8273, webServerCfg.url);
       retOpts.proxy = {
         protocol: (getProtocolFromUrl(cmdLineOpts.consoleServerUrl) === 'https' || getProtocolFromUrl(cmdLineOpts.consoleServerUrl) === 'wss' ? 'wss':'ws'),
         hostname: webServerCfg.hostname ? webServerCfg.hostname : 'localhost',
