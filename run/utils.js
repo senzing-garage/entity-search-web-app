@@ -60,6 +60,7 @@ let getProtocolFromUrl = function(url) {
 
 let replaceProtocol = function(protoStr, url) {
     if(!url) return;
+    if(!protoStr) return url; 
     if( url ) {
         if(url.indexOf && url.indexOf('://') > -1) {
             let urlTokened = url.split('://');
