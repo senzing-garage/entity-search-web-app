@@ -479,8 +479,6 @@ function getConsoleServerOptionsFromInput() {
         port: cmdLineOpts.consoleServerPortNumber ?   cmdLineOpts.consoleServerPortNumber  : 8273
       }
     }
-    //console.log('------------ the fuck? ');
-    //console.log(cmdLineOpts);
   }
   return retOpts;
 }
