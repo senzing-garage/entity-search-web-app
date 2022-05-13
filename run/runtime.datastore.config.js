@@ -469,8 +469,6 @@ function getConsoleServerOptionsFromInput() {
         // reassign to 8273
         retOpts.port    = 8273;
       }
-      // change url to a "local" address
-      retOpts.url = replacePortNumber(retOpts.port, webServerCfg.url);
       // and reassign url to proxy dest
       retOpts.proxy = {
         protocol: (getProtocolFromUrl(cmdLineOpts.consoleServerUrl) === 'https' || getProtocolFromUrl(cmdLineOpts.consoleServerUrl) === 'wss' ? 'wss':'ws'),
@@ -478,6 +476,8 @@ function getConsoleServerOptionsFromInput() {
         target: cmdLineOpts.consoleServerUrl,
         port: cmdLineOpts.consoleServerPortNumber ?   cmdLineOpts.consoleServerPortNumber  : 8273
       }
+      // change url to a "local" address
+      retOpts.url = replaceProtocol(retOpts.protocol || (retOpts.proxy ? retOpts.proxy.protocol : false) || 'ws', replacePortNumber(retOpts.port, webServerCfg.url));
     }
   }
   return retOpts;

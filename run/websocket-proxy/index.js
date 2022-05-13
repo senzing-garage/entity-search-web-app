@@ -41,7 +41,7 @@ runtimeOptions.on('initialized', () => {
             ws: true 
         });
         console_proxy.listen(consoleOptions.port, () => {
-            console.log(`WS Console Proxy Server started on port ${consoleOptions.proxy.port}\nforwarding to ${consoleOptions.proxy.target} :)`);
+            console.log(`WS Console Proxy Server started on port ${consoleOptions.port}\nforwarding to ${consoleOptions.proxy.target} :)`);
         });
     }
 
