@@ -236,7 +236,6 @@ function createCspConfigFromInput() {
   // ------------- add console stream socket to connect src
   if( consoleCfg && consoleCfg.enabled && consoleCfg.url ) {
     let consoleUrl = replaceProtocol(consoleCfg.protocol, consoleCfg.url);
-    console.log('------------------------ CSP for console:  ', consoleUrl, consoleCfg);
     retConfig.directives['connect-src'].push(consoleUrl);
     retConfig.directives['connect-src'].push( getRootFromUrl( consoleUrl ) );
   }

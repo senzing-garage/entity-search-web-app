@@ -92,7 +92,7 @@ let replacePortNumber = function(portNumber, url) {
             } else {
                 replToken = portNumber;
             }
-            console.log('replacePortNumber: ',urlTokened[replInd], replInd, urlTokened);
+            //console.log('replacePortNumber: ',urlTokened[replInd], replInd, urlTokened);
 
             urlTokened[( replInd )] = replToken;
             url = urlTokened.join(':');
