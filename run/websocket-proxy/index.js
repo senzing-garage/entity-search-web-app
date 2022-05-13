@@ -13,8 +13,8 @@ const runtimeOptions = new inMemoryConfig(inMemoryConfigFromInputs);
 runtimeOptions.on('initialized', () => {
     const streamOptions     = runtimeOptions.config.stream;
     const consoleOptions    = runtimeOptions.config.console;
-    console.log('--------------- CONSOLE OPTIONS ---------------');
-    console.log(consoleOptions);
+    //console.log('--------------- CONSOLE OPTIONS ---------------');
+    //console.log(consoleOptions);
 
     if(streamOptions) {
         // create a server
