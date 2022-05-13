@@ -60,6 +60,7 @@ let getProtocolFromUrl = function(url) {
 
 let replaceProtocol = function(protoStr, url) {
     if(!url) return;
+    if(!protoStr) return url; 
     if( url ) {
         if(url.indexOf && url.indexOf('://') > -1) {
             let urlTokened = url.split('://');
@@ -91,7 +92,7 @@ let replacePortNumber = function(portNumber, url) {
             } else {
                 replToken = portNumber;
             }
-            console.log('replacePortNumber: ',urlTokened[replInd], replInd, urlTokened);
+            //console.log('replacePortNumber: ',urlTokened[replInd], replInd, urlTokened);
 
             urlTokened[( replInd )] = replToken;
             url = urlTokened.join(':');

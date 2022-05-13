@@ -1,6 +1,6 @@
 //const { calcProjectFileAndBasePath } = require("@angular/compiler-cli");
 const { env } = require("process");
-const { getHostnameFromUrl, getPortFromUrl, getProtocolFromUrl, getRootFromUrl, replaceProtocol, getPathFromUrl } = require("./utils");
+const { getHostnameFromUrl, getPortFromUrl, getProtocolFromUrl, getRootFromUrl, replaceProtocol, replacePortNumber, getPathFromUrl } = require("./utils");
 
 function getCommandLineArgsAsJSON() {
   // grab cmdline args
@@ -235,8 +235,9 @@ function createCspConfigFromInput() {
   }
   // ------------- add console stream socket to connect src
   if( consoleCfg && consoleCfg.enabled && consoleCfg.url ) {
-    retConfig.directives['connect-src'].push(consoleCfg.url);
-    retConfig.directives['connect-src'].push( getRootFromUrl( consoleCfg.url ) );
+    let consoleUrl = replaceProtocol(consoleCfg.protocol, consoleCfg.url);
+    retConfig.directives['connect-src'].push(consoleUrl);
+    retConfig.directives['connect-src'].push( getRootFromUrl( consoleUrl ) );
   }
 
   return retConfig;
@@ -431,12 +432,28 @@ function getConsoleServerOptionsFromInput() {
       reconnectionDelay: 10000
     }
   }
+  let webServerCfg = getWebServerOptionsFromInput();
   if(env){
     retOpts.port        = env.SENZING_WEB_SERVER_PORT ? env.SENZING_WEB_SERVER_PORT   : retOpts.port;
     retOpts.port        = env.SENZING_CONSOLE_SERVER_PORT ? env.SENZING_CONSOLE_SERVER_PORT : retOpts.port;
     if(env.SENZING_CONSOLE_SERVER_URL) {
       retOpts.url       = env.SENZING_CONSOLE_SERVER_URL? env.SENZING_CONSOLE_SERVER_URL : retOpts.url;
       retOpts.enabled   = true;
+      // set up reverse proxy
+      if(retOpts.port == webServerCfg.port){
+        // socket proxy cannot be on same port as web server
+        // reassign to 8273
+        retOpts.port    = 8273;
+      }
+      // and reassign url to proxy dest
+      retOpts.proxy = {
+        protocol: (getProtocolFromUrl(env.SENZING_CONSOLE_SERVER_URL) === 'https' || getProtocolFromUrl(env.SENZING_CONSOLE_SERVER_URL) === 'wss' ? 'wss':'ws'),
+        hostname: webServerCfg.hostname ? webServerCfg.hostname : 'localhost',
+        target: env.SENZING_CONSOLE_SERVER_URL,
+        port: env.SENZING_CONSOLE_SERVER_PORT ? env.SENZING_CONSOLE_SERVER_PORT : 8273
+      }
+      // change url to a "local" address
+      retOpts.url = replaceProtocol(retOpts.protocol || (retOpts.proxy ? retOpts.proxy.protocol : false) || 'ws', replacePortNumber(retOpts.port, webServerCfg.url));
     }
   }
   let cmdLineOpts = getCommandLineArgsAsJSON();
@@ -447,6 +464,20 @@ function getConsoleServerOptionsFromInput() {
       retOpts.url       = cmdLineOpts.consoleServerUrl ?      cmdLineOpts.consoleServerUrl : retOpts.url;
       retOpts.port      = getPortFromUrl(retOpts.url);
       retOpts.enabled   = true;
+      if(retOpts.port == webServerCfg.port){
+        // socket proxy cannot be on same port as web server
+        // reassign to 8273
+        retOpts.port    = 8273;
+      }
+      // and reassign url to proxy dest
+      retOpts.proxy = {
+        protocol: (getProtocolFromUrl(cmdLineOpts.consoleServerUrl) === 'https' || getProtocolFromUrl(cmdLineOpts.consoleServerUrl) === 'wss' ? 'wss':'ws'),
+        hostname: webServerCfg.hostname ? webServerCfg.hostname : 'localhost',
+        target: cmdLineOpts.consoleServerUrl,
+        port: cmdLineOpts.consoleServerPortNumber ?   cmdLineOpts.consoleServerPortNumber  : 8273
+      }
+      // change url to a "local" address
+      retOpts.url = replaceProtocol(retOpts.protocol || (retOpts.proxy ? retOpts.proxy.protocol : false) || 'ws', replacePortNumber(retOpts.port, webServerCfg.url));
     }
   }
   return retOpts;
