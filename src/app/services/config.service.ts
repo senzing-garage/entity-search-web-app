@@ -224,13 +224,18 @@ export class SzWebAppConfigService {
         map( (cfg) => {
           if(cfg && cfg.url) {
             // check if the url has a "/path" in it
-            let _urlDomain = getBasePathFromUrl(cfg.url);
-            let _urlPath = getPathFromUrl(cfg.url);
+            let _urlDomain  = getBasePathFromUrl(cfg.url);
+            let _urlPath    = getPathFromUrl(cfg.url);
             if(_urlPath) {
               // main url should not have the "/path/to/namespace" 
               // in the options.url field
               // move it to cft.options.path as a namespace
               cfg.url = _urlDomain;
+              // if new path does not end in "socket.io"
+              // add it to the end
+              if(!_urlPath.endsWith('socket.io')) {
+                _urlPath = _urlPath + (_urlPath.endsWith('/') ? '' : '/') +'socket.io';
+              }
               cfg.options.path = _urlPath;
             }
           }

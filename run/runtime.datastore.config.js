@@ -449,7 +449,7 @@ function getConsoleServerOptionsFromInput() {
       retOpts.proxy = {
         protocol: (getProtocolFromUrl(env.SENZING_CONSOLE_SERVER_URL) === 'https' || getProtocolFromUrl(env.SENZING_CONSOLE_SERVER_URL) === 'wss' ? 'wss':'ws'),
         hostname: webServerCfg.hostname ? webServerCfg.hostname : 'localhost',
-        target: env.SENZING_CONSOLE_SERVER_URL,
+        target: replaceProtocol((getProtocolFromUrl(env.SENZING_CONSOLE_SERVER_URL) === 'https' || getProtocolFromUrl(env.SENZING_CONSOLE_SERVER_URL) === 'wss' ? 'wss':'ws'), env.SENZING_CONSOLE_SERVER_URL),
         port: env.SENZING_CONSOLE_SERVER_PORT ? env.SENZING_CONSOLE_SERVER_PORT : 8273
       }
       // change url to a "local" address
@@ -473,7 +473,7 @@ function getConsoleServerOptionsFromInput() {
       retOpts.proxy = {
         protocol: (getProtocolFromUrl(cmdLineOpts.consoleServerUrl) === 'https' || getProtocolFromUrl(cmdLineOpts.consoleServerUrl) === 'wss' ? 'wss':'ws'),
         hostname: webServerCfg.hostname ? webServerCfg.hostname : 'localhost',
-        target: cmdLineOpts.consoleServerUrl,
+        target: replaceProtocol((getProtocolFromUrl(cmdLineOpts.consoleServerUrl) === 'https' || getProtocolFromUrl(cmdLineOpts.consoleServerUrl) === 'wss' ? 'wss':'ws'), cmdLineOpts.consoleServerUrl),
         port: cmdLineOpts.consoleServerPortNumber ?   cmdLineOpts.consoleServerPortNumber  : 8273
       }
       // change url to a "local" address

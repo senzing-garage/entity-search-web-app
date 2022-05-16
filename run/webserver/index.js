@@ -436,6 +436,9 @@ if(consoleOptions && consoleOptions.enabled) {
           target: consoleOptions.proxy.target,
           ws: true 
         });
+        console_proxy.on('error', (err) => {
+          console.log('[error] WS Console Reverse Proxy Server: ', err);
+        });
         console_proxy.listen(consoleOptions.port || 8273, () => {
           console.log(`[started] WS Console Reverse Proxy Server started on port ${(consoleOptions.port || 8273)}. Forwarding to ${consoleOptions.proxy.target} :)`);
           resolve();
@@ -521,6 +524,9 @@ if( serverOptions && serverOptions.ssl && serverOptions.ssl.enabled ){
             req.url = req.url;
           }
           proxy.ws(req, socket, head);
+        });
+        wsProxy.on('error', (err) => {
+          console.log('[error] WS Proxy Server: ', err);
         });
         wsProxy.listen(streamOptions.proxy.port || 8255, () => {
           console.log('[started] WS Proxy Server on port '+ (streamOptions.proxy.port || 8255) +'. Forwarding to "'+ streamOptions.target +'"');

@@ -40,6 +40,9 @@ runtimeOptions.on('initialized', () => {
             target: consoleOptions.proxy.target,
             ws: true 
         });
+        console_proxy.on('error', (err) => {
+            console.log('-- WS CONSOLE ERROR: '+ err.message) +' --';
+        });
         console_proxy.listen(consoleOptions.port, () => {
             console.log(`WS Console Proxy Server started on port ${consoleOptions.port}\nforwarding to ${consoleOptions.proxy.target} :)`);
         });
