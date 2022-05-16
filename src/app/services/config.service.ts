@@ -4,7 +4,7 @@ import { catchError, filter, switchMap, map, take, tap } from 'rxjs/operators';
 import { SzAdminService, SzRestConfigurationParameters, SzConfigurationService, SzServerInfo, SzMeta } from '@senzing/sdk-components-ng';
 import { HttpClient } from '@angular/common/http';
 import { SocketIoConfig } from '../common/console-config';
-import { getBasePathFromUrl, getPathFromUrl } from '../common/url-utilities';
+import { getBasePathFromUrl, getPathFromUrl, replaceHostname } from '../common/url-utilities';
 
 export interface AuthConfig {
   hostname?: string;
@@ -317,6 +317,16 @@ export class SzWebAppConfigService {
     // directly since container is immutable and
     // doesnt write to file system.
     return this.http.get<SzConsoleConfig>('./config/console').pipe(
+      map(cfg => {
+        // if url is "localhost" replace with actual "hostname" when divergent
+        if(window && window.location && window.location.hostname && window.location.hostname.length > 0 && window.location.hostname === 'localhost') {
+          let cfgUrl  = new URL(cfg.url);
+          if(window.location.hostname !== cfgUrl.hostname) {
+            cfg.url = replaceHostname(window.location.hostname, cfg.url);
+          }
+        }
+        return cfg;
+      }),
       tap(cfg => console.warn('getRuntimeConsoleConfig result: ', cfg) )
     )
   }

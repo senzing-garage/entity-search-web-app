@@ -1,46 +1,17 @@
 export function getHostnameFromUrl(url: string) {
     if(!url) return;
     if(url) {
-        var hostname  = url;
-        if(hostname.indexOf && hostname.indexOf('://') > -1) {
-            // strip protocol off
-            let urlTokened = hostname.split('://');
-            hostname  = urlTokened[1];
-        }
-        if(hostname.indexOf && hostname.indexOf(':') > -1) {
-            // strip port off
-            let _ntemp = hostname.split(':')[0];
-            hostname = _ntemp;
-        }
-        if(hostname.indexOf && hostname.indexOf('/') > -1){
-            // strip off anything in path
-            let _ntemp = hostname.split('/')[0];
-            hostname = _ntemp;
-        }
-        //console.log(`set hostname to: "${hostname}"`);
-
-        return hostname;
+        let oUrl        = new URL(url);
+        return oUrl.hostname;
     }
     return;
 }
 
-export function getPortFromUrl(url: string) {
+export function getPortFromUrl(url: string): number {
     if(!url) return;
     if(url) {
-        var hostname    = url;
-        let portnumber  = 8250;
-        if(hostname.indexOf && hostname.indexOf('://') > -1) {
-            // strip protocol off
-            let urlTokened = hostname.split('://');
-            hostname  = urlTokened[1];
-        }
-        if(hostname.indexOf(':') > -1) {
-            // keep port
-            let _ntemp = hostname.split(':');
-            if(_ntemp.length > 1 && _ntemp[1]) {
-                portnumber    = parseInt(_ntemp[1]);
-            }
-        }
+        let oUrl        = new URL(url);
+        let portnumber  = oUrl.port ? parseInt(oUrl.port) : 8250;
         return portnumber;
     }
 }
@@ -48,11 +19,8 @@ export function getPortFromUrl(url: string) {
 export function getProtocolFromUrl(url: string) {
     if(!url) return;
     if( url ) {
-        let protocol    = 'http';
-        if(url.indexOf && url.indexOf('://') > -1) {
-            let urlTokened = url.split('://');
-            protocol  = urlTokened[0];
-        }
+        let oUrl        = new URL(url);
+        let protocol    = oUrl.protocol ? oUrl.protocol : 'http';
         return protocol;
     }
 }
@@ -72,19 +40,37 @@ export function getBasePathFromUrl(url: string) {
 export function getPathFromUrl(url: string) {
     if(!url) return;
     if( url ) {
-        let path    = '';
-        if(url.indexOf && url.indexOf('://') > -1) {
-            let urlTokened = url.split('://');
-            let strPath  = urlTokened[1];
-            if(strPath.indexOf && strPath.indexOf('/') > -1) {
-                path = strPath.substring(strPath.indexOf('/'));
-            } else {
-                // no "/" in url
-            }
-        } else if(url.indexOf && url.indexOf('/') > -1) {
-            // no protocol, assume first "/" to end
-            path = url.substring(url.indexOf('/'));
-        }
-        return path;
+        let oUrl        = new URL(url);
+        return oUrl.pathname;
+    }
+}
+
+export function replaceProtocol(protoStr, url: string) {
+    if(!url) return;
+    if(!protoStr) return url; 
+    if( url ) {
+        let oUrl        = new URL(url);
+        oUrl.protocol   = protoStr;
+        return oUrl.href;
+    }
+    return url;
+}
+
+export function replacePortNumber(portNumber, url: string) {
+    if(!url) return;
+    if( url ) {
+        let oUrl    = new URL(url);
+        oUrl.port   = portNumber;
+        return (oUrl.href);
+    }
+    return url
+}
+
+export function replaceHostname(hostname: string, url: string) {
+    if(!url) return;
+    if(!hostname) { return url; }
+    if(url) {
+        let oUrl = new URL(url);
+        return url.replace(oUrl.hostname, hostname);
     }
 }
