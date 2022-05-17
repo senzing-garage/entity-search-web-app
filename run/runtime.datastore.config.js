@@ -442,15 +442,15 @@ function getConsoleServerOptionsFromInput() {
       // set up reverse proxy
       if(retOpts.port == webServerCfg.port){
         // socket proxy cannot be on same port as web server
-        // reassign to 8273
-        retOpts.port    = 8273;
+        // reassign to 8257
+        retOpts.port    = 8257;
       }
       // and reassign url to proxy dest
       retOpts.proxy = {
         protocol: (getProtocolFromUrl(env.SENZING_CONSOLE_SERVER_URL) === 'https' || getProtocolFromUrl(env.SENZING_CONSOLE_SERVER_URL) === 'wss' ? 'wss':'ws'),
         hostname: webServerCfg.hostname ? webServerCfg.hostname : 'localhost',
         target: replaceProtocol((getProtocolFromUrl(env.SENZING_CONSOLE_SERVER_URL) === 'https' || getProtocolFromUrl(env.SENZING_CONSOLE_SERVER_URL) === 'wss' ? 'wss':'ws'), env.SENZING_CONSOLE_SERVER_URL),
-        port: env.SENZING_CONSOLE_SERVER_PORT ? env.SENZING_CONSOLE_SERVER_PORT : 8273
+        port: env.SENZING_CONSOLE_SERVER_PORT ? env.SENZING_CONSOLE_SERVER_PORT : 8257
       }
       // change url to a "local" address
       retOpts.url = replaceProtocol(retOpts.protocol || (retOpts.proxy ? retOpts.proxy.protocol : false) || 'ws', replacePortNumber(retOpts.port, webServerCfg.url));
@@ -466,15 +466,15 @@ function getConsoleServerOptionsFromInput() {
       retOpts.enabled   = true;
       if(retOpts.port == webServerCfg.port){
         // socket proxy cannot be on same port as web server
-        // reassign to 8273
-        retOpts.port    = 8273;
+        // reassign to 8257
+        retOpts.port    = 8257;
       }
       // and reassign url to proxy dest
       retOpts.proxy = {
         protocol: (getProtocolFromUrl(cmdLineOpts.consoleServerUrl) === 'https' || getProtocolFromUrl(cmdLineOpts.consoleServerUrl) === 'wss' ? 'wss':'ws'),
         hostname: webServerCfg.hostname ? webServerCfg.hostname : 'localhost',
         target: replaceProtocol((getProtocolFromUrl(cmdLineOpts.consoleServerUrl) === 'https' || getProtocolFromUrl(cmdLineOpts.consoleServerUrl) === 'wss' ? 'wss':'ws'), cmdLineOpts.consoleServerUrl),
-        port: cmdLineOpts.consoleServerPortNumber ?   cmdLineOpts.consoleServerPortNumber  : 8273
+        port: cmdLineOpts.consoleServerPortNumber ?   cmdLineOpts.consoleServerPortNumber  : 8257
       }
       // change url to a "local" address
       retOpts.url = replaceProtocol(retOpts.protocol || (retOpts.proxy ? retOpts.proxy.protocol : false) || 'ws', replacePortNumber(retOpts.port, webServerCfg.url));

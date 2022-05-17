@@ -439,8 +439,8 @@ if(consoleOptions && consoleOptions.enabled) {
         console_proxy.on('error', (err) => {
           console.log('[error] WS Console Reverse Proxy Server: ', err);
         });
-        console_proxy.listen(consoleOptions.port || 8273, () => {
-          console.log(`[started] WS Console Reverse Proxy Server started on port ${(consoleOptions.port || 8273)}. Forwarding to ${consoleOptions.proxy.target} :)`);
+        console_proxy.listen(consoleOptions.port || 8257, () => {
+          console.log(`[started] WS Console Reverse Proxy Server started on port ${(consoleOptions.port || 8257)}. Forwarding to ${consoleOptions.proxy.target} :)`);
           resolve();
         });
       } else {
