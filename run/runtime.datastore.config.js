@@ -438,6 +438,7 @@ function getConsoleServerOptionsFromInput() {
     retOpts.port        = env.SENZING_CONSOLE_SERVER_PORT ? env.SENZING_CONSOLE_SERVER_PORT : retOpts.port;
     if(env.SENZING_CONSOLE_SERVER_URL) {
       retOpts.url       = env.SENZING_CONSOLE_SERVER_URL? env.SENZING_CONSOLE_SERVER_URL : retOpts.url;
+      retOpts.port      = env.SENZING_CONSOLE_SERVER_PORT ? env.SENZING_CONSOLE_SERVER_PORT : getPortFromUrl(retOpts.url);
       retOpts.enabled   = true;
       // set up reverse proxy
       if(retOpts.port == webServerCfg.port){
@@ -462,7 +463,7 @@ function getConsoleServerOptionsFromInput() {
     retOpts.port        = cmdLineOpts.consoleServerPortNumber ?   cmdLineOpts.consoleServerPortNumber  : retOpts.port;
     if(cmdLineOpts.consoleServerUrl) {
       retOpts.url       = cmdLineOpts.consoleServerUrl ?      cmdLineOpts.consoleServerUrl : retOpts.url;
-      retOpts.port      = getPortFromUrl(retOpts.url);
+      retOpts.port      = cmdLineOpts.consoleServerPortNumber ? cmdLineOpts.consoleServerPortNumber : getPortFromUrl(retOpts.url);
       retOpts.enabled   = true;
       if(retOpts.port == webServerCfg.port){
         // socket proxy cannot be on same port as web server
@@ -474,7 +475,7 @@ function getConsoleServerOptionsFromInput() {
         protocol: (getProtocolFromUrl(cmdLineOpts.consoleServerUrl) === 'https' || getProtocolFromUrl(cmdLineOpts.consoleServerUrl) === 'wss' ? 'wss':'ws'),
         hostname: webServerCfg.hostname ? webServerCfg.hostname : 'localhost',
         target: replaceProtocol((getProtocolFromUrl(cmdLineOpts.consoleServerUrl) === 'https' || getProtocolFromUrl(cmdLineOpts.consoleServerUrl) === 'wss' ? 'wss':'ws'), cmdLineOpts.consoleServerUrl),
-        port: cmdLineOpts.consoleServerPortNumber ?   cmdLineOpts.consoleServerPortNumber  : 8257
+        port: getPortFromUrl(cmdLineOpts.consoleServerUrl) ? getPortFromUrl(cmdLineOpts.consoleServerUrl) : 8257
       }
       // change url to a "local" address
       retOpts.url = replaceProtocol(retOpts.protocol || (retOpts.proxy ? retOpts.proxy.protocol : false) || 'ws', replacePortNumber(retOpts.port, webServerCfg.url));
