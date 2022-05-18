@@ -216,6 +216,15 @@ export class SzWebAppConfigService {
         }),
         take(1)
       ).subscribe(onStreamConfigResponse);
+    });
+
+    // we need to update the runtime console config on server info update
+    this.onServerInfoUpdated.pipe(
+      filter((srvInfo: undefined | SzServerInfo) => {
+        return srvInfo !== undefined && this.isAdminEnabled;
+      }),
+      take(1)
+    ).subscribe((result) => {
       this.getRuntimeConsoleConfig().pipe(
         filter(() => {
           return this.isAdminEnabled;
@@ -239,7 +248,7 @@ export class SzWebAppConfigService {
               cfg.options.path = _urlPath;
             }
           }
-
+  
           return cfg
         })
       ).subscribe(onConsoleConfigResponse)
