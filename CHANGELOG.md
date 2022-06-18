@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.0] - 2022-6-22
+This update adds the long-awaited *Expand/Collapse* graph node edge feature. Now nodes in the graph will display a bubble with the number of relationships not currently visible. Relationships can be explored by simply expanding relationships down a path.
+The *Why Not* report can now be run from specific integration points. The why not report will run a side-by-side table of two entities information in order to help illustrate why two entities did not come together.
+
+### Added
+- New graph features:
+  - On clicking the bubble the hidden related entities will be drawn around the node. 
+  - On clicking the expand/collapse bubble again the related nodes that are not related to any other nodes on the canvas will be hidden. 
+  - On right clicking the node there is a new option to hide just that specific entity from view(to eliminate clutter)
+  - On right clicking the relationship line match key there will be a menu option for running a *Why NOT* report between the two connected entities
+- There is a new *Multi-Select* mode button in the upper right-corner of search results. Once the button is clicked a user can click on two search results and click on "Compare" to bring up a "Why NOT" report for why those two entities did not come together.
+- Match keys are now displayed in the search result cards by default. _(they can be turned off through preferences)_
+
 ## [2.6.0] - 2022-5-9
 
 This update brings the models in line with the changes for the `3.0.0` release of the [senzing rest api server](https://github.com/Senzing/senzing-api-server)
