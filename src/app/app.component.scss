@@ -28,7 +28,7 @@ sz-powered-by {
   #toolbar-col2 {
     display: inline-flex;
     flex-direction: column;
-    align-self: end;
+    /*align-self: end;*/
     margin: 60px 0 0 0;
     padding: 20px 20px 0 0;
     color: #fff;
@@ -98,6 +98,7 @@ sz-powered-by {
   sz-preferences {
     width: 100%;
     margin: 60px 0 0 0;
+    color: #fff;
   }
 
   .toggle-icon {
