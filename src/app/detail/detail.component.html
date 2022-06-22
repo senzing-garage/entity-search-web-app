@@ -3,7 +3,8 @@
   <!-- start graph context menu template -->
   <ng-template #graphContextMenu let-entityEvt>
       <ul class="graph-context-menu">
-          <li (click)="openGraphItemInNewMenu(entityEvt.entityId)">Open in new tab</li>
+        <li (click)="openGraphItemInNewMenu(entityEvt.entityId)">Open in new tab</li>
+        <li (click)="hideSingleGraphItem(entityEvt.entityId)">Hide this entity</li>
       </ul>
   </ng-template>
   <!-- end graph context menu template -->
@@ -18,6 +19,8 @@
   graphShowZoomControl="true"
   graphZoomControlPosition="top-left"
   [whySelectionMode]="'SINGLE'"
+  [showGraphContextMenu]="false"
+  [showGraphLinkContextMenu]="true"
   [showEntityWhyFunction]="true"
   [showRecordWhyUtilities]="true"
   (dataChanged)="onEntityDataChanged($event)"

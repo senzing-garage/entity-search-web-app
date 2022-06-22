@@ -7,6 +7,10 @@
       <mat-icon color="secondary" class="graph" aria-hidden="false" aria-label="Open Results in Graph">bubble_chart</mat-icon>
     </button>
   </button>
-  <sz-search-results [results]="currentSearchResults" (resultClick)="onSearchResultClick($event)"></sz-search-results>
+  <sz-search-results 
+  [results]="currentSearchResults" 
+  showWhyComparisonButton="true"
+  showMatchKeys="true"
+  (resultClick)="onSearchResultClick($event)"></sz-search-results>
 </div>
 <!-- end search results -->

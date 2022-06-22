@@ -2,7 +2,8 @@
   <!-- start graph context menu template -->
   <ng-template #graphContextMenu let-entityEvt>
       <ul class="graph-context-menu">
-          <li (click)="openGraphItemInNewMenu(entityEvt.entityId)">Open in new tab</li>
+          <li (click)="openGraphItemInNewMenu(entityEvt?.entityId)">Open details in new tab</li>
+          <li (click)="hideSingleGraphItem(entityEvt?.entityId)">Hide this entity</li>
       </ul>
   </ng-template>
 
@@ -27,6 +28,8 @@
           [showPopOutIcon]="false"
           [showMatchKeyControl]="false"
           [showFiltersControl]="false"
+          [showGraphContextMenu]="false"
+          [showGraphLinkContextMenu]="true"
           (entityClick)="onGraphEntityClick($event)"
           [showMatchKeys]="_showMatchKeys"
           (requestStarted)="onRequestStarted($event)"
@@ -34,6 +37,7 @@
           (requestComplete)="onRequestComplete($event)"
           (dataLoaded)="onDataLoaded($event)"
           (dataSourcesChange)="onDataSourcesChange($event)"
+          (contextMenuClick)="onGraphContextClick($event)"
           (matchKeysChange)="onMatchKeysChange($event)"
           (matchKeyTokensChange)="onMatchKeyTokensChange($event)"
       ></sz-standalone-graph>
