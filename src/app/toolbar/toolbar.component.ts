@@ -217,7 +217,7 @@ export class ToolbarComponent implements OnInit, OnDestroy {
   }
 
   downloadEntityPdf() {
-    this.uiService.createPdfForActiveEntity( this.search.currentlySelectedEntityId );
+    //this.uiService.createPdfForActiveEntity( this.search.currentlySelectedEntityId );
   }
 
   goHome() {

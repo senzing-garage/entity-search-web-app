@@ -33,10 +33,10 @@
       <mat-icon>open_in_new</mat-icon>
       Open Entity in New Tab
     </a>
-    <a *ngIf="showEntityOptions" (click)="downloadEntityPdf()" mat-menu-item>
+    <!-- <a *ngIf="showEntityOptions && !showGraphOptions" (click)="downloadEntityPdf()" mat-menu-item>
       <mat-icon>picture_as_pdf</mat-icon>
       Download Entity as PDF
-    </a>
+    </a> -->
     <a (click)="toggleSearch($event)" mat-menu-item>
         <mat-icon *ngIf="ribbonExpanded">visibility_off</mat-icon>
         <mat-icon *ngIf="!ribbonExpanded">visibility</mat-icon>
