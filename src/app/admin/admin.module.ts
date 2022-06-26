@@ -7,7 +7,6 @@ import { FormsModule } from '@angular/forms';
 import { JwtModule, JwtConfig } from '@auth0/angular-jwt';
 import { ApiModule as SenzingDataServiceModule } from '@senzing/rest-api-client-ng';
 import { SenzingSdkModule } from '@senzing/sdk-components-ng';
-import { SenzingSdkGraphModule } from '@senzing/sdk-graph-components';
 
 import { AdminRoutingModule } from './admin-routing.module';
 import { AdminComponent } from './admin/admin.component';
@@ -86,7 +85,6 @@ import { SzWebAppConfigService } from '../services/config.service';
     }),
     MaterialModule,
     SenzingSdkModule.forRoot( SzRestConfigurationFactory ),
-    SenzingSdkGraphModule.forRoot( SzRestConfigurationFactory ),
     SenzingDataServiceModule.forRoot( SzRestConfigurationFactory )
   ],
   entryComponents: [ NewDataSourceDialogComponent, XtermComponent ],

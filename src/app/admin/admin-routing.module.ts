@@ -3,7 +3,6 @@ import { BrowserModule, Title } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from '../material.module';
-import { SenzingSdkGraphModule } from '@senzing/sdk-graph-components';
 import { ApiModule as SenzingDataServiceModule } from '@senzing/rest-api-client-ng';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { LayoutModule } from '@angular/cdk/layout';
@@ -110,7 +109,6 @@ const routes: Routes = [
     MaterialModule,
     LayoutModule,
     SenzingSdkModule.forRoot( SzRestConfigurationFactory ),
-    SenzingSdkGraphModule.forRoot( SzRestConfigurationFactory ),
     SenzingDataServiceModule.forRoot( SzRestConfigurationFactory ),
     RouterModule.forChild(routes)
   ],
