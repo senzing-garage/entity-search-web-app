@@ -161,6 +161,14 @@
                 }
               ]
             },
+            "development": {
+              "optimization": false,
+              "sourceMap": true,
+              "namedChunks": true,
+              "extractLicenses": false,
+              "vendorChunk": true,
+              "buildOptimizer": false
+            },
             "e2e": {
               "fileReplacements": [
                 {
@@ -179,6 +187,9 @@
             "port": 4200
           },
           "configurations": {
+            "development": {
+              "browserTarget": "entity-search-web-app:build:development"
+            },
             "production": {
               "browserTarget": "entity-search-web-app:build:production"
             },

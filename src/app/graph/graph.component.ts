@@ -262,7 +262,9 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
   /** handler for graph components dataLoaded event */
   onDataLoaded(evt: any) {
       console.log('onDataLoaded: ', evt);
-
+  }
+  onDataUpdated(evt: any) {
+    console.log('onDataUpdated: ', evt);
   }
   /** handler for graph components dataSourcesChange event */
   onDataSourcesChange(evt: any) {
