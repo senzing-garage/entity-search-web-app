@@ -32,10 +32,12 @@
           [showGraphLinkContextMenu]="true"
           (entityClick)="onGraphEntityClick($event)"
           [showMatchKeys]="_showMatchKeys"
+          [showMatchKeyTokenFilters]="true"
           (requestStarted)="onRequestStarted($event)"
           (renderComplete)="onRenderComplete($event)"
-          (requestComplete)="onRequestComplete($event)"
+          (requestComplete)="onRequestComplete($event)"matchKeyTokensIncluded
           (dataLoaded)="onDataLoaded($event)"
+          (dataUpdated)="onDataUpdated($event)"
           (dataSourcesChange)="onDataSourcesChange($event)"
           (contextMenuClick)="onGraphContextClick($event)"
           (matchKeysChange)="onMatchKeysChange($event)"
