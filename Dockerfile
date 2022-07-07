@@ -3,7 +3,7 @@ ARG PROD_IMAGE=node:16-alpine3.15
 ARG TEST_IMAGE=node:16-bullseye-slim
 
 FROM ${BUILD_IMAGE}
-ENV REFRESHED_AT=2022-05-22
+ENV REFRESHED_AT=2022-07-07
 
 LABEL Name="senzing/entity-search-web-app" \
       Maintainer="support@senzing.com" \
