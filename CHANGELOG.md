@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.7.0] - 2022-6-22
+## [2.7.0] - 2022-7-07
 This update adds the long-awaited *Expand/Collapse* graph node edge feature. Now nodes in the graph will display a bubble with the number of relationships not currently visible. Relationships can be explored by simply expanding relationships down a path.
 The *Why Not* report can now be run from specific integration points. The why not report will run a side-by-side table of two entities information in order to help illustrate why two entities did not come together.
 
