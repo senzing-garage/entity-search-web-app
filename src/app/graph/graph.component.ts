@@ -288,7 +288,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
       return mkToken.name;
     });
     this._showMatchKeyTokensInFilter  = data;
-    this.prefs.graph.matchKeyTokensIncluded = allTokens;
+    //this.prefs.graph.matchKeyTokensIncluded = allTokens;
   }
   onSearchException(err: Error) {
     throw (err.message);

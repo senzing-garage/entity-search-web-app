@@ -33,9 +33,10 @@
           (entityClick)="onGraphEntityClick($event)"
           [showMatchKeys]="_showMatchKeys"
           [showMatchKeyTokenFilters]="true"
+          matchKeyTokenSelectionScope="CORE"
           (requestStarted)="onRequestStarted($event)"
           (renderComplete)="onRenderComplete($event)"
-          (requestComplete)="onRequestComplete($event)"matchKeyTokensIncluded
+          (requestComplete)="onRequestComplete($event)"
           (dataLoaded)="onDataLoaded($event)"
           (dataUpdated)="onDataUpdated($event)"
           (dataSourcesChange)="onDataSourcesChange($event)"
