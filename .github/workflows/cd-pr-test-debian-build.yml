@@ -15,7 +15,7 @@ jobs:
         run: printenv
       - name: Check if there are conflicts when local merging main
         id: local_merge_main
-        run: git merge origin/main
+        run: git merge origin main
       - name: Build Entity Search Web App
         id: build_entity_search_web_app
         run: |
