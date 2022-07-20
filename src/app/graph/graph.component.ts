@@ -120,7 +120,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() buildOut: number = 1;
 
   /** array of data sources to limit "filter by datasource" to. */
-  public _showDataSourcesInFilter: string[];
+  public _showDataSourcesInFilter: string[] = [];
   public _showMatchKeysInFilter: string[];
   public _showMatchKeyTokensInFilter: Array<SzMatchKeyTokenComposite>;
 
