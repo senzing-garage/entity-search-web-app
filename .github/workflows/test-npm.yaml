@@ -1,0 +1,26 @@
+name: test-npm.yaml
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  testEntitySearchWebApp:
+    name: npm ci and run
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: '0'
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build:docker --if-present
+      - run: npm run test:headless
+ #    - run: npm run e2e:headless
