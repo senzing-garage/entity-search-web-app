@@ -7,21 +7,6 @@ on:
     branches: [ $default-branch, main ]
 
 jobs:
-  prBuildEntitySearchWebApp:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - name: Capture environment variables
-        run: printenv
-      - name: Check if there are conflicts when local merging main
-        id: local_merge_main
-        run: git merge origin/main
-      - name: Build Entity Search Web App
-        id: build_entity_search_web_app
-        run: |
-          make \
-            BASE_IMAGE="node:12.2.0" \
-            docker-build
 
   prTestEntitySearchWebApp:
     runs-on: ubuntu-latest
