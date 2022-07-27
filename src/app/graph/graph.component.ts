@@ -19,11 +19,13 @@ import {
   SzStandaloneGraphComponent,
   SzSearchService,
   SzEntityData,
-  SzEntityDetailGraphFilterComponent
+  SzEntityDetailGraphFilterComponent,
+  SzMatchKeyTokenFilterScope
 } from '@senzing/sdk-components-ng';
 import { UiService } from '../services/ui.service';
 import { LOCAL_STORAGE, StorageService } from 'ngx-webstorage-service';
 import { SzMatchKeyTokenComposite } from '@senzing/sdk-components-ng/lib/models/graph';
+import { parseBool } from '../common/parsing-utils';
 
 @Component({
   selector: 'app-graph',
@@ -114,10 +116,127 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log('@senzing/sdk-components-ng:sz-entity-detail-graph.showMatchKeys: ', value, prefsVal);
   }
 
+  /** @internal */
+  private _maxEntitiesFilterLimit = 200;
+  /** maximum value selectable in the graph filter component */
+  @Input() set maxEntitiesFilterLimit(value: number | string){ this._maxEntitiesFilterLimit = parseInt(value as string); }
+  /** maximum value selectable in the graph filter component */
+  get maxEntitiesFilterLimit(): number { return this._maxEntitiesFilterLimit; }
+  /** @internal */
+  private _unlimitedMaxEntities: boolean;
+  /** @internal */
+  private _unlimitedMaxScope: boolean;
+  /** ignore the entity limit restriction from maxEntities */
+  @Input() set unlimitedMaxEntities(value: boolean) {
+    if(value === undefined) return;
+    if(value !== this.prefs.graph.unlimitedMaxEntities) {
+      this.prefs.graph.unlimitedMaxEntities = value;
+    }
+    this._unlimitedMaxEntities = value;
+  }
+  /** ignore the entity limit restriction from maxEntities */
+  get unlimitedMaxEntities(): boolean {
+    return this.prefs.graph.unlimitedMaxEntities;
+  }
+  /** ignore the scope limit restriction from maxEntities */
+  @Input() set unlimitedMaxScope(value: boolean) {
+    if(value === undefined) return;
+    if(value !== this.prefs.graph.unlimitedMaxScope) {
+      this.prefs.graph.unlimitedMaxScope = this._unlimitedMaxScope;
+    }
+    this._unlimitedMaxScope  = value;
+    //this.prefs.graph.unlimitedMaxScope = value;
+  }
+  /** ignore the scope limit restriction from maxEntities */
+  get unlimitedMaxScope(): boolean {
+    return this.prefs.graph.unlimitedMaxScope;
+  }
+
+  /** @internal */
+  protected _showCoreMatchKeyTokenChips: boolean              = false;
+  /**
+   * whether or not to show only the match key token chips that apply 
+   * to "core" relationships. ie if the relationship is only between 
+   * the queried entity and 1 level away relationships. 
+   */
+  @Input() public set showCoreMatchKeyTokenChips(value: boolean | string){
+    this._showCoreMatchKeyTokenChips = parseBool(value);
+    if (value === true) {
+      //console.log('@senzing/sdk-components-ng/sz-graph-component.showCoreMatchKeyTokenChips = '+ value);
+      this.matchKeyTokenSelectionScope = SzMatchKeyTokenFilterScope.CORE;
+    }
+  }
+  /**
+   * whether or not to show only the match key token chips that apply 
+   * to "core" relationships. ie if the relationship is only between 
+   * the queried entity and 1 level away relationships. 
+   */
+  public get showCoreMatchKeyTokenChips(): boolean {
+    return this._showCoreMatchKeyTokenChips;
+  }
+  /** @internal */
+  protected _showExtraneousMatchKeyTokenChips: boolean = true;
+  /**
+   * whether or not to show only match key token chips that apply 
+   * to relationships between entities that are NOT directly related to 
+   * the primary entities. ie if the relationship is only between 
+   * a relatiohship between two entities that are not the primary queried 
+   * entity. 
+   */
+  @Input() public set showExtraneousMatchKeyTokenChips(value: boolean | string) {
+    this._showExtraneousMatchKeyTokenChips = parseBool(value);
+    if (value === true) {
+      //console.log('@senzing/sdk-components-ng/sz-graph-component.showExtraneousMatchKeyTokenChips = '+ value);
+      this.matchKeyTokenSelectionScope = SzMatchKeyTokenFilterScope.EXTRANEOUS;
+    }
+  }
+  /**
+   * whether or not to show only match key token chips that apply 
+   * to relationships between entities that are NOT directly related to 
+   * the primary entities. ie if the relationship is only between 
+   * a relatiohship between two entities that are not the primary queried 
+   * entity. 
+   */
+  public get showExtraneousMatchKeyTokenChips(): boolean {
+    return this._showExtraneousMatchKeyTokenChips;
+  }
+
+  /** @internal */
+  private _matchKeyTokenSelectionScope: SzMatchKeyTokenFilterScope       = SzMatchKeyTokenFilterScope.EXTRANEOUS;
+  /** sets the depth of what entities are shown when they match the 
+   * match key token filters. possible values are "CORE" and "EXTRANEOUS".
+   * when "CORE" is selected only entities that are directly related to queried 
+   * entity/entities are filtered by match key tokens. 
+   * when "EXTRANEOUS" is selected ALL entities no matter how they are related 
+   * are filtered by match key tokens.
+   */
+  @Input() public set matchKeyTokenSelectionScope(value: SzMatchKeyTokenFilterScope | string){
+    if(value === undefined) return;
+    if((value as string) === 'CORE') {
+      this._matchKeyTokenSelectionScope = SzMatchKeyTokenFilterScope.CORE;
+    } else if((value as string) === 'EXTRANEOUS') {
+      this._matchKeyTokenSelectionScope = SzMatchKeyTokenFilterScope.EXTRANEOUS;
+    } else {
+      this._matchKeyTokenSelectionScope = (value as SzMatchKeyTokenFilterScope);
+    }
+    //console.log(`@senzing/sdk-components-ng/sz-graph-component.matchKeyTokenSelectionScope(${value} | ${(this._matchKeyTokenSelectionScope as unknown as string)})`, this._matchKeyTokenSelectionScope);
+  }
+  /**
+   * get the value of match key token filterings scope. possible values are 
+   * "CORE" and "EXTRANEOUS".
+   * core means the filtering is only being applied to entities that are directly 
+   * related to the primary entity/entities being displayed.
+   */
+  public get matchKeyTokenSelectionScope() {
+    return this._matchKeyTokenSelectionScope as SzMatchKeyTokenFilterScope;
+  }
+
   @Input() sectionIcon: string;
   @Input() maxDegrees: number = 1;
   @Input() maxEntities: number = 20;
   @Input() buildOut: number = 1;
+
+
 
   /** array of data sources to limit "filter by datasource" to. */
   public _showDataSourcesInFilter: string[] = [];
@@ -191,6 +310,13 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     this._showRightRail = !this._showRightRail;
   }
 
+  onTotalRelationshipsCountUpdated(count: number) {
+    if(this.maxEntities !== count) {
+      this.maxEntities              = count;
+      this._maxEntitiesFilterLimit  = count;
+    }
+  }
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -205,6 +331,8 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     private renderer: Renderer2,
     private titleService: Title
     ) {
+
+      console.log('GraphComponent()');
 
       this.route.data.subscribe((data) => {
         // we're using the route resolver to activate spinner
@@ -295,11 +423,12 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onRequestStarted(evt: any) {
-    //console.log('onRequestStarted: ', evt);
-    this.uiService.spinnerActive = false;
+    console.log('onRequestStarted: ', evt);
+    this.uiService.spinnerActive = true;
   }
   onRequestComplete(evt: any) {
     //console.log('onRequestComplete: ', evt);
+    this.uiService.spinnerActive = false;
   }
   onRenderComplete(evt: any) {
     //console.log('onRenderComplete: ', evt);
@@ -431,6 +560,14 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
       // update route if needed
       this.router.navigate(['graph/' + entityId]);
     }
+  }
+
+  /** when the filter component's match key scope is changed from EXTRANEOUS to CORE or vice-versa */
+  public onFilterMatchKeyTokenSelectionScopeChanged(scope: SzMatchKeyTokenFilterScope) {
+    //console.log('sz-standalone-graph.onMatchKeyTokenSelectionScopeChanged: ', scope, this.matchKeyTokenSelectionScope === SzMatchKeyTokenFilterScope.CORE, this.matchKeyTokenSelectionScope === SzMatchKeyTokenFilterScope.EXTRANEOUS);
+    this.matchKeyTokenSelectionScope        = scope;
+    this._showExtraneousMatchKeyTokenChips  = (this.matchKeyTokenSelectionScope === SzMatchKeyTokenFilterScope.EXTRANEOUS) ?  true : false;
+    this._showCoreMatchKeyTokenChips        = (this.matchKeyTokenSelectionScope === SzMatchKeyTokenFilterScope.CORE) ?        true : false;
   }
 
   public toggleGraphMatchKeys(event): void {
