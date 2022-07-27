@@ -10,8 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Modified
 - bugfixes for match key filtering
+- bugfixes for large graph FOC
 
-relevant tickets: #321 #302
+relevant tickets: #321 #302 #324
 
 ## [2.7.0] - 2022-7-07
 This update adds the long-awaited *Expand/Collapse* graph node edge feature. Now nodes in the graph will display a bubble with the number of relationships not currently visible. Relationships can be explored by simply expanding relationships down a path.
