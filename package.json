@@ -103,7 +103,7 @@
     "karma": "^6.3.9",
     "karma-brief-reporter": "^0.2.2",
     "karma-chrome-launcher": "~3.1.0",
-    "karma-coverage": "~2.0.3",
+    "karma-coverage": "~2.2.0",
     "karma-jasmine": "~4.0.1",
     "karma-jasmine-html-reporter": "~1.7.0",
     "karma-junit-reporter": "^2.0.1",
