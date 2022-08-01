@@ -30,7 +30,7 @@ export const routes: Routes = [
   { path: 'search/results', component: SearchResultsComponent, resolve: { params: SearchParamsResolverService, results: SearchResultsResolverService }, data: { animation: 'search-results' } },
   { path: 'entity/:entityId', component: DetailComponent, resolve: { entityData: EntityDetailResolverService }, data: { animation: 'search-detail' } },
   { path: 'datasources/:datasource/records/:recordId', component: SearchRecordComponent, resolve: { params: SearchByIdParamsResolverService, result: RecordResolverService }, data: { animation: 'search-detail' } },
-  { path: 'graph/:entityId', component: GraphComponent, resolve: { networkData: GraphEntityNetworkResolverService, entityData: EntityDetailResolverService }, data: { animation: 'search-detail' } },
+  { path: 'graph/:entityId', component: GraphComponent, resolve: { networkData: GraphEntityNetworkResolverService }, data: { animation: 'search-detail' } },
   { path: 'graph/:entityId/:detailId', component: GraphComponent, resolve: { networkData: GraphEntityNetworkResolverService, entityData: EntityDetailResolverService }, data: { animation: 'search-detail' } },
   { path: 'errors/no-results', component: NoResultsComponent, data: { animation: 'search-detail' } },
   { path: 'errors/404', component: PageNotFoundComponent, data: { animation: 'search-detail' } },
