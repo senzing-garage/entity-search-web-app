@@ -33,7 +33,9 @@
           (entityClick)="onGraphEntityClick($event)"
           [showMatchKeys]="_showMatchKeys"
           [showMatchKeyTokenFilters]="true"
-          [showCoreMatchKeyTokenChips]="true"
+          [matchKeyTokenSelectionScope]="matchKeyTokenSelectionScope"
+          [showCoreMatchKeyTokenChips]="showCoreMatchKeyTokenChips"
+          [showExtraneousMatchKeyTokenChips]="showExtraneousMatchKeyTokenChips"
           (requestStarted)="onRequestStarted($event)"
           (renderComplete)="onRenderComplete($event)"
           (requestComplete)="onRequestComplete($event)"
@@ -43,13 +45,16 @@
           (contextMenuClick)="onGraphContextClick($event)"
           (matchKeysChange)="onMatchKeysChange($event)"
           (matchKeyTokensChange)="onMatchKeyTokensChange($event)"
+          (totalRelationshipsCountUpdated)="onTotalRelationshipsCountUpdated($event)"
+          [unlimitedMaxEntities]="unlimitedMaxEntities"
+          [unlimitedMaxScope]="unlimitedMaxScope"
+          [maxEntities]="maxEntities"
       ></sz-standalone-graph>
     </div>
     <!--  end graph control  -->
 
     <!-- start entity detail -->
     <div class="right-rail">
-
       <!-- start filters control -->
       <sz-entity-detail-graph-filter #graphFilter
       *ngIf="showFilters"
@@ -59,9 +64,13 @@
       [showMatchKeyFilters]="false"
       [showMatchKeyTokens]="_showMatchKeyTokensInFilter"
       [showMatchKeyTokenFilters]="true"
-      [showCoreMatchKeyTokenChips]="true"
-      [showExtraneousMatchKeyTokenChips]="false"
+      [matchKeyTokenSelectionScope]="matchKeyTokenSelectionScope"
+      [showMatchKeyTokenSelectAll]="true"
+      [showCoreMatchKeyTokenChips]="showCoreMatchKeyTokenChips"
+      [showExtraneousMatchKeyTokenChips]="showExtraneousMatchKeyTokenChips"
+      [maxEntitiesLimit]="maxEntitiesFilterLimit"
       (optionChanged)="onFilterOptionChange($event)"
+      (matchKeyTokenSelectionScopeChanged)="onFilterMatchKeyTokenSelectionScopeChanged($event)"
       ></sz-entity-detail-graph-filter>
       <!--  end filters control  -->
 
