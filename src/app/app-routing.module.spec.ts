@@ -13,6 +13,8 @@ export function SzRestConfigurationFactory() {
 
 // test to make sure senzing sdk module is working correctly
 describe(`App Routing`, () => {
+    let router: Router;
+    let location: Location;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -31,12 +33,17 @@ describe(`App Routing`, () => {
               }
             ]
         });
+        router = TestBed.inject(Router) as Router;
+        location = TestBed.inject(Location) as Location;
     });
-    /*
-    it(`should be pointing at api server on /api`, inject([SzRestConfiguration], (cfgSrv: SzRestConfiguration) => {
-      const srv = new SzConfigurationComponent(cfgSrv);
-      expect( cfgSrv.basePath ).toBe('/api');
-    }));
-    */
+    
+    it(
+      'automatically redirects to search when the app starts',
+      fakeAsync(() => {
+        router.navigate(['']);
+        tick();
+        expect(location.path()).toBe('/search');
+      })
+    );
 
 });
