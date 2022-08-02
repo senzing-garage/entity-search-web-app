@@ -27,7 +27,8 @@
     "e2e": "ng e2e --configuration=e2e --protractor-config=e2e/protractor.conf.js",
     "e2e:docker": "ng e2e --port 8080 --configuration=e2e --protractor-config=e2e/protractor.docker.conf.js",
     "e2e:headless": "ng e2e --configuration=e2e --protractor-config=e2e/protractor.ci.conf.js",
-    "prepush": "npm run test:headless"
+    "prepush": "npm run test:headless",
+    "postshrinkwrap": "lockfix"
   },
   "private": true,
   "dependencies": {
@@ -44,8 +45,8 @@
     "@auth0/angular-jwt": "^5.0.2",
     "@fontsource/material-icons": "^4.5.4",
     "@fontsource/roboto": "^4.5.5",
-    "@senzing/rest-api-client-ng": "^4.0.2",
-    "@senzing/sdk-components-ng": "^5.1.0-beta.0",
+    "@senzing/rest-api-client-ng": "~4.0.2",
+    "@senzing/sdk-components-ng": "~5.1.0",
     "@types/d3": "^5.9.1",
     "@types/socket.io-client": "^3.0.0",
     "acorn": "^8.6.0",
@@ -105,6 +106,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.0.0",
     "karma-junit-reporter": "^2.0.1",
+    "lockfix": "^2.0.1",
     "ng-packagr": "^13.3.1",
     "protractor": "~7.0.0",
     "scss-bundle": "^3.1.2",

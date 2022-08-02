@@ -6,13 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.7.1] - 2022-7-19
+## [2.7.1] - 2022-8-2
+
+### Added
+- added new radio switch for graph match key filtering scope
+- added "unlimited" UI options for buildOut and maxEntities graph filtering parameters
 
 ### Modified
-- bugfixes for match key filtering
+- bugfixes for large graph match key filtering
 - bugfixes for large graph FOC
+- graph match key filters now de-select on entity id(s) change
+- bugfixes for graph lifecycle progress/busy indicators.
 
-relevant tickets: #321 #302 #324
+relevant tickets: #299 #321 #302 #324
 
 ## [2.7.0] - 2022-7-07
 This update adds the long-awaited *Expand/Collapse* graph node edge feature. Now nodes in the graph will display a bubble with the number of relationships not currently visible. Relationships can be explored by simply expanding relationships down a path.
