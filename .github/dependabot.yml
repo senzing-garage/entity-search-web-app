@@ -14,7 +14,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "monthly"
     allow:
       - dependency-type: "indirect"
       - dependency-type: "direct"
