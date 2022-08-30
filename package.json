@@ -1,6 +1,6 @@
 {
   "name": "@senzing/entity-search-web-app",
-  "version": "2.7.1",
+  "version": "2.7.2",
   "license": "Apache-2.0",
   "scripts": {
     "ng": "ng",
@@ -13,7 +13,7 @@
     "start:ws": "node ./run/websocket-server -- webServerCspStreamServerUrl=\"ws://localhost:8255 ws://localhost:8250\" streamServerProxyPort=8255 streamServerProxyHost=\"localhost\" streamServerPort=\"8250\" streamServerHost=\"localhost\" streamServerDestUrl=\"ws://localhost:8250\"",
     "start:auth": "node ./run/authserver -- proxyLogLevel=debug authServerPortNumber=8200 adminAuthMode=JWT apiServerUrl=\"http://localhost:8250\" adminAuthSecret=\"db5b19ef-e8fc-43d3-a143-1728e3848aa3\" adminAuthToken=\"b02c708e-6fec-40c8-83b1-11bd8ed36293\"",
     "start:config": "node ./run/config-server -- apiServerUrl=\"http://localhost:8250\" webServerUrl=\"http://localhost:4200\" consoleServerUrl=\"ws://localhost:8273\" confServerPortNumber=4201",
-    "start:with:auth": "concurrently \"npm run start:auth\" \"npm run start:config\" \"ng serve\"",
+    "start:with:auth": "concurrently \"npm run start:auth\" \"npm run start:proxy:ws\" \"npm run start:config\" \"ng serve\"",
     "build": "ng build",
     "build:prod": "ng build --prod -c production",
     "build:docker": "ng build -c docker",
