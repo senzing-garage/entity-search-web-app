@@ -16,7 +16,7 @@ import {
   SzEntityRecord,
   SzSearchByIdFormParams
 } from '@senzing/sdk-components-ng';
-import { EntityGraphService, SzEntityNetworkData, SzFeatureMode } from '@senzing/rest-api-client-ng';
+import { EntityGraphService, SzDetailLevel, SzEntityNetworkData, SzFeatureMode } from '@senzing/rest-api-client-ng';
 import { SpinnerService } from './spinner.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { PrefsManagerService } from './prefs-manager.service';
@@ -332,6 +332,7 @@ export class GraphEntityNetworkResolverService implements Resolve<SzEntityNetwor
         this.prefsService.prefs.graph.maxDegreesOfSeparation,
         this.prefsService.prefs.graph.buildOut,
         this.prefsService.prefs.graph.maxEntities,
+        SzDetailLevel.MINIMAL,
         SzFeatureMode.NONE,
         false,
         false,

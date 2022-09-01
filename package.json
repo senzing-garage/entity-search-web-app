@@ -1,6 +1,6 @@
 {
   "name": "@senzing/entity-search-web-app",
-  "version": "2.7.1",
+  "version": "2.7.2",
   "license": "Apache-2.0",
   "scripts": {
     "ng": "ng",
@@ -45,8 +45,8 @@
     "@auth0/angular-jwt": "^5.0.2",
     "@fontsource/material-icons": "^4.5.4",
     "@fontsource/roboto": "^4.5.5",
-    "@senzing/rest-api-client-ng": "~4.0.2",
-    "@senzing/sdk-components-ng": "~5.1.0",
+    "@senzing/rest-api-client-ng": "^5.0.0",
+    "@senzing/sdk-components-ng": "^5.1.1-beta.1",
     "@types/d3": "^5.9.1",
     "@types/socket.io-client": "^3.0.0",
     "acorn": "^8.6.0",
