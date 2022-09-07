@@ -72,4 +72,6 @@ services:
       restart: 'no'
 
 networks:
-  sz-api-network:
+  senzing:
+    external:
+      name: ${SENZING_DOCKER_NETWORK:-senzing-network}
