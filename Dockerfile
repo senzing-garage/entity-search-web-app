@@ -7,7 +7,7 @@ ENV REFRESHED_AT=2022-08-29
 
 LABEL Name="senzing/entity-search-web-app" \
       Maintainer="support@senzing.com" \
-      Version="2.7.1"
+      Version="2.7.2"
 
 HEALTHCHECK CMD ["/app/healthcheck.sh"]
 
@@ -57,7 +57,7 @@ COPY --chown=1001:1001 ./proxy.conf.json /app
 #USER 1001
 
 # Health Check
-HEALTHCHECK --interval=12s --timeout=12s --start-period=30s \  
+HEALTHCHECK --interval=12s --timeout=12s --start-period=30s \
     CMD node /app/run/health/check.js
 
 # Runtime execution.
