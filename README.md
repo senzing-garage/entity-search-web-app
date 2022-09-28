@@ -299,7 +299,10 @@ If you open that example up you will see two lines at the bottom of the file:
     file: '../CERTS/server.key'
 ```
 
-Those lines tell docker to pass two secrets to the services defined in the docker compose file. These two lines should point to the location of the *server.key* and *server.cert* file you wish to use. The configuration of the *senzing-api-server* service may differ from how you have set up your configuration to run. You should copy over the configuration options defined in your _already working_ docker-compose.yml file to the docker-stack.yml file.
+Those lines tell docker to pass two secrets to the services defined in the docker compose file.
+These two lines should point to the location of the *server.key* and *server.cert* file you wish to use.
+The configuration of the *senzing-api-server* service may differ from how you have set up your configuration to run.
+You should copy over the configuration options defined in your *already working* docker-compose.yml file to the docker-stack.yml file.
 The other important lines(under the *senzing-webapp* service definition) are:
 
 ```yaml
@@ -365,7 +368,12 @@ next you can initiate a curl request to your webserver with `curl -kvv https://l
 > Accept: */*
 ```
 
-I'm using a self-signed cert in this example, but the important part is that you see the *TLSvx.x* handshake(s) and the *Server certificate:* response block. At this point you open up a normal browser(chrome, ff, edge etc) to your server instance, something like [https://localhost:8081](https://localhost:8081). You _should_ see information next to the address in the address bar with the SSL information provided by the certificate. If you self-signed you will be greeted with a warning message asking whether you want to proceed or not, this is normal.
+I'm using a self-signed cert in this example,
+but the important part is that you see the *TLSvx.x* handshake(s) and the *Server certificate:* response block.
+At this point you open up a normal browser(chrome, ff, edge etc) to your server instance,
+something like [https://localhost:8081](https://localhost:8081).
+You *should* see information next to the address in the address bar with the SSL information provided by the certificate.
+If you self-signed you will be greeted with a warning message asking whether you want to proceed or not, this is normal.
 
 You can shut down the swarm node with `docker stack rm senzing-webapp`
 
@@ -396,7 +404,10 @@ By default the webapp instance will not enable CORS requests to it's api endpoin
 
 #### CSP (Content Security Policy)
 
-By default a CSP is deployed to the routes that serve content on the webapp's host. It allows assets from itself to be loaded(and some cdn assets) and nothing else. For more information on CSP and how it offers some protection against XSS issues see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
+By default a CSP is deployed to the routes that serve content on the webapp's host.
+It allows assets from itself to be loaded (and some cdn assets) and nothing else.
+For more information on CSP and how it offers some protection against XSS issues see
+[Content-Security-Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy).
 
 ### Air Gapped Environments
 
@@ -424,7 +435,8 @@ The short version is find a machine with network access, then:
 
 ### Building from Source
 
-1. Build Senzing api server. tag it as *senzing/senzing-api-server *. Following the instructions at ["Senzing API server"](https://github.com/Senzing/senzing-api-server).
+1. Build Senzing api server. tag it as *senzing/senzing-api-server*.
+   Following the instructions at ["Senzing API server"](https://github.com/Senzing/senzing-api-server).
    Example:
 
     ```console

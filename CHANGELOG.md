@@ -6,13 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.7.1] - 2022-8-2
+## [2.7.2] - 2022-09-28
 
-### Added
+### Changed in 2.7.2
+
+- In `Dockerfile`, updated FROM instruction to:
+  - `node:16-bullseye-slim@sha256:18ae6567b623f8c1caada3fefcc8746f8e84ad5c832abd909e129f6b13df25b4`
+  - `node:16-alpine3.15@sha256:a60b681e1c28f60ea63f8394dea5384c69bdc464b9655e880f74aafaa5945665`
+
+## [2.7.1] - 2022-08-02
+
+### Added in 2.7.1
+
 - added new radio switch for graph match key filtering scope
 - added "unlimited" UI options for buildOut and maxEntities graph filtering parameters
 
-### Modified
+### Modified in 2.7.1
+
 - bugfixes for large graph match key filtering
 - bugfixes for large graph FOC
 - graph match key filters now de-select on entity id(s) change
@@ -20,85 +30,116 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 relevant tickets: #299 #321 #302 #324
 
-## [2.7.0] - 2022-7-07
-This update adds the long-awaited *Expand/Collapse* graph node edge feature. Now nodes in the graph will display a bubble with the number of relationships not currently visible. Relationships can be explored by simply expanding relationships down a path.
-The *Why Not* report can now be run from specific integration points. The why not report will run a side-by-side table of two entities information in order to help illustrate why two entities did not come together.
+## [2.7.0] - 2022-07-07
 
-### Added
+This update adds the long-awaited *Expand/Collapse* graph node edge feature.
+Now nodes in the graph will display a bubble with the number of relationships not currently visible.
+Relationships can be explored by simply expanding relationships down a path.
+The *Why Not* report can now be run from specific integration points.
+The why not report will run a side-by-side table of two entities information in order to help illustrate why two entities did not come together.
+
+### Added in 2.7.0
+
 - New graph features:
-  - On clicking the bubble the hidden related entities will be drawn around the node. 
-  - On clicking the expand/collapse bubble again the related nodes that are not related to any other nodes on the canvas will be hidden. 
+  - On clicking the bubble the hidden related entities will be drawn around the node.
+  - On clicking the expand/collapse bubble again the related nodes that are not related to any other nodes on the canvas will be hidden.
   - On right clicking the node there is a new option to hide just that specific entity from view(to eliminate clutter)
   - On right clicking the relationship line match key there will be a menu option for running a *Why NOT* report between the two connected entities
-- There is a new *Multi-Select* mode button in the upper right-corner of search results. Once the button is clicked a user can click on two search results and click on "Compare" to bring up a "Why NOT" report for why those two entities did not come together.
-- Match keys are now displayed in the search result cards by default. _(they can be turned off through preferences)_
+- There is a new *Multi-Select* mode button in the upper right-corner of search results.
+  Once the button is clicked a user can click on two search results and click on "Compare" to bring up
+  a "Why NOT" report for why those two entities did not come together.
+- Match keys are now displayed in the search result cards by default. *(they can be turned off through preferences)*
 
-## [2.6.0] - 2022-5-9
+## [2.6.0] - 2022-05-09
 
-This update brings the models in line with the changes for the `3.0.0` release of the [senzing rest api server](https://github.com/Senzing/senzing-api-server)
+This update brings the models in line with the changes for the `3.0.0` release of the
+[senzing rest api server](https://github.com/Senzing/senzing-api-server)
 and [rest api specification](https://github.com/Senzing/senzing-rest-api-specification/blob/caceres.version-3.0.0/senzing-rest-api.yaml).
 
-### Added
-- "Filter By Match Key" added back to the large graph display using a more user-friendly approach of a _"Tag Cloud" of match key tokens.
-- Why Entity feature that adds a button to the entity detail page that opens a draggable/resizable window with a horizontal side-by-side view of why records in an entity came together
-- Why Entity feature that adds a button to the entity detail page's record rows that opens a draggable/resizable window with a horizontal side-by-side view of why that particular record in an entity came together
+### Added in 2.6.0
 
-### Modified
+- "Filter By Match Key" added back to the large graph display using a more user-friendly approach of a _"Tag Cloud" of match key tokens.
+- Why Entity feature that adds a button to the entity detail page that opens a
+  draggable/resizable window with a horizontal side-by-side view of why records in an entity came together
+- Why Entity feature that adds a button to the entity detail page's record rows that opens a
+  draggable/resizable window with a horizontal side-by-side view of why that particular record in an entity came together
+
+### Modified in 2.6.0
+
 - Major refactoring done under the hood inside the admin area and data importing functionality due to the removal of entity types/classes.
 - `@senzing/rest-api-client-ng` updated to `4.0.0`
 - `@senzing/sdk-graph-components` updated to `4.1.0-beta.1`
 - `@senzing/sdk-components-ng` updated to `4.0.0-beta.7`
 - UI fixes (various)
 
-### Removed
-- Any and all functionality surrounding _Entity Type's_ and _Entity Classes_. Management of these features has been removed in the 3.0 version of the senzing sdk.
+### Removed in 2.6.0
+
+- Any and all functionality surrounding *Entity Type's* and *Entity Classes*.
+  Management of these features has been removed in the 3.0 version of the senzing sdk.
 
 relevant tickets: #265 #263 #261 #258
 
-## [2.5.0] - 2022-2-28
+## [2.5.0] - 2022-02-28
 
 ![EDA Tools Console](docs/img/release/151086453-a276b67c-fad7-411e-a540-f0252a50fe28.png?raw=true "EDA Tools Console")
 
-### Modified
+### Modified in 2.5.0
+
 - dependency updates to resolve security bulletins
 - bugfix for json/json-lines analyze functions switched from `streamAnalyzeByRecords` to `streamAnalyzeByChunks`
 - bugfix for json/json-lines loading functions switched from `streamLoadByRecords` to `streamLoadByChunks`
 
-### Added
-- Optional Web Console Access to the [senzing-web-app-console](https://github.com/Senzing/entity-search-web-app-console) container. Users can now run popular 
-shell tools like [G2Explorer.py](https://senzing.zendesk.com/hc/en-us/articles/360051768234-Exploratory-Data-Analysis-2-Basic-exploration), [G2Snapshot.py](https://senzing.zendesk.com/hc/en-us/articles/360051874294-Exploratory-Data-Analysis-3-Taking-a-snapshot) and [G2Audit.py](https://senzing.zendesk.com/hc/en-us/articles/360050643034-Exploratory-Data-Analysis-4-Comparing-ER-results) from within the context of the container 
-through the web interface.
+### Added in 2.5.0
 
-### Removed
-- "Filter By Match Key" removed from the large graph display due to _usability_ issues on large datasets. _(It will return once a better approach can be implemented)_
+- Optional Web Console Access to the [senzing-web-app-console](https://github.com/Senzing/entity-search-web-app-console) container.
+  Users can now run popular shell tools like
+  [G2Explorer.py](https://senzing.zendesk.com/hc/en-us/articles/360051768234-Exploratory-Data-Analysis-2-Basic-exploration),
+  [G2Snapshot.py](https://senzing.zendesk.com/hc/en-us/articles/360051874294-Exploratory-Data-Analysis-3-Taking-a-snapshot) and
+  [G2Audit.py](https://senzing.zendesk.com/hc/en-us/articles/360050643034-Exploratory-Data-Analysis-4-Comparing-ER-results)
+  from within the context of the container through the web interface.
+
+### Removed in 2.5.0
+
+- "Filter By Match Key" removed from the large graph display due to *usability* issues on large datasets.
+  *(It will return once a better approach can be implemented)*
 
 relevant tickets: #242 #243 #246 #252 #256
 
 ## [2.4.0] - 2021-12-28
-### Added
+
+### Added in 2.4.0
+
 - `/health` route that returns a model shape of `{"isProxyAlive": true, "isApiServerAlive": true, "isWebserverAlive": true}`
 - `/health/proxy` route that returns the status of the proxy
-- [HealthCheckerUtility](https://github.com/Senzing/entity-search-web-app/blob/master/run/health/index.js) that provides state management for health status checks.
+- [HealthCheckerUtility](https://github.com/Senzing/entity-search-web-app/blob/master/run/health/index.js)
+  that provides state management for health status checks.
 
-### Modified
-- Angular Framework Updated to version 13. As of 3.0.0 release this package now requires `@angular@~13.0.0` to compile and run. Updating to angular 13 resolves major dependency compatibility issues so we can apply the latest security patches. 
+### Modified in 2.4.0
+
+- Angular Framework Updated to version 13. As of 3.0.0 release this package now requires `@angular@~13.0.0` to compile and run.
+  Updating to angular 13 resolves major dependency compatibility issues so we can apply the latest security patches.
 - Small bugfix to properly clip the graph scale ui control when graph section in entity detail is collapsed.
 - All dependencies updated to latest versions
 - Docker container now based off of `lts-alpine`(nodejs@16) instead of `14-alpine`(nodejs@14)
 - Docker container now gets `npm` itself deleted from container after build phase since it is not needed for runtime to minimize security exposure.
-- Dockerfile updated to wire HEALTHCHECK's to the new [/health/check script](https://github.com/Senzing/entity-search-web-app/blob/master/run/health/check.js)
+- Dockerfile updated to wire HEALTHCHECK's to the new
+  [/health/check script](https://github.com/Senzing/entity-search-web-app/blob/master/run/health/check.js)
 
 relevant tickets: #230 #231 #235 #195
 
 ## [2.3.4] - 2021-12-01
-### Added
+
+### Added in 2.3.4
+
 - The ability to filter graph elements by "match keys" present on the links between graph entities. #215
 - The ability to import CSV files when using SQS stream loading. #217
 - *Zoom* and *Pan* controls added to embedded and standalone Network Graph components. #216
 - Ability to filter by *Match Keys* present on the links between graph entities in the dataset added to standalone Network Graph component. #215
-- List of _ALL_ command line flags and environment variables for configuration of the docker container. see [docs/Environment Variables](https://github.com/Senzing/entity-search-web-app/blob/master/docs/Environment%20Variables.md) #218
+- List of *ALL* command line flags and environment variables for configuration of the docker container.
+  See [docs/Environment Variables](https://github.com/Senzing/entity-search-web-app/blob/master/docs/Environment%20Variables.md) #218
 
-### Modified
+### Modified in 2.3.4
+
 - "Search By Record Id" now returns full entity NOT just "record". #220
 - bugfix for #222. introduced by #215
 - bugfix for #226. introduced by #220
@@ -108,7 +149,7 @@ relevant tickets #226 #222 #220 #218 #216 #217 #215
 
 ## [2.3.3] - 2021-10-14
 
-- Added multi-stage build to `Dockerfile` so that only production dependencies and 
+- Added multi-stage build to `Dockerfile` so that only production dependencies and
 compiled code is present in immutable container.
 - Removed Google Chrome from container (was used for container e2e testing)
 - Removed `travis.yml` from project.
@@ -116,61 +157,77 @@ compiled code is present in immutable container.
 
 ## [2.3.2] - 2021-09-09
 
-- removed the re-mapping UI interaction in admin/load when an import contains explicitly specified 
-datasources on the record level. If the record contains an explicit datasource that is what the record 
-will be loaded in to. If the datasource specified does not exist it will be created. If the file contains 
-records that have _NO_ datasource specified the user will be prompted to enter one before load.
-- removed the UI interaction in admin/load around custom entity types. Now 
-if a imported file specifies a specific entity type that does not exist it is created. If no 
-entity type is specified it is automatically assumed `GENERIC`
-- Added a "Admin" menu option in the upper-left site menu _WHEN_ the poc or api server has "-adminEnabled" set.
+- removed the re-mapping UI interaction in admin/load when an import contains explicitly specified datasources on the record level.
+  If the record contains an explicit datasource that is what the record will be loaded in to.
+  If the datasource specified does not exist it will be created.
+  If the file contains records that have *NO* datasource specified the user will be prompted to enter one before load.
+- removed the UI interaction in admin/load around custom entity types.
+  Now if a imported file specifies a specific entity type that does not exist it is created.
+  If no entity type is specified it is automatically assumed `GENERIC`.
+- Added a "Admin" menu option in the upper-left site menu *WHEN* the poc or api server has "-adminEnabled" set.
 - bugfixes related to stream loading (various, see relevant tickets)
 
 relevant tickets #189 #190 #192 #196 #198 #200 #202 #204
 
 ## [2.3.1] - 2021-08-26
 
-The configuration options/setup surrounding the stream loading feature released in [2.3.0](https://github.com/Senzing/entity-search-web-app/releases/tag/2.3.0) has been simplified. Now stream loading is automatically enabled for the user **_IF_** the webapp is running against a **[POC Server](https://github.com/Senzing/senzing-poc-server)** that has SQS configured. If not configured properly or running against the [API server](https://github.com/Senzing/senzing-api-server)(with adminMode=true set) the loading feature will fallback to the **non**-stream method. As a result of this streamlining the UI **_toggle switch_** and **"connection configuration"** modal has been _removed_ from the UI.
+The configuration options/setup surrounding the stream loading feature released in
+[2.3.0](https://github.com/Senzing/entity-search-web-app/releases/tag/2.3.0) has been simplified.
+Now stream loading is automatically enabled for the user ***IF*** the webapp is running against a
+**[POC Server](https://github.com/Senzing/senzing-poc-server)** that has SQS configured.
+If not configured properly or running against the
+[API server](https://github.com/Senzing/senzing-api-server)(with adminMode=true set)
+the loading feature will fallback to the **non**-stream method.
+As a result of this streamlining the UI ***toggle switch*** and **"connection configuration"** modal has been *removed* from the UI.
 
 The following ENV vars introduced in `2.3.0` have been removed:
+
 - `SENZING_STREAM_SERVER_URL`
 - `SENZING_STREAM_SERVER_PORT`
 - `SENZING_STREAM_SERVER_DEST_URL`
 - `SENZING_WEB_SERVER_CSP_STREAM_SERVER_URL`
 
 The following ENV var has been introduced:
-- `SENZING_WEB_SERVER_URL` - The fully qualified url to the root of where the webapp is being served from. This is used to define in the webapp security policy that outbound socket connections are allowed to this address. 
+
+- `SENZING_WEB_SERVER_URL` - The fully qualified url to the root of where the webapp is being served from.
+  This is used to define in the webapp security policy that outbound socket connections are allowed to this address.
   - `http://my.public.domain/webapp`
   - `http://my.specific.domain:specificport`
-  
+
 The following cmdline args have been introduced:
+
 - `webServerUrl` - see ENV var `SENZING_WEB_SERVER_URL` description
 
 relevant tickets #180 #183 #185
 
 ## [2.3.0] - 2021-08-10
 
-## Stream loading via websockets to the poc-server to rabbitMQ or Amazon SQS:
+### Stream loading via websockets to the poc-server to rabbitMQ or Amazon SQS
 
-This release is primarily to support stream loading which enables stream ingestion through a web interface to the POC Server which hands off to the configured SQS provider. The stream interface is capable of reading records in a file and sending them out in small chunked batches either as quickly as they can be read or a fast as configured upload rate.
+This release is primarily to support stream loading which enables stream ingestion through
+a web interface to the POC Server which hands off to the configured SQS provider.
+The stream interface is capable of reading records in a file and sending them out in
+small chunked batches either as quickly as they can be read or a fast as configured upload rate.
 
-These features should be cross compatible with the standard API Server backend. If the stack is set up with SQS ingestion and the backend is the POC Server then stream loading will be available. If the backend is the standard API server then stream loading features will be hidden from the UI. 
+These features should be cross compatible with the standard API Server backend.
+If the stack is set up with SQS ingestion and the backend is the POC Server then stream loading will be available.
+If the backend is the standard API server then stream loading features will be hidden from the UI.
 
 relevant tickets: #143 #179
 
 ## [2.2.4] - 2021-07-28
 
-- support for runtime configuration of API path that client connects to through env vars and cmdline switches. 
+- support for runtime configuration of API path that client connects to through env vars and cmdline switches.
 - bugfix for virtual directories
 - dependency security updates
 - docker image base is now `lts-buster-slim`
 
-relevant tickets: #163 #166 #173 
+relevant tickets: #163 #166 #173
 
 ## [2.2.2,2.2.3] - 2021-04-08
 
 - support for virtual directories
-- support for AWS Cloud Formation 
+- support for AWS Cloud Formation
 - webfonts now referenced locally
 - dependency security updates
 - bugfix for download as pdf functionality
@@ -197,6 +254,7 @@ relevant tickets: #147 #154, #156, #157
 ## [2.1.1] - 2020-10-02
 
 Bugfixes for:
+
 - [Large graph filtering](https://github.com/Senzing/sdk-graph-components/issues/27)
 - [Large graph color highlights by datasource](https://github.com/Senzing/sdk-components-ng/issues/162)
 - [Detail Graph lifecycle issue on in-component navigation](https://github.com/Senzing/sdk-components-ng/issues/156)
@@ -207,19 +265,25 @@ Bugfixes for:
 
 ## [2.1.0] - 2020-09-23
 
-Compatibility release for framework upgrade to Angular 10: see [https://blog.angular.io/version-10-of-angular-now-available-78960babd41](https://blog.angular.io/version-10-of-angular-now-available-78960babd41)
+Compatibility release for framework upgrade to Angular 10:
+See [https://blog.angular.io/version-10-of-angular-now-available-78960babd41](https://blog.angular.io/version-10-of-angular-now-available-78960babd41)
 
 Major updates to most dependency versions have also been made which should improve file sizes, security, and stability.
 
 The following Senzing sponsored projects have also been updated to operate on Angular 10,
 see the following links for associated tickets:
+
 - [sdk-components-ng/issues/143](https://github.com/Senzing/sdk-components-ng/issues/143)
 - [rest-api-client-ng/issues/39](https://github.com/Senzing/rest-api-client-ng/issues/39)
 - [sdk-graph-components/issues/37](https://github.com/Senzing/sdk-graph-components/issues/37)
 
-## [2.0.1] - 2020-09-TBD
+## [2.0.1] - 2020-09-21
 
-The scripts no longer write any configuration or runtime configuration information to the filesystem. Instead, the options are read from either ENV vars or Command Line arguements in to a data store class, which is then accessed by scripts and endpoints that need access to these arguements. This was done to support immutable containers(see https://cloud.google.com/solutions/best-practices-for-operating-containers#ensure_that_your_containers_are_stateless_and_immutable)
+The scripts no longer write any configuration or runtime configuration information to the filesystem.
+Instead, the options are read from either ENV vars or Command Line arguements in to a data store class,
+which is then accessed by scripts and endpoints that need access to these arguements.
+This was done to support immutable containers.  See
+[Ensure that your containers are stateless and immutable](https://cloud.google.com/solutions/best-practices-for-operating-containers#ensure_that_your_containers_are_stateless_and_immutable).
 
 Added:
 
@@ -240,7 +304,7 @@ Removed:
 
 Moved:
 
-- auth-server.js → run/authserver/index.js 
+- auth-server.js → run/authserver/index.js
 - auth/auth.js → run/authserver/auth.js
 - webserver.js → run/webserver/index.js
 
@@ -250,7 +314,10 @@ There are several NEW env vars/command args that now are required for full opera
 
 ## [2.0.0] - 2020-07-16
 
-Compatibility release for interacting with the 2.0.0 [senzing-rest-api-spec](https://github.com/Senzing/senzing-rest-api-specification) and [senzing-api-server](https://github.com/Senzing/senzing-api-server). For information on specifics of endpoint changes see below:
+Compatibility release for interacting with the 2.0.0
+[senzing-rest-api-spec](https://github.com/Senzing/senzing-rest-api-specification) and
+[senzing-api-server](https://github.com/Senzing/senzing-api-server).
+For information on specifics of endpoint changes see below:
 
 - [@senzing/rest-api-client-ng@2.0.0](https://github.com/Senzing/rest-api-client-ng/releases/tag/2.0.0)
 - [senzing-rest-api-specification PR #44](https://github.com/Senzing/senzing-rest-api-specification/pull/44)
@@ -319,7 +386,10 @@ Compatibility release for interacting with the 2.0.0 [senzing-rest-api-spec](htt
 
 ### Added to 1.0.3
 
-- [sdk-components-ng](https://github.com/Senzing/sdk-components-ng) updated to [1.0.9](https://github.com/Senzing/sdk-components-ng/releases/tag/1.0.9) and [sdk-graph-components](https://github.com/Senzing/sdk-graph-components) updated to [0.0.6](https://github.com/Senzing/sdk-graph-components/releases/tag/0.0.6)
+- [sdk-components-ng](https://github.com/Senzing/sdk-components-ng) updated to
+  [1.0.9](https://github.com/Senzing/sdk-components-ng/releases/tag/1.0.9) and
+  [sdk-graph-components](https://github.com/Senzing/sdk-graph-components) updated to
+  [0.0.6](https://github.com/Senzing/sdk-graph-components/releases/tag/0.0.6)
 
 ![2019-09-30_122901](docs/img/release/65909647-eaba3600-e37d-11e9-92f8-2d8f7e4ceca3.png)
 
