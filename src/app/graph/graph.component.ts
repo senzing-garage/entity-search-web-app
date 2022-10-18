@@ -108,12 +108,12 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     relatedEntities: SzRelatedEntity[]
   };
 
-  public _showMatchKeys = false;
+  public _showLinkLabels = false;
   /** sets the visibility of edge labels on the node links */
-  @Input() public set showMatchKeys(value: boolean) {
-    this._showMatchKeys = value;
-    let prefsVal = this.prefs.graph.showMatchKeys;
-    console.log('@senzing/sdk-components-ng:sz-entity-detail-graph.showMatchKeys: ', value, prefsVal);
+  @Input() public set showLinkLabels(value: boolean) {
+    this._showLinkLabels = value;
+    let prefsVal = this.prefs.graph.showLinkLabels;
+    console.log('@senzing/sdk-components-ng:sz-entity-detail-graph.showLinkLabels: ', value, prefsVal);
   }
 
   /** @internal */
@@ -687,8 +687,8 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log('GraphComponent.onFilterOptionChange: ', event);
     switch(event.name) {
       case 'showLinkLabels':
-        //this._showMatchKeys = event.value;
-        this.prefs.graph.showMatchKeys = event.value;
+        //this._showLinkLabels = event.value;
+        this.prefs.graph.showLinkLabels = event.value;
         break;
     }
   }
@@ -701,7 +701,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     (see https://github.com/Senzing/entity-search-web-app/issues/272)
 
     console.log('GraphComponent.onPrefsChange(): ', prefs, this.prefs.graph);
-    this._showMatchKeys = prefs.showMatchKeys;
+    this._showLinkLabels = prefs.showLinkLabels;
     this.maxDegrees = prefs.maxDegreesOfSeparation;
     this.maxEntities = prefs.maxEntities;
     this.buildOut = prefs.buildOut;

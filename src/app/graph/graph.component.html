@@ -31,7 +31,7 @@
           [showGraphContextMenu]="false"
           [showGraphLinkContextMenu]="true"
           (entityClick)="onGraphEntityClick($event)"
-          [showMatchKeys]="_showMatchKeys"
+          [showLinkLabels]="_showLinkLabels"
           [showMatchKeyTokenFilters]="true"
           [matchKeyTokenSelectionScope]="matchKeyTokenSelectionScope"
           [showCoreMatchKeyTokenChips]="showCoreMatchKeyTokenChips"
@@ -59,7 +59,7 @@
       <sz-entity-detail-graph-filter #graphFilter
       *ngIf="showFilters"
       class="sz-entity-detail-graph-filter"
-      [showLinkLabels]="_showMatchKeys"
+      [showLinkLabels]="_showLinkLabels"
       [showDataSources]="_showDataSourcesInFilter"
       [showMatchKeyFilters]="false"
       [showMatchKeyTokens]="_showMatchKeyTokensInFilter"
