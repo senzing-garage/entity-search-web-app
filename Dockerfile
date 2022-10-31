@@ -7,7 +7,7 @@ ENV REFRESHED_AT=2022-10-27
 
 LABEL Name="senzing/entity-search-web-app" \
       Maintainer="support@senzing.com" \
-      Version="2.7.2"
+      Version="2.7.3"
 
 HEALTHCHECK CMD ["/app/healthcheck.sh"]
 
