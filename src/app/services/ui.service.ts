@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { SpinnerService } from './spinner.service';
 import { BehaviorSubject, delay, Observable, Subject } from 'rxjs';
 import { Router, ActivatedRoute, UrlSegment, NavigationEnd } from '@angular/router';
+import { PrefsManagerService, SzWebAppPrefs } from './prefs-manager.service';
 
 @Injectable({
   providedIn: 'root'
@@ -27,6 +28,7 @@ export class UiService {
   public set searchExpanded(value) {
     this._searchExpanded = value;
     this._onSearchExpanded.next( this._searchExpanded );
+    this.prefs.ui.searchFormExpanded = this._searchExpanded;
   }
   public get searchType(): string {
     return this._searchType;
@@ -74,10 +76,20 @@ export class UiService {
     }
   }
 
+  private onWebAppPrefsChange(value: SzWebAppPrefs) {
+    if(value && value.searchFormExpanded !== undefined) {
+      // doing this manually instead of through setter
+      // because setter will set pref and cause loop
+      this._searchExpanded = value.searchFormExpanded;
+      this._onSearchExpanded.next( this._searchExpanded );
+    }
+  }
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private spinner: SpinnerService
+    private spinner: SpinnerService,
+    private prefs: PrefsManagerService
     ) {
     // we need route senzing for graph sensing
     // because there is also an embedded graph
@@ -94,5 +106,6 @@ export class UiService {
         //this._consolePopOutOpen = (event && event.urlAfterRedirects && event.urlAfterRedirects.indexOf('/no-decorator(popup:console)') >= 0);
       }
     });
+    this.prefs.ui.prefsChanged.subscribe(this.onWebAppPrefsChange.bind(this));
   }
 }
