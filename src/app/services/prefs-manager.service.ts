@@ -1,8 +1,12 @@
 import { OnDestroy, Injectable, Inject } from '@angular/core';
 import { SzSdkPrefsModel, SzPrefsService } from '@senzing/sdk-components-ng';
 import { StorageService, LOCAL_STORAGE, SESSION_STORAGE } from 'ngx-webstorage-service';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, BehaviorSubject } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
+
+export interface SzWebAppPrefsModel extends SzSdkPrefsModel {
+  webapp?: any
+}
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +20,8 @@ export class PrefsManagerService implements OnDestroy {
   public STORAGE_KEY = 'senzing-app-prefs';
   /** localstorage key to store global app data in (for things like whether or not to store prefs) */
   public G_STORAGE_KEY = 'senzing-web-app';
+  /** local storage key to store app UI state data in (for things like whether or not the search tray is expanded) */
+  public L_STORAGE_KEY = 'senzing-web-app-prefs';
   /** original json value when app was loaded */
   private _localStorageOriginalValue: SzSdkPrefsModel = this.lStore.get(this.STORAGE_KEY);
   /** original json value when app was loaded */
@@ -66,6 +72,9 @@ export class PrefsManagerService implements OnDestroy {
     this.saveGlobalSettingsToStorage();
   }
 
+  /** ui/ux application state preferences */
+  public ui?: SzWebAppPrefs       = new SzWebAppPrefs();
+
   constructor(
     public prefs: SzPrefsService,
     @Inject(LOCAL_STORAGE) private lStore: StorageService,
@@ -76,6 +85,8 @@ export class PrefsManagerService implements OnDestroy {
 
     // set up global properties if set
     this.getGlobalSettingsFromStorage();
+    // set up app state properties if set
+    this.getLocalSettingsFromStorage();
 
     // if (_savePrefsInLocalStorage) set up previous state from local storage
     if (this._storePrefsInLocalStorage) {
@@ -94,6 +105,12 @@ export class PrefsManagerService implements OnDestroy {
     this.prefs.prefsChanged.pipe(
       takeUntil(this.unsubscribe$)
     ).subscribe( this.onPrefsChanged.bind(this) );
+    // listen for UI state changes at the service level
+    this.ui.prefsChanged.pipe(
+      takeUntil(this.unsubscribe$),
+    ).subscribe( (prefs: SzWebAppPrefs) => {
+      this.saveLocalSettingsToStorage();
+    } );
   }
 
   /**
@@ -154,12 +171,24 @@ export class PrefsManagerService implements OnDestroy {
     if (settingsModel) {
       const modelKeys = Object.keys(settingsModel);
       if (modelKeys.indexOf && modelKeys.indexOf('storePrefsInLocalStorage') > -1) {
-        this._storePrefsInLocalStorage = settingsModel['storePrefsInLocalStorage'];
+        this._storePrefsInLocalStorage    = settingsModel['storePrefsInLocalStorage'];
       }
       if (modelKeys.indexOf && modelKeys.indexOf('storePrefsInSessionStorage') > -1) {
-        this._storePrefsInSessionStorage = settingsModel['storePrefsInSessionStorage'];
+        this._storePrefsInSessionStorage  = settingsModel['storePrefsInSessionStorage'];
       }
+
     }
+  }
+  /** get app state values from local storage */
+  private getLocalSettingsFromStorage() {
+    let settingsModel = false;
+    if (this.lStore.has(this.L_STORAGE_KEY)) {
+      this.ui.fromJSONObject( this.lStore.get(this.L_STORAGE_KEY) );
+    }
+  }
+  /** save app state values to local storage */
+  private saveLocalSettingsToStorage() {
+    this.lStore.set(this.L_STORAGE_KEY, this.ui.toJSONObject());
   }
   /** save any global settings to local storage */
   private saveGlobalSettingsToStorage() {
@@ -168,5 +197,90 @@ export class PrefsManagerService implements OnDestroy {
       storePrefsInSessionStorage: this._storePrefsInSessionStorage
     };
     this.lStore.set(this.G_STORAGE_KEY, settingsModel);
+  }
+}
+
+/**
+ * preferences specific to just the webapp.
+ *
+ * used by {@link SzSearchFormPrefs}, {@link SzSearchResultsPrefs}, {@link SzEntityDetailPrefs}, {@link SzGraphPrefs}
+ */
+ export class SzWebAppPrefs {
+  public bulkSet: boolean = false;
+  public prefsChanged: BehaviorSubject<any> = new BehaviorSubject<any>(this.toJSONObject());
+  jsonKeys = ['searchFormExpanded'];
+  typemap  = {};
+  private _searchFormExpanded: boolean;
+
+  // ------------------ methods
+  constructor(){
+    /**
+     * publish out a "first" real payload so that
+     * subscribers get an initial payload from this subclass
+     * instead of the empty superclass
+     **/
+    this.prefsChanged.next( this.toJSONObject() );
+  }
+
+  /** whether or not to expand or collapse search tray. */
+  public get searchFormExpanded(): boolean {
+    return this._searchFormExpanded;
+  }
+  /** whether or not to expand or collapse search tray. */
+  public set searchFormExpanded(value: boolean) {
+    this._searchFormExpanded = value;
+    if(!this.bulkSet) this.prefsChanged.next( this.toJSONObject() );
+  }
+
+  /** get shallow JSON copy of object state. properties are filtered by members of {@link jsonKeys} */
+  public toJSONObject() {
+    const retObj = {};
+    if (this.jsonKeys && this.jsonKeys.forEach) {
+      this.jsonKeys.forEach((k: string) => {
+        if( this[k] !== undefined){
+          try{
+            retObj[k] = ( this[k] && this[k].toJSONObject ) ? this[k].toJSONObject() : this[k];
+          } catch (err) {
+            // console.warn('attempted to get prefVal, but pref unset. ', err)
+          };
+        }
+      });
+    }
+    return retObj;
+  }
+  /** populate values by calling setters with the same names as json keys */
+  public fromJSONObject(value: string) {
+    this.bulkSet = true;
+    let _isChanged = false;
+    if (this.jsonKeys && this.jsonKeys.forEach) {
+      this.jsonKeys.forEach((k: string) => {
+        if( value && value[k] !== undefined ){
+          try{
+            this[k] = (value[k] && value[k].fromJSONObject ) ? value[k].fromJSONObject() : value[k];
+            _isChanged = true;
+          } catch (err) {
+            // console.warn('attempted to get prefVal, but pref unset. ', err)
+          };
+        }
+      });
+    }
+    this.bulkSet = false;
+    if(_isChanged){
+      this.prefsChanged.next( this.toJSONObject() );
+    }
+  }
+  /** get object state representation as a string */
+  public toJSONString(): string {
+    return JSON.stringify(this.toJSONObject());
+  }
+  /** gets an array of all public json properties and their types */
+  public getPublicPropertiesSchema() {
+    const retObj = {};
+    if (this.jsonKeys && this.jsonKeys.forEach) {
+      this.jsonKeys.forEach((k: string) => {
+        retObj[k] = (this.typemap && this.typemap[k]) ? this.typemap[k] : typeof this[k];
+      });
+    }
+    return retObj;
   }
 }
