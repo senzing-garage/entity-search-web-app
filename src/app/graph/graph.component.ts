@@ -331,9 +331,6 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     private renderer: Renderer2,
     private titleService: Title
     ) {
-
-      console.log('GraphComponent()');
-
       this.route.data.subscribe((data) => {
         // we're using the route resolver to activate spinner
         // this could be more efficient and use networkData to feed
