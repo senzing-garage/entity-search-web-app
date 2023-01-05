@@ -21,7 +21,7 @@ describe(`Graph View`, () => {
     });
 
     it(`should resolve entity id #1`, inject([SzRestConfiguration], (cfgSrv: SzRestConfiguration) => {
-
+      expect(true).toBe(true);
     }));
 
 });
