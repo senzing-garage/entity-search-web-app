@@ -10,7 +10,6 @@ import {
   SzEntitySearchParams,
   SzAttributeSearchResult,
   SzEntityDetailComponent,
-  SzPdfUtilService,
   SzResolvedEntity,
   SzRelatedEntity,
   /*SzRelationshipNetworkComponent,*/
@@ -321,7 +320,6 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private search: EntitySearchService,
-    public pdfUtil: SzPdfUtilService,
     public overlay: Overlay,
     public uiService: UiService,
     public viewContainerRef: ViewContainerRef,
@@ -599,7 +597,6 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   private createPDF(): void {
     const filename = this.pdfFileName;
-    // this.pdfUtil.createPdfFromHtmlElement(this.entityDetailComponent.nativeElement, filename);
   }
 
   public onGraphEntityClick(event: any): void {
