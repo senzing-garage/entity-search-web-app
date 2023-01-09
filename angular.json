@@ -281,9 +281,10 @@
       }
     }
   },
-  "defaultProject": "entity-search-web-app",
   "cli": {
     "analytics": false,
-    "defaultCollection": "@angular-eslint/schematics"
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ]
   }
 }

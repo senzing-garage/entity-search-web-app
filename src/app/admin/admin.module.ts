@@ -47,54 +47,53 @@ import { SzRestConfigurationFactory } from '../common/sdk-config.factory';
 import { SzWebAppConfigService } from '../services/config.service';
 
 @NgModule({
-  declarations: [
-    AdminComponent,
-    AdminConsoleComponent,
-    AdminDataSourcesComponent,
-    /*AdminEntityTypesComponent,*/
-    AdminDataLoaderComponent,
-    AdminBulkDataAnalysisComponent,
-    AdminBulkDataAnalysisReportComponent,
-    AdminBulkDataAnalysisSummaryComponent,
-    AdminBulkDataLoadComponent,
-    AdminBulkDataLoadReportComponent,
-    AdminBulkDataLoadSummaryComponent,
-    AdminBulkDataStreamAnalysisReportComponent,
-    AdminBulkDataStreamLoadReportComponent,
-    AdminFileDragAndDrop,
-    AdminOAuthTokensComponent,
-    AdminErrorNoAdminModeComponent,
-    AdminLicenseInfoComponent,
-    AdminLoginComponent,
-    AdminServerInfoComponent,
-    NewDataSourceDialogComponent,
-    SzProgressBarComponent,
-    XtermComponent
-  ],
-  imports: [
-    AdminRoutingModule,
-    CommonModule,
-    FormsModule,
-    HttpClientModule,
-    JwtModule.forRoot({
-      config: {
-        tokenGetter: tokenGetter,
-        allowedDomains: ['localhost:8000'],
-        disallowedRoutes: ['localhost:8000/authsdfsdf']
-      }
-    }),
-    MaterialModule,
-    SenzingSdkModule.forRoot( SzRestConfigurationFactory ),
-    SenzingDataServiceModule.forRoot( SzRestConfigurationFactory )
-  ],
-  entryComponents: [ NewDataSourceDialogComponent, XtermComponent ],
-  providers: [
-    {  provide: HTTP_INTERCEPTORS,
-       useClass: OAuthInterceptor,
-       multi: true
-    },
-    SzWebAppConfigService,
-    WebSocketService
-  ]
+    declarations: [
+        AdminComponent,
+        AdminConsoleComponent,
+        AdminDataSourcesComponent,
+        /*AdminEntityTypesComponent,*/
+        AdminDataLoaderComponent,
+        AdminBulkDataAnalysisComponent,
+        AdminBulkDataAnalysisReportComponent,
+        AdminBulkDataAnalysisSummaryComponent,
+        AdminBulkDataLoadComponent,
+        AdminBulkDataLoadReportComponent,
+        AdminBulkDataLoadSummaryComponent,
+        AdminBulkDataStreamAnalysisReportComponent,
+        AdminBulkDataStreamLoadReportComponent,
+        AdminFileDragAndDrop,
+        AdminOAuthTokensComponent,
+        AdminErrorNoAdminModeComponent,
+        AdminLicenseInfoComponent,
+        AdminLoginComponent,
+        AdminServerInfoComponent,
+        NewDataSourceDialogComponent,
+        SzProgressBarComponent,
+        XtermComponent
+    ],
+    imports: [
+        AdminRoutingModule,
+        CommonModule,
+        FormsModule,
+        HttpClientModule,
+        JwtModule.forRoot({
+            config: {
+                tokenGetter: tokenGetter,
+                allowedDomains: ['localhost:8000'],
+                disallowedRoutes: ['localhost:8000/authsdfsdf']
+            }
+        }),
+        MaterialModule,
+        SenzingSdkModule.forRoot(SzRestConfigurationFactory),
+        SenzingDataServiceModule.forRoot(SzRestConfigurationFactory)
+    ],
+    providers: [
+        { provide: HTTP_INTERCEPTORS,
+            useClass: OAuthInterceptor,
+            multi: true
+        },
+        SzWebAppConfigService,
+        WebSocketService
+    ]
 })
 export class AdminModule { }
