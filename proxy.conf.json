@@ -1,6 +1,6 @@
 {
   "/api/*": {
-    "target": "http://americium.local:8250",
+    "target": "http://localhost:8250",
     "secure": false,
     "logLevel": "debug",
     "pathRewrite": {
