@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.4] - 2023-01-12
+
+### Changed in 2.7.4
+
+- In `Dockerfile`, updated FROM instruction to:
+  - `node:16-bullseye-slim@sha256:cfb2b5e2b39f341056ac624d32fae00ba0ab94145364111b7edfd9db703526e0`
+  - `node:16-alpine3.16@sha256:e023c53915c5e20df594809477dc249dd595a8e731a6e214c4dbdcf7431bf942`
+
 ## [2.7.3] - 2022-10-27
 
 ### Changed in 2.7.3
