@@ -2,7 +2,16 @@
 @import "variables";
 @import "mixins";
 
-@include mat.core();
+// TODO(v15): As of v15 mat.legacy-core no longer includes default typography styles.
+//  The following line adds:
+//    1. Default typography styles for all components
+//    2. Styles for typography hierarchy classes (e.g. .mat-headline-1)
+//  If you specify typography styles for the components you use elsewhere, you should delete this line.
+//  If you don't need the default component typographies but still want the hierarchy styles,
+//  you can delete this line and instead use:
+//    `@include mat.legacy-typography-hierarchy(mat.define-legacy-typography-config());`
+@include mat.all-legacy-component-typographies();
+@include mat.legacy-core();
 
 $my-app-primary: mat.define-palette(mat.$amber-palette);
 $my-app-accent:  mat.define-palette(mat.$blue-gray-palette, 500, 900, A100);
@@ -16,9 +25,9 @@ $my-app-theme: mat.define-light-theme($my-app-primary, $my-app-accent, $my-app-w
 // hue. Available color palettes: https://material.io/design/color/
 
 $sz-mat-colors: (
-  PRIMARY: #{$sz-blue},
-  SECONDARY: #{$sz-blue},
-  WARNING: #{$sz-red},
+  PRIMARY: #0C9BF4,
+  SECONDARY: #0C9BF4,
+  WARNING: #D30B0F,
   contrast: (
     50: rgba(black, 0.87),
     100: rgba(black, 0.87),
@@ -53,4 +62,4 @@ $sz-mat-theme: mat.define-light-theme((
   )
 ));
 
-@include mat.all-component-themes($sz-mat-theme);
+@include mat.all-legacy-component-themes($sz-mat-theme);

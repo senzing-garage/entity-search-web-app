@@ -18,7 +18,7 @@ import { SpinnerService } from './services/spinner.service';
 import { UiService } from './services/ui.service';
 import { PrefsManagerService } from './services/prefs-manager.service';
 import { SzWebAppConfigService } from './services/config.service';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { AlertDialogComponent } from './common/alert-dialog/alert-dialog.component';
 
  @Component({

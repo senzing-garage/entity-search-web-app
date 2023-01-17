@@ -11,7 +11,7 @@ import { AdminStreamLoadQueueDialogComponent } from '../../common/stream-load-qu
 import { filter, take, takeUntil } from 'rxjs/operators';
 import { SzStreamingFileRecordParser } from '../../common/streaming-file-record-parser';
 import { NgForm } from '@angular/forms';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog, MatLegacyDialogRef as MatDialogRef } from '@angular/material/legacy-dialog';
 import { AdminStreamAbortDialogComponent } from '../../common/stream-abort-dialog/stream-abort-dialog.component';
 import { AboutInfoService } from '../../services/about.service';
 

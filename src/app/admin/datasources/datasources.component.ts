@@ -3,9 +3,9 @@ import { Title } from '@angular/platform-browser';
 import { SzDataSourcesService, SzDataSourcesResponseData, SzDataSourcesResponse, SzDataSource } from '@senzing/sdk-components-ng';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
+import { MatLegacyPaginator as MatPaginator } from '@angular/material/legacy-paginator';
+import { MatLegacyDialog as MatDialog, MatLegacyDialogRef as MatDialogRef, MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA } from '@angular/material/legacy-dialog';
 import { AdminBulkDataService } from '../../services/admin.bulk-data.service';
 
 export interface DialogData {

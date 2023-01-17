@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { SzBulkDataAnalysis, SzBulkLoadResult } from '@senzing/rest-api-client-ng';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { takeUntil, take } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
