@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.8.0] - 2023-01-20
+
+### Changed in 2.8.0
+- Angular framework updated to @15.x.x
+- Material toolkit updated to @15.x.x
+- D3 charting toolkit updated to @7.x.x
+- `@senzing/rest-api-client-ng` updated to @6.0.0
+- `@senzing/sdk-components-ng` updated to @6.0.0
+- Dependency Securtity updates (various)
+
 ## [2.7.3] - 2022-10-27
 
 ### Changed in 2.7.3

@@ -1,5 +1,5 @@
 :host {
-    h1.mat-dialog-title {
+    h1.mat-mdc-dialog-title {
         width: auto;
         background-color: #333;
         color: #fff;
@@ -40,7 +40,7 @@
             padding: 20px;
         }
     }
-    .mat-dialog-actions {
+    .mat-mdc-dialog-actions {
         justify-content: flex-end;
     }
 
