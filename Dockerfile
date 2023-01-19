@@ -1,13 +1,13 @@
-ARG BUILD_IMAGE=node:16-bullseye-slim@sha256:5c9f79e11b4f867582241b5e7db96bbe1893fad8c1f523261690c743d0950667
-ARG PROD_IMAGE=node:16-alpine3.16@sha256:f16544bc93cf1a36d213c8e2efecf682e9f4df28429a629a37aaf38ecfc25cf4
-ARG TEST_IMAGE=node:16-bullseye-slim@sha256:5c9f79e11b4f867582241b5e7db96bbe1893fad8c1f523261690c743d0950667
+ARG BUILD_IMAGE=node:16-bullseye-slim@sha256:cfb2b5e2b39f341056ac624d32fae00ba0ab94145364111b7edfd9db703526e0
+ARG PROD_IMAGE=node:16-alpine3.16@sha256:e023c53915c5e20df594809477dc249dd595a8e731a6e214c4dbdcf7431bf942
+ARG TEST_IMAGE=node:16-bullseye-slim@sha256:cfb2b5e2b39f341056ac624d32fae00ba0ab94145364111b7edfd9db703526e0
 
 FROM ${BUILD_IMAGE}
-ENV REFRESHED_AT=2023-01-18
+ENV REFRESHED_AT=2023-01-19
 
 LABEL Name="senzing/entity-search-web-app" \
       Maintainer="support@senzing.com" \
-      Version="2.7.3"
+      Version="2.7.4"
 
 HEALTHCHECK CMD ["/app/healthcheck.sh"]
 
