@@ -264,26 +264,12 @@
           }
         }
       }
-    },
-    "@senzing/sdk-components-ng": {
-      "root": "",
-      "sourceRoot": "sdk-components-ng/src",
-      "projectType": "library",
-      "prefix": "sz",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-ng-packagr:build",
-          "options": {
-            "tsConfig": "sdk-components-ng/src/tsconfig.lib.json",
-            "project": "sdk-components-ng/src/subrepo.ng-package.json"
-          }
-        }
-      }
     }
   },
-  "defaultProject": "entity-search-web-app",
   "cli": {
     "analytics": false,
-    "defaultCollection": "@angular-eslint/schematics"
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ]
   }
 }

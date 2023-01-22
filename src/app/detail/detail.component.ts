@@ -6,7 +6,7 @@ import { tap, filter, take } from 'rxjs/operators';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
 import { Subscription, fromEvent } from 'rxjs';
-import { SzEntityDetailComponent, SzPdfUtilService } from '@senzing/sdk-components-ng';
+import { SzEntityDetailComponent } from '@senzing/sdk-components-ng';
 import { UiService } from '../services/ui.service';
 import {
   SzEntityData
@@ -41,7 +41,6 @@ export class DetailComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private search: EntitySearchService,
-    public pdfUtil: SzPdfUtilService,
     public overlay: Overlay,
     public uiService: UiService,
     public viewContainerRef: ViewContainerRef,
@@ -97,7 +96,6 @@ export class DetailComponent implements OnInit {
    */
   private createPDF(): void {
     const filename = this.pdfFileName;
-    this.pdfUtil.createPdfFromHtmlElement(this.entityDetailComponent.nativeElement, filename);
   }
 
   /**

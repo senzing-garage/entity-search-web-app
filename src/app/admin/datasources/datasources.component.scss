@@ -1,6 +1,12 @@
 @import '../../scss/_admin.scss';
 
 :host {
+  .table-wrapper {
+    display: inline-block;
+  }
+  .row-wrapper {
+    display: block;
+  }
   .form-actions {
     margin: 30px 0 0 0;
 

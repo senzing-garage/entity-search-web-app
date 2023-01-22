@@ -6,21 +6,21 @@
 .section-instructions {
   font-size: 0.7em;
 }
-.mat-paginator {
+.mat-mdc-paginator {
   display: inline-block;
   float: right;
 }
 .mat-elevation-z8 {
   width: 300px;
 }
-.mat-table-full-width {
+.mat-mdc-table-full-width {
   width: 100%;
 }
 
-tr.mat-header-row {
+tr.mat-mdc-header-row {
   @include datagrid-header;
 }
-tr.mat-row {
+tr.mat-mdc-row {
   @include datagrid-row;
 }
 
