@@ -7,7 +7,7 @@ ENV REFRESHED_AT=2023-01-19
 
 LABEL Name="senzing/entity-search-web-app" \
       Maintainer="support@senzing.com" \
-      Version="2.7.4"
+      Version="2.8.0"
 
 HEALTHCHECK CMD ["/app/healthcheck.sh"]
 
@@ -26,7 +26,7 @@ WORKDIR /app
 RUN npm config set update-notifier false \
  && npm config set loglevel warn \
  && npm ci \
- && npm install -g @angular/cli@13
+ && npm install -g @angular/cli@15
 
 # Build app
 COPY . /app
