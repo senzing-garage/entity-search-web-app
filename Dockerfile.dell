@@ -1,0 +1,44 @@
+# syntax=docker/dockerfile:1
+
+FROM node:14.21.1
+#ENV NODE_ENV=production
+ENV NODE_ENV=test
+
+# install latest chrome
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - 
+RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' 
+RUN apt-get update && apt-get install -y google-chrome-stable
+
+# install older chrom version
+# I couldn't get this to work
+#RUN BROWSER_MAJOR=$(google-chrome --version | sed 's/Google Chrome \([0-9]*\).*/\1/g') && \
+#    wget https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${BROWSER_MAJOR} -O chrome_version && \
+#    wget https://chromedriver.storage.googleapis.com/`cat chrome_version`/chromedriver_linux64.zip && \
+#    unzip chromedriver_linux64.zip && \
+#    mv chromedriver /usr/local/bin/ && \
+#    DRIVER_MAJOR=$(chromedriver --version | sed 's/ChromeDriver \([0-9]*\).*/\1/g') && \
+#    echo "chrome version: $BROWSER_MAJOR" && \
+#    echo "chromedriver version: $DRIVER_MAJOR" && \
+#    if [ $BROWSER_MAJOR != $DRIVER_MAJOR ]; then echo "VERSION MISMATCH"; exit 1; fi
+
+# Check available versions here: https://www.ubuntuupdates.org/package/google_chrome/stable/main/base/google-chrome-stable
+#ARG CHROME_VERSION="81.0.4044.113-1"
+#ARG CHROME_VERSION="108.0.5359.71-1"
+#RUN wget --no-verbose -O /tmp/chrome.deb https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}_amd64.deb \
+#  && apt install -y /tmp/chrome.deb \
+#  && rm /tmp/chrome.deb
+
+WORKDIR /app
+
+COPY ["package.json", "package-lock.json*", "./"]
+
+RUN npm install --legacy-peer-deps
+COPY . .
+
+ENV CHROME_BIN=/usr/bin/google-chrome
+# running non-root seems to cause test runner to throw
+# but not the same stack trace as dell ci logs
+# USER 1001
+
+RUN npm run test:headless
+CMD ["npm","run","test:headless"]
