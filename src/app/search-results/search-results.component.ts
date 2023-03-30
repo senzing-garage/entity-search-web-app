@@ -68,5 +68,17 @@ export class SearchResultsComponent implements OnInit {
       this.router.navigate(['graph/' + entityIds.join(',') ]);
     }
   }
+  /** when user clicks the "how" button */
+  public onHowButtonClick($event) {
+    console.log('onHowButtonClick: ', $event);
+    if(!$event.entityId) { return true; }
+    let _openHowInNewTab = $event && $event.ctrlKey? true : false;
+    if(_openHowInNewTab) {
+      const _url = this.router.serializeUrl(this.router.createUrlTree(['how/'+ $event.entityId]));
+      window.open(_url, '_blank');
+    } else {
+      this.router.navigate(['how/'+ $event.entityId]);
+    }
+  }
 
 }

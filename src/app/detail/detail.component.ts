@@ -182,4 +182,16 @@ export class DetailComponent implements OnInit {
     if(window && window.scroll){ window.scroll(0,0); console.log('on popout scrolled'); }
     this.router.navigate(['graph/' + this.entityId]);
   }
+
+  public onHowButtonClick($event) {
+    console.log('onHowButtonClick: ', $event);
+    let _openHowInNewTab = $event && $event.ctrlKey? true : false;
+    if(_openHowInNewTab) {
+      const _url = this.router.serializeUrl(this.router.createUrlTree(['how/'+ this.entityId]));
+      window.open(_url, '_blank');
+      //this.router.navigate(['how/'+ this.entityId]);
+    } else {
+      this.router.navigate(['how/'+ this.entityId]);
+    }
+  }
 }

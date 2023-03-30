@@ -40,7 +40,18 @@ body {
   --sz-graph-filter-match-key-tags-flex-direction: row;
   --sz-graph-filter-match-key-tags-margin-right: 5px;
   --sz-graph-filter-match-key-tags-display: inline-block;
-  
+
+  /* lighten up "how" styles when in detail panel */
+  --sz-entity-detail-section-how-step-card-color: var(--sz-how-step-card-color);
+  --sz-entity-detail-section-how-step-card-border: var(--sz-how-step-card-border);
+  --sz-entity-detail-section-how-step-card-type-color-add: var(--sz-how-step-card-type-color-add);
+  --sz-entity-detail-section-how-step-card-type-color-create: var(--sz-how-step-card-type-color-create);
+  --sz-entity-detail-section-how-step-card-type-color-merge: var(--sz-how-step-card-type-color-merge);
+  --sz-entity-detail-section-how-step-card-type-color-interim: var(--sz-how-step-card-type-color-interim);
+  --sz-entity-detail-section-how-step-card-type-color-final: var(--sz-how-step-card-type-color-final);
+  --sz-entity-detail-section-how-step-card-data-table-border: var(--sz-how-step-card-data-table-border);
+  --sz-entity-detail-section-how-step-card-data-table-cell-border: var(--sz-how-step-card-data-table-cell-border);
+
   &.graph-open {
     overflow: hidden;
     height: 100vh;
