@@ -1,9 +1,9 @@
-ARG BUILD_IMAGE=node:16-bullseye-slim@sha256:06135c43667a4be30a8102171a9afd7d90e6eada7318ae23bd05295cd4eda543
-ARG PROD_IMAGE=node:16-alpine3.17@sha256:b4a72f83f52bbe3970bb74a15e44ec4cf6e873ad4787473dfc8a26f5b4e29dd2
-ARG TEST_IMAGE=node:16-bullseye-slim@sha256:06135c43667a4be30a8102171a9afd7d90e6eada7318ae23bd05295cd4eda543
+ARG BUILD_IMAGE=node:16-bullseye-slim@sha256:7ee0b958bd5f47f54b58f2b9932b1975a4d98d8f332bd2134c2b65514cadb6c6
+ARG PROD_IMAGE=node:16-alpine3.17@sha256:f1657204d3463bce763cefa5b25e48c28af6fe0cdb0f68b354f0f8225ef61be7
+ARG TEST_IMAGE=node:16-bullseye-slim@sha256:7ee0b958bd5f47f54b58f2b9932b1975a4d98d8f332bd2134c2b65514cadb6c6
 
 FROM ${BUILD_IMAGE}
-ENV REFRESHED_AT=2023-04-03
+ENV REFRESHED_AT=2023-05-09
 
 LABEL Name="senzing/entity-search-web-app" \
       Maintainer="support@senzing.com" \
