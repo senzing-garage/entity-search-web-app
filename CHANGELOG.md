@@ -6,15 +6,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.8.1] - 2023-05-11
+
+### Changed in 2.8.1
+
+- In `Dockerfile`, updated FROM instruction to:
+  - `node:16-bullseye-slim@sha256:7ee0b958bd5f47f54b58f2b9932b1975a4d98d8f332bd2134c2b65514cadb6c6`
+  - `node:16-alpine3.17@sha256:f1657204d3463bce763cefa5b25e48c28af6fe0cdb0f68b354f0f8225ef61be7`
+- Update dependencies
+  - http-cache-semantics:4.1.1
+  - node_modules/http-cache-semantics:4.1.1
+  - node_modules/ua-parser-js:0.7.33
+  - ua-parser-js:0.7.33
+
 ## [2.8.0] - 2023-01-20
 
 ### Changed in 2.8.0
+
 - Angular framework updated to @15.x.x
 - Material toolkit updated to @15.x.x
 - D3 charting toolkit updated to @7.x.x
 - `@senzing/rest-api-client-ng` updated to @6.0.0
 - `@senzing/sdk-components-ng` updated to @6.0.0
 - Dependency Securtity updates (various)
+
 ## [2.7.4] - 2023-01-12
 
 ### Changed in 2.7.4
