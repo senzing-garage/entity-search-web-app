@@ -95,7 +95,7 @@
     "angular-in-memory-web-api": "^0.15.0",
     "concat": "^1.0.3",
     "concurrently": "^7.3.0",
-    "eslint": "^8.2.0",
+    "eslint": "^8.44.0",
     "fs-extra": "^9.0.1",
     "jasmine-core": "~4.5.0",
     "jasmine-spec-reporter": "~7.0.0",
