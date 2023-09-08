@@ -12,6 +12,7 @@ import { SearchResultsComponent } from './search-results/search-results.componen
 import { SearchRecordComponent } from './record/record.component';
 import { DetailComponent } from './detail/detail.component';
 import { GraphComponent } from './graph/graph.component';
+import { HowComponent } from './how/how.component';
 import { PageNotFoundComponent } from './errors/page-not-found/page-not-found.component';
 import { NoResultsComponent } from './errors/no-results/no-results.component';
 import { TipsComponent } from './common/tips/tips.component';
@@ -32,6 +33,7 @@ export const routes: Routes = [
   { path: 'datasources/:datasource/records/:recordId', component: SearchRecordComponent, resolve: { params: SearchByIdParamsResolverService, result: RecordResolverService }, data: { animation: 'search-detail' } },
   { path: 'graph/:entityId', component: GraphComponent, resolve: { networkData: GraphEntityNetworkResolverService }, data: { animation: 'search-detail' } },
   { path: 'graph/:entityId/:detailId', component: GraphComponent, resolve: { networkData: GraphEntityNetworkResolverService, entityData: EntityDetailResolverService }, data: { animation: 'search-detail' } },
+  { path: 'how/:entityId', component: HowComponent, data: { animation: 'search-detail' } },
   { path: 'errors/no-results', component: NoResultsComponent, data: { animation: 'search-detail' } },
   { path: 'errors/404', component: PageNotFoundComponent, data: { animation: 'search-detail' } },
   { path: 'errors/500', component: ServerErrorComponent, data: { animation: 'search-detail' } },

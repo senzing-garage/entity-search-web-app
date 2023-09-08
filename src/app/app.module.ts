@@ -29,6 +29,7 @@ import { AlertDialogComponent } from './common/alert-dialog/alert-dialog.compone
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { DetailComponent } from './detail/detail.component';
 import { GraphComponent } from './graph/graph.component';
+import { HowComponent } from './how/how.component';
 import { SearchRecordComponent } from './record/record.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { UiService } from './services/ui.service';
@@ -82,6 +83,7 @@ import { AdminBulkDataService } from './services/admin.bulk-data.service';
         SearchRecordComponent,
         DetailComponent,
         GraphComponent,
+        HowComponent,
         ToolbarComponent,
         ErrorPageComponent,
         PageNotFoundComponent,
