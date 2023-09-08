@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.9.0] - 2023-09-09
+
+### Changed in 2.9.0
+  - new graph icons.
+  - match keys are now shown by default in the graph.
+  - new why and why not report column formatting to match g2Explorer.
+
+### Added in 2.9.0
+
+- @senzing/sdk-components-ng updated to 6.1.0
+  - "How" entity report component(s) added.
+    - Added `SzHowEntityComponent` component which is the only component that should be used at an implementation level. The other components listed below are components that this component uses to create things like different color cards, nested trees, navigation, groups etc.
+- Added new `/how/${entityId}` route to application to display a how report for a specific entity.
+- Update dependencies to latest compatible versions
+
 ## [2.8.2] - 2023-06-29
 
 ### Changed in 2.8.2
