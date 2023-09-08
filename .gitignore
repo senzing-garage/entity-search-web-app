@@ -60,3 +60,5 @@ Thumbs.db
 /rest-api-client-ng
 
 proxy.conf.json
+
+.history
