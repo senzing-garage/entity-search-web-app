@@ -46,7 +46,7 @@
     "@fontsource/material-icons": "^4.5.4",
     "@fontsource/roboto": "^4.5.5",
     "@senzing/rest-api-client-ng": "^6.0.1",
-    "@senzing/sdk-components-ng": "6.1.0-beta.2",
+    "@senzing/sdk-components-ng": "^6.1.0",
     "@types/d3": "^7.4.0",
     "@types/socket.io-client": "^3.0.0",
     "acorn": "^8.6.0",
