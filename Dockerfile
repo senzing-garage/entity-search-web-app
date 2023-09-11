@@ -3,11 +3,11 @@ ARG PROD_IMAGE=node:16-alpine3.17@sha256:77e07be8ecf734e337b1b7d8eaa44abcb87320d
 ARG TEST_IMAGE=node:16-bullseye-slim@sha256:7bd75ac51451826df0d46f8e1446ca806a94f64025f7d7c307dde25117815e71
 
 FROM ${BUILD_IMAGE}
-ENV REFRESHED_AT=2023-06-29
+ENV REFRESHED_AT=2023-09-09
 
 LABEL Name="senzing/entity-search-web-app" \
       Maintainer="support@senzing.com" \
-      Version="2.8.0"
+      Version="2.9.0"
 
 HEALTHCHECK CMD ["/app/healthcheck.sh"]
 
