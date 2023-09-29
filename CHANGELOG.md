@@ -6,12 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.9.1] - 2023-09-29
+
+### Changed in 2.9.1
+
+- In `Dockerfile`, updated FROM instruction to:
+  - `node:16-bullseye-slim@sha256:503446c15c6236291222f8192513c2eb56a02a8949cbadf4fe78cce19815c734`
+  - `node:16-alpine3.18@sha256:a1f9d027912b58a7c75be7716c97cfbc6d3099f3a97ed84aa490be9dee20e787`
+
 ## [2.9.0] - 2023-09-09
 
 ### Changed in 2.9.0
-  - new graph icons.
-  - match keys are now shown by default in the graph.
-  - new why and why not report column formatting to match g2Explorer.
+
+- new graph icons.
+- match keys are now shown by default in the graph.
+- new why and why not report column formatting to match g2Explorer.
 
 ### Added in 2.9.0
 
