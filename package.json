@@ -1,6 +1,6 @@
 {
   "name": "@senzing/entity-search-web-app",
-  "version": "2.9.1",
+  "version": "2.9.2",
   "license": "Apache-2.0",
   "scripts": {
     "ng": "ng",
@@ -24,9 +24,6 @@
     "test:ws:config": "node ./run/test-config.js -- webServerUrl=\"http://localhost:4300\" streamServerUrl=\"ws://localhost:8250\" apiServerUrl=\"http://localhost:8250\"",
     "test:headless": "ng test --no-watch --watch=false --karma-config karma.ci.conf --progress=false --no-progress --browsers=ChromeHeadless",
     "lint": "ng lint",
-    "e2e": "ng e2e --configuration=e2e --protractor-config=e2e/protractor.conf.js",
-    "e2e:docker": "ng e2e --port 8080 --configuration=e2e --protractor-config=e2e/protractor.docker.conf.js",
-    "e2e:headless": "ng e2e --configuration=e2e --protractor-config=e2e/protractor.ci.conf.js",
     "prepush": "npm run test:headless",
     "postshrinkwrap": "lockfix"
   },
@@ -108,7 +105,6 @@
     "karma-junit-reporter": "^2.0.1",
     "lockfix": "^2.0.1",
     "ng-packagr": "^15.2.2",
-    "protractor": "~7.0.0",
     "scss-bundle": "^3.1.2",
     "ts-node": "~10.9.1",
     "typescript": "~4.9.4"

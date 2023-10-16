@@ -23,4 +23,3 @@ jobs:
       - run: npm ci
       - run: npm run build:docker --if-present
       - run: npm run test:headless
- #    - run: npm run e2e:headless
