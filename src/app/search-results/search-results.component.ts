@@ -28,7 +28,7 @@ export class SearchResultsComponent implements OnInit {
 
   ngOnInit() {
     this.route.data
-    .subscribe((data: { results: SzAttributeSearchResult[], parameters: SzEntitySearchParams }) => {
+    .subscribe((data: { results: SzAttributeSearchResult[], parameters: SzEntitySearchParams, searchId: string }) => {
       this.currentSearchParameters = data.parameters;
       this.currentSearchResults = data.results;
       // clear out any globally stored value;

@@ -8,7 +8,7 @@
     <div id="toolbar-col1" class="column">
       <sz-preferences *ngIf="showPrefs"
         showControls="true"></sz-preferences>
-      <sz-search *ngIf="!showPrefs && !showSearchById"
+      <sz-search #searchComponent *ngIf="!showPrefs && !showSearchById"
       showIdentifierTypesPicker="true"
       (resultsChange)="onSearchResults($event)"
       (resultsCleared)="onSearchResultsCleared($event)"
