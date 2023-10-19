@@ -29,6 +29,7 @@ export const routes: Routes = [
   { path: 'debug', component: BlankComponent},
   { path: 'search', component: TipsComponent, resolve:  {entityId: CurrentEntityUnResolverService}, data: { animation: 'search-results' }},
   { path: 'search/results', component: SearchResultsComponent, resolve: { params: SearchParamsResolverService, results: SearchResultsResolverService }, data: { animation: 'search-results' } },
+  { path: 'search/results/:searchId', component: SearchResultsComponent, resolve: { params: SearchParamsResolverService, results: SearchResultsResolverService }, data: { animation: 'search-results' } },
   { path: 'entity/:entityId', component: DetailComponent, resolve: { entityData: EntityDetailResolverService }, data: { animation: 'search-detail' } },
   { path: 'datasources/:datasource/records/:recordId', component: SearchRecordComponent, resolve: { params: SearchByIdParamsResolverService, result: RecordResolverService }, data: { animation: 'search-detail' } },
   { path: 'graph/:entityId', component: GraphComponent, resolve: { networkData: GraphEntityNetworkResolverService }, data: { animation: 'search-detail' } },

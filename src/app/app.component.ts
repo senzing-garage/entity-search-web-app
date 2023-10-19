@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostBinding } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostBinding, ViewChild } from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd, ActivatedRoute, UrlSegment } from '@angular/router';
 import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 import { Subject, Observable } from 'rxjs';
@@ -10,8 +10,10 @@ import {
   SzAttributeSearchResult,
   SzEntityRecord,
   SzEntityData,
-  SzSearchByIdFormParams
+  SzSearchByIdFormParams,
+  SzSearchComponent
 } from '@senzing/sdk-components-ng';
+import { v4 as uuidv4 } from 'uuid';
 
 import { EntitySearchService } from './services/entity-search.service';
 import { SpinnerService } from './services/spinner.service';
@@ -196,7 +198,8 @@ export class AppComponent implements OnInit, OnDestroy {
   public get showGraphOptions() {
     return this.uiService.graphOpen && this.search.currentSearchResults && this.search.currentSearchResults.length > 0;
   }
-
+  /** the search form component as child */
+  @ViewChild('searchComponent') searchComponent: SzSearchComponent;
   /**
    * Event handler for when a search has been performed in
    * the SzSearchComponent.
@@ -208,10 +211,15 @@ export class AppComponent implements OnInit, OnDestroy {
       // show results in graph
       this.entitySearchService.currentSearchResults = evt;
     } else {
+      // store results
+      let searchParams  = this.searchComponent.getSearchParams();
+      let searchGUID    = uuidv4();
+      if(searchParams) {
+        // store last sucessful search by guid in localStorage
+        this.entitySearchService.storeLastSearch(searchGUID, searchParams);
+      }
       // show results
-      this.router.navigate(['search/results'], {
-        queryParams: {refresh: new Date().getTime()}
-      });
+      this.router.navigate(['search/results/', searchGUID]);
       this.entitySearchService.currentSearchResults = evt;
     }
   }

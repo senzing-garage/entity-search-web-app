@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import {
   Router, Resolve,
   RouterStateSnapshot,
@@ -6,6 +6,7 @@ import {
 } from '@angular/router';
 import { Observable, of, EMPTY, Subject } from 'rxjs';
 import { mergeMap, take, catchError, tap, map } from 'rxjs/operators';
+import { StorageService, LOCAL_STORAGE, SESSION_STORAGE } from 'ngx-webstorage-service';
 
 import {
   SzEntitySearchParams,
@@ -47,6 +48,14 @@ export class EntitySearchService {
   private _results = new Subject<SzAttributeSearchResult[]>();
   private _currentRecord: SzEntityRecord;
   private _recordChange = new Subject<SzEntityRecord>();
+  /** store pref state in persistent browser storage */
+  private _storePrefsInLocalStorage = false;
+  /** store pref state in transient browser session storage */
+  private _storePrefsInSessionStorage = true;
+  /** localstorage key to store pref data in */
+  public STORAGE_KEY = 'senzing-app-search';
+  /** local storage key to store search state data in */
+  public L_STORAGE_KEY = 'senzing-web-app-search';
 
   public set currentSearchResults(value) {
     this._currentSearchResults = value;
@@ -88,7 +97,31 @@ export class EntitySearchService {
   /** the search parameters from the last search-by-id performed */
   public currentSearchByIdParameters: SzSearchByIdFormParams;
 
-  constructor(private sdkSearchService: SzSearchService) {
+  constructor(private sdkSearchService: SzSearchService, 
+    @Inject(LOCAL_STORAGE) private lStore: StorageService,
+    @Inject(SESSION_STORAGE) private sStore: StorageService) {
+  }
+  /** store the last successful search by guid */
+  public storeLastSearch(searchId: string, searchParams: SzEntitySearchParams) {
+    let jsonStr = {};
+    jsonStr[ searchId ] = searchParams;
+
+    if (this._storePrefsInLocalStorage) {
+      this.lStore.set(this.STORAGE_KEY, jsonStr);
+    } else if (this._storePrefsInSessionStorage) {
+      this.sStore.set(this.STORAGE_KEY, jsonStr);
+    }
+  }
+  /** get the last successful search by guid */
+  public getLastSearch(searchId: string) {
+    console.log(`getLastSearch(${this.STORAGE_KEY})`, searchId);
+    let retVal;
+    if (this._storePrefsInLocalStorage) {
+      retVal = this.lStore.get(this.STORAGE_KEY);
+    } else if (this._storePrefsInSessionStorage) {
+      retVal = this.sStore.get(this.STORAGE_KEY);
+    }
+    return retVal;
   }
   /** get the page title for the current search */
   public get searchTitle(): string {
@@ -139,20 +172,35 @@ export class EntitySearchService {
 })
 export class SearchResultsResolverService implements Resolve<SzAttributeSearchResult[]> {
   private entitySearchResults: Subject<SzAttributeSearchResult[]>;
-  constructor(private sdkSearchService: SzSearchService, private router: Router, private spinner: SpinnerService) {}
+  constructor(
+    private sdkSearchService: SzSearchService, 
+    private router: Router, 
+    private entitySearchService: EntitySearchService,
+    private spinner: SpinnerService) {}
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<SzAttributeSearchResult[]> | Observable<never> {
-    const sparams = this.sdkSearchService.getSearchParams();
-    console.info('SearchResultsResolverService: params: ', sparams);
+    let sparams: SzEntitySearchParams = this.sdkSearchService.getSearchParams();
+    
+    if(sparams && Object.keys && Object.keys(sparams).length <= 0) {
+      if(route && route.params && route.params['searchId']) {
+        let sId = route.params['searchId'];
+        let ls  = this.entitySearchService.getLastSearch(sId);
+        if(ls && ls[sId]) {
+          // load search from this stored set of parameters
+          sparams = ls[sId];
+        }
+      }
+    }
     this.spinner.show();
 
     return this.sdkSearchService.searchByAttributes( sparams ).pipe(
       mergeMap(results => {
         this.spinner.hide();
         if (results && results.length > 0) {
+          // return results
           return of(results);
         } else { // no results
-          this.router.navigate(['/errors/no-results']);
+          this.router.navigate(['/errors/no-results'], { skipLocationChange: true });
           return EMPTY;
         }
       }),
@@ -160,11 +208,10 @@ export class SearchResultsResolverService implements Resolve<SzAttributeSearchRe
         this.spinner.hide();
         const message = `Retrieval error: ${error.message}`;
         console.error(message);
-        // this.router.navigate(['errors/404']);
         if (error && error.status) {
-          this.router.navigate( [getErrorRouteFromCode(error.status)] );
+          this.router.navigate( [getErrorRouteFromCode(error.status)], { skipLocationChange: true });
         } else {
-          this.router.navigate(['errors/unknown']);
+          this.router.navigate(['errors/unknown'], { skipLocationChange: true });
         }
         return EMPTY;
       })
@@ -220,7 +267,7 @@ export class EntityDetailResolverService implements Resolve<SzEntityData> {
             return of(entityData);
           } else { // no results
             this.search.currentlySelectedEntityId = undefined;
-            this.router.navigate(['errors/404']);
+            this.router.navigate(['errors/404'], { skipLocationChange: true });
             return EMPTY;
           }
         }),
@@ -229,9 +276,9 @@ export class EntityDetailResolverService implements Resolve<SzEntityData> {
           const message = `Retrieval error: ${error.message}`;
           console.error(message);
           if (error && error.status) {
-            this.router.navigate( [getErrorRouteFromCode(error.status)] );
+            this.router.navigate( [getErrorRouteFromCode(error.status)], { skipLocationChange: true } );
           } else {
-            this.router.navigate(['errors/unknown']);
+            this.router.navigate(['errors/unknown'], { skipLocationChange: true });
           }
           return EMPTY;
         })
@@ -239,7 +286,7 @@ export class EntityDetailResolverService implements Resolve<SzEntityData> {
     } else {
       this.spinner.hide();
       this.search.currentlySelectedEntityId = undefined;
-      this.router.navigate(['errors/404']);
+      this.router.navigate(['errors/404'], { skipLocationChange: true });
       return EMPTY;
     }
   }
@@ -270,7 +317,7 @@ export class RecordResolverService implements Resolve<SzEntityRecord> {
           } else { // no results
             this.search.currentlySelectedEntityId = undefined;
             this.search.currentRecord = undefined;
-            this.router.navigate(['errors/404']);
+            this.router.navigate(['errors/404'], { skipLocationChange: true });
             return EMPTY;
           }
         }),
@@ -279,9 +326,9 @@ export class RecordResolverService implements Resolve<SzEntityRecord> {
           const message = `Retrieval error: ${error.message}`;
           console.error(message);
           if (error && error.status) {
-            this.router.navigate( [getErrorRouteFromCode(error.status)] );
+            this.router.navigate( [getErrorRouteFromCode(error.status)], { skipLocationChange: true } );
           } else {
-            this.router.navigate(['errors/unknown']);
+            this.router.navigate(['errors/unknown'], { skipLocationChange: true });
           }
           return EMPTY;
         })
@@ -290,7 +337,7 @@ export class RecordResolverService implements Resolve<SzEntityRecord> {
       this.spinner.hide();
       this.search.currentlySelectedEntityId = undefined;
       this.search.currentRecord = undefined;
-      this.router.navigate(['errors/404']);
+      this.router.navigate(['errors/404'], { skipLocationChange: true });
       return EMPTY;
     }
   }
@@ -345,7 +392,7 @@ export class GraphEntityNetworkResolverService implements Resolve<SzEntityNetwor
               return of(networkData);
             } else { // no results
               this.search.currentlySelectedEntityId = undefined;
-              this.router.navigate(['errors/404']);
+              this.router.navigate(['errors/404'], { skipLocationChange: true });
               return EMPTY;
             }
           }),
@@ -354,9 +401,9 @@ export class GraphEntityNetworkResolverService implements Resolve<SzEntityNetwor
             const message = `Retrieval error: ${error.message}`;
             console.error(message);
             if (error && error.status) {
-              this.router.navigate( [getErrorRouteFromCode(error.status)] );
+              this.router.navigate( [getErrorRouteFromCode(error.status)], { skipLocationChange: true } );
             } else {
-              this.router.navigate(['errors/unknown']);
+              this.router.navigate(['errors/unknown'], { skipLocationChange: true });
             }
             return EMPTY;
           }
@@ -397,7 +444,7 @@ export class GraphEntityNetworkResolverService implements Resolve<SzEntityNetwor
     } else {
       this.spinner.hide();
       this.search.currentlySelectedEntityId = undefined;
-      this.router.navigate(['errors/404']);
+      this.router.navigate(['errors/404'], { skipLocationChange: true });
       return EMPTY;
     }
   }
