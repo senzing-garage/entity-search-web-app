@@ -1,7 +1,18 @@
 # Entity Search Web App
 
-[![Build Status](https://travis-ci.com/Senzing/entity-search-web-app.svg?branch=master)](https://travis-ci.com/Senzing/entity-search-web-app)
-[![License](https://img.shields.io/github/license/senzing/entity-search-web-app.svg)](https://github.com/Senzing/entity-search-web-app/blob/master/LICENSE)
+If you are beginning your journey with
+[Senzing](https://senzing.com/),
+please start with
+[Senzing Quick Start guides](https://docs.senzing.com/quickstart/).
+
+You are in the
+[Senzing Garage](https://github.com/senzing-garage)
+where projects are "tinkered" on.
+Although this GitHub repository may help you understand an approach to using Senzing,
+it's not considered to be "production ready" and is not considered to be part of the Senzing product.
+Heck, it may not even be appropriate for your application of Senzing!
+
+[![License](https://img.shields.io/github/license/senzing/entity-search-web-app.svg)](https://github.com/senzing-garage/entity-search-web-app/blob/master/LICENSE)
 
 ![Screen Shot](src/assets/landing-page.png)
 
@@ -12,7 +23,7 @@ This is an implementation of an entity search app which uses the senzing rest ap
 ### Related artifacts
 
 1. [DockerHub](https://hub.docker.com/r/senzing/entity-search-web-app)
-1. [Helm Chart](https://github.com/Senzing/charts/tree/master/charts/senzing-entity-search-web-app)
+1. [Helm Chart](https://github.com/senzing-garage/charts/tree/master/charts/senzing-entity-search-web-app)
 
 ### Contents
 
@@ -64,8 +75,8 @@ This is an implementation of an entity search app which uses the senzing rest ap
 
 The following software programs need to be installed:
 
-1. [docker](https://github.com/Senzing/knowledge-base/blob/master/WHATIS/docker.md)
-2. [docker-compose](https://github.com/Senzing/knowledge-base/blob/master/WHATIS/docker-compose.md)
+1. [docker](https://github.com/senzing-garage/knowledge-base/blob/master/WHATIS/docker.md)
+2. [docker-compose](https://github.com/senzing-garage/knowledge-base/blob/master/WHATIS/docker-compose.md)
 
 ### Pull latest docker images
 
@@ -94,18 +105,18 @@ The following software programs need to be installed:
     export GIT_REPOSITORY_DIR="${GIT_ACCOUNT_DIR}/${GIT_REPOSITORY}"
     ```
 
-1. Follow steps in [clone-repository](https://github.com/Senzing/knowledge-base/blob/master/HOWTO/clone-repository.md) to install the Git repository.
+1. Follow steps in [clone-repository](https://github.com/senzing-garage/knowledge-base/blob/master/HOWTO/clone-repository.md) to install the Git repository.
 
 ### Configuration
 
 Configuration values specified by environment variable or command line parameter.
 
-- **[SENZING_DATA_VERSION_DIR](https://github.com/Senzing/knowledge-base/blob/master/lists/environment-variables.md#senzing_data_version_dir)**
-- **[SENZING_ETC_DIR](https://github.com/Senzing/knowledge-base/blob/master/lists/environment-variables.md#senzing_etc_dir)**
-- **[SENZING_G2_DIR](https://github.com/Senzing/knowledge-base/blob/master/lists/environment-variables.md#senzing_g2_dir)**
-- **[SENZING_NETWORK](https://github.com/Senzing/knowledge-base/blob/master/lists/environment-variables.md#senzing_network)**
-- **[SENZING_RUNAS_USER](https://github.com/Senzing/knowledge-base/blob/master/lists/environment-variables.md#senzing_runas_user)**
-- **[SENZING_VAR_DIR](https://github.com/Senzing/knowledge-base/blob/master/lists/environment-variables.md#senzing_var_dir)**
+- **[SENZING_DATA_VERSION_DIR](https://github.com/senzing-garage/knowledge-base/blob/master/lists/environment-variables.md#senzing_data_version_dir)**
+- **[SENZING_ETC_DIR](https://github.com/senzing-garage/knowledge-base/blob/master/lists/environment-variables.md#senzing_etc_dir)**
+- **[SENZING_G2_DIR](https://github.com/senzing-garage/knowledge-base/blob/master/lists/environment-variables.md#senzing_g2_dir)**
+- **[SENZING_NETWORK](https://github.com/senzing-garage/knowledge-base/blob/master/lists/environment-variables.md#senzing_network)**
+- **[SENZING_RUNAS_USER](https://github.com/senzing-garage/knowledge-base/blob/master/lists/environment-variables.md#senzing_runas_user)**
+- **[SENZING_VAR_DIR](https://github.com/senzing-garage/knowledge-base/blob/master/lists/environment-variables.md#senzing_var_dir)**
 
 ## Using docker-compose
 
@@ -366,7 +377,7 @@ For more information on CSP and how it offers some protection against XSS issues
 Obviously if your deployment environment is highly restricted you're probably going
 to run in to issues downloading the latest images from that context.
 Please refer to
-"[Install docker image in an air-gapped environment](https://github.com/Senzing/knowledge-base/blob/master/HOWTO/install-docker-image-in-air-gapped-enviroment.md)"
+"[Install docker image in an air-gapped environment](https://github.com/senzing-garage/knowledge-base/blob/master/HOWTO/install-docker-image-in-air-gapped-enviroment.md)"
 for how to procedure regarding this use-case.
 
 The short version is find a machine with network access, then:
@@ -388,7 +399,7 @@ The short version is find a machine with network access, then:
 ### Building from Source
 
 1. Build Senzing api server. tag it as *senzing/senzing-api-server*.
-   Following the instructions at ["Senzing API server"](https://github.com/Senzing/senzing-api-server).
+   Following the instructions at ["Senzing API server"](https://github.com/senzing-garage/senzing-api-server).
    Example:
 
     ```console
@@ -417,7 +428,7 @@ The default api server port that the compose formation is set to communicate is 
 1. To modify or make changes to the app the developer will have to clone or fork the Repository and build from source.
 
     ```console
-    git clone git@github.com:Senzing/entity-search-web-app.git
+    git clone git@github.com:senzing-garage/entity-search-web-app.git
     cd entity-search-web-app
     npm install
     npm start

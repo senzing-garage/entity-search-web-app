@@ -692,7 +692,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     /*
     There is a race condition being caused by this block executing before a similar block
     inside of the SzGraph component in @senzing/sdk-components-ng
-    (see https://github.com/Senzing/entity-search-web-app/issues/272)
+    (see https://github.com/senzing-garage/entity-search-web-app/issues/272)
 
     console.log('GraphComponent.onPrefsChange(): ', prefs, this.prefs.graph);
     this._showLinkLabels = prefs.showLinkLabels;
