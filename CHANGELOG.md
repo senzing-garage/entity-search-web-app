@@ -139,8 +139,8 @@ The why not report will run a side-by-side table of two entities information in 
 ## [2.6.0] - 2022-05-09
 
 This update brings the models in line with the changes for the `3.0.0` release of the
-[senzing rest api server](https://github.com/Senzing/senzing-api-server)
-and [rest api specification](https://github.com/Senzing/senzing-rest-api-specification/blob/caceres.version-3.0.0/senzing-rest-api.yaml).
+[senzing rest api server](https://github.com/senzing-garage/senzing-api-server)
+and [rest api specification](https://github.com/senzing-garage/senzing-rest-api-specification/blob/caceres.version-3.0.0/senzing-rest-api.yaml).
 
 ### Added in 2.6.0
 
@@ -177,7 +177,7 @@ relevant tickets: #265 #263 #261 #258
 
 ### Added in 2.5.0
 
-- Optional Web Console Access to the [senzing-web-app-console](https://github.com/Senzing/entity-search-web-app-console) container.
+- Optional Web Console Access to the [senzing-web-app-console](https://github.com/senzing-garage/entity-search-web-app-console) container.
   Users can now run popular shell tools like
   [G2Explorer.py](https://senzing.zendesk.com/hc/en-us/articles/360051768234-Exploratory-Data-Analysis-2-Basic-exploration),
   [G2Snapshot.py](https://senzing.zendesk.com/hc/en-us/articles/360051874294-Exploratory-Data-Analysis-3-Taking-a-snapshot) and
@@ -197,7 +197,7 @@ relevant tickets: #242 #243 #246 #252 #256
 
 - `/health` route that returns a model shape of `{"isProxyAlive": true, "isApiServerAlive": true, "isWebserverAlive": true}`
 - `/health/proxy` route that returns the status of the proxy
-- [HealthCheckerUtility](https://github.com/Senzing/entity-search-web-app/blob/master/run/health/index.js)
+- [HealthCheckerUtility](https://github.com/senzing-garage/entity-search-web-app/blob/master/run/health/index.js)
   that provides state management for health status checks.
 
 ### Modified in 2.4.0
@@ -209,7 +209,7 @@ relevant tickets: #242 #243 #246 #252 #256
 - Docker container now based off of `lts-alpine`(nodejs@16) instead of `14-alpine`(nodejs@14)
 - Docker container now gets `npm` itself deleted from container after build phase since it is not needed for runtime to minimize security exposure.
 - Dockerfile updated to wire HEALTHCHECK's to the new
-  [/health/check script](https://github.com/Senzing/entity-search-web-app/blob/master/run/health/check.js)
+  [/health/check script](https://github.com/senzing-garage/entity-search-web-app/blob/master/run/health/check.js)
 
 relevant tickets: #230 #231 #235 #195
 
@@ -222,7 +222,7 @@ relevant tickets: #230 #231 #235 #195
 - *Zoom* and *Pan* controls added to embedded and standalone Network Graph components. #216
 - Ability to filter by *Match Keys* present on the links between graph entities in the dataset added to standalone Network Graph component. #215
 - List of *ALL* command line flags and environment variables for configuration of the docker container.
-  See [docs/Environment Variables](https://github.com/Senzing/entity-search-web-app/blob/master/docs/Environment%20Variables.md) #218
+  See [docs/Environment Variables](https://github.com/senzing-garage/entity-search-web-app/blob/master/docs/Environment%20Variables.md) #218
 
 ### Modified in 2.3.4
 
@@ -258,11 +258,11 @@ relevant tickets #189 #190 #192 #196 #198 #200 #202 #204
 ## [2.3.1] - 2021-08-26
 
 The configuration options/setup surrounding the stream loading feature released in
-[2.3.0](https://github.com/Senzing/entity-search-web-app/releases/tag/2.3.0) has been simplified.
+[2.3.0](https://github.com/senzing-garage/entity-search-web-app/releases/tag/2.3.0) has been simplified.
 Now stream loading is automatically enabled for the user ***IF*** the webapp is running against a
-**[POC Server](https://github.com/Senzing/senzing-poc-server)** that has SQS configured.
+**[POC Server](https://github.com/senzing-garage/senzing-poc-server)** that has SQS configured.
 If not configured properly or running against the
-[API server](https://github.com/Senzing/senzing-api-server)(with adminMode=true set)
+[API server](https://github.com/senzing-garage/senzing-api-server)(with adminMode=true set)
 the loading feature will fallback to the **non**-stream method.
 As a result of this streamlining the UI ***toggle switch*** and **"connection configuration"** modal has been *removed* from the UI.
 
@@ -341,13 +341,13 @@ relevant tickets: #147 #154, #156, #157
 
 Bugfixes for:
 
-- [Large graph filtering](https://github.com/Senzing/sdk-graph-components/issues/27)
-- [Large graph color highlights by datasource](https://github.com/Senzing/sdk-components-ng/issues/162)
-- [Detail Graph lifecycle issue on in-component navigation](https://github.com/Senzing/sdk-components-ng/issues/156)
-- [Graph tooltips showing null for address and phone numbers](https://github.com/Senzing/sdk-graph-components/issues/42)
-- [Enitity Id added to detail report](https://github.com/Senzing/sdk-components-ng/issues/159)
-- [Search by Attribute option pinned to menu options](https://github.com/Senzing/entity-search-web-app/issues/131)
-- [Best name logic fix](https://github.com/Senzing/sdk-components-ng/issues/156)
+- [Large graph filtering](https://github.com/senzing-garage/sdk-graph-components/issues/27)
+- [Large graph color highlights by datasource](https://github.com/senzing-garage/sdk-components-ng/issues/162)
+- [Detail Graph lifecycle issue on in-component navigation](https://github.com/senzing-garage/sdk-components-ng/issues/156)
+- [Graph tooltips showing null for address and phone numbers](https://github.com/senzing-garage/sdk-graph-components/issues/42)
+- [Enitity Id added to detail report](https://github.com/senzing-garage/sdk-components-ng/issues/159)
+- [Search by Attribute option pinned to menu options](https://github.com/senzing-garage/entity-search-web-app/issues/131)
+- [Best name logic fix](https://github.com/senzing-garage/sdk-components-ng/issues/156)
 
 ## [2.1.0] - 2020-09-23
 
@@ -359,9 +359,9 @@ Major updates to most dependency versions have also been made which should impro
 The following Senzing sponsored projects have also been updated to operate on Angular 10,
 see the following links for associated tickets:
 
-- [sdk-components-ng/issues/143](https://github.com/Senzing/sdk-components-ng/issues/143)
-- [rest-api-client-ng/issues/39](https://github.com/Senzing/rest-api-client-ng/issues/39)
-- [sdk-graph-components/issues/37](https://github.com/Senzing/sdk-graph-components/issues/37)
+- [sdk-components-ng/issues/143](https://github.com/senzing-garage/sdk-components-ng/issues/143)
+- [rest-api-client-ng/issues/39](https://github.com/senzing-garage/rest-api-client-ng/issues/39)
+- [sdk-graph-components/issues/37](https://github.com/senzing-garage/sdk-graph-components/issues/37)
 
 ## [2.0.1] - 2020-09-21
 
@@ -401,13 +401,13 @@ There are several NEW env vars/command args that now are required for full opera
 ## [2.0.0] - 2020-07-16
 
 Compatibility release for interacting with the 2.0.0
-[senzing-rest-api-spec](https://github.com/Senzing/senzing-rest-api-specification) and
-[senzing-api-server](https://github.com/Senzing/senzing-api-server).
+[senzing-rest-api-spec](https://github.com/senzing-garage/senzing-rest-api-specification) and
+[senzing-api-server](https://github.com/senzing-garage/senzing-api-server).
 For information on specifics of endpoint changes see below:
 
-- [@senzing/rest-api-client-ng@2.0.0](https://github.com/Senzing/rest-api-client-ng/releases/tag/2.0.0)
-- [senzing-rest-api-specification PR #44](https://github.com/Senzing/senzing-rest-api-specification/pull/44)
-- [senzing-api-server PR #172](https://github.com/Senzing/senzing-api-server/pull/172)
+- [@senzing/rest-api-client-ng@2.0.0](https://github.com/senzing-garage/rest-api-client-ng/releases/tag/2.0.0)
+- [senzing-rest-api-specification PR #44](https://github.com/senzing-garage/senzing-rest-api-specification/pull/44)
+- [senzing-api-server PR #172](https://github.com/senzing-garage/senzing-api-server/pull/172)
 
 ## [1.2.1] - 2020-04-24
 
@@ -419,23 +419,23 @@ For information on specifics of endpoint changes see below:
 - Added MSSQL support
 - Added Search by *record Id* or *entity Id* form interfaces
 - Added Record JSON viewer
-- Added Admin functionality. (see [Readme](https://github.com/Senzing/entity-search-web-app#admin-area) for more details)
+- Added Admin functionality. (see [Readme](https://github.com/senzing-garage/entity-search-web-app#admin-area) for more details)
   - added ability to view datasources available to an instance
   - added ability to do bulk import or csv or json files in to a datasource
   - added randomly generated JWT token to `/admin` routes by default. other authentication options include external SSO relay and NONE.
 - Implemented CORS support for allowing the container to tell the client to directly request api resources. Default is disabled.
 - Implemented CSP (Content Security Policy) - enabled by default. see #96 for more details.
 - relevant tickets:
-  [#66](https://github.com/Senzing/entity-search-web-app/pull/66),
-  [#67](https://github.com/Senzing/entity-search-web-app/pull/67),
-  [#68](https://github.com/Senzing/entity-search-web-app/pull/68),
-  [#73](https://github.com/Senzing/entity-search-web-app/pull/73),
-  [#74](https://github.com/Senzing/entity-search-web-app/pull/74),
-  [#76](https://github.com/Senzing/entity-search-web-app/pull/76),
-  [#83](https://github.com/Senzing/entity-search-web-app/pull/83),
-  [#84](https://github.com/Senzing/entity-search-web-app/pull/84),
-  [#89](https://github.com/Senzing/entity-search-web-app/pull/89),
-  [#96](https://github.com/Senzing/entity-search-web-app/pull/96)
+  [#66](https://github.com/senzing-garage/entity-search-web-app/pull/66),
+  [#67](https://github.com/senzing-garage/entity-search-web-app/pull/67),
+  [#68](https://github.com/senzing-garage/entity-search-web-app/pull/68),
+  [#73](https://github.com/senzing-garage/entity-search-web-app/pull/73),
+  [#74](https://github.com/senzing-garage/entity-search-web-app/pull/74),
+  [#76](https://github.com/senzing-garage/entity-search-web-app/pull/76),
+  [#83](https://github.com/senzing-garage/entity-search-web-app/pull/83),
+  [#84](https://github.com/senzing-garage/entity-search-web-app/pull/84),
+  [#89](https://github.com/senzing-garage/entity-search-web-app/pull/89),
+  [#96](https://github.com/senzing-garage/entity-search-web-app/pull/96)
 
 ![image](docs/img/release/80262048-14e88380-8641-11ea-9a66-3455d8e3b044.png)
 ![image](docs/img/release/80262278-c8ea0e80-8641-11ea-9672-c105a99a45d9.png)
@@ -460,10 +460,10 @@ For information on specifics of endpoint changes see below:
 - basic auth support (alpha) for docker image.
 - premature loading indicator disapearing fix.
 - relevant tickets:
-  [#34](https://github.com/Senzing/entity-search-web-app/pull/34),
-  [#67](https://github.com/Senzing/entity-search-web-app/pull/67),
-  [#69](https://github.com/Senzing/entity-search-web-app/pull/69),
-  [#71](https://github.com/Senzing/entity-search-web-app/pull/71)
+  [#34](https://github.com/senzing-garage/entity-search-web-app/pull/34),
+  [#67](https://github.com/senzing-garage/entity-search-web-app/pull/67),
+  [#69](https://github.com/senzing-garage/entity-search-web-app/pull/69),
+  [#71](https://github.com/senzing-garage/entity-search-web-app/pull/71)
 
 ![2019-11-19_154007](docs/img/release/69196314-04a50900-0ae3-11ea-9ef4-74903c507360.png)
 ![2019-11-19_154500](docs/img/release/69196516-96ad1180-0ae3-11ea-9848-7d868d874a01.png)
@@ -472,10 +472,10 @@ For information on specifics of endpoint changes see below:
 
 ### Added to 1.0.3
 
-- [sdk-components-ng](https://github.com/Senzing/sdk-components-ng) updated to
-  [1.0.9](https://github.com/Senzing/sdk-components-ng/releases/tag/1.0.9) and
-  [sdk-graph-components](https://github.com/Senzing/sdk-graph-components) updated to
-  [0.0.6](https://github.com/Senzing/sdk-graph-components/releases/tag/0.0.6)
+- [sdk-components-ng](https://github.com/senzing-garage/sdk-components-ng) updated to
+  [1.0.9](https://github.com/senzing-garage/sdk-components-ng/releases/tag/1.0.9) and
+  [sdk-graph-components](https://github.com/senzing-garage/sdk-graph-components) updated to
+  [0.0.6](https://github.com/senzing-garage/sdk-graph-components/releases/tag/0.0.6)
 
 ![2019-09-30_122901](docs/img/release/65909647-eaba3600-e37d-11e9-92f8-2d8f7e4ceca3.png)
 
@@ -495,7 +495,7 @@ For information on specifics of endpoint changes see below:
 ### Added to 1.0.2
 
 - SDK components updated to [1.0.8](https://github.com/senzingiris/sdk-components-ng/releases/tag/1.0.8)
-- Graph components updated to [0.0.4](https://github.com/Senzing/sdk-graph-components/releases)
+- Graph components updated to [0.0.4](https://github.com/senzing-garage/sdk-graph-components/releases)
 - PDF downloads
 - minor UI/UX changes
 
@@ -506,11 +506,11 @@ For information on specifics of endpoint changes see below:
 - entity icon fixes
 - graph overflow issue
 - relevant tickets:
-  [#32](https://github.com/Senzing/entity-search-web-app/pull/32),
-  [#36](https://github.com/Senzing/entity-search-web-app/pull/36),
-  [#47](https://github.com/Senzing/entity-search-web-app/pull/47),
-  [#51](https://github.com/Senzing/entity-search-web-app/pull/51),
-  [#53](https://github.com/Senzing/entity-search-web-app/pull/53)
+  [#32](https://github.com/senzing-garage/entity-search-web-app/pull/32),
+  [#36](https://github.com/senzing-garage/entity-search-web-app/pull/36),
+  [#47](https://github.com/senzing-garage/entity-search-web-app/pull/47),
+  [#51](https://github.com/senzing-garage/entity-search-web-app/pull/51),
+  [#53](https://github.com/senzing-garage/entity-search-web-app/pull/53)
 
 ## [1.0.1] - 2019-06-26
 
@@ -520,7 +520,7 @@ For information on specifics of endpoint changes see below:
 - wonky graph styling issue
 - basic unit tests fixes
 - sdk-components-ng version bump. 1.0.4 -> **1.0.5**
-- adds licence badge to readme. [![License](https://img.shields.io/github/license/senzing/entity-search-web-app.svg)](https://github.com/Senzing/entity-search-web-app/blob/master/LICENSE)
+- adds licence badge to readme. [![License](https://img.shields.io/github/license/senzing/entity-search-web-app.svg)](https://github.com/senzing-garage/entity-search-web-app/blob/master/LICENSE)
 - adds `npm run e2e`, `npm run e2e:headless`, `npm run test`, and `npm run test:headless` scripts
 - added .travis.yml for CI build/test integration
 - angular.json configuration changes to support path refactoring
