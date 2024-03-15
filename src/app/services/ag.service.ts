@@ -136,18 +136,6 @@ export class AuthGuardService implements CanActivate {
               );
               retReq = jwtReq;
             }
-          } else if(authConf.admin.mode === 'EXTERNAL' || authConf.admin.mode === 'SSO') {
-            // SSO or EXTERNAL auth check
-            retReq = this.adminAuth.getIsAuthorized().pipe(
-                tap((resi: boolean) => {
-                  responseMap.sso = resi;
-                }),
-                catchError( (err) => {
-                  responseMap.sso = false;
-                  responseMap.error = err;
-                  return of(false);
-                })
-              );
           } else {
             console.warn('fallthrough: ', (authConf.admin.mode === 'JWT' || authConf.admin.mode === 'BUILT-IN'));
           }
