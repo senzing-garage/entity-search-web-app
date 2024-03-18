@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.9.4] - 2024-03-16
+
+### Changed in 2.9.4
+
+- Removed 'SSO' integration variables. SSO authententication/redirects should be handled at the network/formation level instead of by the individual container.
+
 ## [2.9.3] - 2024-01-18
 
 ### Changed in 2.9.3

@@ -348,16 +348,14 @@ The admin area can then be accessed by browsing to `/admin` on the same domain/h
 
 #### Admin Area Configuration
 
-There are three security modes supported.
+There are two security modes supported.
 
   1. JWT/Token based : randomly generated secret/phrase/seed. This is the default mode because it's self-contained and does not require any additional configuration on the part of the admin or user.
-  2. SSO/Proxy : This mode makes a request to `/admin/auth/sso/status` and checks whether the response is a 200. If the response is anything other than a 200 then the user is redirected to a log in page defined by the value of the `SENZING_WEB_SERVER_ADMIN_AUTH_REDIRECT` env variable. Your SSO/Proxy should be configured to return 401/403 for requests to `/admin/auth/sso/status` when the user is not logged in.
-  3. None: this is not a recommended mode. It exists purely for development or debugging purposes.
+  2. None: this is not a recommended mode. It exists purely for development or debugging purposes.
 
 variables:
 
-  1. `SENZING_WEB_SERVER_ADMIN_AUTH_MODE` defines what security mode to use for the admin area. possible values are `SSO`,`JWT`,`EXTERNAL`,`NONE`.
-  2. `SENZING_WEB_SERVER_ADMIN_AUTH_REDIRECT` defines the path to redirect to when a user has not been authenticated. This is useful for SSO mode when the desired result is to redirect to the company SSO login interface.
+  1. `SENZING_WEB_SERVER_ADMIN_AUTH_MODE` defines what security mode to use for the admin area. possible values are `JWT`,`NONE`.
 
 ### Security Safeguards
 

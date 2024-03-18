@@ -17,7 +17,7 @@ import { AuthConfig, SzWebAppConfigService } from './config.service';
 export class AdminAuthService {
   /** options are 'JWT' | 'EXTERNAL' | false */
   public get authMode(): string | boolean {
-    return (this._authConfig && this._authConfig.admin && this._authConfig.admin.mode !== undefined) ? this._authConfig.admin.mode : 'SSO';
+    return (this._authConfig && this._authConfig.admin && this._authConfig.admin.mode !== undefined) ? this._authConfig.admin.mode : 'JWT';
   }
   public get redirectOnFailure(): boolean {
     return (this._authConfig && this._authConfig.admin && this._authConfig.admin.redirectOnFailure !== undefined) ? this._authConfig.admin.redirectOnFailure : true;
@@ -122,13 +122,6 @@ export class AdminAuthService {
         return of(false);
       }
       return this.verifyJWT(adminToken);
-    }
-    if(this.authMode === 'EXTERNAL' || this.authMode === 'SSO') {
-      if(!this.authCheckUrl) {
-        console.warn('NO AUTH CHECK URL for SSO! ', this.authCheckUrl);
-        return of(false);
-      }
-      return this.verifyExternalAuthByCode();
     }
   }
 
