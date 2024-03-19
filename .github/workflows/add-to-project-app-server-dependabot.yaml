@@ -1,8 +1,11 @@
-name: add to project garage dependabot
+name: add to project app server dependabot
 
 on:
   pull_request:
     branches: [main]
+
+permissions:
+  repository-projects: write
 
 jobs:
   add-to-project-dependabot:
