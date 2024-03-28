@@ -50,7 +50,7 @@
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "d3": "^7.8.4",
-    "express": "^4.18.1",
+    "express": "^4.19.2",
     "express-basic-auth": "^1.2.1",
     "express-jwt": "^8.3.0",
     "helmet-csp": "^3.4.0",
