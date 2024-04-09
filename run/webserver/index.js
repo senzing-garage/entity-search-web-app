@@ -141,7 +141,7 @@ if(proxyConfig) {
     }
     proxyTargetOptions.onError = onError;
     if(proxyOptions.logLevel === 'debug') {
-      STARTUP_MSG = STARTUP_MSG + '\n'+' ['+proxyPath+'] ~> '+ proxyTargetOptions.target +' ('+ JSON.stringify(proxyTargetOptions.pathRewrite) +')';
+      STARTUP_MSG = STARTUP_MSG + '\n'+' ['+proxyPath+'] ~> '+ proxyTargetOptions.target +' ('+ JSON.stringify(proxyTargetOptions.pathRewrite) +', enforce ssl? '+ proxyTargetOptions.secure +')';
     }
 //    app.use(proxyPath, apiProxy(proxyTargetOptions));
     app.use(proxyPath, createProxyMiddleware(proxyTargetOptions));
@@ -395,13 +395,6 @@ if(authOptions && authOptions !== undefined) {
     STARTUP_MSG = STARTUP_MSG + '\n'+'set the \'SENZING_WEB_SERVER_ADMIN_AUTH_MODE="JWT"\' env variable ';
     STARTUP_MSG = STARTUP_MSG + '\n'+'or the \'adminAuthMode="JWT"\' command line arg.'
     STARTUP_MSG = STARTUP_MSG + '\n'+'';
-    STARTUP_MSG = STARTUP_MSG + '\n'+'To add an external authentication check configure your ';
-    STARTUP_MSG = STARTUP_MSG + '\n'+'proxy to resolve with a 401 or 403 header for ';
-    STARTUP_MSG = STARTUP_MSG + '\n'+'"/admin/auth/status" requests to this instance.';
-    STARTUP_MSG = STARTUP_MSG + '\n'+'Set the auth mode to SSO by setting \'SENZING_WEB_SERVER_ADMIN_AUTH_MODE="SSO"\'';
-    STARTUP_MSG = STARTUP_MSG + '\n'+'A failure can be redirected by setting "SENZING_WEB_SERVER_ADMIN_AUTH_REDIRECT="https://my-sso.my-domain.com/path-to/login""';
-    STARTUP_MSG = STARTUP_MSG + '\n'+'or via cmdline \'adminAuthRedirectUrl="https://my-sso.my-domain.com/path-to/login"\''
-
     STARTUP_MSG = STARTUP_MSG + '\n'+'---------------------';
     STARTUP_MSG = STARTUP_MSG + '\n'+'';
   }
@@ -495,8 +488,16 @@ if( serverOptions && serverOptions.ssl && serverOptions.ssl.enabled ){
   }
   ExpressSrvInstance = https.createServer(ssl_opts, app).listen(serverOptions.port)
   STARTUP_MSG_POST = '\n'+'SSL Express Server started on port '+ serverOptions.port;
-  STARTUP_MSG_POST = STARTUP_MSG_POST + '\n'+'\tKEY: ', serverOptions.keyPath;
-  STARTUP_MSG_POST = STARTUP_MSG_POST + '\n'+'\tCERT: ', serverOptions.certPath;
+  STARTUP_MSG_POST = STARTUP_MSG_POST +'\nSSL Opts: '+ JSON.stringify(serverOptions.ssl, undefined, 2)
+  if(serverOptions.ssl && serverOptions.ssl.keyPath) {
+    STARTUP_MSG_POST = STARTUP_MSG_POST + '\n'+'\t\t- KEY Path: '+ serverOptions.ssl.keyPath;
+  }
+  if(serverOptions.ssl && serverOptions.ssl.certPath) {
+    STARTUP_MSG_POST = STARTUP_MSG_POST + '\n'+'\t\t- CERT Path: '+ serverOptions.ssl.certPath;
+  }
+  if(serverOptions.ssl && serverOptions.ssl.caPath) {
+    STARTUP_MSG_POST = STARTUP_MSG_POST + '\n'+'\t\t- CA Path: '+ serverOptions.ssl.caPath;
+  }
   STARTUP_MSG_POST = STARTUP_MSG_POST + '\n'+'';
   STARTUP_MSG = STARTUP_MSG_POST + STARTUP_MSG;
 } else {

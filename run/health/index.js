@@ -1,4 +1,5 @@
 const http = require('http');
+const https = require('https');
 let EventEmitter = require('events').EventEmitter;
 const { replacePortNumber } = require("../utils");
 
@@ -31,31 +32,69 @@ class HealthCheckerUtility extends EventEmitter {
         return this.inMemoryConfig.config;
     }
     checkIfWebServerAlive() {
-        let reqUrl  = this.config.web.url;
-        let req = http.get(reqUrl, (res => {
-            //console.log('checkIfWebServerAlive.response:   ', res.statusCode);  
-            //res.on('end',(() => {
-              if(res.statusCode === 200) {
-                if(this.isWebserverAlive !== true) {
-                    this.isWebserverAlive = true;
+        let reqUrl      = this.config.web.url;
+        let protocol    = this.config.web.protocol ? this.config.web.protocol : undefined;
+        if(protocol === undefined && reqUrl && reqUrl.indexOf && reqUrl.indexOf('://')) {
+            // try and get it from web url
+            let url_parts = reqUrl.split('://');
+            if(url_parts && url_parts[0]) {
+                protocol = url_parts[0];
+            }
+        }
+        if(protocol === 'https') {
+            // use ssl
+            let req = https.get(reqUrl, (res => {
+                //console.log('checkIfWebServerAlive.response:   ', res.statusCode);  
+                //res.on('end',(() => {
+                  if(res.statusCode === 200) {
+                    if(this.isWebserverAlive !== true) {
+                        this.isWebserverAlive = true;
+                        this.emit('statusChange', this.status);
+                    }
+                    //console.log('Response ended: \n', _dataRes);
+                  } else if(this.isWebserverAlive == true) {
+                    this.isWebserverAlive = false;
+                    this.emit('statusChange', this.status);
+                  }
+                //}).bind(this));
+          
+            }).bind(this)).on('error', (error => {
+                //console.log('checkIfWebServerAlive:   '+ error.code +' | ['+ reqUrl +']');
+                if(this.isWebserverAlive == true) {
+                    this.isWebserverAlive = false;
                     this.emit('statusChange', this.status);
                 }
-                //console.log('Response ended: \n', _dataRes);
-              } else if(this.isWebserverAlive == true) {
                 this.isWebserverAlive = false;
-                this.emit('statusChange', this.status);
-              }
-            //}).bind(this));
-      
-        }).bind(this)).on('error', (error => {
-            //console.log('checkIfWebServerAlive:   '+ error.code +' | ['+ reqUrl +']');
-            if(this.isWebserverAlive == true) {
+                //console.log(error)
+            }).bind(this))
+        } else {
+            // assume http
+            let req = http.get(reqUrl, (res => {
+                //console.log('checkIfWebServerAlive.response:   ', res.statusCode);  
+                //res.on('end',(() => {
+                  if(res.statusCode === 200) {
+                    if(this.isWebserverAlive !== true) {
+                        this.isWebserverAlive = true;
+                        this.emit('statusChange', this.status);
+                    }
+                    //console.log('Response ended: \n', _dataRes);
+                  } else if(this.isWebserverAlive == true) {
+                    this.isWebserverAlive = false;
+                    this.emit('statusChange', this.status);
+                  }
+                //}).bind(this));
+          
+            }).bind(this)).on('error', (error => {
+                //console.log('checkIfWebServerAlive:   '+ error.code +' | ['+ reqUrl +']');
+                if(this.isWebserverAlive == true) {
+                    this.isWebserverAlive = false;
+                    this.emit('statusChange', this.status);
+                }
                 this.isWebserverAlive = false;
-                this.emit('statusChange', this.status);
-            }
-            this.isWebserverAlive = false;
-            //console.log(error)
-        }).bind(this))
+                //console.log(error)
+            }).bind(this))
+        }
+        
     }
     checkIfApiServerAlive() {
         let reqUrl  = this.config.web.apiServerUrl+'/server-info';    
@@ -90,32 +129,69 @@ class HealthCheckerUtility extends EventEmitter {
         //console.log('checkIfProxyServerAlive: port', this.config.configServer.port);
         //console.log('checkIfProxyServerAlive: url', reqUrl);
         //console.log(this.config);
-
-        let req = http.get(reqUrl, (res => {
-            //console.log('checkIfProxyServerAlive.response: ', res.statusCode);  
-            //res.on('end',(() => {
-                if(res.statusCode === 200) {
-                    //console.log('\t isProxyAlive('+ this.isProxyAlive +')', (this.isProxyAlive !== true));
-                    if(this.isProxyAlive !== true) {
-                        this.isProxyAlive = true;
+        let protocol    = this.config.web.protocol ? this.config.web.protocol : undefined;
+        if(protocol === undefined && reqUrl && reqUrl.indexOf && reqUrl.indexOf('://')) {
+            // try and get it from web url
+            let url_parts = reqUrl.split('://');
+            if(url_parts && url_parts[0]) {
+                protocol = url_parts[0];
+            }
+        }
+        if(protocol === 'https') {
+            // use ssl
+            let req = https.get(reqUrl, (res => {
+                //console.log('checkIfProxyServerAlive.response: ', res.statusCode);  
+                //res.on('end',(() => {
+                    if(res.statusCode === 200) {
+                        //console.log('\t isProxyAlive('+ this.isProxyAlive +')', (this.isProxyAlive !== true));
+                        if(this.isProxyAlive !== true) {
+                            this.isProxyAlive = true;
+                            this.emit('statusChange', this.status);
+                        }
+                        //console.log('Response ended: \n', _dataRes);
+                    } else if(this.isProxyAlive == true) {
+                        this.isProxyAlive = false;
                         this.emit('statusChange', this.status);
                     }
-                    //console.log('Response ended: \n', _dataRes);
-                } else if(this.isProxyAlive == true) {
+                //}).bind(this));
+          
+            }).bind(this)).on('error', (error => {
+                //console.log('checkIfProxyServerAlive: '+ error.code +' | ['+ reqUrl +']');
+                if(this.isProxyAlive == true) {
                     this.isProxyAlive = false;
                     this.emit('statusChange', this.status);
                 }
-            //}).bind(this));
-      
-        }).bind(this)).on('error', (error => {
-            //console.log('checkIfProxyServerAlive: '+ error.code +' | ['+ reqUrl +']');
-            if(this.isProxyAlive == true) {
                 this.isProxyAlive = false;
-                this.emit('statusChange', this.status);
-            }
-            this.isProxyAlive = false;
-            //console.log(error)
-        }).bind(this))
+                //console.log(error)
+            }).bind(this))
+        } else {
+            //assume http
+            let req = http.get(reqUrl, (res => {
+                //console.log('checkIfProxyServerAlive.response: ', res.statusCode);  
+                //res.on('end',(() => {
+                    if(res.statusCode === 200) {
+                        //console.log('\t isProxyAlive('+ this.isProxyAlive +')', (this.isProxyAlive !== true));
+                        if(this.isProxyAlive !== true) {
+                            this.isProxyAlive = true;
+                            this.emit('statusChange', this.status);
+                        }
+                        //console.log('Response ended: \n', _dataRes);
+                    } else if(this.isProxyAlive == true) {
+                        this.isProxyAlive = false;
+                        this.emit('statusChange', this.status);
+                    }
+                //}).bind(this));
+          
+            }).bind(this)).on('error', (error => {
+                //console.log('checkIfProxyServerAlive: '+ error.code +' | ['+ reqUrl +']');
+                if(this.isProxyAlive == true) {
+                    this.isProxyAlive = false;
+                    this.emit('statusChange', this.status);
+                }
+                this.isProxyAlive = false;
+                //console.log(error)
+            }).bind(this))
+        }
     }
 }
 

@@ -523,6 +523,9 @@ function getWebServerOptionsFromInput() {
     if(env.SENZING_WEB_SERVER_SSL_KEY_PATH) {
       retOpts.ssl.keyPath         = env.SENZING_WEB_SERVER_SSL_KEY_PATH;
     }
+    if(env.SENZING_WEB_SERVER_SSL_CA_PATH) {
+      retOpts.ssl.caPath          = env.SENZING_WEB_SERVER_SSL_CA_PATH;
+    }
     if(env.SENZING_WEB_SERVER_BASIC_AUTH_JSON) {
       retOpts.authBasicJson       = env.SENZING_WEB_SERVER_BASIC_AUTH_JSON;
     }
@@ -551,6 +554,10 @@ function getWebServerOptionsFromInput() {
     if(retOpts.sslKeyPath) {
       retOpts.ssl = retOpts.ssl ? retOpts.ssl : {};
       retOpts.ssl.keyPath   = retOpts.sslKeyPath;
+    }
+    if(retOpts.sslCaPath) {
+      retOpts.ssl = retOpts.ssl ? retOpts.ssl : {};
+      retOpts.ssl.caPath   = retOpts.sslCaPath;
     }
   }
 
@@ -585,10 +592,14 @@ function createWebServerConfigFromInput() {
 
 function getProxyServerOptionsFromInput() {
   let retOpts = {
+    authServerProtocol: 'http',
     authServerHostName: "localhost",
     authServerPortNumber: 8080,
+    authServerSecure: true,
+    confServerProtocol: 'http',
     confServerHostName: "localhost",
     confServerPortNumber: 8080,
+    confServerSecure: true,
     logLevel: "error",
     apiServerUrl: "",
     configPath: "",
@@ -609,11 +620,15 @@ function getProxyServerOptionsFromInput() {
       retOpts.authServerHostName    = (env.SENZING_AUTH_SERVER_HOSTNAME) ? env.SENZING_AUTH_SERVER_HOSTNAME : env.SENZING_WEB_SERVER_HOSTNAME;
       retOpts.confServerHostName    = retOpts.authServerHostName;
     }
+    if(env.SENZING_AUTH_SERVER_PROTOCOL || env.SENZING_WEB_SERVER_PROTOCOL) {
+      retOpts.authServerProtocol    = (env.SENZING_AUTH_SERVER_PROTOCOL) ? env.SENZING_AUTH_SERVER_PROTOCOL : retOpts.authServerProtocol;
+      retOpts.confServerProtocol    = (env.SENZING_WEB_SERVER_PROTOCOL) ? env.SENZING_WEB_SERVER_PROTOCOL : retOpts.confServerProtocol;
+    }
     if(env.SENZING_AUTH_SERVER_PORT || env.SENZING_WEB_SERVER_PORT) {
       retOpts.authServerPortNumber  = (env.SENZING_AUTH_SERVER_PORT) ? env.SENZING_AUTH_SERVER_PORT : env.SENZING_WEB_SERVER_PORT;
       retOpts.confServerPortNumber  = retOpts.authServerPortNumber;
-      retOpts.adminAuthPath         = "http://"+ retOpts.authServerHostName +":"+ retOpts.authServerPortNumber;
-      retOpts.configPath            = "http://"+ retOpts.confServerHostName +":"+ retOpts.confServerPortNumber;
+      retOpts.adminAuthPath         = retOpts.authServerProtocol + "://"+ retOpts.authServerHostName +":"+ retOpts.authServerPortNumber;
+      retOpts.configPath            = retOpts.confServerProtocol + "://"+ retOpts.confServerHostName +":"+ retOpts.confServerPortNumber;
     }
     if(env.SENZING_WEB_SERVER_AUTH_PATH) {
       retOpts.adminAuthPath = env.SENZING_WEB_SERVER_AUTH_PATH;
@@ -630,10 +645,20 @@ function getProxyServerOptionsFromInput() {
     if(env.SENZING_WEB_SERVER_INTERNAL_URL) {
       retOpts.configPath = env.SENZING_WEB_SERVER_INTERNAL_URL;
     }
+
+    if(retOpts.confServerProtocol && retOpts.configPath) {
+      // replace 'http' with 'https' if necessary
+      retOpts.configPath = replaceProtocol(retOpts.confServerProtocol, retOpts.configPath);
+    }
     /*if(env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE) {
       retOpts.authMode = env.SENZING_WEB_SERVER_ADMIN_AUTH_MODE;
     }*/
-
+    if(env.SENZING_AUTH_SERVER_PROXY_SECURE) {
+      retOpts.authServerSecure = env.SENZING_AUTH_SERVER_PROXY_SECURE;
+    }
+    if(env.SENZING_WEB_SERVER_PROXY_SECURE) {
+      retOpts.confServerSecure = env.SENZING_WEB_SERVER_PROXY_SECURE;
+    }
     if(env.SENZING_AUTH_SERVER_JWTPATH_REWRITE) {
       retOpts.jwtPathRewrite = env.SENZING_AUTH_SERVER_JWTPATH_REWRITE;
     }
@@ -654,12 +679,18 @@ function getProxyServerOptionsFromInput() {
   // now get cmdline options and override any defaults or ENV options
   let cmdLineOpts = getCommandLineArgsAsJSON();
   if(cmdLineOpts && cmdLineOpts !== undefined) {
+    if(cmdLineOpts.authServerProtocol) {
+      retOpts.authServerProtocol = cmdLineOpts.authServerProtocol;
+    }
+    if(cmdLineOpts.confServerProtocol) {
+      retOpts.confServerProtocol = cmdLineOpts.confServerProtocol;
+    }
     if(cmdLineOpts.authServerPortNumber) {
       retOpts.authServerPortNumber  = cmdLineOpts.authServerPortNumber;
       retOpts.confServerPortNumber  = retOpts.authServerPortNumber;
 
-      retOpts.adminAuthPath         = "http://"+ retOpts.authServerHostName +":"+ retOpts.authServerPortNumber;
-      retOpts.configPath            = "http://"+ retOpts.confServerHostName +":"+ retOpts.confServerPortNumber;
+      retOpts.adminAuthPath         = retOpts.authServerProtocol + "://"+ retOpts.authServerHostName +":"+ retOpts.authServerPortNumber;
+      retOpts.configPath            = retOpts.confServerProtocol + "://"+ retOpts.confServerHostName +":"+ retOpts.confServerPortNumber;
     }
     if(cmdLineOpts.proxyLogLevel) {
       retOpts.logLevel = cmdLineOpts.proxyLogLevel;
@@ -675,6 +706,12 @@ function getProxyServerOptionsFromInput() {
     }
     if(cmdLineOpts.webServerInternalUrl) {
       retOpts.configPath = cmdLineOpts.webServerInternalUrl;
+    }
+    if(cmdLineOpts.authProxySecure) {
+      retOpts.authServerSecure = cmdLineOpts.authProxySecure;
+    }
+    if(cmdLineOpts.proxySecure) {
+      retOpts.confServerSecure = cmdLineOpts.proxySecure;
     }
     if(cmdLineOpts.proxyJWTPathRewrite) {
       retOpts.jwtPathRewrite = cmdLineOpts.proxyJWTPathRewrite;
@@ -769,7 +806,7 @@ function createProxyConfigFromInput() {
   let mergeObj = appendBasePathToKeys({
     "/config/console": {
       "target": proxyOpts.configPath + "/conf/console/",
-      "secure": true,
+      "secure": proxyOpts.confServerSecure,
       "logLevel": proxyOpts.logLevel,
       "pathRewrite": {
         "^/config/console": ""
@@ -777,7 +814,7 @@ function createProxyConfigFromInput() {
     },
     "/config/cors": {
       "target": proxyOpts.configPath + "/conf/cors/",
-      "secure": true,
+      "secure": proxyOpts.confServerSecure,
       "logLevel": proxyOpts.logLevel,
       "pathRewrite": {
         "^/config/cors": ""
@@ -785,7 +822,7 @@ function createProxyConfigFromInput() {
     },
     "/config/csp": {
       "target": proxyOpts.configPath + "/conf/csp/",
-      "secure": true,
+      "secure": proxyOpts.confServerSecure,
       "logLevel": proxyOpts.logLevel,
       "pathRewrite": {
         "^/config/csp": ""
@@ -793,7 +830,7 @@ function createProxyConfigFromInput() {
     },
     "/config/package": {
       "target": proxyOpts.configPath + "/conf/package",
-      "secure": true,
+      "secure": proxyOpts.confServerSecure,
       "logLevel": proxyOpts.logLevel,
       "pathRewrite": {
         "^/config/package": ""
@@ -801,7 +838,7 @@ function createProxyConfigFromInput() {
     },
     "/config/server": {
       "target": proxyOpts.configPath + "/conf/server/",
-      "secure": true,
+      "secure": proxyOpts.confServerSecure,
       "logLevel": proxyOpts.logLevel,
       "pathRewrite": {
         "^/config/server": ""
@@ -809,7 +846,7 @@ function createProxyConfigFromInput() {
     },
     "/config/streams": {
       "target": proxyOpts.configPath + "/conf/streams/",
-      "secure": true,
+      "secure": proxyOpts.confServerSecure,
       "logLevel": proxyOpts.logLevel,
       "pathRewrite": {
         "^/config/streams": ""
@@ -817,7 +854,7 @@ function createProxyConfigFromInput() {
     },
     "/health/proxy": {
       "target": proxyOpts.configPath + "/status/proxy/",
-      "secure": true,
+      "secure": proxyOpts.confServerSecure,
       "logLevel": proxyOpts.logLevel,
       "pathRewrite": {
         "^/status/proxy": ""
@@ -831,7 +868,7 @@ function createProxyConfigFromInput() {
     let mergeObj = appendBasePathToKeys({
       "/admin/auth/jwt/*": {
         "target": env.SENZING_WEB_SERVER_ADMIN_AUTH_PATH,
-        "secure": true,
+        "secure": proxyOpts.authServerSecure,
         "logLevel": proxyOpts.logLevel,
         "pathRewrite": {
           "^/admin/auth/jwt": proxyOpts.adminJwtPathRewrite
@@ -839,7 +876,7 @@ function createProxyConfigFromInput() {
       },
       "/admin/auth/sso/*": {
         "target": env.SENZING_WEB_SERVER_ADMIN_AUTH_PATH,
-        "secure": true,
+        "secure": proxyOpts.authServerSecure,
         "logLevel": proxyOpts.logLevel,
         "pathRewrite": {
           "^/admin/auth/sso": proxyOpts.adminSsoPathRewrite
@@ -847,7 +884,7 @@ function createProxyConfigFromInput() {
       },
       "/auth/jwt/*": {
         "target": env.SENZING_WEB_SERVER_ADMIN_AUTH_PATH + "/jwt/",
-        "secure": true,
+        "secure": proxyOpts.authServerSecure,
         "logLevel": proxyOpts.logLevel,
         "pathRewrite": {
           "^/auth/jwt": proxyOpts.jwtPathRewrite
@@ -855,7 +892,7 @@ function createProxyConfigFromInput() {
       },
       "/auth/sso/*": {
         "target": env.SENZING_WEB_SERVER_ADMIN_AUTH_PATH + "/sso/",
-        "secure": true,
+        "secure": proxyOpts.authServerSecure,
         "logLevel": proxyOpts.logLevel,
         "pathRewrite": {
           "^/auth/sso": proxyOpts.ssoPathRewrite
@@ -863,7 +900,7 @@ function createProxyConfigFromInput() {
       },
       "/config/auth": {
         "target": env.SENZING_WEB_SERVER_ADMIN_AUTH_PATH + "/conf/auth/",
-        "secure": true,
+        "secure": proxyOpts.authServerSecure,
         "logLevel": proxyOpts.logLevel,
         "pathRewrite": {
           "^/config/auth": ""
@@ -871,7 +908,7 @@ function createProxyConfigFromInput() {
       },
       "/cors/test": {
         "target": env.SENZING_WEB_SERVER_ADMIN_AUTH_PATH + "/cors/test/",
-        "secure": true,
+        "secure": proxyOpts.authServerSecure,
         "logLevel": proxyOpts.logLevel,
         "withCredentials": true,
         "pathRewrite": {
@@ -888,7 +925,7 @@ function createProxyConfigFromInput() {
       let mergeObj = appendBasePathToKeys({
         "/admin/auth/jwt/*": {
           "target": proxyOpts.adminAuthPath,
-          "secure": true,
+          "secure": proxyOpts.authServerSecure,
           "logLevel": proxyOpts.logLevel,
           "pathRewrite": {
             "^/admin/auth/jwt": proxyOpts.adminJwtPathRewrite
@@ -896,7 +933,7 @@ function createProxyConfigFromInput() {
         },
         "/admin/auth/sso/*": {
           "target": proxyOpts.adminAuthPath,
-          "secure": true,
+          "secure": proxyOpts.authServerSecure,
           "logLevel": proxyOpts.logLevel,
           "pathRewrite": {
             "^/admin/auth/sso": proxyOpts.adminSsoPathRewrite
@@ -904,7 +941,7 @@ function createProxyConfigFromInput() {
         },
         "/auth/jwt/*": {
           "target": proxyOpts.adminAuthPath + "/jwt/",
-          "secure": true,
+          "secure": proxyOpts.authServerSecure,
           "logLevel": proxyOpts.logLevel,
           "pathRewrite": {
             "^/auth/jwt": proxyOpts.jwtPathRewrite
@@ -912,7 +949,7 @@ function createProxyConfigFromInput() {
         },
         "/auth/sso/*": {
           "target": proxyOpts.adminAuthPath + "/sso/",
-          "secure": true,
+          "secure": proxyOpts.authServerSecure,
           "logLevel": proxyOpts.logLevel,
           "pathRewrite": {
             "^/auth/sso": proxyOpts.ssoPathRewrite
@@ -920,7 +957,7 @@ function createProxyConfigFromInput() {
         },
         "/config/auth": {
           "target": proxyOpts.adminAuthPath + "/conf/auth/",
-          "secure": true,
+          "secure": proxyOpts.authServerSecure,
           "logLevel": proxyOpts.logLevel,
           "pathRewrite": {
             "^/config/auth": ""
@@ -928,7 +965,7 @@ function createProxyConfigFromInput() {
         },
         "/cors/test": {
           "target": proxyOpts.adminAuthPath + "/cors/test/",
-          "secure": true,
+          "secure": proxyOpts.authServerSecure,
           "logLevel": proxyOpts.logLevel,
           "withCredentials": true,
           "pathRewrite": {
