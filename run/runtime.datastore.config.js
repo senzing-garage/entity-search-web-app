@@ -529,6 +529,9 @@ function getWebServerOptionsFromInput() {
     if(env.SENZING_WEB_SERVER_BASIC_AUTH_JSON) {
       retOpts.authBasicJson       = env.SENZING_WEB_SERVER_BASIC_AUTH_JSON;
     }
+    if(retOpts.url && !env.SENZING_WEB_SERVER_PROTOCOL) {
+      retOpts.protocol            = getProtocolFromUrl(retOpts.url); // set protocol from url
+    }
   }
 
   // now get cmdline options and override any defaults or ENV options
@@ -608,7 +611,7 @@ function getProxyServerOptionsFromInput() {
     ssoPathRewrite: "/sso",
     adminJwtPathRewrite: "/jwt/admin",
     adminSsoPathRewrite: "/sso/admin",
-    writeToFile: false,
+    writeToFile: false
   };
 
   // update defaults with ENV options(if present)
@@ -640,10 +643,28 @@ function getProxyServerOptionsFromInput() {
       retOpts.apiServerUrl = env.SENZING_API_SERVER_URL;
     }
     if(env.SENZING_WEB_SERVER_URL) {
-      retOpts.configPath = env.SENZING_WEB_SERVER_URL;
+      retOpts.configPath    = env.SENZING_WEB_SERVER_URL;
+      if(!env.SENZING_WEB_SERVER_PROTOCOL) {
+        retOpts.confServerProtocol  = getProtocolFromUrl(retOpts.configPath); // grab protocol from url
+      }
+      if(!env.SENZING_WEB_SERVER_ADMIN_AUTH_PATH) {
+        retOpts.adminAuthPath       = retOpts.configPath;
+      }
+      if(!env.SENZING_AUTH_SERVER_PROTOCOL) {
+        retOpts.authServerProtocol  = getProtocolFromUrl(retOpts.adminAuthPath); // grab protocol from url
+      }
     }
     if(env.SENZING_WEB_SERVER_INTERNAL_URL) {
       retOpts.configPath = env.SENZING_WEB_SERVER_INTERNAL_URL;
+      if(!env.SENZING_WEB_SERVER_PROTOCOL) {
+        retOpts.confServerProtocol  = getProtocolFromUrl(retOpts.configPath); // grab protocol from url
+      }
+      if(!env.SENZING_WEB_SERVER_ADMIN_AUTH_PATH) {
+        retOpts.adminAuthPath       = retOpts.configPath;
+      }
+      if(!env.SENZING_AUTH_SERVER_PROTOCOL) {
+        retOpts.authServerProtocol  = getProtocolFromUrl(retOpts.adminAuthPath); // grab protocol from url
+      }
     }
 
     if(retOpts.confServerProtocol && retOpts.configPath) {
@@ -861,7 +882,12 @@ function createProxyConfigFromInput() {
       }
     }
   });
-  retConfig = Object.assign(retConfig, mergeObj);
+  // if we are using SSL on our conf server we don't want to introduce
+  // a reverse proxy due to TLS needing to verify with the CA which 
+  // looks suspiciously like a MITM. just skip it to KISS
+  if(proxyOpts && proxyOpts.confServerProtocol !== 'https') {
+    retConfig = Object.assign(retConfig, mergeObj);
+  }
 
   if(env.SENZING_WEB_SERVER_ADMIN_AUTH_PATH) {
     retConfig = retConfig !== undefined ? retConfig : {};
@@ -916,7 +942,11 @@ function createProxyConfigFromInput() {
         }
       }
     });
-    retConfig = Object.assign(retConfig, mergeObj);
+    // if we are using SSL on our auth server we don't want to introduce
+    // a reverse proxy due to TLS needing to verify with the CA
+    if(proxyOpts && proxyOpts.authServerProtocol !== 'https') {
+      retConfig = Object.assign(retConfig, mergeObj);
+    }
   }
   // -------------------- start CMD LINE ARGS import -----------
     // now check our imported cmdline args
@@ -973,7 +1003,11 @@ function createProxyConfigFromInput() {
           }
         }
       });
-      retConfig = Object.assign(retConfig, mergeObj);
+      // if we are using SSL on our auth server we don't want to introduce
+      // a reverse proxy due to TLS needing to verify with the CA
+      if(proxyOpts && proxyOpts.authServerProtocol !== 'https') {
+        retConfig = Object.assign(retConfig, mergeObj);
+      }
     }
   // -------------------- end CMD LINE ARGS import -----------
 

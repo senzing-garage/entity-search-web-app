@@ -198,35 +198,46 @@ const authRes = (req, res, next) => {
 };
 
 // ----------------- start config endpoints -----------------
-  let _confBasePath = '';
+  let _confBaseRoot     = '';
+  let _confWildcardRoot = '*/conf';
+
   if(runtimeOptions.config && 
     runtimeOptions.config.web && 
     runtimeOptions.config.web.path && runtimeOptions.config.web.path !== '/') {
-      _confBasePath = runtimeOptions.config.web.path;
+      _confBaseRoot = runtimeOptions.config.web.path;
   }
-  app.get(_confBasePath+'/conf/auth', (req, res, next) => {
+  // add '/conf' to basepath
+  let _confBasePath = _confBaseRoot + '/conf';
+  // if we are using SSL we want to skip reverse proxy altogether
+  // otherwise we'll have to add CA to every rewrite rule and thats .. unpleasant.
+  if(serverOptions.ssl.enabled && proxyOptions.confServerProtocol === 'https') {
+    // switch from "/conf" to "/config"
+    _confBasePath     = _confBaseRoot+'/config'
+    _confWildcardRoot = '*/config';
+  }
+  app.get(_confBasePath+'/auth', (req, res, next) => {
     res.status(200).json( authOptions );
   });
-  app.get(_confBasePath+'/conf/auth/admin', (req, res, next) => {
+  app.get(_confBasePath+'/auth/admin', (req, res, next) => {
     res.status(200).json( authOptions.admin );
   });
-  app.get(_confBasePath+'/conf/auth/operator', (req, res, next) => {
+  app.get(_confBasePath+'/auth/operator', (req, res, next) => {
     res.status(200).json( authOptions.operator );
   });
-  app.get(_confBasePath+'/conf/console', (req, res, next) => {
+  app.get(_confBasePath+'/console', (req, res, next) => {
     res.status(200).json( consoleOptions );
   });
-  app.get(_confBasePath+'/conf/cors', (req, res, next) => {
+  app.get(_confBasePath+'/cors', (req, res, next) => {
       res.status(200).json( corsOptions );
   });
 
-  app.get(_confBasePath+'/conf/csp', (req, res, next) => {
+  app.get(_confBasePath+'/csp', (req, res, next) => {
       res.status(200).json( cspOptions );
   });
-  app.get(_confBasePath+'/conf/package', (req, res, next) => {
+  app.get(_confBasePath+'/package', (req, res, next) => {
     res.status(200).json( packageInfo );
   });
-  app.get(_confBasePath+'/conf/streams', (req, res, next) => {
+  app.get(_confBasePath+'/streams', (req, res, next) => {
       if(streamOptions && streamOptions !== undefined) {
         res.status(200).json( streamOptions );
       } else {
@@ -234,7 +245,7 @@ const authRes = (req, res, next) => {
         res.status(503).json();
       }
   });
-  app.get(_confBasePath+'/health', (req, res, next) => {
+  app.get(_confBaseRoot+'/health', (req, res, next) => {
     let currentStatus = healthChecker.status;
     let retCode = 500;
     if(currentStatus && Object.values(currentStatus)){
@@ -243,7 +254,7 @@ const authRes = (req, res, next) => {
     }
     res.status(retCode).json( currentStatus );
   });
-  app.get(_confBasePath+'/status/proxy', (req, res, next) => {
+  app.get(_confBaseRoot+'/status/proxy', (req, res, next) => {
     res.status(200).json({});
   });
 
@@ -251,22 +262,23 @@ const authRes = (req, res, next) => {
   // we need a wildcarded version due to 
   // queries from virtual directory hosted apps
   // and any number of SPA routes on top of that
-  app.get('*/conf/auth', (req, res, next) => {
+  
+  app.get(_confWildcardRoot+'/auth', (req, res, next) => {
     res.status(200).json( authOptions );
   });
-  app.get('*/conf/console', (req, res, next) => {
+  app.get(_confWildcardRoot+'/console', (req, res, next) => {
     res.status(200).json( consoleOptions );
   });
-  app.get('*/conf/cors', (req, res, next) => {
+  app.get(_confWildcardRoot+'/cors', (req, res, next) => {
     res.status(200).json( corsOptions );
   });
-  app.get('*/conf/csp', (req, res, next) => {
+  app.get(_confWildcardRoot+'/csp', (req, res, next) => {
       res.status(200).json( cspOptions );
   });
-  app.get('*/conf/package', (req, res, next) => {
+  app.get(_confWildcardRoot+'/package', (req, res, next) => {
     res.status(200).json( packageInfo );
   });
-  app.get('*/conf/streams', (req, res, next) => {
+  app.get(_confWildcardRoot+'/streams', (req, res, next) => {
       if(streamOptions && streamOptions !== undefined) {
         res.status(200).json( streamOptions );
       } else {
@@ -290,11 +302,17 @@ const authRes = (req, res, next) => {
 // ----------------- end config endpoints -----------------
 
 if(authOptions && authOptions !== undefined) {
-  let _authBasePath = '';
+  let _authBasePath   = '';
+  let _authPathIsSSL  = false;
   if(runtimeOptions.config && 
     runtimeOptions.config.web && 
     runtimeOptions.config.web.path && runtimeOptions.config.web.path !== '/') {
       _authBasePath = runtimeOptions.config.web.path;
+  }
+  // if we are using SSL we want to skip reverse proxy altogether
+  // otherwise we'll have to add CA to every rewrite rule and thats .. unpleasant.
+  if(serverOptions.ssl.enabled && proxyOptions.authServerProtocol === 'https') {
+    _authPathIsSSL     = true;
   }
   if(authOptions.admin && authOptions.admin.mode === 'SSO' || authOptions.admin && authOptions.admin.mode === 'EXTERNAL') {
     const ssoResForceTrue = (req, res, next) => {
@@ -309,8 +327,8 @@ if(authOptions && authOptions !== undefined) {
     };
     // dunno if this should be a reverse proxy req or not
     // especially if the SSO uses cookies etc
-    app.get(_authBasePath+'/sso/admin/status', ssoResForceTrue);
-    app.get(_authBasePath+'/sso/admin/login', (req, res, next) => {
+    app.get(_authBasePath+(_authPathIsSSL ? '/auth' : '')+'/sso/admin/status', ssoResForceTrue);
+    app.get(_authBasePath+(_authPathIsSSL ? '/auth' : '')+'/sso/admin/login', (req, res, next) => {
       res.sendFile(path.resolve(path.join(__dirname,'../../', '/auth/sso-login.html')));
     });
     //STARTUP_MSG = STARTUP_MSG + '\n'+'';
@@ -347,24 +365,24 @@ if(authOptions && authOptions !== undefined) {
     app.get('/jwt/admin/login', jwtResForceTrue);
     */
 
-    app.post(_authBasePath+'/jwt/admin/status', auth.auth.bind(auth), jwtRes);
-    app.post(_authBasePath+'/jwt/admin/login', auth.login.bind(auth));
-    app.get(_authBasePath+'/jwt/admin/status', auth.auth.bind(auth), jwtRes);
-    app.get(_authBasePath+'/jwt/admin/login', auth.auth.bind(auth), jwtRes);
+    app.post(_authBasePath+(_authPathIsSSL ? '/auth' : '')+'/jwt/admin/status', auth.auth.bind(auth), jwtRes);
+    app.post(_authBasePath+(_authPathIsSSL ? '/auth' : '')+'/jwt/admin/login', auth.login.bind(auth));
+    app.get(_authBasePath+(_authPathIsSSL ? '/auth' : '')+'/jwt/admin/status', auth.auth.bind(auth), jwtRes);
+    app.get(_authBasePath+(_authPathIsSSL ? '/auth' : '')+'/jwt/admin/login', auth.auth.bind(auth), jwtRes);
 
     /** operator endpoints */
     if(authOptions.operator && authOptions.operator.mode === 'JWT') {
       // token auth for operators
-      app.post(_authBasePath+'/jwt/status', auth.auth.bind(adminAuth), jwtRes);
-      app.post(_authBasePath+'/jwt/login', auth.login.bind(adminAuth));
-      app.get(_authBasePath+'/jwt/status', auth.auth.bind(adminAuth), jwtRes);
-      app.get(_authBasePath+'/jwt/login', auth.auth.bind(adminAuth), jwtRes);
+      app.post(_authBasePath+(_authPathIsSSL ? '/auth' : '')+'/jwt/status', auth.auth.bind(adminAuth), jwtRes);
+      app.post(_authBasePath+(_authPathIsSSL ? '/auth' : '')+'/jwt/login', auth.login.bind(adminAuth));
+      app.get(_authBasePath+(_authPathIsSSL ? '/auth' : '')+'/jwt/status', auth.auth.bind(adminAuth), jwtRes);
+      app.get(_authBasePath+(_authPathIsSSL ? '/auth' : '')+'/jwt/login', auth.auth.bind(adminAuth), jwtRes);
     } else {
       // always return true for operators
-      app.post(_authBasePath+'/jwt/status', jwtResForceTrue);
-      app.post(_authBasePath+'/jwt/login', jwtResForceTrue);
-      app.get(_authBasePath+'/jwt/status', jwtResForceTrue);
-      app.get(_authBasePath+'/jwt/login', jwtResForceTrue);
+      app.post(_authBasePath+(_authPathIsSSL ? '/auth' : '')+'/jwt/status', jwtResForceTrue);
+      app.post(_authBasePath+(_authPathIsSSL ? '/auth' : '')+'/jwt/login', jwtResForceTrue);
+      app.get(_authBasePath+(_authPathIsSSL ? '/auth' : '')+'/jwt/status', jwtResForceTrue);
+      app.get(_authBasePath+(_authPathIsSSL ? '/auth' : '')+'/jwt/login', jwtResForceTrue);
     }
 
     STARTUP_MSG = STARTUP_MSG + '\n'+'';
@@ -487,7 +505,7 @@ if( serverOptions && serverOptions.ssl && serverOptions.ssl.enabled ){
     cert: fs.readFileSync(serverOptions.ssl.certPath)
   }
   ExpressSrvInstance = https.createServer(ssl_opts, app).listen(serverOptions.port)
-  STARTUP_MSG_POST = '\n'+'SSL Express Server started on port '+ serverOptions.port;
+  STARTUP_MSG_POST = '\n'+'SSL Express Server '+ serverOptions.url +' started on port '+ serverOptions.port;
   STARTUP_MSG_POST = STARTUP_MSG_POST +'\nSSL Opts: '+ JSON.stringify(serverOptions.ssl, undefined, 2)
   if(serverOptions.ssl && serverOptions.ssl.keyPath) {
     STARTUP_MSG_POST = STARTUP_MSG_POST + '\n'+'\t\t- KEY Path: '+ serverOptions.ssl.keyPath;

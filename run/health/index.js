@@ -41,6 +41,8 @@ class HealthCheckerUtility extends EventEmitter {
                 protocol = url_parts[0];
             }
         }
+        console.log('---------------------------- checkIfWebServerAlive: url: '+reqUrl);
+        console.log('---------------------------- checkIfWebServerAlive: protocol: '+protocol);
         if(protocol === 'https') {
             // use ssl
             let req = https.get(reqUrl, (res => {
