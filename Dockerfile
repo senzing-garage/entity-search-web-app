@@ -6,8 +6,8 @@ FROM ${BUILD_IMAGE}
 ENV REFRESHED_AT=2023-09-29
 
 LABEL Name="senzing/entity-search-web-app" \
-      Maintainer="support@senzing.com" \
-      Version="2.9.2"
+  Maintainer="support@senzing.com" \
+  Version="2.9.2"
 
 HEALTHCHECK CMD ["/app/healthcheck.sh"]
 
@@ -24,9 +24,9 @@ COPY package-lock.json /app/package-lock.json
 WORKDIR /app
 
 RUN npm config set update-notifier false \
- && npm config set loglevel warn \
- && npm ci \
- && npm install -g @angular/cli@15
+  && npm config set loglevel warn \
+  && npm ci \
+  && npm install -g @angular/cli@15
 
 # Build app
 COPY . /app
@@ -44,8 +44,8 @@ COPY package-lock.json /app/package-lock.json
 COPY --from=0 /app/dist /app/dist
 
 RUN npm config set update-notifier false \
- && npm config set loglevel warn \
- && npm ci --production
+  && npm config set loglevel warn \
+  && npm ci --production
 
 # update npm vulnerabilites
 RUN npm -g uninstall npm
@@ -54,11 +54,11 @@ RUN rm -fr /usr/local/lib/node_modules/npm
 #COPY . /app
 COPY --chown=1001:1001 ./proxy.conf.json /app
 
-#USER 1001
+USER 1001
 
 # Health Check
 HEALTHCHECK --interval=12s --timeout=12s --start-period=30s \
-    CMD node /app/run/health/check.js
+  CMD node /app/run/health/check.js
 
 # Runtime execution.
 WORKDIR /app
