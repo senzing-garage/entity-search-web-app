@@ -8,6 +8,7 @@ import {
   CurrentEntityUnResolverService,
   GraphEntityNetworkResolverService,
   RecordResolverService } from './services/entity-search.service';
+import { SzCrossSourceSummaryCategoryType } from '@senzing/sdk-components-ng';
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { SearchRecordComponent } from './record/record.component';
 import { DetailComponent } from './detail/detail.component';
@@ -23,10 +24,32 @@ import { AboutComponent } from './about/about.component';
 import { BlankComponent } from './common/blank/blank.component';
 import { XtermComponent } from './admin/xterm/xterm.component';
 import { NoDecorationComponent } from './common/no-decoration/no-decoration.component';
+import { LandingComponent } from './landing/landing.component';
+import { SampleGridComponent } from './sample/sample-grid.component';
+
+/**
+"MATCHES" | "AMBIGUOUS_MATCHES" | "POSSIBLE_MATCHES" | "POSSIBLE_RELATIONS" | "DISCLOSED_RELATIONS"
+ */
 
 export const routes: Routes = [
   { path: 'no-decorator', component: NoDecorationComponent},
   { path: 'debug', component: BlankComponent},
+  { path: 'landing', component: LandingComponent },
+  /** sample data table related */
+  { path: 'sample', component: SampleGridComponent },
+  { path: 'sample/:datasource1', component: SampleGridComponent },
+  { path: 'sample/:datasource1/matches', component: SampleGridComponent, data: {statType: SzCrossSourceSummaryCategoryType.MATCHES} },
+  { path: 'sample/:datasource1/ambiguous', component: SampleGridComponent, data: {statType: SzCrossSourceSummaryCategoryType.AMBIGUOUS_MATCHES} },
+  { path: 'sample/:datasource1/possible-matches', component: SampleGridComponent, data: {statType: SzCrossSourceSummaryCategoryType.POSSIBLE_MATCHES} },
+  { path: 'sample/:datasource1/possible-relations', component: SampleGridComponent, data: {statType: SzCrossSourceSummaryCategoryType.POSSIBLE_RELATIONS} },
+  { path: 'sample/:datasource1/disclosed-relations', component: SampleGridComponent, data: {statType: SzCrossSourceSummaryCategoryType.DISCLOSED_RELATIONS} },
+  { path: 'sample/:datasource1/vs/:datasource2', component: SampleGridComponent },
+  { path: 'sample/:datasource1/vs/:datasource2/matches', component: SampleGridComponent, data: {statType: SzCrossSourceSummaryCategoryType.MATCHES} },
+  { path: 'sample/:datasource1/vs/:datasource2/ambiguous', component: SampleGridComponent, data: {statType: SzCrossSourceSummaryCategoryType.AMBIGUOUS_MATCHES} },
+  { path: 'sample/:datasource1/vs/:datasource2/possible-matches', component: SampleGridComponent, data: {statType: SzCrossSourceSummaryCategoryType.POSSIBLE_MATCHES} },
+  { path: 'sample/:datasource1/vs/:datasource2/possible-relations', component: SampleGridComponent, data: {statType: SzCrossSourceSummaryCategoryType.POSSIBLE_RELATIONS} },
+  { path: 'sample/:datasource1/vs/:datasource2/disclosed-relations', component: SampleGridComponent, data: {statType: SzCrossSourceSummaryCategoryType.DISCLOSED_RELATIONS} },
+  /** search */
   { path: 'search', component: TipsComponent, resolve:  {entityId: CurrentEntityUnResolverService}, data: { animation: 'search-results' }},
   { path: 'search/results', component: SearchResultsComponent, resolve: { params: SearchParamsResolverService, results: SearchResultsResolverService }, data: { animation: 'search-results' } },
   { path: 'search/results/:searchId', component: SearchResultsComponent, resolve: { params: SearchParamsResolverService, results: SearchResultsResolverService }, data: { animation: 'search-results' } },
@@ -47,7 +70,7 @@ export const routes: Routes = [
     component: XtermComponent,
     data: { fullscreen: true }
   },
-  { path: '',   redirectTo: 'search', pathMatch: 'full' },
+  { path: '',   redirectTo: 'landing', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent }
 ];
 

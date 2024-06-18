@@ -225,6 +225,11 @@ export class ToolbarComponent implements OnInit, OnDestroy {
     this.uiService.searchExpanded = true;
   }
 
+  goSample() {
+    // collapse search if it's open
+    this.uiService.searchExpanded = false;
+  }
+
   goAdmin() {
 
   }

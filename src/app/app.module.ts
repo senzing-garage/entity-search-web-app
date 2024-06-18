@@ -25,6 +25,7 @@ import { AboutInfoService } from './services/about.service';
 //import { AdminComponent } from './admin/admin.component';
 //import { AdminDataSourcesComponent } from './admin/datasources.component';
 import { AppComponent } from './app.component';
+import { LandingComponent } from './landing/landing.component';
 import { AlertDialogComponent } from './common/alert-dialog/alert-dialog.component';
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { DetailComponent } from './detail/detail.component';
@@ -39,6 +40,13 @@ import { BlankComponent } from './common/blank/blank.component';
 import { NoDecorationComponent } from './common/no-decoration/no-decoration.component';
 import { NoResultsComponent } from './errors/no-results/no-results.component';
 import { AboutComponent } from './about/about.component';
+// sampling components
+import { SampleGridComponent } from './sample/sample-grid.component';
+
+// datasource summary donut
+
+// landing page
+
 
 // admin dialog components that "FREAK-OUT" for no good reason
 import { AdminStreamLoadQueueInfoComponent } from './common/stream-load-queue-dialog/stream-load-queue-info.component';
@@ -83,6 +91,8 @@ import { AdminBulkDataService } from './services/admin.bulk-data.service';
         SearchRecordComponent,
         DetailComponent,
         GraphComponent,
+        LandingComponent,
+        SampleGridComponent,
         HowComponent,
         ToolbarComponent,
         ErrorPageComponent,
