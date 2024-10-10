@@ -46,6 +46,7 @@ export class AppComponent implements OnInit, OnDestroy {
    * local | session | memory
   */
   public isGraphOpen = false;
+  private _isLandingPage = false;
   public get prefsStorageMode() {
     if ( this.prefsManager.storePrefsInLocalStorage ) {
       return 'local';
@@ -68,6 +69,14 @@ export class AppComponent implements OnInit, OnDestroy {
     '(max-width: 500px)',
   ];
   @HostBinding('class') layoutClasses = [];
+
+  @HostBinding("class.landing-page") get classIsLanding() {
+    return this._isLandingPage;
+  }
+
+  public get isLandingPage(): boolean {
+    return this._isLandingPage;
+  }
 
   public getAnimationData(outlet: RouterOutlet) {
     return outlet && outlet.activatedRouteData && outlet.activatedRouteData['animation'];
@@ -130,6 +139,7 @@ export class AppComponent implements OnInit, OnDestroy {
     layoutChanges.pipe(
       takeUntil(this.unsubscribe$)
     ).subscribe( this.onBreakPointStateChange.bind(this) );
+    this.route.url.subscribe(this.onActiveRouteChange.bind(this))
   }
   /**
    * unsubscribe when component is destroyed
@@ -151,6 +161,13 @@ export class AppComponent implements OnInit, OnDestroy {
           break;
       default:
         this.showPrefs = false;
+    }
+  }
+
+  public onActiveRouteChange(url: UrlSegment[]) {    
+    if(url && url[0]) {
+      // if first part of url is "" we're on the landing page
+      this._isLandingPage = url[0].path === '';
     }
   }
 

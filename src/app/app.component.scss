@@ -6,6 +6,14 @@ sz-powered-by {
   position: absolute;
 }
 
+:host {
+  display: block;
+  
+  &.landing-page {
+    background-color: #eee;
+  }
+}
+
 
 .tool-tray {
   display: flex;

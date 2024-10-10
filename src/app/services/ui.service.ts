@@ -12,6 +12,7 @@ export class UiService {
   private _searchType         = 'default';
   public createPdfClicked     = new Subject<number>();
   private _graphOpen          = false;
+  private _isSampleGridOpen   = false;
   private _noDecoration       = false;
   private _consolePopOutOpen  = false;
   private _resultsViewType    = 'default';
@@ -57,6 +58,12 @@ export class UiService {
   public set graphOpen(value: boolean) {
     this._graphOpen = value;
   }
+  public get sampleGridOpen(): boolean {
+    return this._isSampleGridOpen;
+  }
+  public set sampleGridOpen(value: boolean) {
+    this._isSampleGridOpen = value;
+  }
 
   public get spinnerActive(): boolean {
     return this.spinner.active;
@@ -97,12 +104,14 @@ export class UiService {
       const urlStr = url.join();
       this._graphOpen         = (urlStr && urlStr.indexOf && urlStr.indexOf('/graph/') >= 0);
       this._noDecoration      = (urlStr && urlStr.indexOf && urlStr.indexOf('/no-decorator') >= 0);
+      this.sampleGridOpen     = (urlStr && urlStr.indexOf && urlStr.indexOf('/sample') >= 0);
       //this._consolePopOutOpen = (urlStr && urlStr.indexOf && urlStr.indexOf('/no-decorator(popup:console)') >= 0);
     });
     router.events.subscribe((event) => {
       if (event instanceof NavigationEnd ) {
         this._graphOpen         = (event && event.urlAfterRedirects && event.urlAfterRedirects.indexOf('/graph/') >= 0);
         this._noDecoration      = (event && event.urlAfterRedirects && event.urlAfterRedirects.indexOf('/no-decorator') >= 0);
+        this.sampleGridOpen     = (event && event.urlAfterRedirects && event.urlAfterRedirects.indexOf('/sample') >= 0);
         //this._consolePopOutOpen = (event && event.urlAfterRedirects && event.urlAfterRedirects.indexOf('/no-decorator(popup:console)') >= 0);
       }
     });

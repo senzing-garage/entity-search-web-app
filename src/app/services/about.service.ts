@@ -156,7 +156,8 @@ export class AboutInfoService {
     this.isReadOnly               = info.readOnly;
     this.isAdminEnabled           = info.adminEnabled;
     this.infoQueueConfigured      = info && info.infoQueueConfigured !== undefined ? info.infoQueueConfigured : this.infoQueueConfigured;
-    this.loadQueueConfigured      = info && info.loadQueueConfigured !== undefined ? info.loadQueueConfigured : this.loadQueueConfigured;
+    //this.loadQueueConfigured      = info && info.loadQueueConfigured !== undefined ? info.loadQueueConfigured : this.loadQueueConfigured;
+    this.loadQueueConfigured      = false;
     this.webSocketsMessageMaxSize = info && info.webSocketsMessageMaxSize !== undefined ? info.webSocketsMessageMaxSize : this.webSocketsMessageMaxSize;
     this._onServerInfoUpdated.next(this);
   }

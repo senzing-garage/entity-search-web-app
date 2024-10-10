@@ -1,8 +1,9 @@
-import { Inject, Injectable } from '@angular/core';
+import { Inject, Injectable, inject } from '@angular/core';
 import {
   Router, Resolve,
   RouterStateSnapshot,
-  ActivatedRouteSnapshot
+  ActivatedRouteSnapshot,
+  ResolveFn
 } from '@angular/router';
 import { Observable, of, EMPTY, Subject } from 'rxjs';
 import { mergeMap, take, catchError, tap, map } from 'rxjs/operators';
@@ -52,7 +53,7 @@ export class EntitySearchService {
   private _storePrefsInLocalStorage = false;
   /** store pref state in transient browser session storage */
   private _storePrefsInSessionStorage = true;
-  /** localstorage key to store pref data in */
+  /** local storage key to store pref data in */
   public STORAGE_KEY = 'senzing-app-search';
   /** local storage key to store search state data in */
   public L_STORAGE_KEY = 'senzing-web-app-search';
@@ -105,7 +106,7 @@ export class EntitySearchService {
   public storeLastSearch(searchId: string, searchParams: SzEntitySearchParams) {
     let jsonStr = {};
     jsonStr[ searchId ] = searchParams;
-
+    console.warn(`storeLastSearch(${searchId}, ${searchParams}) under "${this.STORAGE_KEY}"`, searchParams, jsonStr);
     if (this._storePrefsInLocalStorage) {
       this.lStore.set(this.STORAGE_KEY, jsonStr);
     } else if (this._storePrefsInSessionStorage) {
@@ -113,7 +114,7 @@ export class EntitySearchService {
     }
   }
   /** get the last successful search by guid */
-  public getLastSearch(searchId: string) {
+  public getLastSearch(searchId?: string) {
     console.log(`getLastSearch(${this.STORAGE_KEY})`, searchId);
     let retVal;
     if (this._storePrefsInLocalStorage) {
@@ -122,6 +123,16 @@ export class EntitySearchService {
       retVal = this.sStore.get(this.STORAGE_KEY);
     }
     return retVal;
+  }
+  public getLastSearchGuid(): string | undefined {
+    let _getLastKnownSearch = this.getLastSearch();
+    if(_getLastKnownSearch as JSON) {
+      let _keys = Object.keys(_getLastKnownSearch as JSON);
+      if(_keys && _keys.length > 0) {
+        return _keys[0];
+      }
+    }
+    return undefined
   }
   /** get the page title for the current search */
   public get searchTitle(): string {
@@ -166,11 +177,16 @@ export class EntitySearchService {
     return retVal;
   }
 }
-
+export const SearchResultsResolver: ResolveFn<Observable<SzAttributeSearchResult[]> | Observable<never>> = (
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot
+) => {
+  return inject(SearchResultsResolverService).resolve(route, state);
+};
 @Injectable({
   providedIn: 'root'
 })
-export class SearchResultsResolverService implements Resolve<SzAttributeSearchResult[]> {
+export class SearchResultsResolverService {
   private entitySearchResults: Subject<SzAttributeSearchResult[]>;
   constructor(
     private sdkSearchService: SzSearchService, 
@@ -219,10 +235,16 @@ export class SearchResultsResolverService implements Resolve<SzAttributeSearchRe
   }
 }
 
+export const SearchParamsResolver: ResolveFn<SzEntitySearchParams | Observable<never>> = (
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot
+) => {
+  return inject(SearchParamsResolverService).resolve(route, state);
+};
 @Injectable({
   providedIn: 'root'
 })
-export class SearchParamsResolverService implements Resolve<SzEntitySearchParams> {
+export class SearchParamsResolverService {
   constructor(private sdkSearchService: SzSearchService, private router: Router) {}
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): SzEntitySearchParams | Observable<never> {
@@ -230,10 +252,17 @@ export class SearchParamsResolverService implements Resolve<SzEntitySearchParams
     return this.sdkSearchService.getSearchParams();
   }
 }
+
+export const SearchByIdParamsResolver: ResolveFn<SzSearchByIdFormParams | Observable<never>> = (
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot
+) => {
+  return inject(SearchByIdParamsResolverService).resolve(route, state);
+};
 @Injectable({
   providedIn: 'root'
 })
-export class SearchByIdParamsResolverService implements Resolve<SzSearchByIdFormParams> {
+export class SearchByIdParamsResolverService {
   constructor(
     private search: EntitySearchService,
     private sdkSearchService: SzSearchService,
@@ -245,11 +274,17 @@ export class SearchByIdParamsResolverService implements Resolve<SzSearchByIdForm
   }
 }
 
+export const EntityDetailResolver: ResolveFn<Observable<SzEntityData> | Observable<never>> = (
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot
+) => {
+  return inject(EntityDetailResolverService).resolve(route, state);
+};
 
 @Injectable({
   providedIn: 'root'
 })
-export class EntityDetailResolverService implements Resolve<SzEntityData> {
+export class EntityDetailResolverService {
   constructor(
     private sdkSearchService: SzSearchService,
     private router: Router,
@@ -292,10 +327,17 @@ export class EntityDetailResolverService implements Resolve<SzEntityData> {
   }
 }
 
+export const RecordResolver: ResolveFn<Observable<SzEntityRecord> | Observable<never>> = (
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot
+) => {
+  return inject(RecordResolverService).resolve(route, state);
+};
+
 @Injectable({
   providedIn: 'root'
 })
-export class RecordResolverService implements Resolve<SzEntityRecord> {
+export class RecordResolverService {
   constructor(
     private sdkSearchService: SzSearchService,
     private router: Router,
@@ -346,10 +388,30 @@ export class RecordResolverService implements Resolve<SzEntityRecord> {
 @Injectable({
   providedIn: 'root'
 })
-export class CurrentEntityUnResolverService implements Resolve<number | undefined> {
+export class CurrentEntityUnResolverService {
   constructor(private search: EntitySearchService, private spinner: SpinnerService, private sdkSearchService: SzSearchService, private router: Router) {}
 
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<undefined> | Observable<number> | Observable<never> {
+  resolve(): Observable<undefined> | Observable<number> | Observable<never> {
+    // undefine any currently defined entity id
+    this.search.currentlySelectedEntityId = undefined;
+    this.spinner.hide();
+    return of(this.search.currentlySelectedEntityId);
+  }
+}
+export const CurrentEntityUnResolver: ResolveFn<Observable<undefined> | Observable<number> | Observable<never>> = (
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot
+) => {
+  return inject(CurrentEntityUnResolverService).resolve();
+};
+
+@Injectable({
+  providedIn: 'root'
+})
+export class CurrentSearchUnResolverService {
+  constructor(private search: EntitySearchService, private spinner: SpinnerService, private sdkSearchService: SzSearchService, private router: Router) {}
+
+  resolve(): Observable<undefined> | Observable<number> | Observable<never> {
     // undefine any currently defined entity id
     this.search.currentlySelectedEntityId = undefined;
     this.spinner.hide();
@@ -357,10 +419,24 @@ export class CurrentEntityUnResolverService implements Resolve<number | undefine
   }
 }
 
+export const CurrentSearchUnResolver: ResolveFn<Observable<undefined> | Observable<number> | Observable<never>> = (
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot
+) => {
+  return inject(CurrentSearchUnResolverService).resolve();
+};
+
+export const GraphEntityNetworkResolver: ResolveFn<Observable<SzEntityNetworkData> | Observable<never>> = (
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot
+) => {
+  return inject(GraphEntityNetworkResolverService).resolve(route, state);
+}
+
 @Injectable({
   providedIn: 'root'
 })
-export class GraphEntityNetworkResolverService implements Resolve<SzEntityNetworkData> {
+export class GraphEntityNetworkResolverService {
   constructor(
     private sdkSearchService: SzSearchService,
     private graphService: EntityGraphService,
