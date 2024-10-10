@@ -164,9 +164,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
-  public onActiveRouteChange(url: UrlSegment[]) {
-    console.log(`Route Change: `, url);
-    
+  public onActiveRouteChange(url: UrlSegment[]) {    
     if(url && url[0]) {
       // if first part of url is "" we're on the landing page
       this._isLandingPage = url[0].path === '';
