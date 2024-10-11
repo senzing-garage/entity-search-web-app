@@ -38,11 +38,11 @@ describe(`App Routing`, () => {
     });
     
     it(
-      'automatically redirects to search when the app starts',
+      'automatically redirects to landing when the app starts',
       fakeAsync(() => {
         router.navigate(['']);
         tick();
-        expect(location.path()).toBe('/search');
+        expect(location.path()).toBe('/landing');
       })
     );
 
