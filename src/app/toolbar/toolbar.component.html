@@ -9,6 +9,7 @@
   <mat-menu #appMenu="matMenu">
     <a (click)="goHome()" routerLink="/" routerLinkActive="active" mat-menu-item><mat-icon>home</mat-icon>Home</a>
     <a *ngIf="showAdminOptions" mat-menu-item [matMenuTriggerFor]="adminMenu"><mat-icon>admin_panel_settings</mat-icon>Admin</a>
+    <a *ngIf="!showSampleGridOptions" (click)="goSample()" routerLink="/sample" routerLinkActive="active" mat-menu-item><mat-icon>table_chart</mat-icon>Cross Source Results</a>
     <a *ngIf="!showGraphOptions" (click)="showSearchByAttributeForm()" mat-menu-item>
       <mat-icon>assignment_ind</mat-icon>
       Search By Attribute
@@ -21,11 +22,11 @@
         <mat-icon>insert_chart</mat-icon>
         Open Entity in Graph View
     </a>
-    <a *ngIf="!showEntityOptions && !showGraphOptions && showResultsOptions" (click)="showResultsAsGraph = true" [href]="graphSearchResultsRouteLink" mat-menu-item>
+    <a *ngIf="!showEntityOptions && !showGraphOptions && !showSampleGridOptions && showResultsOptions" (click)="showResultsAsGraph = true" [href]="graphSearchResultsRouteLink" mat-menu-item>
         <mat-icon>insert_chart</mat-icon>
         Open in Graph View
     </a>
-    <a *ngIf="!showEntityOptions && showGraphOptions" (click)="showResultsAsList = true" [href]="listSearchResultsRouteLink" mat-menu-item>
+    <a *ngIf="showGraphOptions" (click)="showResultsAsList = true" [href]="exitGraphRouteLink" mat-menu-item>
         <mat-icon>insert_chart</mat-icon>
         Exit Graph View
     </a>
@@ -33,15 +34,11 @@
       <mat-icon>open_in_new</mat-icon>
       Open Entity in New Tab
     </a>
-    <!-- <a *ngIf="showEntityOptions && !showGraphOptions" (click)="downloadEntityPdf()" mat-menu-item>
-      <mat-icon>picture_as_pdf</mat-icon>
-      Download Entity as PDF
-    </a> -->
     <a (click)="toggleSearch($event)" mat-menu-item>
         <mat-icon *ngIf="ribbonExpanded">visibility_off</mat-icon>
         <mat-icon *ngIf="!ribbonExpanded">visibility</mat-icon>
         Show/Hide Search
-      </a>
+    </a>
     <a *ngIf="!prefsIsShowing" (click)="showPreferences()" mat-menu-item>
       <mat-icon>settings_applications</mat-icon>
       Preferences
@@ -50,12 +47,6 @@
         <mat-icon>arrow_back</mat-icon>
         Back to Search
     </a>
-
-    <!-- <a (click)="toggleSpinner($event)" mat-menu-item>Toggle Spinner</a>
-    <a routerLink="/entity/1" routerLinkActive="active" mat-menu-item>Ent 1</a>
-    <a routerLink="/entity/9002324729487" routerLinkActive="active" mat-menu-item>Bad Ent Id</a>
-    <a routerLink="/page/not/found" routerLinkActive="active" mat-menu-item>Page Not Found</a>
-    <a [routerLink]="[{ outlets: { popup: ['compose'] } }]" mat-menu-item>Send</a> -->
   </mat-menu>
   <mat-menu #adminMenu="matMenu">
     <button routerLink="/admin/datasources" mat-menu-item><mat-icon>account_tree</mat-icon>Data Sources</button>

@@ -104,7 +104,8 @@ export class SzWebAppConfigService {
     return this._serverInfo && this._serverInfo.infoQueueConfigured !== undefined ? this._serverInfo.infoQueueConfigured : false;
   }
   public get loadQueueConfigured(): boolean {
-    return this._serverInfo && this._serverInfo.loadQueueConfigured !== undefined ? this._serverInfo.loadQueueConfigured : false;
+    return false; // deprecated BE functionality
+    //return this._serverInfo && this._serverInfo.loadQueueConfigured !== undefined ? this._serverInfo.loadQueueConfigured : false;
   }
   public get isPocServerInstance(): boolean {
     return this._serverInfoMetadata && this._serverInfoMetadata.pocApiVersion !== undefined ? true : false;

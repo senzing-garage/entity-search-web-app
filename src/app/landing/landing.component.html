@@ -1,0 +1,15 @@
+<div class="cols card-row">
+  <sz-record-counts-donut
+    ignore="test,search,watchlist"
+    [colors]="['#081fad', 'lightblue', '#434447', '#6b486b', '#a05d56', '#d0743c', '#ff8c00']"
+    orderBy="countdesc"
+    ></sz-record-counts-donut>
+  <sz-license></sz-license>
+</div>
+<div class="card-row venn-diagrams">
+    <sz-cross-source-select></sz-cross-source-select>
+    <sz-cross-source-summary
+    [disableClickOnZero]="true"
+    [openMatchKeyFiltersOnSelection]="false"
+    (sourceStatisticClicked)="onSourceStatClicked($event)"></sz-cross-source-summary>
+</div>

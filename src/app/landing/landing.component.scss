@@ -1,0 +1,32 @@
+  :host {
+    display: block;
+
+    sz-record-counts-donut {
+      height: 200px;
+      min-width: 35%;
+    }
+    sz-license {
+        margin-left: 0;
+        /*width: 98%;*/
+
+        padding: 0 20px 20px 20px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 8;
+        border-left: 1px solid #c4c4c4;
+    }
+  }
+
+  .cols {
+    display: flex;;
+    flex-direction: row;
+    
+  }
+  .card-row {
+    background-color: #fff;
+    filter: drop-shadow(2px 0px 4px rgba(0, 0, 0, 0.3));
+    margin-bottom: 28px;
+  }
+  .venn-diagrams {
+    padding: 10px 30px;
+  }

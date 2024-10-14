@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, ViewChild } 
 import { SpinnerService } from '../services/spinner.service';
 import { UiService } from '../services/ui.service';
 import { EntitySearchService } from '../services/entity-search.service';
-import { Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 import { Overlay, CdkOverlayOrigin, OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
@@ -36,7 +35,6 @@ export class ToolbarComponent implements OnInit, OnDestroy {
   constructor(
     public aboutService: AboutInfoService,
     public overlay: Overlay,
-    private router: Router,
     private search: EntitySearchService,
     private configService: SzWebAppConfigService,
     private spinner: SpinnerService,
@@ -85,7 +83,10 @@ export class ToolbarComponent implements OnInit, OnDestroy {
       return false;
     }
   }
-
+  /** whether or not to show sample datagrid options */
+  public get showSampleGridOptions() {
+    return this.uiService.sampleGridOpen;
+  }
   /** when admin is enabled in the poc/api server the "Admin" sub menu is shown */
   public get showAdminOptions(): boolean {
     return this.aboutService.isAdminEnabled;
@@ -159,7 +160,26 @@ export class ToolbarComponent implements OnInit, OnDestroy {
     }
   }
   public get listSearchResultsRouteLink() {
+    let _searchGuid = this.search.getLastSearchGuid();
+    if(_searchGuid) {
+      return `/search/results/${_searchGuid}`
+    }
     return '/search';
+  }
+  public get exitGraphRouteLink() {
+    let retVal = '/';
+    if(this.currentlySelectedEntityId) {
+      return this.entityRouteLink;
+    } else if(this.search.currentSearchResults && this.search.currentSearchResults.length > 0) {
+      // get last known guid
+      let _searchGuid = this.search.getLastSearchGuid();
+      if(_searchGuid) {
+        return this.listSearchResultsRouteLink;
+      }
+    } else {
+      console.warn(`huh???`, this.search.currentSearchResults, this.search.getLastSearch(), this.currentlySelectedEntityId);
+    }
+    return retVal;
   }
 
   toggleAboutInfo() {
@@ -208,6 +228,10 @@ export class ToolbarComponent implements OnInit, OnDestroy {
     })();
   }
 
+  private onActivatedRouteChange(url) {
+    console.warn(`Toolbar: Activated Route: `, url);
+  }
+
   toggleSearch(evt?) {
     this.uiService.searchExpanded = !this.uiService.searchExpanded;
     this.showSection.emit('search');
@@ -223,6 +247,11 @@ export class ToolbarComponent implements OnInit, OnDestroy {
   goHome() {
     // pop search open if its closed
     this.uiService.searchExpanded = true;
+  }
+
+  goSample() {
+    // collapse search if it's open
+    this.uiService.searchExpanded = false;
   }
 
   goAdmin() {
