@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, HostBinding, OnDestroy, ViewChild, ViewEncapsulation } from '@angular/core';
-import { Terminal } from 'xterm';
-import { WebLinksAddon } from 'xterm-addon-web-links';
-import { FitAddon } from 'xterm-addon-fit';
+import { Terminal } from '@xterm/xterm';
+import { WebLinksAddon } from '@xterm/addon-web-links';
+import { FitAddon } from '@xterm/addon-fit';
 import { fromEvent, Observable, Subject, Subscription, takeUntil, take, filter } from 'rxjs';
 import { SzXtermSocket } from '../../services/xterm.socket.service';
 import { UiService } from '../../services/ui.service';
