@@ -176,8 +176,6 @@ export class ToolbarComponent implements OnInit, OnDestroy {
       if(_searchGuid) {
         return this.listSearchResultsRouteLink;
       }
-    } else {
-      console.warn(`huh???`, this.search.currentSearchResults, this.search.getLastSearch(), this.currentlySelectedEntityId);
     }
     return retVal;
   }
