@@ -18,7 +18,7 @@ Heck, it may not even be appropriate for your application of Senzing!
 
 ## Overview
 
-This is an implementation of an entity search app which uses the senzing rest api server microservice to access functions of the Senzing API through a web interface.
+This is an implementation of an entity search app which uses the senzing rest poc server microservice to access functions of the Senzing API through a web interface.
 
 ### Related artifacts
 
@@ -87,11 +87,11 @@ The following software programs need to be installed:
     sudo docker pull senzing/entity-search-web-app
     ```
 
-1. Pull the latest of the api server from [DockerHub](https://hub.docker.com/r/senzing/senzing-api-server).
+1. Pull the latest of the poc server from [DockerHub](https://hub.docker.com/r/senzing/senzing-poc-server).
    Example:
 
     ```console
-    sudo docker pull senzing/senzing-api-server
+    sudo docker pull senzing/senzing-poc-server
     ```
 
 ### Clone repository
@@ -187,13 +187,13 @@ The following docker containers communicate over a docker network.
 
 ### Run
 
-1. Attach senzing-api-server.
+1. Attach senzing-poc-server.
    Example:
 
     ```console
     sudo docker run \
       --interactive \
-      --name=senzing-api-server \
+      --name=senzing-poc-server \
       --publish 8080:8080 \
       --rm \
       --tty \
@@ -202,7 +202,7 @@ The following docker containers communicate over a docker network.
       --volume ${SENZING_G2_DIR}:/opt/senzing/g2 \
       --volume ${SENZING_VAR_DIR}:/var/opt/senzing \
       ${SENZING_NETWORK_PARAMETER} \
-      senzing/senzing-api-server \
+      senzing/senzing-poc-server \
         -concurrency 10 \
         -httpPort 8080 \
         -bindAddr all \
@@ -214,7 +214,7 @@ The following docker containers communicate over a docker network.
 
     ```console
     sudo docker run \
-      --env SENZING_API_SERVER_URL=http://senzing-api-server:8080 \
+      --env SENZING_API_SERVER_URL=http://senzing-poc-server:8080 \
       --env SENZING_WEB_SERVER_PORT=8081 \
       --interactive \
       --name=senzing-webapp \
@@ -264,7 +264,7 @@ If you open that example up you will see two lines at the bottom of the file:
 
 Those lines tell docker to pass two secrets to the services defined in the docker compose file.
 These two lines should point to the location of the *server.key* and *server.cert* file you wish to use.
-The configuration of the *senzing-api-server* service may differ from how you have set up your configuration to run.
+The configuration of the *senzing-poc-server* service may differ from how you have set up your configuration to run.
 You should copy over the configuration options defined in your *already working* docker-compose.yml file to the docker-stack.yml file.
 The other important lines(under the *senzing-webapp* service definition) are:
 
@@ -287,7 +287,7 @@ check that the services started up successfully by typing `docker stack ps senzi
 
 ```bash
 ID                  NAME                                  IMAGE                               NODE                DESIRED STATE       CURRENT STATE               ERROR               PORTS
-7mxc4jru51pl        senzing-webapp_senzing-api-server.1   senzing/senzing-api-server:latest   americium           Running             Running about an hour ago
+7mxc4jru51pl        senzing-webapp_senzing-poc-server.1   senzing/senzing-poc-server:latest   americium           Running             Running about an hour ago
 rnguy9d2incb        senzing-webapp_senzing-webapp.1       senzing/entity-search-web-app:ssl   americium           Running             Running about an hour ago
 ```
 
@@ -342,7 +342,7 @@ You can shut down the swarm node with `docker stack rm senzing-webapp`
 
 ### Admin Area
 
-There is an *admin* area that can be used to create new datasources, and import data in to those datasources. In order to access this functionality your api server version must be >= 1.7.11 and it must be started with the `-enableAdmin` flag set to true.
+There is an *admin* area that can be used to create new datasources, and import data in to those datasources. In order to access this functionality your poc server version must be >= 1.7.11 and it must be started with the `-enableAdmin` flag set to true.
 
 The admin area can then be accessed by browsing to `/admin` on the same domain/hostname that you are running the webapp. You will be prompted to input an `Api Token`, this is the default security mechanism used to keep the riff-raff from doing unwanted things to your data. The token is randomly generated on server startup and output to stout in the same terminal used to start the container. Copy and past this token in to the login box when prompted.
 
@@ -396,13 +396,13 @@ The short version is find a machine with network access, then:
 
 ### Building from Source
 
-1. Build Senzing api server. tag it as *senzing/senzing-api-server*.
-   Following the instructions at ["Senzing API server"](https://github.com/senzing-garage/senzing-api-server).
+1. Build Senzing POC server. tag it as *senzing/senzing-poc-server*.
+   Following the instructions at ["Senzing POC server"](https://github.com/senzing-garage/senzing-poc-server).
    Example:
 
     ```console
-    cd ../senzing-api-server
-    sudo docker build --tag senzing/senzing-api-server .
+    cd ../senzing-poc-server
+    sudo docker build --tag senzing/senzing-poc-server .
     ```
 
 2. Build the web app.
@@ -511,7 +511,7 @@ There are several ways to run unit tests.
 
     ```console
     sudo docker run \
-      --env SENZING_API_SERVER_URL=http://senzing-api-server:8080 \
+      --env SENZING_API_SERVER_URL=http://senzing-poc-server:8080 \
       --env SENZING_WEB_SERVER_PORT=8081 \
       --interactive \
       --name=senzing-webapp-e2e \
