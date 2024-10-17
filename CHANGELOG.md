@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2024-10-17
+
+### Changed in 3.0.0
+
+- Dependency updates.
+- Searches can now survive a page reload
+- Route Resolvers changed from Class to Fn
+
+### Added in 3.0.0
+- New Landing page
+  - Donut widget displaying how many records have been loader for each datasource.
+  - License widget displays how much of your current license is being used and it's expiration date.
+- Cross Source Comparison widget. Allows selection of a data source or two and selection of the type of matches or relations for sample browsing.
+  - Sample browsing Data Table widget. Is populated from the user's selection from the Cross Source Comparison widget and allows the user to browse through a sample-set that matches the parameters selected.
+
 ## [2.9.4] - 2024-03-16
 
 ### Changed in 2.9.4
