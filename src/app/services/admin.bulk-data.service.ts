@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { ActivatedRouteSnapshot } from '@angular/router';
 import { Platform } from '@angular/cdk/platform';
 import { Observable, of, from, interval, Subject, BehaviorSubject, timer } from 'rxjs';
