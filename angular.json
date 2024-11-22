@@ -88,7 +88,7 @@
               "hammerjs",
               "jspdf",
               "url",
-              "zone.js/dist/zone-error"
+              "zone.js"
             ],
             "assets": [
               "src/favicon.ico",
