@@ -1,6 +1,6 @@
 import { NgModule, InjectionToken } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from "@angular/common/http";
+import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 
 import { MaterialModule } from '../material.module';
 import { FormsModule } from '@angular/forms';
@@ -46,8 +46,7 @@ export function tokenGetter() {
 import { SzRestConfigurationFactory } from '../common/sdk-config.factory';
 import { SzWebAppConfigService } from '../services/config.service';
 
-@NgModule({
-    declarations: [
+@NgModule({ declarations: [
         AdminComponent,
         AdminConsoleComponent,
         AdminDataSourcesComponent,
@@ -70,12 +69,9 @@ import { SzWebAppConfigService } from '../services/config.service';
         NewDataSourceDialogComponent,
         SzProgressBarComponent,
         XtermComponent
-    ],
-    imports: [
-        AdminRoutingModule,
+    ], imports: [AdminRoutingModule,
         CommonModule,
         FormsModule,
-        HttpClientModule,
         JwtModule.forRoot({
             config: {
                 tokenGetter: tokenGetter,
@@ -85,15 +81,13 @@ import { SzWebAppConfigService } from '../services/config.service';
         }),
         MaterialModule,
         SenzingSdkModule.forRoot(SzRestConfigurationFactory),
-        SenzingDataServiceModule.forRoot(SzRestConfigurationFactory)
-    ],
-    providers: [
+        SenzingDataServiceModule.forRoot(SzRestConfigurationFactory)], providers: [
         { provide: HTTP_INTERCEPTORS,
             useClass: OAuthInterceptor,
             multi: true
         },
         SzWebAppConfigService,
-        WebSocketService
-    ]
-})
+        WebSocketService,
+        provideHttpClient(withInterceptorsFromDi())
+    ] })
 export class AdminModule { }
