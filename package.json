@@ -42,8 +42,8 @@
     "@auth0/angular-jwt": "^5.0.2",
     "@fontsource/material-icons": "^4.5.4",
     "@fontsource/roboto": "^4.5.5",
-    "@senzing/rest-api-client-ng": "file:../libs/senzing-rest-api-client-ng-7.0.0-ng16-beta.0.tgz",
-    "@senzing/sdk-components-ng": "file:../libs/senzing-sdk-components-ng-7.0.0-ng16.tgz",
+    "@senzing/rest-api-client-ng": "file:../libs/senzing-rest-api-client-ng-7.0.0-ng17-beta.0.tgz",
+    "@senzing/sdk-components-ng": "file:../libs/senzing-sdk-components-ng-7.0.0-ng17.tgz",
     "@types/d3": "^7.4.0",
     "@types/socket.io-client": "^3.0.0",
     "acorn": "^8.6.0",
@@ -52,7 +52,7 @@
     "d3": "^7.8.4",
     "express": "^4.18.1",
     "express-basic-auth": "^1.2.1",
-    "express-jwt": "^8.3.0",
+    "express-jwt": "^8.4.1",
     "helmet-csp": "^3.4.0",
     "http-proxy": "^1.18.1",
     "http-proxy-middleware": "^2.0.3",
@@ -61,7 +61,7 @@
     "pug": "^3.0.2",
     "rxjs": "~7.8.1",
     "sanitize-filename": "^1.6.3",
-    "sass": "^1.45.0",
+    "sass": "^1.77.6",
     "serve-static": "^1.14.2",
     "socket.io-client": "^4.5.1",
     "tslib": "^2.5.0",
@@ -70,7 +70,7 @@
     "@xterm/xterm": "^5.5.0",
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/addon-web-links": "^0.11.0",
-    "zone.js": "~0.13.3"
+    "zone.js": "~0.14.10"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^16.2.16",
@@ -106,6 +106,6 @@
     "ng-packagr": "^16.2.3",
     "scss-bundle": "^3.1.2",
     "ts-node": "~10.9.1",
-    "typescript": "~4.9.4"
+    "typescript": "~5.4.5"
   }
 }
