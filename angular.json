@@ -182,29 +182,29 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "entity-search-web-app:build",
             "proxyConfig": "proxy.conf.json",
-            "port": 4200
+            "port": 4200,
+            "buildTarget": "entity-search-web-app:build"
           },
           "configurations": {
             "development": {
-              "browserTarget": "entity-search-web-app:build:development"
+              "buildTarget": "entity-search-web-app:build:development"
             },
             "production": {
-              "browserTarget": "entity-search-web-app:build:production"
+              "buildTarget": "entity-search-web-app:build:production"
             },
             "docker": {
-              "browserTarget": "entity-search-web-app:build:docker"
+              "buildTarget": "entity-search-web-app:build:docker"
             },
             "e2e": {
-              "browserTarget": "entity-search-web-app:build:e2e"
+              "buildTarget": "entity-search-web-app:build:e2e"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "entity-search-web-app:build"
+            "buildTarget": "entity-search-web-app:build"
           }
         },
         "test": {
