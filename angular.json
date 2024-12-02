@@ -15,12 +15,15 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/entity-search-web-app",
+            "outputPath": {
+              "base": "dist/entity-search-web-app"
+            },
             "index": "src/index.html",
-            "main": "src/main.ts",
-            "polyfills": "src/polyfills.ts",
+            "polyfills": [
+              "src/polyfills.ts"
+            ],
             "tsConfig": "tsconfig.app.json",
             "aot": true,
             "allowedCommonJsDependencies": [
@@ -88,7 +91,7 @@
               "hammerjs",
               "jspdf",
               "url",
-              "zone.js/dist/zone-error"
+              "zone.js"
             ],
             "assets": [
               "src/favicon.ico",
@@ -101,7 +104,8 @@
               "src/app/scss/theme.scss"
             ],
             "scripts": [],
-            "webWorkerTsConfig": "tsconfig.worker.json"
+            "webWorkerTsConfig": "tsconfig.worker.json",
+            "browser": "src/main.ts"
           },
           "configurations": {
             "production": {
@@ -120,8 +124,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -151,8 +153,6 @@
               "sourceMap": true,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -165,9 +165,7 @@
               "optimization": false,
               "sourceMap": true,
               "namedChunks": true,
-              "extractLicenses": false,
-              "vendorChunk": true,
-              "buildOptimizer": false
+              "extractLicenses": false
             },
             "e2e": {
               "fileReplacements": [
@@ -182,29 +180,29 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "entity-search-web-app:build",
             "proxyConfig": "proxy.conf.json",
-            "port": 4200
+            "port": 4200,
+            "buildTarget": "entity-search-web-app:build"
           },
           "configurations": {
             "development": {
-              "browserTarget": "entity-search-web-app:build:development"
+              "buildTarget": "entity-search-web-app:build:development"
             },
             "production": {
-              "browserTarget": "entity-search-web-app:build:production"
+              "buildTarget": "entity-search-web-app:build:production"
             },
             "docker": {
-              "browserTarget": "entity-search-web-app:build:docker"
+              "buildTarget": "entity-search-web-app:build:docker"
             },
             "e2e": {
-              "browserTarget": "entity-search-web-app:build:e2e"
+              "buildTarget": "entity-search-web-app:build:e2e"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "entity-search-web-app:build"
+            "buildTarget": "entity-search-web-app:build"
           }
         },
         "test": {

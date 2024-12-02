@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { CanActivate, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { Injectable, inject } from '@angular/core';
+import { CanActivateFn, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { ActivatedRouteSnapshot } from '@angular/router';
 import { Observable, of, Subject } from 'rxjs';
 import { map, catchError, tap, concatMap } from 'rxjs/operators';
@@ -14,7 +14,7 @@ import { SzServerInfo } from '@senzing/sdk-components-ng';
 @Injectable({
   providedIn: 'root'
 })
-export class AuthGuardService implements CanActivate {
+export class AuthGuardService  {
   constructor(
     private adminAuth: AdminAuthService,
     private router: Router
@@ -219,4 +219,11 @@ export class AuthGuardService implements CanActivate {
     // yeah. I know, little bit Marty McFly
     return canActivateResult;
   }
+}
+/** fn to call from route "CanActivate" that uses the "AuthGuardService" from above */
+export const AuthGuardFn: CanActivateFn = (next: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+  const authService = inject(AuthGuardService);
+  //const router = inject(Router);
+
+  return authService.canActivate(next, state);
 }

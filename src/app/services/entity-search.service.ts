@@ -1,10 +1,5 @@
 import { Inject, Injectable, inject } from '@angular/core';
-import {
-  Router, Resolve,
-  RouterStateSnapshot,
-  ActivatedRouteSnapshot,
-  ResolveFn
-} from '@angular/router';
+import { Router, RouterStateSnapshot, ActivatedRouteSnapshot, ResolveFn } from '@angular/router';
 import { Observable, of, EMPTY, Subject } from 'rxjs';
 import { mergeMap, take, catchError, tap, map } from 'rxjs/operators';
 import { StorageService, LOCAL_STORAGE, SESSION_STORAGE } from 'ngx-webstorage-service';

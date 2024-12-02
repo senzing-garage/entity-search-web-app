@@ -19,7 +19,7 @@ import { AdminDataSourcesComponent } from './datasources/datasources.component';
 import { AdminDataLoaderComponent } from './load/load.component';
 //import { AdminEntityTypesComponent } from './entity-types/entity-types.component';
 import { AdminOAuthTokensComponent } from './tokens/tokens.component';
-import { AuthGuardService } from '../services/ag.service';
+import { AuthGuardService, AuthGuardFn } from '../services/ag.service';
 import { AdminErrorNoAdminModeComponent } from './errors/no-admin.component';
 import { AdminServerInfoComponent } from './server-info/server-info.component';
 import { AdminLicenseInfoComponent } from './license-info/license-info.component';
@@ -37,22 +37,22 @@ const routes: Routes = [
         children: [
           {
             path: 'tokens',
-            canActivate: [AuthGuardService],
+            canActivate: [AuthGuardFn],
             component: AdminOAuthTokensComponent
           },
           {
               path: 'datasources',
-              canActivate: [AuthGuardService],
+              canActivate: [AuthGuardFn],
               component: AdminDataSourcesComponent
           },
           /*{
               path: 'entity-types',
-              canActivate: [AuthGuardService],
+              canActivate: [AuthGuardFn],
               component: AdminEntityTypesComponent
           },*/
           {
               path: 'load',
-              canActivate: [AuthGuardService],
+              canActivate: [AuthGuardFn],
               component: AdminDataLoaderComponent
           },
           {
@@ -65,7 +65,7 @@ const routes: Routes = [
           },
           {
             path: 'license/info',
-            canActivate: [AuthGuardService],
+            canActivate: [AuthGuardFn],
             component: AdminLicenseInfoComponent
           },
           {
@@ -75,6 +75,7 @@ const routes: Routes = [
           {
             path: 'console',
             pathMatch: 'full',
+            canActivate: [AuthGuardFn],
             component: AdminConsoleComponent
           },
           {

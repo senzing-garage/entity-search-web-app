@@ -41,20 +41,20 @@ $sz-mat-colors: (
 );
 
 // $default: 500, $lighter: 100, $darker: 700, $text: $default
-$sz-mat-primary: mat.define-palette($sz-mat-colors, PRIMARY, PRIMARY, PRIMARY);
-$sz-mat-accent:  mat.define-palette($sz-mat-colors, SECONDARY, SECONDARY, SECONDARY);
+$sz-mat-primary: mat.m2-define-palette($sz-mat-colors, PRIMARY, PRIMARY, PRIMARY);
+$sz-mat-accent:  mat.m2-define-palette($sz-mat-colors, SECONDARY, SECONDARY, SECONDARY);
 // The warn palette is optional (defaults to red).
-$sz-mat-warn:    mat.define-palette($sz-mat-colors, WARNING, WARNING, WARNING);
+$sz-mat-warn:    mat.m2-define-palette($sz-mat-colors, WARNING, WARNING, WARNING);
 
 // Create the theme object. A theme consists of configurations for individual
 // theming systems such as `color` or `typography`.
-$sz-mat-theme: mat.define-light-theme((
+$sz-mat-theme: mat.m2-define-light-theme((
   color: (
     primary: $sz-mat-primary,
     accent: $sz-mat-accent,
     warn: $sz-mat-warn
   ),
-  typography: mat.define-typography-config(),
+  typography: mat.m2-define-typography-config(),
   density: 0
 ));
 

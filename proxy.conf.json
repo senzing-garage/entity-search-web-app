@@ -1,5 +1,5 @@
 {
-  "/api/*": {
+  "/api/**": {
     "target": "http://localhost:8250",
     "secure": false,
     "logLevel": "debug",
@@ -7,7 +7,7 @@
       "^/api": ""
     }
   },
-  "/admin/auth/jwt/*": {
+  "/admin/auth/jwt/**": {
     "target": "http://localhost:8200/jwt/",
     "secure": true,
     "logLevel": "debug",
@@ -15,7 +15,7 @@
       "^/admin/auth/jwt": "/admin"
     }
   },
-  "/admin/auth/sso/*": {
+  "/admin/auth/sso/**": {
     "target": "http://localhost:8200/sso/",
     "secure": true,
     "logLevel": "debug",
@@ -23,7 +23,7 @@
       "^/admin/auth/sso": "/admin"
     }
   },
-  "/auth/jwt/*": {
+  "/auth/jwt/**": {
     "target": "http://localhost:8200/jwt/",
     "secure": true,
     "logLevel": "debug",
@@ -31,7 +31,7 @@
       "^/auth/jwt": ""
     }
   },
-  "/auth/sso/*": {
+  "/auth/sso/**": {
     "target": "http://localhost:8200/sso/",
     "secure": true,
     "logLevel": "debug",

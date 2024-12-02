@@ -1,9 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  Router, Resolve,
-  RouterStateSnapshot,
-  ActivatedRouteSnapshot,
-} from '@angular/router';
+import { Router, RouterStateSnapshot, ActivatedRouteSnapshot } from '@angular/router';
 import { Observable, interval, from, of, EMPTY, Subject, BehaviorSubject } from 'rxjs';
 import { AdminService, SzBaseResponse, SzMeta, SzVersionResponse, SzVersionInfo } from '@senzing/rest-api-client-ng';
 import { switchMap, tap, takeWhile, map, take } from 'rxjs/operators';
