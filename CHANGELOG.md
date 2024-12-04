@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.0] - 2024-10-17
 
+The `entity-search-webapp` now *REQUIRES* the use of the  [senzing-poc-server](https://github.com/senzing-garage/senzing-poc-server/) to provide it's senzing api access. This is a change from before where you could use either the [senzing-api-server](https://github.com/senzing-garage/senzing-api-server) *OR* the [senzing-poc-server](https://github.com/senzing-garage/senzing-poc-server/).
+
 ### Changed in 3.0.0
 
 - Dependency updates.

@@ -23,6 +23,7 @@
     "test": "ng test",
     "test:ws:config": "node ./run/test-config.js -- webServerUrl=\"http://localhost:4300\" streamServerUrl=\"ws://localhost:8250\" apiServerUrl=\"http://localhost:8250\"",
     "test:headless": "ng test --no-watch --watch=false --karma-config karma.ci.conf --progress=false --no-progress --browsers=ChromeHeadless",
+    "e2e": "ng e2e",
     "lint": "ng lint",
     "prepush": "npm run test:headless",
     "postshrinkwrap": "lockfix"
@@ -83,6 +84,7 @@
     "@angular/cli": "^18.2.12",
     "@angular/compiler-cli": "^18.2.12",
     "@angular/language-service": "^18.2.12",
+    "@playwright/test": "1.49.0",
     "@types/jasmine": "~3.10.3",
     "@types/jasminewd2": "~2.0.10",
     "@types/node": "^18.11.9",
@@ -104,6 +106,7 @@
     "karma-junit-reporter": "^2.0.1",
     "lockfix": "^2.0.1",
     "ng-packagr": "^18.2.1",
+    "playwright-ng-schematics": "^1.2.1",
     "scss-bundle": "^3.1.2",
     "ts-node": "~10.9.1",
     "typescript": "~5.4.5"
