@@ -1,0 +1,434 @@
+{
+    "meta": {
+        "server": "Senzing POC API Server",
+        "httpMethod": "GET",
+        "httpStatusCode": 200,
+        "timings": {
+            "overall": 20,
+            "enqueued": 0,
+            "nativeAPI": 19,
+            "nativeAPI:engine.searchByAttributes": 19,
+            "processRawData": 1
+        },
+        "timestamp": "2024-12-05T16:57:11.285Z",
+        "version": "",
+        "restApiVersion": "3.4.1",
+        "nativeApiVersion": "3.10.1",
+        "nativeApiBuildVersion": "3.10.1.24135",
+        "nativeApiBuildNumber": "2024_05_14__11_31",
+        "nativeApiBuildDate": "2024-05-14T18:31:00.000Z",
+        "configCompatibilityVersion": "10",
+        "pocServerVersion": "3.6.0-dirty",
+        "pocApiVersion": "3.6.0"
+    },
+    "links": {
+        "self": "http://localhost:4200/entities?attrs=%7B%22NAME_FULL%22%3A%22Robert%20Smith%22%2C%22DATE_OF_BIRTH%22%3A%223%2F31%2F54%22%2C%22NAME_TYPE%22%3A%22PRIMARY%22%2C%22COMPANY_NAME_ORG%22%3A%22Robert%20Smith%22%7D",
+        "openApiSpecification": "http://localhost:4200/specifications/open-api"
+    },
+    "data": {
+        "searchResults": [
+            {
+                "entityId": 5,
+                "entityName": "Rob Smith Sr",
+                "recordSummaries": [
+                    {
+                        "dataSource": "CUSTOMERS",
+                        "recordCount": 1,
+                        "topRecordIds": [
+                            "1005"
+                        ]
+                    },
+                    {
+                        "dataSource": "REFERENCE",
+                        "recordCount": 1,
+                        "topRecordIds": [
+                            "1006"
+                        ]
+                    },
+                    {
+                        "dataSource": "WATCHLIST",
+                        "recordCount": 1,
+                        "topRecordIds": [
+                            "1005"
+                        ]
+                    }
+                ],
+                "addressData": [
+                    "HOME: 123 E Main St Henderson NV 89132",
+                    "HOME: 123 Main St, Las Vegas"
+                ],
+                "characteristicData": [
+                    "DOB: 3/31/54"
+                ],
+                "identifierData": [
+                    "DRLIC: 112233 NV"
+                ],
+                "nameData": [
+                    "PRIMARY: Rob Smith Sr"
+                ],
+                "otherData": [
+                    "AMOUNT: 500",
+                    "STATUS: Active",
+                    "DATE: 7/16/2019",
+                    "CATEGORY: A",
+                    "DATE: 1/3/17"
+                ],
+                "features": {
+                    "ADDRESS": [
+                        {
+                            "primaryId": 44,
+                            "primaryValue": "123 E Main St Henderson NV 89132",
+                            "usageType": "HOME",
+                            "featureDetails": [
+                                {
+                                    "internalId": 44,
+                                    "featureValue": "123 E Main St Henderson NV 89132"
+                                }
+                            ]
+                        },
+                        {
+                            "primaryId": 100003,
+                            "primaryValue": "123 Main St, Las Vegas",
+                            "usageType": "HOME",
+                            "featureDetails": [
+                                {
+                                    "internalId": 100003,
+                                    "featureValue": "123 Main St, Las Vegas"
+                                }
+                            ]
+                        }
+                    ],
+                    "DOB": [
+                        {
+                            "primaryId": 100002,
+                            "primaryValue": "3/31/54",
+                            "featureDetails": [
+                                {
+                                    "internalId": 100002,
+                                    "featureValue": "3/31/54"
+                                }
+                            ]
+                        }
+                    ],
+                    "DRLIC": [
+                        {
+                            "primaryId": 45,
+                            "primaryValue": "112233 NV",
+                            "featureDetails": [
+                                {
+                                    "internalId": 45,
+                                    "featureValue": "112233 NV"
+                                }
+                            ]
+                        }
+                    ],
+                    "NAME": [
+                        {
+                            "primaryId": 100001,
+                            "primaryValue": "Rob Smith Sr",
+                            "usageType": "PRIMARY",
+                            "duplicateValues": [
+                                "Rob E Smith"
+                            ],
+                            "featureDetails": [
+                                {
+                                    "internalId": 100001,
+                                    "featureValue": "Rob Smith Sr"
+                                },
+                                {
+                                    "internalId": 43,
+                                    "featureValue": "Rob E Smith"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "records": [
+                    {
+                        "dataSource": "CUSTOMERS",
+                        "recordId": "1005",
+                        "addressData": [
+                            "HOME: 123 E Main St Henderson NV 89132"
+                        ],
+                        "identifierData": [
+                            "DRLIC: 112233 NV"
+                        ],
+                        "nameData": [
+                            "PRIMARY: Smith Rob E"
+                        ],
+                        "otherData": [
+                            "AMOUNT: 500",
+                            "STATUS: Active",
+                            "DATE: 7/16/2019"
+                        ],
+                        "originalSourceData": {
+                            "RECORD_ID": "1005",
+                            "PRIMARY_NAME_LAST": "Smith",
+                            "PRIMARY_NAME_FIRST": "Rob",
+                            "PRIMARY_NAME_MIDDLE": "E",
+                            "DRIVERS_LICENSE_NUMBER": "112233",
+                            "DRIVERS_LICENSE_STATE": "NV",
+                            "HOME_ADDR_LINE1": "123 E Main St",
+                            "HOME_ADDR_CITY": "Henderson",
+                            "HOME_ADDR_STATE": "NV",
+                            "HOME_ADDR_POSTAL_CODE": "89132",
+                            "DATE": "7/16/2019",
+                            "STATUS": "Active",
+                            "AMOUNT": "500",
+                            "DATA_SOURCE": "CUSTOMERS",
+                            "SOURCE_ID": "yRP+p+XjKG/0BTQRraoTTg==_?_20240626_222458Z"
+                        },
+                        "lastSeenTimestamp": "2024-06-26T22:25:06.852Z",
+                        "matchLevel": 0
+                    },
+                    {
+                        "dataSource": "REFERENCE",
+                        "recordId": "1006",
+                        "addressData": [
+                            "HOME: 123 Main St, Las Vegas"
+                        ],
+                        "characteristicData": [
+                            "DOB: 3/31/54"
+                        ],
+                        "identifierData": [
+                            "DRLIC: 112233 NV"
+                        ],
+                        "nameData": [
+                            "PRIMARY: Smith Sr Rob"
+                        ],
+                        "otherData": [
+                            "CATEGORY: A",
+                            "STATUS: Active",
+                            "DATE: 1/3/17"
+                        ],
+                        "originalSourceData": {
+                            "RECORD_ID": "1006",
+                            "PRIMARY_NAME_LAST": "Smith Sr",
+                            "PRIMARY_NAME_FIRST": "Rob",
+                            "DATE_OF_BIRTH": "3/31/54",
+                            "DRIVERS_LICENSE_NUMBER": "112233",
+                            "DRIVERS_LICENSE_STATE": "NV",
+                            "HOME_ADDR_LINE1": "123 Main St, Las Vegas",
+                            "DATE": "1/3/17",
+                            "STATUS": "Active",
+                            "CATEGORY": "A",
+                            "DATA_SOURCE": "REFERENCE",
+                            "SOURCE_ID": "vM5cEFddW24J80hyrrCKsg==_?_20240626_222532Z"
+                        },
+                        "lastSeenTimestamp": "2024-06-26T22:25:32.536Z",
+                        "matchLevel": 1,
+                        "matchKey": "+NAME+DRLIC",
+                        "resolutionRuleCode": "SF1_CNAME"
+                    },
+                    {
+                        "dataSource": "WATCHLIST",
+                        "recordId": "1005",
+                        "addressData": [
+                            "HOME: 123 E Main St Henderson NV 89132"
+                        ],
+                        "identifierData": [
+                            "DRLIC: 112233 NV"
+                        ],
+                        "nameData": [
+                            "PRIMARY: Smith Rob E"
+                        ],
+                        "otherData": [
+                            "AMOUNT: 500",
+                            "STATUS: Active",
+                            "DATE: 7/16/2019"
+                        ],
+                        "originalSourceData": {
+                            "RECORD_ID": "1005",
+                            "PRIMARY_NAME_LAST": "Smith",
+                            "PRIMARY_NAME_FIRST": "Rob",
+                            "PRIMARY_NAME_MIDDLE": "E",
+                            "DRIVERS_LICENSE_NUMBER": "112233",
+                            "DRIVERS_LICENSE_STATE": "NV",
+                            "HOME_ADDR_LINE1": "123 E Main St",
+                            "HOME_ADDR_CITY": "Henderson",
+                            "HOME_ADDR_STATE": "NV",
+                            "HOME_ADDR_POSTAL_CODE": "89132",
+                            "DATE": "7/16/2019",
+                            "STATUS": "Active",
+                            "AMOUNT": "500",
+                            "DATA_SOURCE": "WATCHLIST",
+                            "SOURCE_ID": "yRP+p+XjKG/0BTQRraoTTg==_?_20240626_222549Z"
+                        },
+                        "lastSeenTimestamp": "2024-06-26T22:25:49.262Z",
+                        "matchLevel": 1,
+                        "matchKey": "+NAME+ADDRESS+DRLIC",
+                        "resolutionRuleCode": "SF1_PNAME_CFF"
+                    }
+                ],
+                "partial": false,
+                "lastSeenTimestamp": "2024-06-26T22:25:49.262Z",
+                "matchLevel": 1,
+                "matchKey": "+NAME+DOB",
+                "resolutionRuleCode": "SNAME_SSTAB",
+                "resultType": "MATCH",
+                "bestNameScore": 97,
+                "featureScores": {
+                    "DOB": [
+                        {
+                            "featureType": "DOB",
+                            "inboundFeature": "3/31/54",
+                            "candidateFeature": "3/31/54",
+                            "score": 100
+                        }
+                    ],
+                    "NAME": [
+                        {
+                            "featureType": "NAME",
+                            "inboundFeature": "Robert Smith",
+                            "candidateFeature": "Rob Smith Sr",
+                            "score": 97,
+                            "nameScoringDetails": {
+                                "fullNameScore": 97
+                            }
+                        },
+                        {
+                            "featureType": "NAME",
+                            "inboundFeature": "Robert Smith",
+                            "candidateFeature": "Rob E Smith",
+                            "score": 90,
+                            "nameScoringDetails": {
+                                "fullNameScore": 90
+                            }
+                        },
+                        {
+                            "featureType": "NAME",
+                            "inboundFeature": "Robert Smith",
+                            "candidateFeature": "Rob Smith Sr",
+                            "score": 83,
+                            "nameScoringDetails": {
+                                "fullNameScore": 83,
+                                "orgNameScore": 83
+                            }
+                        },
+                        {
+                            "featureType": "NAME",
+                            "inboundFeature": "Robert Smith",
+                            "candidateFeature": "Rob E Smith",
+                            "score": 82,
+                            "nameScoringDetails": {
+                                "fullNameScore": 82,
+                                "orgNameScore": 82
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "entityId": 100003,
+                "entityName": "Robert Smith",
+                "recordSummaries": [
+                    {
+                        "dataSource": "REFERENCE",
+                        "recordCount": 1,
+                        "topRecordIds": [
+                            "1008"
+                        ]
+                    }
+                ],
+                "identifierData": [
+                    "EMAIL: robert.smith@email.com"
+                ],
+                "nameData": [
+                    "PRIMARY: Robert Smith"
+                ],
+                "otherData": [
+                    "CATEGORY: C",
+                    "STATUS: Active",
+                    "DATE: 3/5/19"
+                ],
+                "features": {
+                    "EMAIL": [
+                        {
+                            "primaryId": 100019,
+                            "primaryValue": "robert.smith@email.com",
+                            "featureDetails": [
+                                {
+                                    "internalId": 100019,
+                                    "featureValue": "robert.smith@email.com"
+                                }
+                            ]
+                        }
+                    ],
+                    "NAME": [
+                        {
+                            "primaryId": 1,
+                            "primaryValue": "Robert Smith",
+                            "usageType": "PRIMARY",
+                            "featureDetails": [
+                                {
+                                    "internalId": 1,
+                                    "featureValue": "Robert Smith"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "records": [
+                    {
+                        "dataSource": "REFERENCE",
+                        "recordId": "1008",
+                        "identifierData": [
+                            "EMAIL: robert.smith@email.com"
+                        ],
+                        "nameData": [
+                            "PRIMARY: Smith Robert"
+                        ],
+                        "otherData": [
+                            "CATEGORY: C",
+                            "STATUS: Active",
+                            "DATE: 3/5/19"
+                        ],
+                        "originalSourceData": {
+                            "RECORD_ID": "1008",
+                            "PRIMARY_NAME_LAST": "Smith",
+                            "PRIMARY_NAME_FIRST": "Robert",
+                            "EMAIL_ADDRESS": "robert.smith@email.com",
+                            "DATE": "3/5/19",
+                            "STATUS": "Active",
+                            "CATEGORY": "C",
+                            "DATA_SOURCE": "REFERENCE",
+                            "SOURCE_ID": "vM5cEFddW24J80hyrrCKsg==_?_20240626_222532Z"
+                        },
+                        "lastSeenTimestamp": "2024-06-26T22:25:32.656Z",
+                        "matchLevel": 0
+                    }
+                ],
+                "partial": false,
+                "lastSeenTimestamp": "2024-06-26T22:25:32.656Z",
+                "matchLevel": 2,
+                "matchKey": "+NAME",
+                "resolutionRuleCode": "CNAME",
+                "resultType": "POSSIBLE_MATCH",
+                "bestNameScore": 100,
+                "featureScores": {
+                    "NAME": [
+                        {
+                            "featureType": "NAME",
+                            "inboundFeature": "Robert Smith",
+                            "candidateFeature": "Robert Smith",
+                            "score": 100,
+                            "nameScoringDetails": {
+                                "fullNameScore": 100
+                            }
+                        },
+                        {
+                            "featureType": "NAME",
+                            "inboundFeature": "Robert Smith",
+                            "candidateFeature": "Robert Smith",
+                            "score": 100,
+                            "nameScoringDetails": {
+                                "fullNameScore": 100,
+                                "orgNameScore": 100
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}
