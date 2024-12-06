@@ -63,3 +63,8 @@ proxy.conf.json
 
 .history
 .vscode
+
+# Playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/

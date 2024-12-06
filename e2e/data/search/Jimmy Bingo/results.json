@@ -1,0 +1,965 @@
+{
+    "meta": {
+        "server": "Senzing POC API Server",
+        "httpMethod": "GET",
+        "httpStatusCode": 200,
+        "timings": {
+            "overall": 25,
+            "enqueued": 0,
+            "nativeAPI": 22,
+            "nativeAPI:engine.searchByAttributes": 22,
+            "processRawData": 2
+        },
+        "timestamp": "2024-12-04T19:30:22.401Z",
+        "version": "",
+        "restApiVersion": "3.4.1",
+        "nativeApiVersion": "3.10.1",
+        "nativeApiBuildVersion": "3.10.1.24135",
+        "nativeApiBuildNumber": "2024_05_14__11_31",
+        "nativeApiBuildDate": "2024-05-14T18:31:00.000Z",
+        "configCompatibilityVersion": "10",
+        "pocServerVersion": "3.6.0-dirty",
+        "pocApiVersion": "3.6.0"
+    },
+    "links": {
+        "self": "http://localhost:4200/entities?attrs=%7B%22NAME_FULL%22%3A%22Robert%20Smith%22%2C%22NAME_TYPE%22%3A%22PRIMARY%22%2C%22COMPANY_NAME_ORG%22%3A%22Robert%20Smith%22%7D",
+        "openApiSpecification": "http://localhost:4200/specifications/open-api"
+    },
+    "data": {
+        "searchResults": [
+            {
+                "entityId": 1,
+                "entityName": "Jimmy Bingo",
+                "recordSummaries": [
+                    {
+                        "dataSource": "CUSTOMERS",
+                        "recordCount": 4,
+                        "topRecordIds": [
+                            "1001",
+                            "1002",
+                            "1003",
+                            "1004"
+                        ]
+                    },
+                    {
+                        "dataSource": "WATCHLIST",
+                        "recordCount": 4,
+                        "topRecordIds": [
+                            "1001",
+                            "1002",
+                            "1003",
+                            "1004"
+                        ]
+                    }
+                ],
+                "addressData": [
+                    "HOME: 123 Main Street, Las Vegas NV 89132",
+                    "HOME: 1515 Adela Lane Las Vegas NV 89111"
+                ],
+                "characteristicData": [
+                    "DOB: 12/11/78"
+                ],
+                "identifierData": [
+                    "EMAIL: bsmith@work.com"
+                ],
+                "nameData": [
+                    "PRIMARY: Robert Jimbo Smith",
+                    "PRIMARY: B Smith"
+                ],
+                "phoneData": [
+                    "CELL: 702-919-1300",
+                    "HOME: 702-919-1300"
+                ],
+                "otherData": [
+                    "AMOUNT: 400",
+                    "STATUS: Inactive",
+                    "DATE: 1/5/2015",
+                    "AMOUNT: 100",
+                    "STATUS: Active",
+                    "DATE: 1/2/2018",
+                    "AMOUNT: 200",
+                    "DATE: 3/10/2017",
+                    "AMOUNT: 300",
+                    "DATE: 4/9/2016"
+                ],
+                "features": {
+                    "ADDRESS": [
+                        {
+                            "primaryId": 3,
+                            "primaryValue": "123 Main Street, Las Vegas NV 89132",
+                            "usageType": "HOME",
+                            "featureDetails": [
+                                {
+                                    "internalId": 3,
+                                    "featureValue": "123 Main Street, Las Vegas NV 89132"
+                                }
+                            ]
+                        },
+                        {
+                            "primaryId": 19,
+                            "primaryValue": "1515 Adela Lane Las Vegas NV 89111",
+                            "usageType": "HOME",
+                            "duplicateValues": [
+                                "1515 Adela Ln Las Vegas NV 89132"
+                            ],
+                            "featureDetails": [
+                                {
+                                    "internalId": 19,
+                                    "featureValue": "1515 Adela Lane Las Vegas NV 89111"
+                                },
+                                {
+                                    "internalId": 38,
+                                    "featureValue": "1515 Adela Ln Las Vegas NV 89132"
+                                }
+                            ]
+                        }
+                    ],
+                    "DOB": [
+                        {
+                            "primaryId": 2,
+                            "primaryValue": "12/11/78",
+                            "duplicateValues": [
+                                "11/12/78"
+                            ],
+                            "featureDetails": [
+                                {
+                                    "internalId": 2,
+                                    "featureValue": "12/11/78"
+                                },
+                                {
+                                    "internalId": 18,
+                                    "featureValue": "11/12/78"
+                                }
+                            ]
+                        }
+                    ],
+                    "EMAIL": [
+                        {
+                            "primaryId": 5,
+                            "primaryValue": "bsmith@work.com",
+                            "featureDetails": [
+                                {
+                                    "internalId": 5,
+                                    "featureValue": "bsmith@work.com"
+                                }
+                            ]
+                        }
+                    ],
+                    "NAME": [
+                        {
+                            "primaryId": 37,
+                            "primaryValue": "B Smith",
+                            "usageType": "PRIMARY",
+                            "featureDetails": [
+                                {
+                                    "internalId": 37,
+                                    "featureValue": "B Smith"
+                                }
+                            ]
+                        },
+                        {
+                            "primaryId": 1,
+                            "primaryValue": "Jimmy Bingo",
+                            "usageType": "PRIMARY",
+                            "duplicateValues": [
+                                "Bob J Smith",
+                                "Bob Smith"
+                            ],
+                            "featureDetails": [
+                                {
+                                    "internalId": 1,
+                                    "featureValue": "Jimmy Bingo"
+                                },
+                                {
+                                    "internalId": 31,
+                                    "featureValue": "Bob J Smith"
+                                },
+                                {
+                                    "internalId": 17,
+                                    "featureValue": "Bob Smith"
+                                }
+                            ]
+                        }
+                    ],
+                    "PHONE": [
+                        {
+                            "primaryId": 4,
+                            "primaryValue": "702-919-1300",
+                            "usageType": "CELL",
+                            "featureDetails": [
+                                {
+                                    "internalId": 4,
+                                    "featureValue": "702-919-1300"
+                                }
+                            ]
+                        },
+                        {
+                            "primaryId": 4,
+                            "primaryValue": "702-919-1300",
+                            "usageType": "HOME",
+                            "featureDetails": [
+                                {
+                                    "internalId": 4,
+                                    "featureValue": "702-919-1300"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "records": [
+                    {
+                        "dataSource": "WATCHLIST",
+                        "recordId": "1004",
+                        "addressData": [
+                            "HOME: 1515 Adela Ln Las Vegas NV 89132"
+                        ],
+                        "identifierData": [
+                            "EMAIL: bsmith@work.com"
+                        ],
+                        "nameData": [
+                            "PRIMARY: Smith B"
+                        ],
+                        "otherData": [
+                            "AMOUNT: 400",
+                            "STATUS: Inactive",
+                            "DATE: 1/5/2015"
+                        ],
+                        "originalSourceData": {
+                            "RECORD_ID": "1004",
+                            "PRIMARY_NAME_LAST": "Smith",
+                            "PRIMARY_NAME_FIRST": "B",
+                            "HOME_ADDR_LINE1": "1515 Adela Ln",
+                            "HOME_ADDR_CITY": "Las Vegas",
+                            "HOME_ADDR_STATE": "NV",
+                            "HOME_ADDR_POSTAL_CODE": "89132",
+                            "EMAIL_ADDRESS": "bsmith@work.com",
+                            "DATE": "1/5/2015",
+                            "STATUS": "Inactive",
+                            "AMOUNT": "400",
+                            "DATA_SOURCE": "WATCHLIST",
+                            "SOURCE_ID": "yRP+p+XjKG/0BTQRraoTTg==_?_20240626_222549Z"
+                        },
+                        "lastSeenTimestamp": "2024-06-26T22:25:49.247Z",
+                        "matchLevel": 0
+                    },
+                    {
+                        "dataSource": "CUSTOMERS",
+                        "recordId": "1001",
+                        "addressData": [
+                            "HOME: 123 Main Street, Las Vegas NV 89132"
+                        ],
+                        "characteristicData": [
+                            "DOB: 12/11/78"
+                        ],
+                        "identifierData": [
+                            "EMAIL: bsmith@work.com"
+                        ],
+                        "nameData": [
+                            "PRIMARY: Smith Robert"
+                        ],
+                        "phoneData": [
+                            "HOME: 702-919-1300"
+                        ],
+                        "otherData": [
+                            "AMOUNT: 100",
+                            "STATUS: Active",
+                            "DATE: 1/2/2018"
+                        ],
+                        "originalSourceData": {
+                            "RECORD_ID": "1001",
+                            "PRIMARY_NAME_LAST": "Smith",
+                            "PRIMARY_NAME_FIRST": "Robert",
+                            "DATE_OF_BIRTH": "12/11/78",
+                            "HOME_ADDR_LINE1": "123 Main Street, Las Vegas NV 89132",
+                            "HOME_PHONE_NUMBER": "702-919-1300",
+                            "EMAIL_ADDRESS": "bsmith@work.com",
+                            "DATE": "1/2/2018",
+                            "STATUS": "Active",
+                            "AMOUNT": "100",
+                            "DATA_SOURCE": "CUSTOMERS",
+                            "SOURCE_ID": "yRP+p+XjKG/0BTQRraoTTg==_?_20240626_222458Z"
+                        },
+                        "lastSeenTimestamp": "2024-06-26T22:24:58.126Z",
+                        "matchLevel": 1,
+                        "matchKey": "+NAME+DOB+PHONE+EMAIL",
+                        "resolutionRuleCode": "SF1_SNAME_CFF_CSTAB"
+                    },
+                    {
+                        "dataSource": "CUSTOMERS",
+                        "recordId": "1002",
+                        "addressData": [
+                            "HOME: 1515 Adela Lane Las Vegas NV 89111"
+                        ],
+                        "characteristicData": [
+                            "DOB: 11/12/78"
+                        ],
+                        "nameData": [
+                            "PRIMARY: Smith Bob"
+                        ],
+                        "phoneData": [
+                            "CELL: 702-919-1300"
+                        ],
+                        "otherData": [
+                            "AMOUNT: 200",
+                            "STATUS: Inactive",
+                            "DATE: 3/10/2017"
+                        ],
+                        "originalSourceData": {
+                            "RECORD_ID": "1002",
+                            "PRIMARY_NAME_LAST": "Smith",
+                            "PRIMARY_NAME_FIRST": "Bob",
+                            "DATE_OF_BIRTH": "11/12/78",
+                            "HOME_ADDR_LINE1": "1515 Adela Lane",
+                            "HOME_ADDR_CITY": "Las Vegas",
+                            "HOME_ADDR_STATE": "NV",
+                            "HOME_ADDR_POSTAL_CODE": "89111",
+                            "CELL_PHONE_NUMBER": "702-919-1300",
+                            "DATE": "3/10/2017",
+                            "STATUS": "Inactive",
+                            "AMOUNT": "200",
+                            "DATA_SOURCE": "CUSTOMERS",
+                            "SOURCE_ID": "yRP+p+XjKG/0BTQRraoTTg==_?_20240626_222458Z"
+                        },
+                        "lastSeenTimestamp": "2024-06-26T22:25:03.251Z",
+                        "matchLevel": 1,
+                        "matchKey": "+NAME+ADDRESS",
+                        "resolutionRuleCode": "CNAME_CFF"
+                    },
+                    {
+                        "dataSource": "CUSTOMERS",
+                        "recordId": "1003",
+                        "characteristicData": [
+                            "DOB: 12/11/78"
+                        ],
+                        "identifierData": [
+                            "EMAIL: bsmith@work.com"
+                        ],
+                        "nameData": [
+                            "PRIMARY: Smith Bob J"
+                        ],
+                        "otherData": [
+                            "AMOUNT: 300",
+                            "STATUS: Inactive",
+                            "DATE: 4/9/2016"
+                        ],
+                        "originalSourceData": {
+                            "RECORD_ID": "1003",
+                            "PRIMARY_NAME_LAST": "Smith",
+                            "PRIMARY_NAME_FIRST": "Bob",
+                            "PRIMARY_NAME_MIDDLE": "J",
+                            "DATE_OF_BIRTH": "12/11/78",
+                            "EMAIL_ADDRESS": "bsmith@work.com",
+                            "DATE": "4/9/2016",
+                            "STATUS": "Inactive",
+                            "AMOUNT": "300",
+                            "DATA_SOURCE": "CUSTOMERS",
+                            "SOURCE_ID": "yRP+p+XjKG/0BTQRraoTTg==_?_20240626_222458Z"
+                        },
+                        "lastSeenTimestamp": "2024-06-26T22:25:06.805Z",
+                        "matchLevel": 1,
+                        "matchKey": "+NAME+DOB+EMAIL",
+                        "resolutionRuleCode": "SF1_PNAME_CSTAB"
+                    },
+                    {
+                        "dataSource": "CUSTOMERS",
+                        "recordId": "1004",
+                        "addressData": [
+                            "HOME: 1515 Adela Ln Las Vegas NV 89132"
+                        ],
+                        "identifierData": [
+                            "EMAIL: bsmith@work.com"
+                        ],
+                        "nameData": [
+                            "PRIMARY: Smith B"
+                        ],
+                        "otherData": [
+                            "AMOUNT: 400",
+                            "STATUS: Inactive",
+                            "DATE: 1/5/2015"
+                        ],
+                        "originalSourceData": {
+                            "RECORD_ID": "1004",
+                            "PRIMARY_NAME_LAST": "Smith",
+                            "PRIMARY_NAME_FIRST": "B",
+                            "HOME_ADDR_LINE1": "1515 Adela Ln",
+                            "HOME_ADDR_CITY": "Las Vegas",
+                            "HOME_ADDR_STATE": "NV",
+                            "HOME_ADDR_POSTAL_CODE": "89132",
+                            "EMAIL_ADDRESS": "bsmith@work.com",
+                            "DATE": "1/5/2015",
+                            "STATUS": "Inactive",
+                            "AMOUNT": "400",
+                            "DATA_SOURCE": "CUSTOMERS",
+                            "SOURCE_ID": "yRP+p+XjKG/0BTQRraoTTg==_?_20240626_222458Z"
+                        },
+                        "lastSeenTimestamp": "2024-06-26T22:25:06.829Z",
+                        "matchLevel": 1,
+                        "matchKey": "+NAME+ADDRESS+EMAIL",
+                        "resolutionRuleCode": "SF1_PNAME_CFF"
+                    },
+                    {
+                        "dataSource": "WATCHLIST",
+                        "recordId": "1001",
+                        "addressData": [
+                            "HOME: 123 Main Street, Las Vegas NV 89132"
+                        ],
+                        "characteristicData": [
+                            "DOB: 12/11/78"
+                        ],
+                        "identifierData": [
+                            "EMAIL: bsmith@work.com"
+                        ],
+                        "nameData": [
+                            "PRIMARY: Smith Robert"
+                        ],
+                        "phoneData": [
+                            "HOME: 702-919-1300"
+                        ],
+                        "otherData": [
+                            "AMOUNT: 100",
+                            "STATUS: Active",
+                            "DATE: 1/2/2018"
+                        ],
+                        "originalSourceData": {
+                            "RECORD_ID": "1001",
+                            "PRIMARY_NAME_LAST": "Smith",
+                            "PRIMARY_NAME_FIRST": "Robert",
+                            "DATE_OF_BIRTH": "12/11/78",
+                            "HOME_ADDR_LINE1": "123 Main Street, Las Vegas NV 89132",
+                            "HOME_PHONE_NUMBER": "702-919-1300",
+                            "EMAIL_ADDRESS": "bsmith@work.com",
+                            "DATE": "1/2/2018",
+                            "STATUS": "Active",
+                            "AMOUNT": "100",
+                            "DATA_SOURCE": "WATCHLIST",
+                            "SOURCE_ID": "yRP+p+XjKG/0BTQRraoTTg==_?_20240626_222549Z"
+                        },
+                        "lastSeenTimestamp": "2024-06-26T22:25:49.186Z",
+                        "matchLevel": 1,
+                        "matchKey": "+NAME+DOB+ADDRESS+PHONE+EMAIL",
+                        "resolutionRuleCode": "SF1_SNAME_CFF_CSTAB"
+                    },
+                    {
+                        "dataSource": "WATCHLIST",
+                        "recordId": "1002",
+                        "addressData": [
+                            "HOME: 1515 Adela Lane Las Vegas NV 89111"
+                        ],
+                        "characteristicData": [
+                            "DOB: 11/12/78"
+                        ],
+                        "nameData": [
+                            "PRIMARY: Smith Bob"
+                        ],
+                        "phoneData": [
+                            "CELL: 702-919-1300"
+                        ],
+                        "otherData": [
+                            "AMOUNT: 200",
+                            "STATUS: Inactive",
+                            "DATE: 3/10/2017"
+                        ],
+                        "originalSourceData": {
+                            "RECORD_ID": "1002",
+                            "PRIMARY_NAME_LAST": "Smith",
+                            "PRIMARY_NAME_FIRST": "Bob",
+                            "DATE_OF_BIRTH": "11/12/78",
+                            "HOME_ADDR_LINE1": "1515 Adela Lane",
+                            "HOME_ADDR_CITY": "Las Vegas",
+                            "HOME_ADDR_STATE": "NV",
+                            "HOME_ADDR_POSTAL_CODE": "89111",
+                            "CELL_PHONE_NUMBER": "702-919-1300",
+                            "DATE": "3/10/2017",
+                            "STATUS": "Inactive",
+                            "AMOUNT": "200",
+                            "DATA_SOURCE": "WATCHLIST",
+                            "SOURCE_ID": "yRP+p+XjKG/0BTQRraoTTg==_?_20240626_222549Z"
+                        },
+                        "lastSeenTimestamp": "2024-06-26T22:25:49.215Z",
+                        "matchLevel": 1,
+                        "matchKey": "+NAME+DOB+ADDRESS+PHONE",
+                        "resolutionRuleCode": "MFF_LNAME_CEXCL"
+                    },
+                    {
+                        "dataSource": "WATCHLIST",
+                        "recordId": "1003",
+                        "characteristicData": [
+                            "DOB: 12/11/78"
+                        ],
+                        "identifierData": [
+                            "EMAIL: bsmith@work.com"
+                        ],
+                        "nameData": [
+                            "PRIMARY: Smith Bob J"
+                        ],
+                        "otherData": [
+                            "AMOUNT: 300",
+                            "STATUS: Inactive",
+                            "DATE: 4/9/2016"
+                        ],
+                        "originalSourceData": {
+                            "RECORD_ID": "1003",
+                            "PRIMARY_NAME_LAST": "Smith",
+                            "PRIMARY_NAME_FIRST": "Bob",
+                            "PRIMARY_NAME_MIDDLE": "J",
+                            "DATE_OF_BIRTH": "12/11/78",
+                            "EMAIL_ADDRESS": "bsmith@work.com",
+                            "DATE": "4/9/2016",
+                            "STATUS": "Inactive",
+                            "AMOUNT": "300",
+                            "DATA_SOURCE": "WATCHLIST",
+                            "SOURCE_ID": "yRP+p+XjKG/0BTQRraoTTg==_?_20240626_222549Z"
+                        },
+                        "lastSeenTimestamp": "2024-06-26T22:25:49.232Z",
+                        "matchLevel": 1,
+                        "matchKey": "+NAME+DOB+EMAIL",
+                        "resolutionRuleCode": "SF1_PNAME_CSTAB"
+                    }
+                ],
+                "partial": false,
+                "lastSeenTimestamp": "2024-06-26T22:25:49.247Z",
+                "matchLevel": 2,
+                "matchKey": "+NAME",
+                "resolutionRuleCode": "CNAME",
+                "resultType": "POSSIBLE_MATCH",
+                "bestNameScore": 100,
+                "featureScores": {
+                    "NAME": [
+                        {
+                            "featureType": "NAME",
+                            "inboundFeature": "Robert Smith",
+                            "candidateFeature": "Bob J Smith",
+                            "score": 90,
+                            "nameScoringDetails": {
+                                "fullNameScore": 90
+                            }
+                        },
+                        {
+                            "featureType": "NAME",
+                            "inboundFeature": "Robert Smith",
+                            "candidateFeature": "Robert Smith",
+                            "score": 100,
+                            "nameScoringDetails": {
+                                "fullNameScore": 100
+                            }
+                        },
+                        {
+                            "featureType": "NAME",
+                            "inboundFeature": "Robert Smith",
+                            "candidateFeature": "Bob J Smith",
+                            "score": 70,
+                            "nameScoringDetails": {
+                                "fullNameScore": 70,
+                                "orgNameScore": 70
+                            }
+                        },
+                        {
+                            "featureType": "NAME",
+                            "inboundFeature": "Robert Smith",
+                            "candidateFeature": "Robert Smith",
+                            "score": 100,
+                            "nameScoringDetails": {
+                                "fullNameScore": 100,
+                                "orgNameScore": 100
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "entityId": 5,
+                "entityName": "Rob Smith Sr",
+                "recordSummaries": [
+                    {
+                        "dataSource": "CUSTOMERS",
+                        "recordCount": 1,
+                        "topRecordIds": [
+                            "1005"
+                        ]
+                    },
+                    {
+                        "dataSource": "REFERENCE",
+                        "recordCount": 1,
+                        "topRecordIds": [
+                            "1006"
+                        ]
+                    },
+                    {
+                        "dataSource": "WATCHLIST",
+                        "recordCount": 1,
+                        "topRecordIds": [
+                            "1005"
+                        ]
+                    }
+                ],
+                "addressData": [
+                    "HOME: 123 E Main St Henderson NV 89132",
+                    "HOME: 123 Main St, Las Vegas"
+                ],
+                "characteristicData": [
+                    "DOB: 3/31/54"
+                ],
+                "identifierData": [
+                    "DRLIC: 112233 NV"
+                ],
+                "nameData": [
+                    "PRIMARY: Rob Smith Sr"
+                ],
+                "otherData": [
+                    "AMOUNT: 500",
+                    "STATUS: Active",
+                    "DATE: 7/16/2019",
+                    "CATEGORY: A",
+                    "DATE: 1/3/17"
+                ],
+                "features": {
+                    "ADDRESS": [
+                        {
+                            "primaryId": 44,
+                            "primaryValue": "123 E Main St Henderson NV 89132",
+                            "usageType": "HOME",
+                            "featureDetails": [
+                                {
+                                    "internalId": 44,
+                                    "featureValue": "123 E Main St Henderson NV 89132"
+                                }
+                            ]
+                        },
+                        {
+                            "primaryId": 100003,
+                            "primaryValue": "123 Main St, Las Vegas",
+                            "usageType": "HOME",
+                            "featureDetails": [
+                                {
+                                    "internalId": 100003,
+                                    "featureValue": "123 Main St, Las Vegas"
+                                }
+                            ]
+                        }
+                    ],
+                    "DOB": [
+                        {
+                            "primaryId": 100002,
+                            "primaryValue": "3/31/54",
+                            "featureDetails": [
+                                {
+                                    "internalId": 100002,
+                                    "featureValue": "3/31/54"
+                                }
+                            ]
+                        }
+                    ],
+                    "DRLIC": [
+                        {
+                            "primaryId": 45,
+                            "primaryValue": "112233 NV",
+                            "featureDetails": [
+                                {
+                                    "internalId": 45,
+                                    "featureValue": "112233 NV"
+                                }
+                            ]
+                        }
+                    ],
+                    "NAME": [
+                        {
+                            "primaryId": 100001,
+                            "primaryValue": "Rob Smith Sr",
+                            "usageType": "PRIMARY",
+                            "duplicateValues": [
+                                "Rob E Smith"
+                            ],
+                            "featureDetails": [
+                                {
+                                    "internalId": 100001,
+                                    "featureValue": "Rob Smith Sr"
+                                },
+                                {
+                                    "internalId": 43,
+                                    "featureValue": "Rob E Smith"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "records": [
+                    {
+                        "dataSource": "CUSTOMERS",
+                        "recordId": "1005",
+                        "addressData": [
+                            "HOME: 123 E Main St Henderson NV 89132"
+                        ],
+                        "identifierData": [
+                            "DRLIC: 112233 NV"
+                        ],
+                        "nameData": [
+                            "PRIMARY: Smith Rob E"
+                        ],
+                        "otherData": [
+                            "AMOUNT: 500",
+                            "STATUS: Active",
+                            "DATE: 7/16/2019"
+                        ],
+                        "originalSourceData": {
+                            "RECORD_ID": "1005",
+                            "PRIMARY_NAME_LAST": "Smith",
+                            "PRIMARY_NAME_FIRST": "Rob",
+                            "PRIMARY_NAME_MIDDLE": "E",
+                            "DRIVERS_LICENSE_NUMBER": "112233",
+                            "DRIVERS_LICENSE_STATE": "NV",
+                            "HOME_ADDR_LINE1": "123 E Main St",
+                            "HOME_ADDR_CITY": "Henderson",
+                            "HOME_ADDR_STATE": "NV",
+                            "HOME_ADDR_POSTAL_CODE": "89132",
+                            "DATE": "7/16/2019",
+                            "STATUS": "Active",
+                            "AMOUNT": "500",
+                            "DATA_SOURCE": "CUSTOMERS",
+                            "SOURCE_ID": "yRP+p+XjKG/0BTQRraoTTg==_?_20240626_222458Z"
+                        },
+                        "lastSeenTimestamp": "2024-06-26T22:25:06.852Z",
+                        "matchLevel": 0
+                    },
+                    {
+                        "dataSource": "REFERENCE",
+                        "recordId": "1006",
+                        "addressData": [
+                            "HOME: 123 Main St, Las Vegas"
+                        ],
+                        "characteristicData": [
+                            "DOB: 3/31/54"
+                        ],
+                        "identifierData": [
+                            "DRLIC: 112233 NV"
+                        ],
+                        "nameData": [
+                            "PRIMARY: Smith Sr Rob"
+                        ],
+                        "otherData": [
+                            "CATEGORY: A",
+                            "STATUS: Active",
+                            "DATE: 1/3/17"
+                        ],
+                        "originalSourceData": {
+                            "RECORD_ID": "1006",
+                            "PRIMARY_NAME_LAST": "Smith Sr",
+                            "PRIMARY_NAME_FIRST": "Rob",
+                            "DATE_OF_BIRTH": "3/31/54",
+                            "DRIVERS_LICENSE_NUMBER": "112233",
+                            "DRIVERS_LICENSE_STATE": "NV",
+                            "HOME_ADDR_LINE1": "123 Main St, Las Vegas",
+                            "DATE": "1/3/17",
+                            "STATUS": "Active",
+                            "CATEGORY": "A",
+                            "DATA_SOURCE": "REFERENCE",
+                            "SOURCE_ID": "vM5cEFddW24J80hyrrCKsg==_?_20240626_222532Z"
+                        },
+                        "lastSeenTimestamp": "2024-06-26T22:25:32.536Z",
+                        "matchLevel": 1,
+                        "matchKey": "+NAME+DRLIC",
+                        "resolutionRuleCode": "SF1_CNAME"
+                    },
+                    {
+                        "dataSource": "WATCHLIST",
+                        "recordId": "1005",
+                        "addressData": [
+                            "HOME: 123 E Main St Henderson NV 89132"
+                        ],
+                        "identifierData": [
+                            "DRLIC: 112233 NV"
+                        ],
+                        "nameData": [
+                            "PRIMARY: Smith Rob E"
+                        ],
+                        "otherData": [
+                            "AMOUNT: 500",
+                            "STATUS: Active",
+                            "DATE: 7/16/2019"
+                        ],
+                        "originalSourceData": {
+                            "RECORD_ID": "1005",
+                            "PRIMARY_NAME_LAST": "Smith",
+                            "PRIMARY_NAME_FIRST": "Rob",
+                            "PRIMARY_NAME_MIDDLE": "E",
+                            "DRIVERS_LICENSE_NUMBER": "112233",
+                            "DRIVERS_LICENSE_STATE": "NV",
+                            "HOME_ADDR_LINE1": "123 E Main St",
+                            "HOME_ADDR_CITY": "Henderson",
+                            "HOME_ADDR_STATE": "NV",
+                            "HOME_ADDR_POSTAL_CODE": "89132",
+                            "DATE": "7/16/2019",
+                            "STATUS": "Active",
+                            "AMOUNT": "500",
+                            "DATA_SOURCE": "WATCHLIST",
+                            "SOURCE_ID": "yRP+p+XjKG/0BTQRraoTTg==_?_20240626_222549Z"
+                        },
+                        "lastSeenTimestamp": "2024-06-26T22:25:49.262Z",
+                        "matchLevel": 1,
+                        "matchKey": "+NAME+ADDRESS+DRLIC",
+                        "resolutionRuleCode": "SF1_PNAME_CFF"
+                    }
+                ],
+                "partial": false,
+                "lastSeenTimestamp": "2024-06-26T22:25:49.262Z",
+                "matchLevel": 2,
+                "matchKey": "+NAME",
+                "resolutionRuleCode": "CNAME",
+                "resultType": "POSSIBLE_MATCH",
+                "bestNameScore": 97,
+                "featureScores": {
+                    "NAME": [
+                        {
+                            "featureType": "NAME",
+                            "inboundFeature": "Robert Smith",
+                            "candidateFeature": "Rob Smith Sr",
+                            "score": 97,
+                            "nameScoringDetails": {
+                                "fullNameScore": 97
+                            }
+                        },
+                        {
+                            "featureType": "NAME",
+                            "inboundFeature": "Robert Smith",
+                            "candidateFeature": "Rob E Smith",
+                            "score": 90,
+                            "nameScoringDetails": {
+                                "fullNameScore": 90
+                            }
+                        },
+                        {
+                            "featureType": "NAME",
+                            "inboundFeature": "Robert Smith",
+                            "candidateFeature": "Rob Smith Sr",
+                            "score": 83,
+                            "nameScoringDetails": {
+                                "fullNameScore": 83,
+                                "orgNameScore": 83
+                            }
+                        },
+                        {
+                            "featureType": "NAME",
+                            "inboundFeature": "Robert Smith",
+                            "candidateFeature": "Rob E Smith",
+                            "score": 82,
+                            "nameScoringDetails": {
+                                "fullNameScore": 82,
+                                "orgNameScore": 82
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "entityId": 100003,
+                "entityName": "Robert Smith",
+                "recordSummaries": [
+                    {
+                        "dataSource": "REFERENCE",
+                        "recordCount": 1,
+                        "topRecordIds": [
+                            "1008"
+                        ]
+                    }
+                ],
+                "identifierData": [
+                    "EMAIL: robert.smith@email.com"
+                ],
+                "nameData": [
+                    "PRIMARY: Robert Smith"
+                ],
+                "otherData": [
+                    "CATEGORY: C",
+                    "STATUS: Active",
+                    "DATE: 3/5/19"
+                ],
+                "features": {
+                    "EMAIL": [
+                        {
+                            "primaryId": 100019,
+                            "primaryValue": "robert.smith@email.com",
+                            "featureDetails": [
+                                {
+                                    "internalId": 100019,
+                                    "featureValue": "robert.smith@email.com"
+                                }
+                            ]
+                        }
+                    ],
+                    "NAME": [
+                        {
+                            "primaryId": 1,
+                            "primaryValue": "Robert Smith",
+                            "usageType": "PRIMARY",
+                            "featureDetails": [
+                                {
+                                    "internalId": 1,
+                                    "featureValue": "Robert Smith"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "records": [
+                    {
+                        "dataSource": "REFERENCE",
+                        "recordId": "1008",
+                        "identifierData": [
+                            "EMAIL: robert.smith@email.com"
+                        ],
+                        "nameData": [
+                            "PRIMARY: Smith Robert"
+                        ],
+                        "otherData": [
+                            "CATEGORY: C",
+                            "STATUS: Active",
+                            "DATE: 3/5/19"
+                        ],
+                        "originalSourceData": {
+                            "RECORD_ID": "1008",
+                            "PRIMARY_NAME_LAST": "Smith",
+                            "PRIMARY_NAME_FIRST": "Robert",
+                            "EMAIL_ADDRESS": "robert.smith@email.com",
+                            "DATE": "3/5/19",
+                            "STATUS": "Active",
+                            "CATEGORY": "C",
+                            "DATA_SOURCE": "REFERENCE",
+                            "SOURCE_ID": "vM5cEFddW24J80hyrrCKsg==_?_20240626_222532Z"
+                        },
+                        "lastSeenTimestamp": "2024-06-26T22:25:32.656Z",
+                        "matchLevel": 0
+                    }
+                ],
+                "partial": false,
+                "lastSeenTimestamp": "2024-06-26T22:25:32.656Z",
+                "matchLevel": 2,
+                "matchKey": "+NAME",
+                "resolutionRuleCode": "CNAME",
+                "resultType": "POSSIBLE_MATCH",
+                "bestNameScore": 100,
+                "featureScores": {
+                    "NAME": [
+                        {
+                            "featureType": "NAME",
+                            "inboundFeature": "Robert Smith",
+                            "candidateFeature": "Robert Smith",
+                            "score": 100,
+                            "nameScoringDetails": {
+                                "fullNameScore": 100
+                            }
+                        },
+                        {
+                            "featureType": "NAME",
+                            "inboundFeature": "Robert Smith",
+                            "candidateFeature": "Robert Smith",
+                            "score": 100,
+                            "nameScoringDetails": {
+                                "fullNameScore": 100,
+                                "orgNameScore": 100
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

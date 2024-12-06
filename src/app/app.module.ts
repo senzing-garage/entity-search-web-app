@@ -7,7 +7,7 @@ import { MaterialModule } from './material.module';
 import { SenzingSdkModule, SzRestConfiguration } from '@senzing/sdk-components-ng';
 import { ApiModule as SenzingDataServiceModule } from '@senzing/rest-api-client-ng';
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
-import { InMemoryDataService } from '../../e2e/data/services/in-memory-data.service';
+//import { InMemoryDataService } from '../../deprecated/e2e/data/services/in-memory-data.service';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { LayoutModule } from '@angular/cdk/layout';
 import { PlatformModule } from '@angular/cdk/platform';
@@ -125,8 +125,7 @@ import { AdminBulkDataService } from './services/admin.bulk-data.service';
         LayoutModule,
         SenzingSdkModule.forRoot(SzRestConfigurationFactory),
         SenzingDataServiceModule.forRoot(SzRestConfigurationFactory),
-        SpinnerModule,
-        environment.test ? HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService, { delay: 100 }) : []
+        SpinnerModule
     ],
     providers: [
         SzWebAppConfigService,
