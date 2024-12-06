@@ -1,6 +1,6 @@
-# This workflow will do a clean installation of node dependencies, 
-# cache/restore them, build the source code and run tests across different 
-# versions of node
+# This workflow will do a clean installation of node dependencies,
+#  cache/restore them, build the source code and run tests across different
+#  versions of node
 
 name: E2E Tests
 
@@ -37,9 +37,11 @@ jobs:
         run: npm run build:e2e --if-present
       - name: Run Playwright tests
         run: npm run e2e:ci
-      - uses: actions/upload-artifact@v4
+      - name: Upload Artifact ${{ matrix.node-version }}
+        uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
           name: playwright-report
           path: playwright-report/
           retention-days: 14
+          overwrite: true
