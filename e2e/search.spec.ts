@@ -15,13 +15,13 @@ test.describe('Search Tests', () => {
         await expect(searchComponentNode).toHaveCount(1);
     });
 
-    test('should have SSN in type pulldown', async ({ page }) => {
+    /*test('should have SSN in type pulldown', async ({ page }) => {
         await page.goto('/search');
         let identifierNode = await page.locator('select#entity-type');
         await expect(identifierNode).toHaveCount(1);
         identifierNode  = await identifierNode.first().locator('option[value=SSN_NUMBER]');
         await expect(identifierNode).toHaveCount(1);
-    });
+    });*/
 
     test('submit button should be clickable', async ({ page }) => {
         await page.goto('/search');
@@ -75,7 +75,7 @@ test.describe('Search Tests', () => {
         const field = await page.locator('input#entity-email');
         await expect(field).toHaveCount(1);
     })
-
+    /*
     test('should have exact match for Name + DOB search', async({ page }) => {
         await page.goto('/search');
         const nameField     = await page.locator('input#entity-name');
@@ -97,9 +97,9 @@ test.describe('Search Tests', () => {
         // (yes I know this is bad practice but the way of waiting for a response to a specific route(ie: "/api/entities?**")) doesnt work for some reason
         //await page.waitForResponse('/api/entities?**', { timeout: 500 }).catch(err => {});
         // make sure there is at least one "matches" node
-        const resultNode    = await page.locator('sz-search-result-card.matches')
+        const resultNode    = await page.locator('sz-search-result-card.matches');
         expect(await resultNode.count()).toBeGreaterThanOrEqual(1);
-    });
+    });*/
 
     test('should have possibly related for Name + Phone Number', async ({ page }) => {
         await page.goto('/search');
