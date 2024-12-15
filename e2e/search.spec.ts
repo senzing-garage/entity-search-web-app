@@ -102,30 +102,29 @@ test.describe('Search Tests', () => {
         await expect(field).toHaveCount(1);
     })
     
-    
-    test('should have exact match for Name + DOB search', async({ searchPage, page }) => {
+    test('should have exact match for Name + DOB search', async ({ searchPage, page }) => {
         //await page.goto('/search');
         const nameField     = await page.locator('input#entity-name');
         const dobField      = await page.locator('input#entity-dob');
+        const addressField  = await page.locator('input#entity-address');
         const submitButton  = await page.locator('button.button__search-go').first();
         const pageChanged   = page.waitForURL("**\/search\/results\/**",{ timeout: 5000 });
-
         await page.route('/api/entities?**', async route => {
+            //const json = NameAndAddressSearchStub;
             const json = NameAndDobSearchStub;
             await route.fulfill({status: 200, json: json });
         });
-
         await nameField.fill("Robert Smith");
+        //await addressField.fill("123 E Main St Henderson NV 89132");
         await dobField.fill("3/31/54");
         await submitButton.click();
         // submit causes route change, wait for response
         await pageChanged.catch(error => { console.log('got response error'); });
-        // wait a half sec for the request to render
-        // (yes I know this is bad practice but the way of waiting for a response to a specific route(ie: "/api/entities?**")) doesnt work for some reason
-        //await page.waitForResponse('/api/entities?**', { timeout: 500 }).catch(err => {});
-        // make sure there is at least one "matches" node
+        // make sure there is one exact match
         const resultNode    = await page.locator('sz-search-result-card.matches');
-        await expect(await resultNode.count()).toBeGreaterThanOrEqual(1);
+        //await page.pause();
+        await expect(page.locator('sz-search-result-card.matches')).toHaveCount(1);
+        //await expect(await resultNode.count()).toBeGreaterThanOrEqual(2);
     });
     
     test('should have possibly related for Name + Phone Number', async ({ searchPage, page }) => {
