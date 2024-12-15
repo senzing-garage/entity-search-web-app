@@ -28,11 +28,11 @@ export class LandingPage {
             const json = StatsDataSourceSummaryStub1;
             await route.fulfill({status: 200, json: json });
         });
-        await this.page.route('http://localhost:4200/api/statistics/summary/data-sources/CUSTOMERS/vs/REFERENCE?**', async route => {
+        await this.page.route('/api/statistics/summary/data-sources/CUSTOMERS/vs/REFERENCE?**', async route => {
             const json = StatsDataSourceSummaryStub2;
             await route.fulfill({status: 200, json: json });
         });
-        await this.page.route('http://localhost:4200/api/statistics/summary/data-sources/REFERENCE/vs/REFERENCE?**', async route => {
+        await this.page.route('/api/statistics/summary/data-sources/REFERENCE/vs/REFERENCE?**', async route => {
             const json = StatsDataSourceSummaryStub3;
             await route.fulfill({status: 200, json: json });
         });

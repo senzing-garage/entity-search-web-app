@@ -32,6 +32,7 @@ const test = base.extend<{ landingPage: LandingPage, searchPage: SearchPage, bas
 });
 
 test.describe('Search Tests', () => {
+
     test('should have search box', async ({ landingPage, page }) => {
         //await landingPage.goto('/search');
         const searchComponentNode = await page.locator('sz-search');
@@ -101,31 +102,25 @@ test.describe('Search Tests', () => {
         const field = await page.locator('input#entity-email');
         await expect(field).toHaveCount(1);
     })
-    
-    /*test('should have exact match for Name + DOB search', async ({ searchPage, page }) => {
-        //await page.goto('/search');
+
+    test('should have exact match for Name + DOB search', async ({ searchPage, page }) => {
         const nameField     = await page.locator('input#entity-name');
         const dobField      = await page.locator('input#entity-dob');
-        const addressField  = await page.locator('input#entity-address');
         const submitButton  = await page.locator('button.button__search-go').first();
-        const pageChanged   = page.waitForURL("**\/search\/results\/**",{ timeout: 5000 });
+        const pageChanged   = page.waitForURL("**\/search\/results\/**",{ timeout: 20000 });
+        // /api/entities?attrs=%7B%22NAME_FULL%22:%22Robert%20Smith%22,%22DATE_OF_BIRTH%22:%223/31/54%22,%22NAME_TYPE%22:%22PRIMARY%22,%22COMPANY_NAME_ORG%22:%22Robert%20Smith%22%7D
         await page.route('/api/entities?**', async route => {
-            const json = NameAndAddressSearchStub;
-            //const json = NameAndDobSearchStub;
+            const json = NameAndDobSearchStub;
             await route.fulfill({status: 200, json: json });
         });
         await nameField.fill("Robert Smith");
-        //await addressField.fill("123 E Main St Henderson NV 89132");
-        await dobField.fill("3/31/54");
+        await dobField.fill("3-31-54");
         await submitButton.click({delay: 500});
         // submit causes route change, wait for response
         await pageChanged.catch(error => { console.log('got response error'); });
         // make sure there is one exact match
-        const resultNode    = await page.locator('sz-search-result-card.matches');
-        //await page.pause();
         await expect(page.locator('sz-search-result-card.matches')).toHaveCount(1);
-        //await expect(await resultNode.count()).toBeGreaterThanOrEqual(2);
-    });*/
+    });
     
     test('should have possibly related for Name + Phone Number', async ({ searchPage, page }) => {
         //await page.goto('/search');
@@ -169,5 +164,5 @@ test.describe('Search Tests', () => {
         //await page.pause();
         await expect(await resultNode.count()).toBeGreaterThanOrEqual(2);
     });
-
+    
 });
