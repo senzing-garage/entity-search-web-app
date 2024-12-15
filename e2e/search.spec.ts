@@ -110,14 +110,14 @@ test.describe('Search Tests', () => {
         const submitButton  = await page.locator('button.button__search-go').first();
         const pageChanged   = page.waitForURL("**\/search\/results\/**",{ timeout: 5000 });
         await page.route('/api/entities?**', async route => {
-            //const json = NameAndAddressSearchStub;
-            const json = NameAndDobSearchStub;
+            const json = NameAndAddressSearchStub;
+            //const json = NameAndDobSearchStub;
             await route.fulfill({status: 200, json: json });
         });
         await nameField.fill("Robert Smith");
         //await addressField.fill("123 E Main St Henderson NV 89132");
         await dobField.fill("3/31/54");
-        await submitButton.click();
+        await submitButton.click({delay: 500});
         // submit causes route change, wait for response
         await pageChanged.catch(error => { console.log('got response error'); });
         // make sure there is one exact match
