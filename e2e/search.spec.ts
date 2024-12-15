@@ -125,7 +125,7 @@ test.describe('Search Tests', () => {
         //await page.waitForResponse('/api/entities?**', { timeout: 500 }).catch(err => {});
         // make sure there is at least one "matches" node
         const resultNode    = await page.locator('sz-search-result-card.matches');
-        expect(await resultNode.count()).toBeGreaterThanOrEqual(1);
+        await expect(await resultNode.count()).toBeGreaterThanOrEqual(1);
     });
     
     test('should have possibly related for Name + Phone Number', async ({ searchPage, page }) => {
@@ -147,7 +147,7 @@ test.describe('Search Tests', () => {
         await pageChanged.catch(error => { console.log('got response error'); });
         // make sure there is at least one "possible matches" node
         const resultNode    = await page.locator('sz-search-result-card.possible-match')
-        expect(await resultNode.count()).toBeGreaterThanOrEqual(2);
+        await expect(await resultNode.count()).toBeGreaterThanOrEqual(2);
     });
 
     test('should have exact match for Name + Address', async ({ searchPage, page }) => {
