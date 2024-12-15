@@ -1,0 +1,76 @@
+{
+    "meta": {
+        "server": "Senzing POC API Server",
+        "httpMethod": "GET",
+        "httpStatusCode": 200,
+        "timings": {
+            "overall": 1,
+            "enqueued": 0,
+            "nativeAPI": 1,
+            "nativeAPI:engine.exportConfig": 0,
+            "nativeAPI:config.load": 1,
+            "nativeAPI:config.listDataSources": 0,
+            "processRawData": 0
+        },
+        "timestamp": "2024-12-14T22:53:52.167Z",
+        "version": "",
+        "restApiVersion": "3.4.1",
+        "nativeApiVersion": "3.10.1",
+        "nativeApiBuildVersion": "3.10.1.24135",
+        "nativeApiBuildNumber": "2024_05_14__11_31",
+        "nativeApiBuildDate": "2024-05-14T18:31:00.000Z",
+        "configCompatibilityVersion": "10",
+        "pocServerVersion": "3.6.0-dirty",
+        "pocApiVersion": "3.6.0"
+    },
+    "links": {
+        "self": "http://localhost:4200/data-sources",
+        "openApiSpecification": "http://localhost:4200/specifications/open-api"
+    },
+    "data": {
+        "dataSources": [
+            "TEST",
+            "SEARCH",
+            "CUSTOMERS",
+            "REFERENCE",
+            "WATCHLIST",
+            "SINGAPORE1",
+            "SINGAPORE2",
+            "SINGAPORE3"
+        ],
+        "dataSourceDetails": {
+            "TEST": {
+                "dataSourceCode": "TEST",
+                "dataSourceId": 1
+            },
+            "SEARCH": {
+                "dataSourceCode": "SEARCH",
+                "dataSourceId": 2
+            },
+            "CUSTOMERS": {
+                "dataSourceCode": "CUSTOMERS",
+                "dataSourceId": 1001
+            },
+            "REFERENCE": {
+                "dataSourceCode": "REFERENCE",
+                "dataSourceId": 1002
+            },
+            "WATCHLIST": {
+                "dataSourceCode": "WATCHLIST",
+                "dataSourceId": 1003
+            },
+            "SINGAPORE1": {
+                "dataSourceCode": "SINGAPORE1",
+                "dataSourceId": 1004
+            },
+            "SINGAPORE2": {
+                "dataSourceCode": "SINGAPORE2",
+                "dataSourceId": 1005
+            },
+            "SINGAPORE3": {
+                "dataSourceCode": "SINGAPORE3",
+                "dataSourceId": 1006
+            }
+        }
+    }
+}

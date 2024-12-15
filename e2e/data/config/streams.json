@@ -1,0 +1,10 @@
+{
+    "protocol": "ws",
+    "target": "ws://localhost:8250",
+    "proxy": {
+        "protocol": "ws",
+        "hostname": "localhost",
+        "port": 8255,
+        "url": "ws://localhost:8255"
+    }
+}
