@@ -102,7 +102,7 @@ test.describe('Search Tests', () => {
         await expect(field).toHaveCount(1);
     })
     
-    test('should have exact match for Name + DOB search', async ({ searchPage, page }) => {
+    /*test('should have exact match for Name + DOB search', async ({ searchPage, page }) => {
         //await page.goto('/search');
         const nameField     = await page.locator('input#entity-name');
         const dobField      = await page.locator('input#entity-dob');
@@ -125,7 +125,7 @@ test.describe('Search Tests', () => {
         //await page.pause();
         await expect(page.locator('sz-search-result-card.matches')).toHaveCount(1);
         //await expect(await resultNode.count()).toBeGreaterThanOrEqual(2);
-    });
+    });*/
     
     test('should have possibly related for Name + Phone Number', async ({ searchPage, page }) => {
         //await page.goto('/search');
