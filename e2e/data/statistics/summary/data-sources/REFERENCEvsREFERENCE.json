@@ -1,0 +1,96 @@
+{
+    "meta": {
+        "server": "Senzing POC API Server",
+        "httpMethod": "GET",
+        "httpStatusCode": 200,
+        "timings": {
+            "overall": 1,
+            "sqlQuery": 0,
+            "sqlQuery:selectCrossSourceSummary": 0
+        },
+        "timestamp": "2024-12-14T23:52:36.356Z",
+        "version": "",
+        "restApiVersion": "3.4.1",
+        "nativeApiVersion": "3.10.1",
+        "nativeApiBuildVersion": "3.10.1.24135",
+        "nativeApiBuildNumber": "2024_05_14__11_31",
+        "nativeApiBuildDate": "2024-05-14T18:31:00.000Z",
+        "configCompatibilityVersion": "10",
+        "pocServerVersion": "3.6.0-dirty",
+        "pocApiVersion": "3.6.0"
+    },
+    "links": {
+        "self": "http://localhost:4200/statistics/summary/data-sources/REFERENCE/vs/REFERENCE?matchKey=%2A",
+        "openApiSpecification": "http://localhost:4200/specifications/open-api"
+    },
+    "data": {
+        "dataSource": "REFERENCE",
+        "versusDataSource": "REFERENCE",
+        "matches": [
+            {
+                "entityCount": 2,
+                "recordCount": 4
+            },
+            {
+                "matchKey": "+DOB+SSN+PNAME",
+                "entityCount": 1,
+                "recordCount": 2
+            },
+            {
+                "matchKey": "+NAME+ADDRESS",
+                "entityCount": 1,
+                "recordCount": 2
+            },
+            {
+                "matchKey": "+NAME+DOB+ADDRESS",
+                "entityCount": 1,
+                "recordCount": 2
+            },
+            {
+                "matchKey": "+NAME+DOB+ADDRESS+SSN+EMAIL",
+                "entityCount": 1,
+                "recordCount": 2
+            }
+        ],
+        "ambiguousMatches": [
+            {
+                "entityCount": 0,
+                "recordCount": 0,
+                "relationCount": 0
+            }
+        ],
+        "possibleMatches": [
+            {
+                "entityCount": 2,
+                "recordCount": 2,
+                "relationCount": 2
+            },
+            {
+                "matchKey": "+NAME",
+                "entityCount": 2,
+                "recordCount": 2,
+                "relationCount": 2
+            }
+        ],
+        "possibleRelations": [
+            {
+                "entityCount": 2,
+                "recordCount": 3,
+                "relationCount": 2
+            },
+            {
+                "matchKey": "+ADDRESS+EMAIL+SURNAME-DOB-SSN",
+                "entityCount": 2,
+                "recordCount": 3,
+                "relationCount": 2
+            }
+        ],
+        "disclosedRelations": [
+            {
+                "entityCount": 0,
+                "recordCount": 0,
+                "relationCount": 0
+            }
+        ]
+    }
+}

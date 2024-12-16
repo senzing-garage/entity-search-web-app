@@ -1,0 +1,165 @@
+{
+    "meta": {
+        "server": "Senzing POC API Server",
+        "httpMethod": "GET",
+        "httpStatusCode": 200,
+        "timings": {
+            "overall": 7,
+            "enqueued": 0,
+            "nativeAPI": 6,
+            "nativeAPI:engine.findNetworkByEntityID": 6,
+            "processRawData": 0
+        },
+        "timestamp": "2024-12-15T22:37:26.844Z",
+        "version": "",
+        "restApiVersion": "3.4.1",
+        "nativeApiVersion": "3.10.1",
+        "nativeApiBuildVersion": "3.10.1.24135",
+        "nativeApiBuildNumber": "2024_05_14__11_31",
+        "nativeApiBuildDate": "2024-05-14T18:31:00.000Z",
+        "configCompatibilityVersion": "10",
+        "pocServerVersion": "3.6.0-dirty",
+        "pocApiVersion": "3.6.0"
+    },
+    "links": {
+        "self": "http://localhost:8251/entity-networks?e=1&maxDegrees=1&buildOut=1&maxEntities=40000&detailLevel=NETWORK_MINIMAL&featureMode=NONE&withFeatureStats=false&withInternalFeatures=false&forceMinimal=false&withRaw=false",
+        "openApiSpecification": "http://localhost:8251/specifications/open-api"
+    },
+    "data": {
+        "entityPaths": [],
+        "entities": [
+            {
+                "resolvedEntity": {
+                    "entityId": 1,
+                    "partial": true
+                },
+                "relatedEntities": [
+                    {
+                        "entityId": 5,
+                        "partial": true,
+                        "matchLevel": 2,
+                        "matchKey": "+NAME+ADDRESS-DOB",
+                        "resolutionRuleCode": "CNAME_CFF_DEXCL",
+                        "disclosed": false,
+                        "ambiguous": false,
+                        "relationType": "POSSIBLE_MATCH"
+                    },
+                    {
+                        "entityId": 100003,
+                        "partial": true,
+                        "matchLevel": 2,
+                        "matchKey": "+NAME",
+                        "resolutionRuleCode": "CNAME",
+                        "disclosed": false,
+                        "ambiguous": false,
+                        "relationType": "POSSIBLE_MATCH"
+                    },
+                    {
+                        "entityId": 100002,
+                        "partial": true,
+                        "matchLevel": 3,
+                        "matchKey": "+ADDRESS+SURNAME",
+                        "resolutionRuleCode": "CFF_SURNAME",
+                        "disclosed": false,
+                        "ambiguous": false,
+                        "relationType": "POSSIBLE_RELATION"
+                    }
+                ]
+            },
+            {
+                "resolvedEntity": {
+                    "entityId": 5,
+                    "partial": true
+                },
+                "relatedEntities": [
+                    {
+                        "entityId": 1,
+                        "partial": true,
+                        "matchLevel": 2,
+                        "matchKey": "+NAME+ADDRESS-DOB",
+                        "resolutionRuleCode": "CNAME_CFF_DEXCL",
+                        "disclosed": false,
+                        "ambiguous": false,
+                        "relationType": "POSSIBLE_MATCH"
+                    },
+                    {
+                        "entityId": 100003,
+                        "partial": true,
+                        "matchLevel": 2,
+                        "matchKey": "+NAME",
+                        "resolutionRuleCode": "CNAME",
+                        "disclosed": false,
+                        "ambiguous": false,
+                        "relationType": "POSSIBLE_MATCH"
+                    }
+                ]
+            },
+            {
+                "resolvedEntity": {
+                    "entityId": 100002,
+                    "partial": true
+                },
+                "relatedEntities": [
+                    {
+                        "entityId": 29,
+                        "partial": true,
+                        "matchLevel": 2,
+                        "matchKey": "+NAME",
+                        "resolutionRuleCode": "CNAME",
+                        "disclosed": false,
+                        "ambiguous": false,
+                        "relationType": "POSSIBLE_MATCH"
+                    },
+                    {
+                        "entityId": 30,
+                        "partial": true,
+                        "matchLevel": 2,
+                        "matchKey": "+NAME",
+                        "resolutionRuleCode": "CNAME",
+                        "disclosed": false,
+                        "ambiguous": false,
+                        "relationType": "POSSIBLE_MATCH"
+                    },
+                    {
+                        "entityId": 1,
+                        "partial": true,
+                        "matchLevel": 3,
+                        "matchKey": "+ADDRESS+SURNAME",
+                        "resolutionRuleCode": "CFF_SURNAME",
+                        "disclosed": false,
+                        "ambiguous": false,
+                        "relationType": "POSSIBLE_RELATION"
+                    }
+                ]
+            },
+            {
+                "resolvedEntity": {
+                    "entityId": 100003,
+                    "partial": true
+                },
+                "relatedEntities": [
+                    {
+                        "entityId": 1,
+                        "partial": true,
+                        "matchLevel": 2,
+                        "matchKey": "+NAME",
+                        "resolutionRuleCode": "CNAME",
+                        "disclosed": false,
+                        "ambiguous": false,
+                        "relationType": "POSSIBLE_MATCH"
+                    },
+                    {
+                        "entityId": 5,
+                        "partial": true,
+                        "matchLevel": 2,
+                        "matchKey": "+NAME",
+                        "resolutionRuleCode": "CNAME",
+                        "disclosed": false,
+                        "ambiguous": false,
+                        "relationType": "POSSIBLE_MATCH"
+                    }
+                ]
+            }
+        ]
+    }
+}
