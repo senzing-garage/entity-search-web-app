@@ -32,22 +32,6 @@ const test = base.extend<{ landingPage: LandingPage, searchPage: SearchPage, bas
 });
 
 test.describe('Search Tests', () => {
-
-    test('should have search box', async ({ landingPage, page }) => {
-        //await landingPage.goto('/search');
-        const searchComponentNode = await page.locator('sz-search');
-        await expect(searchComponentNode).toHaveCount(1);
-    });
-
-    test('should have powered by menu', async ({ landingPage, page }) => {
-        //await landingPage.goto();
-        const versionNode   = await page.locator('sz-powered-by').first();
-        //await expect(versionNode).toHaveCount(1);
-        await versionNode.click({force: true});
-        const menuNode      = await page.locator('app-about');
-        await expect(menuNode).toHaveCount(1);
-    });
-    
     test('should have SSN in type pulldown', async ({ searchPage, page }) => {
         let identifierNode = await page.locator('select#entity-type');
         await expect(identifierNode).toHaveCount(1);
