@@ -1,0 +1,16 @@
+{
+    "protocol": "http",
+    "port": 4200,
+    "hostname": "localhost",
+    "path": "/",
+    "apiPath": "/api",
+    "authPath": "http://localhost:4200",
+    "authMode": "JWT",
+    "apiServerUrl": "http://localhost:8250",
+    "streamLoading": false,
+    "ssl": {
+        "certPath": "/run/secrets/server.cert",
+        "keyPath": "/run/secrets/server.key"
+    },
+    "url": "http://localhost:4200"
+}

@@ -1,0 +1,1121 @@
+{
+    "meta": {
+        "server": "Senzing POC API Server",
+        "httpMethod": "GET",
+        "httpStatusCode": 200,
+        "timings": {
+            "overall": 2,
+            "enqueued": 0,
+            "nativeAPI": 0,
+            "nativeAPI:engine.exportConfig": 0,
+            "processRawData": 1
+        },
+        "timestamp": "2024-12-14T22:53:52.146Z",
+        "version": "",
+        "restApiVersion": "3.4.1",
+        "nativeApiVersion": "3.10.1",
+        "nativeApiBuildVersion": "3.10.1.24135",
+        "nativeApiBuildNumber": "2024_05_14__11_31",
+        "nativeApiBuildDate": "2024-05-14T18:31:00.000Z",
+        "configCompatibilityVersion": "10",
+        "pocServerVersion": "3.6.0-dirty",
+        "pocApiVersion": "3.6.0"
+    },
+    "links": {
+        "self": "http://localhost:4200/attribute-types",
+        "openApiSpecification": "http://localhost:4200/specifications/open-api"
+    },
+    "data": {
+        "attributeTypes": [
+            {
+                "attributeCode": "ACCOUNT_DOMAIN",
+                "defaultValue": "",
+                "necessity": "PREFERRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "ACCT_NUM",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "ACCOUNT_NUMBER",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "ACCT_NUM",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "ADDR_CITY",
+                "defaultValue": "",
+                "necessity": "SUFFICIENT",
+                "attributeClass": "ADDRESS",
+                "featureType": "ADDRESS",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "ADDR_COUNTRY",
+                "defaultValue": "",
+                "necessity": "SUFFICIENT",
+                "attributeClass": "ADDRESS",
+                "featureType": "ADDRESS",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "ADDR_FROM_DATE",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "ADDRESS",
+                "featureType": "ADDRESS",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "ADDR_FULL",
+                "defaultValue": "",
+                "necessity": "SUFFICIENT",
+                "attributeClass": "ADDRESS",
+                "featureType": "ADDRESS",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "ADDR_LINE1",
+                "defaultValue": "",
+                "necessity": "SUFFICIENT",
+                "attributeClass": "ADDRESS",
+                "featureType": "ADDRESS",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "ADDR_LINE2",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "ADDRESS",
+                "featureType": "ADDRESS",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "ADDR_LINE3",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "ADDRESS",
+                "featureType": "ADDRESS",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "ADDR_LINE4",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "ADDRESS",
+                "featureType": "ADDRESS",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "ADDR_LINE5",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "ADDRESS",
+                "featureType": "ADDRESS",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "ADDR_LINE6",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "ADDRESS",
+                "featureType": "ADDRESS",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "ADDR_PLACEKEY",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "ADDRESS",
+                "featureType": "ADDRESS",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "ADDR_POSTAL_CODE",
+                "defaultValue": "",
+                "necessity": "SUFFICIENT",
+                "attributeClass": "ADDRESS",
+                "featureType": "ADDRESS",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "ADDR_STATE",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "ADDRESS",
+                "featureType": "ADDRESS",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "ADDR_THRU_DATE",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "ADDRESS",
+                "featureType": "ADDRESS",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "ADDR_TYPE",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "ADDRESS",
+                "featureType": "ADDRESS",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "CITIZENSHIP",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "CHARACTERISTIC",
+                "featureType": "CITIZENSHIP",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "COUNTRY_OF_ASSOCIATION",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "CHARACTERISTIC",
+                "featureType": "COUNTRY_OF_ASSOCIATION",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "DATA_SOURCE",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "OBSERVATION",
+                "featureType": null,
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "DATE_OF_BIRTH",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "CHARACTERISTIC",
+                "featureType": "DOB",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "DATE_OF_DEATH",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "CHARACTERISTIC",
+                "featureType": "DOD",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "DRIVERS_LICENSE_EXPIRE_DT",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "DRLIC",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "DRIVERS_LICENSE_ISSUE_DT",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "DRLIC",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "DRIVERS_LICENSE_NUMBER",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "DRLIC",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "DRIVERS_LICENSE_STATE",
+                "defaultValue": "",
+                "necessity": "PREFERRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "DRLIC",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "DSRC_ACTION",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "OBSERVATION",
+                "featureType": null,
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "DUNS_NUMBER",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "DUNS_NUMBER",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "EMAIL_ADDRESS",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "EMAIL",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "EMAIL_FROM_DATE",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "EMAIL",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "EMAIL_THRU_DATE",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "EMAIL",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "EMAIL_TYPE",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "EMAIL",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "EMPLOYER",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "CHARACTERISTIC",
+                "featureType": "EMPLOYER",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "ENTITY_TYPE",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "OBSERVATION",
+                "featureType": null,
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "FACEBOOK",
+                "defaultValue": "NONE",
+                "necessity": "REQUIRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "FACEBOOK",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "GENDER",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "CHARACTERISTIC",
+                "featureType": "GENDER",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "GEO_LATITUDE",
+                "defaultValue": "",
+                "necessity": "SUFFICIENT",
+                "attributeClass": "ADDRESS",
+                "featureType": "GEO_LOC",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "GEO_LATLONG",
+                "defaultValue": "",
+                "necessity": "SUFFICIENT",
+                "attributeClass": "ADDRESS",
+                "featureType": "GEO_LOC",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "GEO_LONGITUDE",
+                "defaultValue": "",
+                "necessity": "SUFFICIENT",
+                "attributeClass": "ADDRESS",
+                "featureType": "GEO_LOC",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "GEO_PRECISION",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "ADDRESS",
+                "featureType": "GEO_LOC",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "GROUP_ASSN_ID_NUMBER",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "CHARACTERISTIC",
+                "featureType": "GROUP_ASSN_ID",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "GROUP_ASSN_ID_TYPE",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "CHARACTERISTIC",
+                "featureType": "GROUP_ASSN_ID",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "GROUP_ASSOCIATION_ORG_NAME",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "CHARACTERISTIC",
+                "featureType": "GROUP_ASSOCIATION",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "GROUP_ASSOCIATION_TYPE",
+                "defaultValue": "(ORG)",
+                "necessity": "OPTIONAL",
+                "attributeClass": "CHARACTERISTIC",
+                "featureType": "GROUP_ASSOCIATION",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "INSTAGRAM",
+                "defaultValue": "NONE",
+                "necessity": "REQUIRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "INSTAGRAM",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "LEI_NUMBER",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "LEI_NUMBER",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "LINKEDIN",
+                "defaultValue": "NONE",
+                "necessity": "REQUIRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "LINKEDIN",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "LOAD_ID",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "OBSERVATION",
+                "featureType": null,
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "MOBILE_AD_ID",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "MOBILE_AD_ID",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "NAME_FIRST",
+                "defaultValue": "",
+                "necessity": "SUFFICIENT",
+                "attributeClass": "NAME",
+                "featureType": "NAME",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "NAME_FULL",
+                "defaultValue": "",
+                "necessity": "SUFFICIENT",
+                "attributeClass": "NAME",
+                "featureType": "NAME",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "NAME_GEN",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "NAME",
+                "featureType": "NAME",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "NAME_LAST",
+                "defaultValue": "",
+                "necessity": "SUFFICIENT",
+                "attributeClass": "NAME",
+                "featureType": "NAME",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "NAME_MIDDLE",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "NAME",
+                "featureType": "NAME",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "NAME_ORG",
+                "defaultValue": "",
+                "necessity": "SUFFICIENT",
+                "attributeClass": "NAME",
+                "featureType": "NAME",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "NAME_PREFIX",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "NAME",
+                "featureType": "NAME",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "NAME_SUFFIX",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "NAME",
+                "featureType": "NAME",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "NAME_TYPE",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "NAME",
+                "featureType": "NAME",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "NATIONALITY",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "CHARACTERISTIC",
+                "featureType": "NATIONALITY",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "NATIONAL_ID_COUNTRY",
+                "defaultValue": "",
+                "necessity": "PREFERRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "NATIONAL_ID",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "NATIONAL_ID_EXPIRE_DT",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "NATIONAL_ID",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "NATIONAL_ID_ISSUE_DT",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "NATIONAL_ID",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "NATIONAL_ID_NUMBER",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "NATIONAL_ID",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "NPI_NUMBER",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "NPI_NUMBER",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "OTHER_ID_COUNTRY",
+                "defaultValue": "",
+                "necessity": "PREFERRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "OTHER_ID",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "OTHER_ID_EXPIRE_DT",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "OTHER_ID",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "OTHER_ID_ISSUE_DT",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "OTHER_ID",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "OTHER_ID_NUMBER",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "OTHER_ID",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "OTHER_ID_TYPE",
+                "defaultValue": "",
+                "necessity": "PREFERRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "OTHER_ID",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "PASSPORT_COUNTRY",
+                "defaultValue": "",
+                "necessity": "PREFERRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "PASSPORT",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "PASSPORT_EXPIRE_DT",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "PASSPORT",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "PASSPORT_ISSUE_DT",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "PASSPORT",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "PASSPORT_NUMBER",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "PASSPORT",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "PHONE_AREACODE",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "PHONE",
+                "featureType": "PHONE",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "PHONE_EXT",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "PHONE",
+                "featureType": "PHONE",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "PHONE_FROM_DATE",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "PHONE",
+                "featureType": "PHONE",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "PHONE_NUMBER",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "PHONE",
+                "featureType": "PHONE",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "PHONE_THRU_DATE",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "PHONE",
+                "featureType": "PHONE",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "PHONE_TYPE",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "PHONE",
+                "featureType": "PHONE",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "PHYSICAL_TYPE",
+                "defaultValue": "",
+                "necessity": "PREFERRED",
+                "attributeClass": "CHARACTERISTIC",
+                "featureType": "PHYSICAL_ATTRIBUTE",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "PHYSICAL_VALUE",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "CHARACTERISTIC",
+                "featureType": "PHYSICAL_ATTRIBUTE",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "PLACE_OF_BIRTH",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "CHARACTERISTIC",
+                "featureType": "PLACE_OF_BIRTH",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "RECORD_ID",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "OBSERVATION",
+                "featureType": null,
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "RECORD_TYPE",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "CHARACTERISTIC",
+                "featureType": "RECORD_TYPE",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "REGISTRATION_COUNTRY",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "CHARACTERISTIC",
+                "featureType": "REGISTRATION_COUNTRY",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "REGISTRATION_DATE",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "CHARACTERISTIC",
+                "featureType": "REGISTRATION_DATE",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "RELATED_FROM_DATE",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "RELATIONSHIP",
+                "featureType": "REL_LINK",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "RELATED_THRU_DATE",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "RELATIONSHIP",
+                "featureType": "REL_LINK",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "RELATIONSHIP_KEY",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "RELATIONSHIP",
+                "featureType": "REL_LINK",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "RELATIONSHIP_ROLE",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "RELATIONSHIP",
+                "featureType": "REL_LINK",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "RELATIONSHIP_TYPE",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "RELATIONSHIP",
+                "featureType": "REL_LINK",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "REL_ANCHOR_DOMAIN",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "RELATIONSHIP",
+                "featureType": "REL_ANCHOR",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "REL_ANCHOR_KEY",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "RELATIONSHIP",
+                "featureType": "REL_ANCHOR",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "REL_POINTER_DOMAIN",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "RELATIONSHIP",
+                "featureType": "REL_POINTER",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "REL_POINTER_KEY",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "RELATIONSHIP",
+                "featureType": "REL_POINTER",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "REL_POINTER_ROLE",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "RELATIONSHIP",
+                "featureType": "REL_POINTER",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "ROUTE_CODE",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "OBSERVATION",
+                "featureType": null,
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "SIGNAL",
+                "defaultValue": "NONE",
+                "necessity": "REQUIRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "SIGNAL",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "SKYPE",
+                "defaultValue": "NONE",
+                "necessity": "REQUIRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "SKYPE",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "SOCIAL_FROM_DATE",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "LOGIN_ID",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "SOCIAL_HANDLE",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "LOGIN_ID",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "SOCIAL_NETWORK",
+                "defaultValue": "",
+                "necessity": "PREFERRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "LOGIN_ID",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "SOCIAL_THRU_DATE",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "LOGIN_ID",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "SSN_NUMBER",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "SSN",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "TANGO",
+                "defaultValue": "NONE",
+                "necessity": "REQUIRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "TANGO",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "TAX_ID_COUNTRY",
+                "defaultValue": "",
+                "necessity": "PREFERRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "TAX_ID",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "TAX_ID_EXPIRE_DT",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "TAX_ID",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "TAX_ID_ISSUE_DT",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "TAX_ID",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "TAX_ID_NUMBER",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "TAX_ID",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "TELEGRAM",
+                "defaultValue": "NONE",
+                "necessity": "REQUIRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "TELEGRAM",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "TRUSTED_ID_NUMBER",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "TRUSTED_ID",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "TRUSTED_ID_TYPE",
+                "defaultValue": "",
+                "necessity": "OPTIONAL",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "TRUSTED_ID",
+                "advanced": true,
+                "internal": false
+            },
+            {
+                "attributeCode": "TWITTER",
+                "defaultValue": "NONE",
+                "necessity": "REQUIRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "TWITTER",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "VEHICLE_LICENSE_PLATE_NUMBER",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "VEH_LIC_PLATE",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "VEHICLE_LICENSE_PLATE_STATE",
+                "defaultValue": "",
+                "necessity": "PREFERRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "VEH_LIC_PLATE",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "VEHICLE_VIN_NUMBER",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "VEH_VIN",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "VIBER",
+                "defaultValue": "NONE",
+                "necessity": "REQUIRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "VIBER",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "WEBSITE_ADDRESS",
+                "defaultValue": "",
+                "necessity": "REQUIRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "WEBSITE",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "WECHAT",
+                "defaultValue": "NONE",
+                "necessity": "REQUIRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "WECHAT",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "WHATSAPP",
+                "defaultValue": "NONE",
+                "necessity": "REQUIRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "WHATSAPP",
+                "advanced": false,
+                "internal": false
+            },
+            {
+                "attributeCode": "ZOOMROOM",
+                "defaultValue": "NONE",
+                "necessity": "REQUIRED",
+                "attributeClass": "IDENTIFIER",
+                "featureType": "ZOOMROOM",
+                "advanced": false,
+                "internal": false
+            }
+        ]
+    }
+}

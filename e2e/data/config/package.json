@@ -1,0 +1,10 @@
+{
+    "name": "@senzing/entity-search-web-app",
+    "version": "3.0.0",
+    "angular": "^18.2.12",
+    "material": "^18.2.14",
+    "sdk-components-ng": "^8.0.0-beta.1",
+    "sdk-graph-components": "unknown",
+    "rest-api-client-ng": "^7.0.0",
+    "d3": "^7.8.4"
+}
