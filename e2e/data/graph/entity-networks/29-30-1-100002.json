@@ -1,0 +1,518 @@
+{
+    "meta": {
+        "server": "Senzing POC API Server",
+        "httpMethod": "GET",
+        "httpStatusCode": 200,
+        "timings": {
+            "overall": 20,
+            "enqueued": 0,
+            "nativeAPI": 16,
+            "nativeAPI:engine.findNetworkByEntityID": 16,
+            "processRawData": 2
+        },
+        "timestamp": "2024-12-15T22:43:00.190Z",
+        "version": "",
+        "restApiVersion": "3.4.1",
+        "nativeApiVersion": "3.10.1",
+        "nativeApiBuildVersion": "3.10.1.24135",
+        "nativeApiBuildNumber": "2024_05_14__11_31",
+        "nativeApiBuildDate": "2024-05-14T18:31:00.000Z",
+        "configCompatibilityVersion": "10",
+        "pocServerVersion": "3.6.0-dirty",
+        "pocApiVersion": "3.6.0"
+    },
+    "links": {
+        "self": "http://localhost:8251/entity-networks?e=29&e=30&e=1&e=100002&maxDegrees=1&buildOut=0&maxEntities=100&detailLevel=SUMMARY&featureMode=NONE&withFeatureStats=false&withInternalFeatures=false&forceMinimal=false&withRaw=false",
+        "openApiSpecification": "http://localhost:8251/specifications/open-api"
+    },
+    "data": {
+        "entityPaths": [
+            {
+                "startEntityId": 1,
+                "endEntityId": 29,
+                "entityIds": []
+            },
+            {
+                "startEntityId": 1,
+                "endEntityId": 30,
+                "entityIds": []
+            },
+            {
+                "startEntityId": 1,
+                "endEntityId": 100002,
+                "entityIds": [
+                    1,
+                    100002
+                ]
+            },
+            {
+                "startEntityId": 29,
+                "endEntityId": 30,
+                "entityIds": [
+                    29,
+                    30
+                ]
+            },
+            {
+                "startEntityId": 29,
+                "endEntityId": 100002,
+                "entityIds": [
+                    29,
+                    100002
+                ]
+            },
+            {
+                "startEntityId": 30,
+                "endEntityId": 100002,
+                "entityIds": [
+                    30,
+                    100002
+                ]
+            }
+        ],
+        "entities": [
+            {
+                "resolvedEntity": {
+                    "entityId": 1,
+                    "entityName": "Robert Smith",
+                    "recordSummaries": [
+                        {
+                            "dataSource": "CUSTOMERS",
+                            "recordCount": 4,
+                            "topRecordIds": []
+                        },
+                        {
+                            "dataSource": "WATCHLIST",
+                            "recordCount": 4,
+                            "topRecordIds": []
+                        }
+                    ],
+                    "partial": true,
+                    "lastSeenTimestamp": "2024-06-26T22:25:49.247Z"
+                },
+                "relatedEntities": [
+                    {
+                        "entityId": 5,
+                        "entityName": "Rob Smith Sr",
+                        "recordSummaries": [
+                            {
+                                "dataSource": "CUSTOMERS",
+                                "recordCount": 1,
+                                "topRecordIds": []
+                            },
+                            {
+                                "dataSource": "REFERENCE",
+                                "recordCount": 1,
+                                "topRecordIds": []
+                            },
+                            {
+                                "dataSource": "WATCHLIST",
+                                "recordCount": 1,
+                                "topRecordIds": []
+                            }
+                        ],
+                        "partial": true,
+                        "lastSeenTimestamp": "2024-06-26T22:25:49.262Z",
+                        "matchLevel": 2,
+                        "matchKey": "+NAME+ADDRESS-DOB",
+                        "resolutionRuleCode": "CNAME_CFF_DEXCL",
+                        "disclosed": false,
+                        "ambiguous": false,
+                        "relationType": "POSSIBLE_MATCH"
+                    },
+                    {
+                        "entityId": 100003,
+                        "entityName": "Robert Smith",
+                        "recordSummaries": [
+                            {
+                                "dataSource": "REFERENCE",
+                                "recordCount": 1,
+                                "topRecordIds": []
+                            }
+                        ],
+                        "partial": true,
+                        "lastSeenTimestamp": "2024-06-26T22:25:32.656Z",
+                        "matchLevel": 2,
+                        "matchKey": "+NAME",
+                        "resolutionRuleCode": "CNAME",
+                        "disclosed": false,
+                        "ambiguous": false,
+                        "relationType": "POSSIBLE_MATCH"
+                    },
+                    {
+                        "entityId": 100002,
+                        "entityName": "Patricia Smith",
+                        "recordSummaries": [
+                            {
+                                "dataSource": "REFERENCE",
+                                "recordCount": 1,
+                                "topRecordIds": []
+                            }
+                        ],
+                        "partial": true,
+                        "lastSeenTimestamp": "2024-06-26T22:25:32.626Z",
+                        "matchLevel": 3,
+                        "matchKey": "+ADDRESS+SURNAME",
+                        "resolutionRuleCode": "CFF_SURNAME",
+                        "disclosed": false,
+                        "ambiguous": false,
+                        "relationType": "POSSIBLE_RELATION"
+                    }
+                ]
+            },
+            {
+                "resolvedEntity": {
+                    "entityId": 29,
+                    "entityName": "Patrick Smith",
+                    "recordSummaries": [
+                        {
+                            "dataSource": "CUSTOMERS",
+                            "recordCount": 2,
+                            "topRecordIds": []
+                        },
+                        {
+                            "dataSource": "WATCHLIST",
+                            "recordCount": 2,
+                            "topRecordIds": []
+                        }
+                    ],
+                    "partial": true,
+                    "lastSeenTimestamp": "2024-06-26T22:25:49.701Z"
+                },
+                "relatedEntities": [
+                    {
+                        "entityId": 30,
+                        "entityName": "Patricia Smith",
+                        "recordSummaries": [
+                            {
+                                "dataSource": "CUSTOMERS",
+                                "recordCount": 2,
+                                "topRecordIds": []
+                            },
+                            {
+                                "dataSource": "WATCHLIST",
+                                "recordCount": 2,
+                                "topRecordIds": []
+                            }
+                        ],
+                        "partial": true,
+                        "lastSeenTimestamp": "2024-06-26T22:25:49.719Z",
+                        "matchLevel": 2,
+                        "matchKey": "+NAME+ADDRESS-DOB-PASSPORT",
+                        "resolutionRuleCode": "CNAME_CFF_DEXCL",
+                        "disclosed": false,
+                        "ambiguous": false,
+                        "relationType": "POSSIBLE_MATCH"
+                    },
+                    {
+                        "entityId": 100002,
+                        "entityName": "Patricia Smith",
+                        "recordSummaries": [
+                            {
+                                "dataSource": "REFERENCE",
+                                "recordCount": 1,
+                                "topRecordIds": []
+                            }
+                        ],
+                        "partial": true,
+                        "lastSeenTimestamp": "2024-06-26T22:25:32.626Z",
+                        "matchLevel": 2,
+                        "matchKey": "+NAME",
+                        "resolutionRuleCode": "CNAME",
+                        "disclosed": false,
+                        "ambiguous": false,
+                        "relationType": "POSSIBLE_MATCH"
+                    },
+                    {
+                        "entityId": 27,
+                        "entityName": "John Smith",
+                        "recordSummaries": [
+                            {
+                                "dataSource": "CUSTOMERS",
+                                "recordCount": 1,
+                                "topRecordIds": []
+                            },
+                            {
+                                "dataSource": "WATCHLIST",
+                                "recordCount": 1,
+                                "topRecordIds": []
+                            }
+                        ],
+                        "partial": true,
+                        "lastSeenTimestamp": "2024-06-26T22:25:49.616Z",
+                        "matchLevel": 3,
+                        "matchKey": "+DOB+ADDRESS+SURNAME",
+                        "resolutionRuleCode": "CFF_SURNAME",
+                        "disclosed": false,
+                        "ambiguous": false,
+                        "relationType": "POSSIBLE_RELATION"
+                    },
+                    {
+                        "entityId": 28,
+                        "entityName": "John Smith",
+                        "recordSummaries": [
+                            {
+                                "dataSource": "CUSTOMERS",
+                                "recordCount": 1,
+                                "topRecordIds": []
+                            },
+                            {
+                                "dataSource": "WATCHLIST",
+                                "recordCount": 1,
+                                "topRecordIds": []
+                            }
+                        ],
+                        "partial": true,
+                        "lastSeenTimestamp": "2024-06-26T22:25:49.636Z",
+                        "matchLevel": 3,
+                        "matchKey": "+ADDRESS+SURNAME-DOB",
+                        "resolutionRuleCode": "CFF_SURNAME",
+                        "disclosed": false,
+                        "ambiguous": false,
+                        "relationType": "POSSIBLE_RELATION"
+                    },
+                    {
+                        "entityId": 100012,
+                        "entityName": "John Smith",
+                        "recordSummaries": [
+                            {
+                                "dataSource": "REFERENCE",
+                                "recordCount": 2,
+                                "topRecordIds": []
+                            }
+                        ],
+                        "partial": true,
+                        "lastSeenTimestamp": "2024-06-26T22:25:32.968Z",
+                        "matchLevel": 3,
+                        "matchKey": "+ADDRESS+SURNAME",
+                        "resolutionRuleCode": "CFF_SURNAME",
+                        "disclosed": false,
+                        "ambiguous": false,
+                        "relationType": "POSSIBLE_RELATION"
+                    }
+                ]
+            },
+            {
+                "resolvedEntity": {
+                    "entityId": 30,
+                    "entityName": "Patricia Smith",
+                    "recordSummaries": [
+                        {
+                            "dataSource": "CUSTOMERS",
+                            "recordCount": 2,
+                            "topRecordIds": []
+                        },
+                        {
+                            "dataSource": "WATCHLIST",
+                            "recordCount": 2,
+                            "topRecordIds": []
+                        }
+                    ],
+                    "partial": true,
+                    "lastSeenTimestamp": "2024-06-26T22:25:49.719Z"
+                },
+                "relatedEntities": [
+                    {
+                        "entityId": 29,
+                        "entityName": "Patrick Smith",
+                        "recordSummaries": [
+                            {
+                                "dataSource": "CUSTOMERS",
+                                "recordCount": 2,
+                                "topRecordIds": []
+                            },
+                            {
+                                "dataSource": "WATCHLIST",
+                                "recordCount": 2,
+                                "topRecordIds": []
+                            }
+                        ],
+                        "partial": true,
+                        "lastSeenTimestamp": "2024-06-26T22:25:49.701Z",
+                        "matchLevel": 2,
+                        "matchKey": "+NAME+ADDRESS-DOB-PASSPORT",
+                        "resolutionRuleCode": "CNAME_CFF_DEXCL",
+                        "disclosed": false,
+                        "ambiguous": false,
+                        "relationType": "POSSIBLE_MATCH"
+                    },
+                    {
+                        "entityId": 100002,
+                        "entityName": "Patricia Smith",
+                        "recordSummaries": [
+                            {
+                                "dataSource": "REFERENCE",
+                                "recordCount": 1,
+                                "topRecordIds": []
+                            }
+                        ],
+                        "partial": true,
+                        "lastSeenTimestamp": "2024-06-26T22:25:32.626Z",
+                        "matchLevel": 2,
+                        "matchKey": "+NAME",
+                        "resolutionRuleCode": "CNAME",
+                        "disclosed": false,
+                        "ambiguous": false,
+                        "relationType": "POSSIBLE_MATCH"
+                    },
+                    {
+                        "entityId": 27,
+                        "entityName": "John Smith",
+                        "recordSummaries": [
+                            {
+                                "dataSource": "CUSTOMERS",
+                                "recordCount": 1,
+                                "topRecordIds": []
+                            },
+                            {
+                                "dataSource": "WATCHLIST",
+                                "recordCount": 1,
+                                "topRecordIds": []
+                            }
+                        ],
+                        "partial": true,
+                        "lastSeenTimestamp": "2024-06-26T22:25:49.616Z",
+                        "matchLevel": 3,
+                        "matchKey": "+ADDRESS+SURNAME-DOB",
+                        "resolutionRuleCode": "CFF_SURNAME",
+                        "disclosed": false,
+                        "ambiguous": false,
+                        "relationType": "POSSIBLE_RELATION"
+                    },
+                    {
+                        "entityId": 28,
+                        "entityName": "John Smith",
+                        "recordSummaries": [
+                            {
+                                "dataSource": "CUSTOMERS",
+                                "recordCount": 1,
+                                "topRecordIds": []
+                            },
+                            {
+                                "dataSource": "WATCHLIST",
+                                "recordCount": 1,
+                                "topRecordIds": []
+                            }
+                        ],
+                        "partial": true,
+                        "lastSeenTimestamp": "2024-06-26T22:25:49.636Z",
+                        "matchLevel": 3,
+                        "matchKey": "+DOB+ADDRESS+SURNAME",
+                        "resolutionRuleCode": "CFF_SURNAME",
+                        "disclosed": false,
+                        "ambiguous": false,
+                        "relationType": "POSSIBLE_RELATION"
+                    },
+                    {
+                        "entityId": 100012,
+                        "entityName": "John Smith",
+                        "recordSummaries": [
+                            {
+                                "dataSource": "REFERENCE",
+                                "recordCount": 2,
+                                "topRecordIds": []
+                            }
+                        ],
+                        "partial": true,
+                        "lastSeenTimestamp": "2024-06-26T22:25:32.968Z",
+                        "matchLevel": 3,
+                        "matchKey": "+ADDRESS+SURNAME",
+                        "resolutionRuleCode": "CFF_SURNAME",
+                        "disclosed": false,
+                        "ambiguous": false,
+                        "relationType": "POSSIBLE_RELATION"
+                    }
+                ]
+            },
+            {
+                "resolvedEntity": {
+                    "entityId": 100002,
+                    "entityName": "Patricia Smith",
+                    "recordSummaries": [
+                        {
+                            "dataSource": "REFERENCE",
+                            "recordCount": 1,
+                            "topRecordIds": []
+                        }
+                    ],
+                    "partial": true,
+                    "lastSeenTimestamp": "2024-06-26T22:25:32.626Z"
+                },
+                "relatedEntities": [
+                    {
+                        "entityId": 29,
+                        "entityName": "Patrick Smith",
+                        "recordSummaries": [
+                            {
+                                "dataSource": "CUSTOMERS",
+                                "recordCount": 2,
+                                "topRecordIds": []
+                            },
+                            {
+                                "dataSource": "WATCHLIST",
+                                "recordCount": 2,
+                                "topRecordIds": []
+                            }
+                        ],
+                        "partial": true,
+                        "lastSeenTimestamp": "2024-06-26T22:25:49.701Z",
+                        "matchLevel": 2,
+                        "matchKey": "+NAME",
+                        "resolutionRuleCode": "CNAME",
+                        "disclosed": false,
+                        "ambiguous": false,
+                        "relationType": "POSSIBLE_MATCH"
+                    },
+                    {
+                        "entityId": 30,
+                        "entityName": "Patricia Smith",
+                        "recordSummaries": [
+                            {
+                                "dataSource": "CUSTOMERS",
+                                "recordCount": 2,
+                                "topRecordIds": []
+                            },
+                            {
+                                "dataSource": "WATCHLIST",
+                                "recordCount": 2,
+                                "topRecordIds": []
+                            }
+                        ],
+                        "partial": true,
+                        "lastSeenTimestamp": "2024-06-26T22:25:49.719Z",
+                        "matchLevel": 2,
+                        "matchKey": "+NAME",
+                        "resolutionRuleCode": "CNAME",
+                        "disclosed": false,
+                        "ambiguous": false,
+                        "relationType": "POSSIBLE_MATCH"
+                    },
+                    {
+                        "entityId": 1,
+                        "entityName": "Robert Smith",
+                        "recordSummaries": [
+                            {
+                                "dataSource": "CUSTOMERS",
+                                "recordCount": 4,
+                                "topRecordIds": []
+                            },
+                            {
+                                "dataSource": "WATCHLIST",
+                                "recordCount": 4,
+                                "topRecordIds": []
+                            }
+                        ],
+                        "partial": true,
+                        "lastSeenTimestamp": "2024-06-26T22:25:49.247Z",
+                        "matchLevel": 3,
+                        "matchKey": "+ADDRESS+SURNAME",
+                        "resolutionRuleCode": "CFF_SURNAME",
+                        "disclosed": false,
+                        "ambiguous": false,
+                        "relationType": "POSSIBLE_RELATION"
+                    }
+                ]
+            }
+        ]
+    }
+}

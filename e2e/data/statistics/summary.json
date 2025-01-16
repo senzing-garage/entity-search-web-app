@@ -1,0 +1,2527 @@
+{
+    "meta": {
+        "server": "Senzing POC API Server",
+        "httpMethod": "GET",
+        "httpStatusCode": 200,
+        "timings": {
+            "overall": 45,
+            "sqlQuery": 0,
+            "sqlQuery:selectSourceSummary": 0,
+            "sqlQuery:selectCrossSourceSummary": 0
+        },
+        "timestamp": "2024-12-14T22:53:52.219Z",
+        "version": "",
+        "restApiVersion": "3.4.1",
+        "nativeApiVersion": "3.10.1",
+        "nativeApiBuildVersion": "3.10.1.24135",
+        "nativeApiBuildNumber": "2024_05_14__11_31",
+        "nativeApiBuildDate": "2024-05-14T18:31:00.000Z",
+        "configCompatibilityVersion": "10",
+        "pocServerVersion": "3.6.0-dirty",
+        "pocApiVersion": "3.6.0"
+    },
+    "links": {
+        "self": "http://localhost:4200/statistics/summary?onlyLoadedSources=false",
+        "openApiSpecification": "http://localhost:4200/specifications/open-api"
+    },
+    "data": {
+        "sourceSummaries": [
+            {
+                "dataSource": "CUSTOMERS",
+                "entityCount": 45,
+                "recordCount": 90,
+                "unmatchedRecordCount": 12,
+                "crossSourceSummaries": [
+                    {
+                        "dataSource": "CUSTOMERS",
+                        "versusDataSource": "TEST",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "CUSTOMERS",
+                        "versusDataSource": "SEARCH",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "CUSTOMERS",
+                        "versusDataSource": "CUSTOMERS",
+                        "matches": [
+                            {
+                                "entityCount": 33,
+                                "recordCount": 78
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 12,
+                                "recordCount": 17,
+                                "relationCount": 12
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 12,
+                                "recordCount": 23,
+                                "relationCount": 24
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "CUSTOMERS",
+                        "versusDataSource": "REFERENCE",
+                        "matches": [
+                            {
+                                "entityCount": 5,
+                                "recordCount": 10
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 2,
+                                "recordCount": 2,
+                                "relationCount": 2
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 6,
+                                "recordCount": 11,
+                                "relationCount": 7
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 7,
+                                "recordCount": 17,
+                                "relationCount": 9
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "CUSTOMERS",
+                        "versusDataSource": "WATCHLIST",
+                        "matches": [
+                            {
+                                "entityCount": 45,
+                                "recordCount": 90
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 12,
+                                "recordCount": 17,
+                                "relationCount": 12
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 12,
+                                "recordCount": 23,
+                                "relationCount": 24
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "CUSTOMERS",
+                        "versusDataSource": "SINGAPORE1",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "CUSTOMERS",
+                        "versusDataSource": "SINGAPORE2",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "CUSTOMERS",
+                        "versusDataSource": "SINGAPORE3",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "dataSource": "REFERENCE",
+                "entityCount": 11,
+                "recordCount": 13,
+                "unmatchedRecordCount": 9,
+                "crossSourceSummaries": [
+                    {
+                        "dataSource": "REFERENCE",
+                        "versusDataSource": "TEST",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "REFERENCE",
+                        "versusDataSource": "SEARCH",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "REFERENCE",
+                        "versusDataSource": "CUSTOMERS",
+                        "matches": [
+                            {
+                                "entityCount": 5,
+                                "recordCount": 6
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 1,
+                                "recordCount": 2,
+                                "relationCount": 2
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 5,
+                                "recordCount": 5,
+                                "relationCount": 7
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 4,
+                                "recordCount": 6,
+                                "relationCount": 9
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "REFERENCE",
+                        "versusDataSource": "REFERENCE",
+                        "matches": [
+                            {
+                                "entityCount": 2,
+                                "recordCount": 4
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 2,
+                                "recordCount": 2,
+                                "relationCount": 2
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 2,
+                                "recordCount": 3,
+                                "relationCount": 2
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "REFERENCE",
+                        "versusDataSource": "WATCHLIST",
+                        "matches": [
+                            {
+                                "entityCount": 5,
+                                "recordCount": 6
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 1,
+                                "recordCount": 2,
+                                "relationCount": 2
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 5,
+                                "recordCount": 5,
+                                "relationCount": 7
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 4,
+                                "recordCount": 6,
+                                "relationCount": 9
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "REFERENCE",
+                        "versusDataSource": "SINGAPORE1",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "REFERENCE",
+                        "versusDataSource": "SINGAPORE2",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "REFERENCE",
+                        "versusDataSource": "SINGAPORE3",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "dataSource": "SEARCH",
+                "entityCount": 0,
+                "recordCount": 0,
+                "unmatchedRecordCount": 0,
+                "crossSourceSummaries": [
+                    {
+                        "dataSource": "SEARCH",
+                        "versusDataSource": "TEST",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "SEARCH",
+                        "versusDataSource": "SEARCH",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "SEARCH",
+                        "versusDataSource": "CUSTOMERS",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "SEARCH",
+                        "versusDataSource": "REFERENCE",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "SEARCH",
+                        "versusDataSource": "WATCHLIST",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "SEARCH",
+                        "versusDataSource": "SINGAPORE1",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "SEARCH",
+                        "versusDataSource": "SINGAPORE2",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "SEARCH",
+                        "versusDataSource": "SINGAPORE3",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "dataSource": "SINGAPORE1",
+                "entityCount": 8284,
+                "recordCount": 8378,
+                "unmatchedRecordCount": 8193,
+                "crossSourceSummaries": [
+                    {
+                        "dataSource": "SINGAPORE1",
+                        "versusDataSource": "TEST",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "SINGAPORE1",
+                        "versusDataSource": "SEARCH",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "SINGAPORE1",
+                        "versusDataSource": "CUSTOMERS",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "SINGAPORE1",
+                        "versusDataSource": "REFERENCE",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "SINGAPORE1",
+                        "versusDataSource": "WATCHLIST",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "SINGAPORE1",
+                        "versusDataSource": "SINGAPORE1",
+                        "matches": [
+                            {
+                                "entityCount": 91,
+                                "recordCount": 184
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 317,
+                                "recordCount": 322,
+                                "relationCount": 368
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 3724,
+                                "recordCount": 3774,
+                                "relationCount": 10548
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "SINGAPORE1",
+                        "versusDataSource": "SINGAPORE2",
+                        "matches": [
+                            {
+                                "entityCount": 4666,
+                                "recordCount": 4732
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 756,
+                                "recordCount": 773,
+                                "relationCount": 917
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 4543,
+                                "recordCount": 4604,
+                                "relationCount": 14575
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "SINGAPORE1",
+                        "versusDataSource": "SINGAPORE3",
+                        "matches": [
+                            {
+                                "entityCount": 1584,
+                                "recordCount": 1616
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 332,
+                                "recordCount": 339,
+                                "relationCount": 379
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 1927,
+                                "recordCount": 1960,
+                                "relationCount": 3325
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "dataSource": "SINGAPORE2",
+                "entityCount": 21297,
+                "recordCount": 21786,
+                "unmatchedRecordCount": 20840,
+                "crossSourceSummaries": [
+                    {
+                        "dataSource": "SINGAPORE2",
+                        "versusDataSource": "TEST",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "SINGAPORE2",
+                        "versusDataSource": "SEARCH",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "SINGAPORE2",
+                        "versusDataSource": "CUSTOMERS",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "SINGAPORE2",
+                        "versusDataSource": "REFERENCE",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "SINGAPORE2",
+                        "versusDataSource": "WATCHLIST",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "SINGAPORE2",
+                        "versusDataSource": "SINGAPORE1",
+                        "matches": [
+                            {
+                                "entityCount": 4666,
+                                "recordCount": 4871
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 877,
+                                "recordCount": 904,
+                                "relationCount": 917
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 6861,
+                                "recordCount": 7101,
+                                "relationCount": 14575
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "SINGAPORE2",
+                        "versusDataSource": "SINGAPORE2",
+                        "matches": [
+                            {
+                                "entityCount": 457,
+                                "recordCount": 945
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 767,
+                                "recordCount": 793,
+                                "relationCount": 954
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 10292,
+                                "recordCount": 10639,
+                                "relationCount": 30722
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "SINGAPORE2",
+                        "versusDataSource": "SINGAPORE3",
+                        "matches": [
+                            {
+                                "entityCount": 1946,
+                                "recordCount": 2038
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 365,
+                                "recordCount": 377,
+                                "relationCount": 389
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 3169,
+                                "recordCount": 3282,
+                                "relationCount": 4852
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "dataSource": "SINGAPORE3",
+                "entityCount": 3513,
+                "recordCount": 3597,
+                "unmatchedRecordCount": 3434,
+                "crossSourceSummaries": [
+                    {
+                        "dataSource": "SINGAPORE3",
+                        "versusDataSource": "TEST",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "SINGAPORE3",
+                        "versusDataSource": "SEARCH",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "SINGAPORE3",
+                        "versusDataSource": "CUSTOMERS",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "SINGAPORE3",
+                        "versusDataSource": "REFERENCE",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "SINGAPORE3",
+                        "versusDataSource": "WATCHLIST",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "SINGAPORE3",
+                        "versusDataSource": "SINGAPORE1",
+                        "matches": [
+                            {
+                                "entityCount": 1584,
+                                "recordCount": 1637
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 353,
+                                "recordCount": 370,
+                                "relationCount": 379
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 1474,
+                                "recordCount": 1514,
+                                "relationCount": 3325
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "SINGAPORE3",
+                        "versusDataSource": "SINGAPORE2",
+                        "matches": [
+                            {
+                                "entityCount": 1946,
+                                "recordCount": 2007
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 347,
+                                "recordCount": 352,
+                                "relationCount": 389
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 1945,
+                                "recordCount": 1996,
+                                "relationCount": 4852
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "SINGAPORE3",
+                        "versusDataSource": "SINGAPORE3",
+                        "matches": [
+                            {
+                                "entityCount": 79,
+                                "recordCount": 163
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 145,
+                                "recordCount": 149,
+                                "relationCount": 204
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 973,
+                                "recordCount": 1005,
+                                "relationCount": 1938
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "dataSource": "TEST",
+                "entityCount": 0,
+                "recordCount": 0,
+                "unmatchedRecordCount": 0,
+                "crossSourceSummaries": [
+                    {
+                        "dataSource": "TEST",
+                        "versusDataSource": "TEST",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "TEST",
+                        "versusDataSource": "SEARCH",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "TEST",
+                        "versusDataSource": "CUSTOMERS",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "TEST",
+                        "versusDataSource": "REFERENCE",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "TEST",
+                        "versusDataSource": "WATCHLIST",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "TEST",
+                        "versusDataSource": "SINGAPORE1",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "TEST",
+                        "versusDataSource": "SINGAPORE2",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "TEST",
+                        "versusDataSource": "SINGAPORE3",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "dataSource": "WATCHLIST",
+                "entityCount": 45,
+                "recordCount": 90,
+                "unmatchedRecordCount": 12,
+                "crossSourceSummaries": [
+                    {
+                        "dataSource": "WATCHLIST",
+                        "versusDataSource": "TEST",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "WATCHLIST",
+                        "versusDataSource": "SEARCH",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "WATCHLIST",
+                        "versusDataSource": "CUSTOMERS",
+                        "matches": [
+                            {
+                                "entityCount": 45,
+                                "recordCount": 90
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 12,
+                                "recordCount": 17,
+                                "relationCount": 12
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 12,
+                                "recordCount": 23,
+                                "relationCount": 24
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "WATCHLIST",
+                        "versusDataSource": "REFERENCE",
+                        "matches": [
+                            {
+                                "entityCount": 5,
+                                "recordCount": 10
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 2,
+                                "recordCount": 2,
+                                "relationCount": 2
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 6,
+                                "recordCount": 11,
+                                "relationCount": 7
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 7,
+                                "recordCount": 17,
+                                "relationCount": 9
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "WATCHLIST",
+                        "versusDataSource": "WATCHLIST",
+                        "matches": [
+                            {
+                                "entityCount": 33,
+                                "recordCount": 78
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 12,
+                                "recordCount": 17,
+                                "relationCount": 12
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 12,
+                                "recordCount": 23,
+                                "relationCount": 24
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "WATCHLIST",
+                        "versusDataSource": "SINGAPORE1",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "WATCHLIST",
+                        "versusDataSource": "SINGAPORE2",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    },
+                    {
+                        "dataSource": "WATCHLIST",
+                        "versusDataSource": "SINGAPORE3",
+                        "matches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0
+                            }
+                        ],
+                        "ambiguousMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleMatches": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "possibleRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ],
+                        "disclosedRelations": [
+                            {
+                                "entityCount": 0,
+                                "recordCount": 0,
+                                "relationCount": 0
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

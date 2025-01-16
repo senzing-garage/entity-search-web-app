@@ -1,0 +1,37 @@
+{
+    "meta": {
+        "server": "Senzing POC API Server",
+        "httpMethod": "GET",
+        "httpStatusCode": 200,
+        "timings": {
+            "overall": 0,
+            "enqueued": 0,
+            "nativeAPI": 0,
+            "nativeAPI:engine.getActiveConfigID": 0
+        },
+        "timestamp": "2024-12-14T22:53:52.161Z",
+        "version": "",
+        "restApiVersion": "3.4.1",
+        "nativeApiVersion": "3.10.1",
+        "nativeApiBuildVersion": "3.10.1.24135",
+        "nativeApiBuildNumber": "2024_05_14__11_31",
+        "nativeApiBuildDate": "2024-05-14T18:31:00.000Z",
+        "configCompatibilityVersion": "10",
+        "pocServerVersion": "3.6.0-dirty",
+        "pocApiVersion": "3.6.0"
+    },
+    "links": {
+        "self": "http://localhost:4200/server-info",
+        "openApiSpecification": "http://localhost:4200/specifications/open-api"
+    },
+    "data": {
+        "concurrency": 8,
+        "activeConfigId": 780910306,
+        "dynamicConfig": true,
+        "readOnly": false,
+        "adminEnabled": true,
+        "webSocketsMessageMaxSize": 10485760,
+        "infoQueueConfigured": false,
+        "loadQueueConfigured": false
+    }
+}

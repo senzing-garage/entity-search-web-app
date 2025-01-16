@@ -1,12 +1,12 @@
 <mat-toolbar>
-  <button mat-icon-button [matMenuTriggerFor]="appMenu">
+  <button mat-icon-button [matMenuTriggerFor]="appMenu" class="menu-button">
     <mat-icon>more_vert</mat-icon>
   </button>
   <span>{{ headerTitle }}</span>
   <!--<span *ngIf="!showGraphOptions">Entity Search</span>
   <span *ngIf="showGraphOptions">Explore Networks</span>-->
   <sz-powered-by cdkOverlayOrigin #poweredByOrigin="cdkOverlayOrigin" format="small" (click)="toggleAboutInfo()"></sz-powered-by>
-  <mat-menu #appMenu="matMenu">
+  <mat-menu #appMenu="matMenu" class="app-menu">
     <a (click)="goHome()" routerLink="/" routerLinkActive="active" mat-menu-item><mat-icon>home</mat-icon>Home</a>
     <a *ngIf="showAdminOptions" mat-menu-item [matMenuTriggerFor]="adminMenu"><mat-icon>admin_panel_settings</mat-icon>Admin</a>
     <a *ngIf="!showSampleGridOptions" (click)="goSample()" routerLink="/sample" routerLinkActive="active" mat-menu-item><mat-icon>table_chart</mat-icon>Cross Source Results</a>
