@@ -58,7 +58,7 @@
     "express-jwt": "^8.4.1",
     "helmet-csp": "^3.4.0",
     "http-proxy": "^1.18.1",
-    "http-proxy-middleware": "^2.0.3",
+    "http-proxy-middleware": "^2.0.9",
     "jsonwebtoken": "^9.0.0",
     "ngx-webstorage-service": "^5.0.0",
     "pug": "^3.0.2",
