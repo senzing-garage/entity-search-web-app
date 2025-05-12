@@ -51,7 +51,7 @@ wss.on('connection', (ws) => {
         ws.send(message);
     });
 
-    //send immediatly a feedback to the incoming connection    
+    //send immediately a feedback to the incoming connection
     ws.send('{"connected": true, "uuid": "'+ uuidv4() +'"}');
 });
 
@@ -64,9 +64,9 @@ wss.on('close', (ws) => {
 let streamServerPromise = new Promise((resolve) => {
     let streamServerDestUrl = ((streamOptions.ssl ? "wss://" : "ws://") + streamOptions.host + (streamOptions.port ? ":"+streamOptions.port : ""));
     if(streamOptions && streamOptions.proxyPort) {
-        var wsProxy   = httpProxy.createServer({ 
+        var wsProxy   = httpProxy.createServer({
             target: streamServerDestUrl,
-            ws: true 
+            ws: true
         });
         wsProxy.on('error', function(e) {
             console.log('WS Proxy Error: '+ e.message);
@@ -81,12 +81,12 @@ let streamServerPromise = new Promise((resolve) => {
         console.log('NO WS PROXY!!', serverOptions);
         resolve();
     }
-}, (reason) => { 
+}, (reason) => {
     console.log('[error] WS Proxy Server: ', reason);
-    reject(); 
+    reject();
 });
 StartupPromises.push(streamServerPromise);
-  
+
 // http
 let webServerPromise = new Promise((resolve) => {
     streamServerPort = streamOptions.proxyPort ? (streamOptions.port ? streamOptions.port : 8256) : (streamOptions.port ? streamOptions.port : 8255);
@@ -94,9 +94,9 @@ let webServerPromise = new Promise((resolve) => {
         console.log('[started] Web Socket Server on port '+ streamServerPort);
         resolve();
     });
-}, (reason) => { 
+}, (reason) => {
     console.log('[error] Web Socket Server', reason);
-    reject(); 
+    reject();
 });
 StartupPromises.push(webServerPromise);
 

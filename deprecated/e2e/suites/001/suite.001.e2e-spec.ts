@@ -121,7 +121,7 @@ describe('@senzing/entity-search-webapp: Suite 1 - Owners/Companies DS - Detail 
     detail.navigateTo( 1001 );
     await detail.waitForPossibleMatchesSection();
     expect( detail.getDisplayedName() ).toBe('Steve Smith');
-    await detail.toggleCollapseableSection('possible');
+    await detail.toggleCollapsibleSection('possible');
     // browser.sleep(5000);
     // console.log('collapse/expand 1');
     await expect( await detail.sectionIsCollapsed('possible') ).toBeTruthy();
@@ -133,7 +133,7 @@ describe('@senzing/entity-search-webapp: Suite 1 - Owners/Companies DS - Detail 
     detail.navigateTo( 1001 );
     await detail.waitForPossibleMatchesSection();
     expect( detail.getDisplayedName() ).toBe('Steve Smith');
-    await detail.toggleCollapseableSection('disclosed');
+    await detail.toggleCollapsibleSection('disclosed');
     // browser.sleep(5000);
     // console.log('collapse/expand 1');
     await expect( await detail.sectionIsCollapsed('disclosed') ).toBeTruthy();

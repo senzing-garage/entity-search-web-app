@@ -3,7 +3,7 @@
 import {
     determineLineEndingStyle,
     getFileTypeFromName,
-    lineEndingStyle, 
+    lineEndingStyle,
     lineEndingStyleAsEnumKey,
     validImportFileTypes,
     getUtf8ByteLength
@@ -42,7 +42,7 @@ addEventListener('message', ({ data }) => {
     var reader = fsStream.getReader();
     let _readChunks: string[] = [];
 
-    // construct summary object that we can report 
+    // construct summary object that we can report
     // statistics to
     let summary: AdminStreamLoadSummary = {
         fileType: fileType,
@@ -65,7 +65,7 @@ addEventListener('message', ({ data }) => {
         complete: false
     }
     //let _readRecords        = [];
-    if(fileType === validImportFileTypes.JSONL || fileType === validImportFileTypes.JSON) { 
+    if(fileType === validImportFileTypes.JSONL || fileType === validImportFileTypes.JSON) {
         let recordsReadFromStream = [];
 
         console.log(`StreamReaderWorker.onMessage: reading json/json-lines ${fileName}`);
@@ -97,7 +97,7 @@ addEventListener('message', ({ data }) => {
 });
 
 function getChunksFromFileStream(fileHandle: File, fileReadStream: ReadableStreamDefaultReader<any>, summary: AdminStreamLoadSummary): Observable<string> {
-    // set up return observeable
+    // set up return observable
     let retSubject  = new Subject<string>();
     let retObs      = retSubject.asObservable();
     // text decoding
@@ -153,16 +153,16 @@ function getChunksFromFileStream(fileHandle: File, fileReadStream: ReadableStrea
     })
     .finally( () => {
         // publish just '0' and the "streaming-file-record-parser"
-        // will intercept as stream close 
+        // will intercept as stream close
         postMessage(0);
     });
 
-    // return observeable of stream summary info
+    // return observable of stream summary info
     return retObs;
 }
 
 function getRecordsFromFileStream(fileHandle: File, fileReadStream: ReadableStreamDefaultReader<any>, summary: AdminStreamLoadSummary): Observable<string[]> {
-    // set up return observeable
+    // set up return observable
     let retSubject  = new Subject<string[]>();
     let retObs      = retSubject.asObservable();
     //let readRecs    = [];
@@ -212,7 +212,7 @@ function getRecordsFromFileStream(fileHandle: File, fileReadStream: ReadableStre
                 //retSubject.next(summary);
             }
             let lineEndingRegEx = (summary.fileLineEndingStyle === lineEndingStyle.Windows) ? new RegExp(/\r\n/g) : new RegExp(/\n/g);
-            
+
             if(firstChunk) {
             // test for validity
                 isValidJSONL = (firstChunk && payloadChunk.indexOf('[') > -1) ? false : ((firstChunk && payloadChunk.indexOf('[') >= -1 && payloadChunk.indexOf('{') > -1) ? true : false);
@@ -312,10 +312,10 @@ function getRecordsFromFileStream(fileHandle: File, fileReadStream: ReadableStre
     })
     .finally( () => {
         // publish just '0' and the "streaming-file-record-parser"
-        // will intercept as stream close 
+        // will intercept as stream close
         postMessage(0);
     });
 
-    // return observeable of stream summary info
+    // return observable of stream summary info
     return retObs;
 }

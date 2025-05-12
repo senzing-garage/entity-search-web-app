@@ -77,8 +77,8 @@ class inMemoryConfig extends EventEmitter {
   // options used for testing purposes
   testOptionsConfiguration = undefined;
 
-  // will be set to "true" if initial response 
-  // from api server recieved
+  // will be set to "true" if initial response
+  // from api server received
   _apiServerIsReady   = false;
   _initialized        = false;
 
@@ -101,7 +101,7 @@ class inMemoryConfig extends EventEmitter {
   }
   get initialized() {
     return this._apiServerIsReady === true;
-  }  
+  }
 
   // get an JSON object representing all of the configuration
   // options specified through either the command line args or env vars
@@ -132,7 +132,7 @@ class inMemoryConfig extends EventEmitter {
     }
     if(this.configServerOptions && this.configServerOptions !== undefined && this.configServerOptions !== null) {
       retValue.configServer = this.configServerOptions;
-    }    
+    }
     return retValue;
   }
   // set the configuration objects representing
@@ -167,7 +167,7 @@ class inMemoryConfig extends EventEmitter {
           } else if(value.auth.admin.mode === 'SSO') {
             this.authConfiguration.admin = value.auth.admin;
           } else {
-            // no auth configuraton
+            // no auth configuration
             this.authConfiguration.admin = {
               "mode": false,
               "redirectOnFailure": false
@@ -196,7 +196,7 @@ class inMemoryConfig extends EventEmitter {
           } else if(value.auth.operator.mode === 'SSO') {
             this.authConfiguration.operator = value.auth.operator;
           } else {
-            // no auth configuraton
+            // no auth configuration
             this.authConfiguration.operator = {
               "mode": false,
               "redirectOnFailure": false
@@ -285,7 +285,7 @@ class inMemoryConfig extends EventEmitter {
   }
 
   checkIfApiServerInitialized() {
-    let reqUrl  = this.webConfiguration.apiServerUrl+'/server-info';    
+    let reqUrl  = this.webConfiguration.apiServerUrl+'/server-info';
     let req = http.get(reqUrl, (res => {
       //console.log('checkIfApiServerInitialized.response: ', res.statusCode);
       let data = [];
@@ -310,10 +310,10 @@ class inMemoryConfig extends EventEmitter {
     })
   }
   /**
-   * When we get a response back from the API_SERVER or POC_SERVER 
+   * When we get a response back from the API_SERVER or POC_SERVER
    * we do some extra parameter updates and emit the 'initialized' event
-   * 
-   * @param {*} serverInfo 
+   *
+   * @param {*} serverInfo
    */
   onApiServerReady( serverInfo ) {
     if(this.apiServerInitializedTimer) {

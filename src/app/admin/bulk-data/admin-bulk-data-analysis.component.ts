@@ -44,11 +44,11 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
   public get readOnly() {
     return this.adminService.readOnly;
   }
-  /** whether or not a file is being analysed */
+  /** whether or not a file is being analyzed */
   public get analyzingFile(): boolean {
     return this.adminBulkDataService.isAnalyzingFile;
   }
-  /** whenther or not a file is being loaded */
+  /** whether or not a file is being loaded */
   public get loadingFile(): boolean {
     return this.adminBulkDataService.isLoadingFile;
   }
@@ -118,7 +118,7 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
   public set streamAnalysisPaused(value: boolean) {
     this._streamAnalysisPaused = value;
   }
-  
+
   public get streamAnalysisComplete(): boolean {
     return this._streamAnalysisComplete;
   }
@@ -148,7 +148,7 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
   public set streamImportPaused(value: boolean) {
     this._streamImportPaused = value;
   }
-  
+
   public get streamImportComplete(): boolean {
     return this._streamImportComplete;
   }
@@ -165,7 +165,7 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
       case 1:
         this._streamImportInProgress  = true;
         break;
-      case 2: 
+      case 2:
         this._streamImportInProgress  = true;
         break;
       case 3:
@@ -199,7 +199,7 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
     }
     return retStr;
   }
-  
+
   public get streamImportProgressBarValue(): number {
     let retValue = 0;
     if(this._currentStreamLoadStats && this._currentStreamLoadStats.recordCount > 0){
@@ -213,7 +213,7 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
 
   public get streamImportProgressBarMode(): string {
     let retValue = 'determinate';
-    
+
     if(this._streamImportPhase === 2 || this._streamImportPhase === 3) {
       if(this._streamImportPhase === 2) {
         //retValue = 'query';
@@ -244,12 +244,12 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
   }
   ngAfterViewInit() {
     // all phase 1
-    // ---------------------- import records handlers --------------- 
+    // ---------------------- import records handlers ---------------
     this.adminBulkDataService.onStreamLoadFileReadStarted
     .pipe(
       takeUntil(this.unsubscribe$),
       filter( (value) => { return value !== undefined; })
-    ).subscribe((state) => { 
+    ).subscribe((state) => {
       if(this._streamImportInProgress){
         this.streamImportPhase = 1;
       }
@@ -259,7 +259,7 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
       takeUntil(this.unsubscribe$),
       filter( (value) => { return value !== undefined; })
     ).subscribe((summary: AdminStreamLoadSummary ) => {
-      this.streamImportPhase = 1; 
+      this.streamImportPhase = 1;
       this._currentStreamLoadStats = (summary as AdminStreamLoadSummary);
     });
     this.adminBulkDataService.onStreamLoadFileReadComplete
@@ -267,21 +267,21 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
       takeUntil(this.unsubscribe$),
       filter( (value) => { return value !== undefined && this._streamImportInProgress; })
     ).subscribe((state) => {
-      this.streamImportPhase = 2; 
+      this.streamImportPhase = 2;
     });
-    // ---------------------- analysis stream handlers --------------- 
+    // ---------------------- analysis stream handlers ---------------
     this.adminBulkDataService.onStreamAnalysisFileReadStarted
     .pipe(
       takeUntil(this.unsubscribe$),
       filter( (value) => { return value !== undefined; })
-    ).subscribe((state) => { 
+    ).subscribe((state) => {
       this._streamAnalysisInProgress = true;
     });
     this.adminBulkDataService.onStreamAnalysisFileReadProgress
     .pipe(
       takeUntil(this.unsubscribe$),
       filter( (value) => { return value !== undefined; })
-    ).subscribe((summary: AdminStreamAnalysisSummary) => { 
+    ).subscribe((summary: AdminStreamAnalysisSummary) => {
       this._currentStreamAnalysisStats = summary;
     });
     /*
@@ -297,13 +297,13 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
     this.adminBulkDataService.onStreamAnalysisStarted.pipe(
       takeUntil(this.unsubscribe$),
       filter( (value) => { return value !== undefined; })
-    ).subscribe((state) => { 
+    ).subscribe((state) => {
       this.streamAnalysisInProgress = true;
     });
     this.adminBulkDataService.onStreamAnalysisComplete.pipe(
       takeUntil(this.unsubscribe$),
       filter( (value) => { return value !== undefined; }))
-    .subscribe((summary) => { 
+    .subscribe((summary) => {
       //console.warn('AdminBulkDataAnalysisComponent.onStreamAnalysisComplete: ', summary);
       this.streamAnalysisComplete = true;
       this.streamAnalysisInProgress = false;
@@ -313,7 +313,7 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
     this.adminBulkDataService.onStreamLoadStarted.pipe(
       takeUntil(this.unsubscribe$),
       filter( (value) => { return value !== undefined; })
-    ).subscribe((state) => { 
+    ).subscribe((state) => {
       this.streamImportInProgress = true;
       this.streamImportPhase = 2;
       //console.warn(`adminBulkDataService.onStreamLoadStarted: ${this.streamImportInProgress}`);
@@ -322,21 +322,21 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
     .pipe(
       takeUntil(this.unsubscribe$),
       filter( (value) => { return value !== undefined; })
-    ).subscribe((summary) => { 
-      this.streamImportPhase = 2; 
+    ).subscribe((summary) => {
+      this.streamImportPhase = 2;
       this._currentStreamLoadStats = summary;
       //console.log('onStreamLoadProgress: ', summary);
     });
     this.adminBulkDataService.onStreamLoadPaused.pipe(
       takeUntil(this.unsubscribe$)
-    ).subscribe((pausedState: boolean) => { 
-      this._streamImportPaused = pausedState; 
+    ).subscribe((pausedState: boolean) => {
+      this._streamImportPaused = pausedState;
       //console.log('onStreamLoadProgress: ', summary);
     });
     this.adminBulkDataService.onStreamLoadComplete.pipe(
       takeUntil(this.unsubscribe$),
       filter( (value) => { return value !== undefined; })
-    ).subscribe((state) => { 
+    ).subscribe((state) => {
       this.streamImportPhase = 3;
       this._streamImportComplete = true;
     });
@@ -371,7 +371,7 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
   }
 
   /** convenience method to analyze a file. used by file setter. */
-  public analyzeFile(file: File) {    
+  public analyzeFile(file: File) {
     return this.adminBulkDataService.analyze(file);
   }
   /** pause stream load */
@@ -398,7 +398,7 @@ export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterV
         case 'reading':
           return (this._streamImportPhase === 1);
           break;
-        case 'sending': 
+        case 'sending':
           return this._streamImportPhase === 2;
           break;
         case 'complete':

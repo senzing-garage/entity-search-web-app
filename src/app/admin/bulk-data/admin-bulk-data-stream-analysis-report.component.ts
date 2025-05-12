@@ -69,7 +69,7 @@ export class AdminBulkDataStreamAnalysisReportComponent implements OnInit, OnDes
   public getIsNew(value: boolean): boolean | undefined {
     return (value === true) ? value : false;
   }
-  public isNewDataDource(value: string): boolean {
+  public isNewDataSource(value: string): boolean {
     //return true;
     return value && (value.trim().length > 0) && (this.dataSources.indexOf(value) < 0);
   }

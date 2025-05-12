@@ -29,13 +29,13 @@ export class WebSocketService {
     map( WebSocketService.statusChangeEvtToConnectionBool )
   )
   /** when the connected socket receives an upstream message */
-  private _onMessageRecieved: Subject<any> = new Subject<any>();
-  public onMessageRecieved = this._onMessageRecieved.asObservable();
+  private _onMessageReceived: Subject<any> = new Subject<any>();
+  public onMessageReceived = this._onMessageReceived.asObservable();
 
   /** subject used for when messages sent by server */
   private message$: Subject<any> = new Subject<any>();
   /** observable published when server sends message */
-  private messageRecieved: Observable<any> = this.message$.asObservable();
+  private messageReceived: Observable<any> = this.message$.asObservable();
 
   /** messages sent while connection offline */
   private _offlineMessageQueue: offlineMessage[] = [];
@@ -43,14 +43,14 @@ export class WebSocketService {
   private _reconnectionAttemptsIncrement = 0;
   /** @internal */
   private _connected = false;
-  /** 
-   * returns true if the socket is currently open. false if disconnected 
+  /**
+   * returns true if the socket is currently open. false if disconnected
    * @readonly
    **/
   public get connected(): boolean {
     return this._connected;
   }
-  /** 
+  /**
    * when a user manually(calls this.disconnect) this flag is set. this informs
    * the auto-reconnect mechanism NOT to attempt reconnect
    */
@@ -235,7 +235,7 @@ export class WebSocketService {
 
   constructor(
     public configService: SzWebAppConfigService
-  ) {  
+  ) {
     // if running the poc server check if streaming is configured
     // if so do a quick test
     this.configService.onPocStreamConfigChange.pipe(
@@ -247,7 +247,7 @@ export class WebSocketService {
         this.connectionProperties.path = result && result.proxy && result.proxy.path ? result.proxy.path : (this.connectionProperties.path ? this.connectionProperties.path : '');
       }
     });
-      
+
     /** track the connection status of the socket */
     this.onConnectionStateChange.subscribe((connected) => {
       if(!this._connected && connected) {
@@ -258,7 +258,7 @@ export class WebSocketService {
       this._connected = connected;
       //console.warn('WebSocketService.onConnectionStateChange: ', this._connected);
     });
-    
+
     /** when "reconnectOnClose" == true, reconnect socket */
     /*
     this.onStatusChange.pipe(
@@ -268,9 +268,9 @@ export class WebSocketService {
     */
     this.onStatusChange.pipe(
       map( WebSocketService.statusChangeEvtToConnectionBool ),
-      filter( (_status) => { 
-        return this.connectionProperties.reconnectOnClose && !this.manuallyDisconnected && 
-        this._reconnectionAttemptsIncrement < this.connectionProperties.reconnectConsecutiveAttemptLimit && 
+      filter( (_status) => {
+        return this.connectionProperties.reconnectOnClose && !this.manuallyDisconnected &&
+        this._reconnectionAttemptsIncrement < this.connectionProperties.reconnectConsecutiveAttemptLimit &&
         !_status;
       })
     ).subscribe( this._onDisconnectRetry.bind(this) );
@@ -298,7 +298,7 @@ export class WebSocketService {
   }
   /** open connection */
   public open(hostname?: string, port?: number, path?: string, method?: "POST" | "PUT" | "GET"): Observable<any> {
-    // set up intial connection properties if not already set up
+    // set up initial connection properties if not already set up
     //console.log('WebsocketService.open: ', this.connectionProperties, this.configService.pocStreamConfig);
     this.connectionProperties = this.connectionProperties ? this.connectionProperties : {
       "hostname": hostname,
@@ -313,7 +313,7 @@ export class WebSocketService {
     this.connectionProperties.hostname  = hostname ? hostname : this.connectionProperties.hostname;
     this.connectionProperties.path      = this.configService.pocStreamConfig && this.configService.pocStreamConfig.proxy && this.configService.pocStreamConfig.proxy.path ? this.configService.pocStreamConfig.proxy.path : this.connectionProperties.path;
     this.connectionProperties.method    = method ? method : this.connectionProperties.method;
-    if(port) { this.connectionProperties.port = port; } 
+    if(port) { this.connectionProperties.port = port; }
 
     // connection string
     let _wsaddr = WebSocketService.getSocketUriFromConnectionObject(this.connectionProperties, path);
@@ -321,7 +321,7 @@ export class WebSocketService {
     // when connection is opened proxy to status$
     const openSubject = new Subject<Event>();
     openSubject.pipe(
-      tap( s => { 
+      tap( s => {
         //console.log('WebSocketService.open: ', s);
         this._connected = true;
       })
@@ -401,16 +401,16 @@ export class WebSocketService {
       })
     ).subscribe((msg: any | CloseEvent) => {
       //console.log('WebsocketService Message: ', msg);
-      this._onMessageRecieved.next(msg);
+      this._onMessageReceived.next(msg);
     });
 
-    // return observeable
+    // return observable
     return this.ws$.asObservable();
   }
 
   private close() {
     //console.warn('WebSocketService.close: ', this.ws$);
-    
+
     if(this.ws$) {
       if(this.ws$.complete) this.ws$.complete();
       //if(this.ws$.unsubscribe) this.ws$.unsubscribe();
@@ -461,7 +461,7 @@ export class WebSocketService {
         this.disconnect();
         // re-init with new path
         this.open(undefined, undefined, path, method).pipe(
-          /** 
+          /**
            * this will trigger for any message/event so we only care about the first one.
            * alternatively maybe using "debounce" might be a better solution
            */
@@ -470,18 +470,18 @@ export class WebSocketService {
       } else {
         onWSExists();
       }
-      
+
     } else if(this.connectionProperties && this.connectionProperties.connectionTest) {
       console.log('WebSocketService.reconnect -> WebSocketService.open', this.ws$, this.connectionProperties);
       this.open(undefined, undefined, path, method);
     } else {
-      // should we try to connect something that hasnt been flagged as valid?
+      // should we try to connect something that hasn't been flagged as valid?
       this._onErrorSubject.next('Websocket could not connect to Stream interface after a disconnect. Will continue to retry connection until reconnection attempt limit is reached.');
     }
   }
   /**
    * when autoreconnect set to true reconnect
-   * @param connStatus 
+   * @param connStatus
    */
   private _onDisconnectRetry(connStatus){
     this._reconnectionAttemptsIncrement = this._reconnectionAttemptsIncrement +1;
@@ -504,7 +504,7 @@ export class WebSocketService {
 
       const openSubject = new Subject<Event>();
       openSubject.pipe(
-        tap( s => { 
+        tap( s => {
           //console.log('WebSocketService.open: ', s);
           this._connected = true;
           if(this.ws$ && this.close){
@@ -518,12 +518,12 @@ export class WebSocketService {
           }
         })
       ).subscribe(this._onStatusChange);
-      
+
       const closeSubject = new Subject<CloseEvent>();
       closeSubject.pipe(
         tap( s => {
           //console.log('WebSocketService.close: ', s);
-          
+
           // conn opened then closed successfully
           retSub.next(this._connected);
           retSub.closed = true;

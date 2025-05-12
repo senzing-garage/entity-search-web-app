@@ -6,8 +6,8 @@ import { filter, share, take } from 'rxjs/operators';
 import { SzConsoleConfig, SzWebAppConfigService } from './config.service';
 import { SocketIoConfig } from '../common/console-config';
 
-/** 
- * Socket wrapper service for socket-io to make it a little easier 
+/**
+ * Socket wrapper service for socket-io to make it a little easier
  * to handle from the context of an angular app
  **/
 @Injectable({
@@ -33,8 +33,8 @@ export class SzXtermSocket {
   private _onReconnectionFailure: Subject<any>  = new Subject();
   public onReconnectionFailure = this._onReconnectionFailure.asObservable();
   private _onReconnectionError: Subject<any>  = new Subject();
-  public onReconnectionError = this._onReconnectionError.asObservable();  
-  private _hasEverSuccesfullyConnected = false;
+  public onReconnectionError = this._onReconnectionError.asObservable();
+  private _hasEverSuccessfullyConnected = false;
 
   /** grab the default socket.io-client default export for socket init */
   private ioFunc = (io as any).default ? (io as any).default : io;
@@ -58,7 +58,7 @@ export class SzXtermSocket {
   public get options(): SocketIoConfig["options"] {
       return this._options;
   }
-  /** intialized socket.io socket connection placeholder */
+  /** initialized socket.io socket connection placeholder */
   private _ioSocket: any;
   /** getter for socket.io socket connection instance */
   private get ioSocket(): any {
@@ -85,7 +85,7 @@ export class SzXtermSocket {
     this.onConnected.pipe(
       take(1)
     ).subscribe(status => {
-      this._hasEverSuccesfullyConnected = true;
+      this._hasEverSuccessfullyConnected = true;
     })
   }
 
@@ -100,7 +100,7 @@ export class SzXtermSocket {
         this._options = cfg.options;
       }
     }
-    
+
     this.ioSocket = this.ioFunc(this._url, this._options);
 
     /** set up socket.io evt to Observable event proxies */
@@ -166,7 +166,7 @@ export class SzXtermSocket {
    * pass through to socket.io-client "connect" method
    */
   reconnect() {
-    if(!this._hasEverSuccesfullyConnected) {
+    if(!this._hasEverSuccessfullyConnected) {
       return false
     }
     return this.connect();

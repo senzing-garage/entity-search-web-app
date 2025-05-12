@@ -38,7 +38,7 @@ test.describe('Search Tests', () => {
         identifierNode  = await identifierNode.first().locator('option[value=SSN_NUMBER]');
         await expect(identifierNode).toHaveCount(1);
     });
-    
+
     test('submit button should be clickable', async ({ landingPage, page }) => {
         //await page.goto('/search');
         const submitButton      = await page.locator('button.button__search-go');
@@ -46,7 +46,7 @@ test.describe('Search Tests', () => {
         await expect(submitButtonCount).toBeGreaterThan(0);
         await expect(await submitButton.first()).toBeEnabled();
     });
-    
+
     test('landing should be able to search by name', async({ landingPage, page }) => {
         await page.route('/api/entities?**', async route => {
             const json = NameSearchStub;
@@ -68,7 +68,7 @@ test.describe('Search Tests', () => {
         const searchResults = await page.locator('sz-search-result-card');
         await expect(searchResults).toHaveCount(3);
     })
-    
+
     // should have dob field
     test('should have dob field', async({ searchPage, page }) => {
         const field = await page.locator('input#entity-dob');
@@ -81,7 +81,7 @@ test.describe('Search Tests', () => {
         await expect(field).toHaveCount(1);
     })
 
-    // should have dob fieldl
+    // should have dob field
     test('should have email field', async({ searchPage, page }) => {
         const field = await page.locator('input#entity-email');
         await expect(field).toHaveCount(1);
@@ -105,7 +105,7 @@ test.describe('Search Tests', () => {
         // make sure there is one exact match
         await expect(page.locator('sz-search-result-card.matches')).toHaveCount(1);
     });
-    
+
     test('should have possibly related for Name + Phone Number', async ({ searchPage, page }) => {
         //await page.goto('/search');
         const nameField     = await page.locator('input#entity-name');
@@ -148,5 +148,5 @@ test.describe('Search Tests', () => {
         //await page.pause();
         await expect(await resultNode.count()).toBeGreaterThanOrEqual(2);
     });
-    
+
 });

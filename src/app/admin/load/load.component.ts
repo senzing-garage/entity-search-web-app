@@ -33,7 +33,7 @@ export class AdminDataLoaderComponent implements OnInit, OnDestroy {
         if(enc && enc.occurrenceCount){
           retVal = retVal+enc.occurrenceCount;
         } else {
-          // no occurence count, guess singular
+          // no occurrence count, guess singular
           retVal++;
         }
       });
@@ -57,7 +57,7 @@ export class AdminDataLoaderComponent implements OnInit, OnDestroy {
       console.log('after error inspector closed.');
     });
   }
-  
+
   /** after selecting switch to use stream
    * we set the connection properties of admin streaming
    */
@@ -122,11 +122,11 @@ export class AdminDataLoaderComponent implements OnInit, OnDestroy {
   public get result(): SzBulkLoadResult | AdminStreamLoadSummary {
     return this.adminBulkDataService.currentLoadResult;
   }
-  /** whether or not a file is being analysed */
+  /** whether or not a file is being analyzed */
   public get analyzingFile(): boolean {
     return this.adminBulkDataService.isAnalyzingFile;
   }
-  /** whenther or not a file is being loaded */
+  /** whether or not a file is being loaded */
   public get loadingFile(): boolean {
     return this.adminBulkDataService.isLoadingFile;
   }
@@ -181,7 +181,7 @@ export class AdminDataLoaderComponent implements OnInit, OnDestroy {
     public aboutInfoService: AboutInfoService,
     public prefs: SzPrefsService,
     public dialog: MatDialog
-    ) { 
+    ) {
       this.adminBulkDataService.onCurrentFileChange.pipe(
         takeUntil(this.unsubscribe$)
       ).subscribe((file) => {

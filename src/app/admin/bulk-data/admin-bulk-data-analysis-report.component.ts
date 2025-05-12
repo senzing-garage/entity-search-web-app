@@ -70,7 +70,7 @@ export class AdminBulkDataAnalysisReportComponent implements OnInit, OnDestroy, 
   public getIsNew(value: boolean): boolean | undefined {
     return (value === true) ? value : false;
   }
-  public isNewDataDource(value: string): boolean {
+  public isNewDataSource(value: string): boolean {
     //return true;
     return value && (value.trim().length > 0) && (this.dataSources.indexOf(value) < 0);
   }

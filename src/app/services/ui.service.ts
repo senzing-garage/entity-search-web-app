@@ -18,7 +18,7 @@ export class UiService {
   private _resultsViewType    = 'default';
   /** when the search tray expansion state changes */
   private _onSearchExpanded: BehaviorSubject<boolean>   = new BehaviorSubject<boolean>(this._searchExpanded);
-  /** delay the observeable by time of tray animation */
+  /** delay the observable by time of tray animation */
   public onSearchExpanded: Observable<boolean>          = this._onSearchExpanded.asObservable().pipe(
     delay(1000)
   );
