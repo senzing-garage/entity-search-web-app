@@ -124,16 +124,16 @@ export class DetailPage {
     return hasMatchByKey;
   }
 
-  getCollapseableSection( sectionEle ) {
+  getCollapsibleSection( sectionEle ) {
     return sectionEle.all( by.css('.sz-entity-detail-section-collapsible-card-content') ).first();
   }
-  getCollapseableSectionHeader( sectionEle ) {
+  getCollapsibleSectionHeader( sectionEle ) {
     return sectionEle.all( by.css('.sz-entity-detail-section-collapsible-card-content .mat-expansion-panel-header') ).first();
   }
-  getCollapseableSectionHeaderHandle( sectionEle ) {
+  getCollapsibleSectionHeaderHandle( sectionEle ) {
     return sectionEle.all( by.css('.sz-entity-detail-section-collapsible-card-content .mat-expansion-panel-header svg') ).first();
   }
-  async toggleCollapseableSection( sectionStr ) {
+  async toggleCollapsibleSection( sectionStr ) {
     const keysToSelector = {
       'matches': '.details-section.matches',
       'possible': '.details-section.possible',
@@ -141,7 +141,7 @@ export class DetailPage {
       'disclosed': '.details-section.disclosed'
     };
     const sectionEle = element.all( by.css( keysToSelector[ sectionStr ] )).first();
-    const ele = await this.getCollapseableSectionHeader( sectionEle );
+    const ele = await this.getCollapsibleSectionHeader( sectionEle );
     ele.click();
     browser.sleep(1000);
   }

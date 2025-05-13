@@ -47,14 +47,14 @@ export class SzStreamingFileChunkReader {
             this._file = file;
         }
         //console.log('SzStreamingFileChunkReader()');
-        
+
         this.onStreamChunkRead.asObservable().pipe(
             takeUntil(this.unsubscribe$)
         ).subscribe( (chunks: any[] ) => {
             this.readStreamReadChunks = this._readStreamReadChunks.concat(chunks);
             //console.log('SzStreamingFileChunkReader.onStreamChunkRead: ', chunks, this._readStreamReadChunks);
         });
-        
+
         this.onStreamClosed.subscribe((status) => {
             //console.warn('SzStreamingFileChunkReader.closed()');
         });
@@ -124,7 +124,7 @@ export class SzStreamingFileChunkReader {
             worker.onmessage = ({ data }) => {
                 data = (data && data.trim) ? data.trim() : data;
                 //console.log('\tread: ', data);
-                
+
 
                 if(data || data === '0' || data === 0){
                     if(data === '0' || data === 0){
@@ -141,20 +141,20 @@ export class SzStreamingFileChunkReader {
             };
             // open up file read
             worker.postMessage(file);
-            
+
         }
     }
 }
 
 /**
- * Helper class for doing a Threaded file stream read. 
+ * Helper class for doing a Threaded file stream read.
  * File is passed to WebWorker for processing, and response(s)
- * are handed back to this class and encapsulated in to Observeables
+ * are handed back to this class and encapsulated in to Observables
  * for easy handling.
- * 
- * @example 
+ *
+ * @example
  let sr = new SzStreamingFileRecordParser(fileHandle)
- sr.read().subscribe((recordsRead) => {}) 
+ sr.read().subscribe((recordsRead) => {})
 
  */
 export class SzStreamingFileRecordParser {
@@ -276,7 +276,7 @@ export class SzStreamingFileRecordParser {
             worker.onmessage = ({ data }) => {
                 data = (data && data.trim) ? data.trim() : data;
                 //console.log('\tread: ', data);
-                
+
 
                 if(data || data === '0' || data === 0){
                     if(data === '0' || data === 0){
@@ -293,7 +293,7 @@ export class SzStreamingFileRecordParser {
             };
             // open up file read
             worker.postMessage(file);
-            
+
         }
     }
 }

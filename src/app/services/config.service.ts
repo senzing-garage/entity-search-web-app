@@ -148,14 +148,14 @@ export class SzWebAppConfigService {
   private _onConsoleConfigChange: BehaviorSubject<SzConsoleConfig>    = new BehaviorSubject<SzConsoleConfig>(undefined);
   public onConsoleConfigChange                                        = this._onConsoleConfigChange.asObservable().pipe(filter( (value) => { return value ? true : false; }));
 
-  constructor( 
-    private adminService: SzAdminService, 
+  constructor(
+    private adminService: SzAdminService,
     private http: HttpClient,
     private sdkConfigService: SzConfigurationService
   ) {
 
     // ---------------------------------------  set up event handlers -------------------------------------------
-    
+
     let onStreamConfigResponse = (resp: POCStreamConfig) => {
       this._isStreamingConfigured = true;
       this._pocStreamConfig = (resp as POCStreamConfig);
@@ -174,7 +174,7 @@ export class SzWebAppConfigService {
       this._onConsoleConfigChange.next( this._consoleConfig );
     }
 
-    // if the api config changes we need to grab a new versions of 
+    // if the api config changes we need to grab a new versions of
     // stream config and auth config
     // _serverInfo and _serverInfoMetadata
     this.onApiConfigChange.pipe(
@@ -204,7 +204,7 @@ export class SzWebAppConfigService {
       });
     });
 
-    // If the server info or server info metadata has been updated we need to 
+    // If the server info or server info metadata has been updated we need to
     // requery for runtime stream config (maybe)
     this.onServerInfoUpdated.pipe(
       filter((srvInfo: undefined | SzServerInfo) => {
@@ -237,7 +237,7 @@ export class SzWebAppConfigService {
             let _urlDomain  = getBasePathFromUrl(cfg.url);
             let _urlPath    = getPathFromUrl(cfg.url);
             if(_urlPath) {
-              // main url should not have the "/path/to/namespace" 
+              // main url should not have the "/path/to/namespace"
               // in the options.url field
               // move it to cft.options.path as a namespace
               cfg.url = _urlDomain;
@@ -249,7 +249,7 @@ export class SzWebAppConfigService {
               cfg.options.path = _urlPath;
             }
           }
-  
+
           return cfg
         })
       ).subscribe(onConsoleConfigResponse)
@@ -279,7 +279,7 @@ export class SzWebAppConfigService {
       this._serverInfo = resp;
       this._onServerInfoUpdated.next(this._serverInfo);
     });
-    // in order to get "POC" specific properties we neet the metadata node instead
+    // in order to get "POC" specific properties we need the metadata node instead
     this.adminService.getServerInfoMetadata().pipe(take(1)).subscribe((resp: SzMeta) => {
       this._serverInfoMetadata = resp;
       this._onServerInfoUpdated.next(this._serverInfo);
@@ -302,17 +302,17 @@ export class SzWebAppConfigService {
     // reach out to webserver to get auth
     // config. we cant do this with static files
     // directly since container is immutable and
-    // doesnt write to file system.
+    // doesn't write to file system.
     return this.http.get<AuthConfig>('./config/auth');
   }
   public getRuntimeApiConfig(): Observable<SzRestConfigurationParameters> {
     // reach out to webserver to get api
     // config. we cant do this with static files
     // directly since container is immutable and
-    // doesnt write to file system.
+    // doesn't write to file system.
     return this.http.get<SzRestConfigurationParameters>('./config/api').pipe(
       catchError((err) => {
-        // return default payload for local developement when "/config/api" not available
+        // return default payload for local development when "/config/api" not available
         return of({
           basePath: "/api"
         })
@@ -323,14 +323,14 @@ export class SzWebAppConfigService {
     // reach out to webserver to get api
     // config. we cant do this with static files
     // directly since container is immutable and
-    // doesnt write to file system.
+    // doesn't write to file system.
     return this.http.get<POCStreamConfig>('./config/streams');
   }
   public getRuntimeConsoleConfig(): Observable<SzConsoleConfig> {
     // reach out to webserver to get xterm
     // config. we cant do this with static files
     // directly since container is immutable and
-    // doesnt write to file system.
+    // doesn't write to file system.
     return this.http.get<SzConsoleConfig>('./config/console').pipe(
       map(cfg => {
         // if url is "localhost" replace with actual "hostname" when divergent
@@ -348,7 +348,7 @@ export class SzWebAppConfigService {
   public getAppPackageInfo(): Observable<WebAppPackageInfo> {
     return this.http.get<WebAppPackageInfo>('./config/package').pipe(
       catchError((err) => {
-        // return default payload for local developement when "/config/package" not available
+        // return default payload for local development when "/config/package" not available
         return of({
           'name':                 'entity-search-webapp',
           'version':              'unknown',

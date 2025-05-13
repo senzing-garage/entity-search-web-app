@@ -154,9 +154,9 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
   /** @internal */
   protected _showCoreMatchKeyTokenChips: boolean              = false;
   /**
-   * whether or not to show only the match key token chips that apply 
-   * to "core" relationships. ie if the relationship is only between 
-   * the queried entity and 1 level away relationships. 
+   * whether or not to show only the match key token chips that apply
+   * to "core" relationships. ie if the relationship is only between
+   * the queried entity and 1 level away relationships.
    */
   @Input() public set showCoreMatchKeyTokenChips(value: boolean | string){
     this._showCoreMatchKeyTokenChips = parseBool(value);
@@ -166,9 +166,9 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   /**
-   * whether or not to show only the match key token chips that apply 
-   * to "core" relationships. ie if the relationship is only between 
-   * the queried entity and 1 level away relationships. 
+   * whether or not to show only the match key token chips that apply
+   * to "core" relationships. ie if the relationship is only between
+   * the queried entity and 1 level away relationships.
    */
   public get showCoreMatchKeyTokenChips(): boolean {
     return this._showCoreMatchKeyTokenChips;
@@ -176,11 +176,11 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
   /** @internal */
   protected _showExtraneousMatchKeyTokenChips: boolean = true;
   /**
-   * whether or not to show only match key token chips that apply 
-   * to relationships between entities that are NOT directly related to 
-   * the primary entities. ie if the relationship is only between 
-   * a relatiohship between two entities that are not the primary queried 
-   * entity. 
+   * whether or not to show only match key token chips that apply
+   * to relationships between entities that are NOT directly related to
+   * the primary entities. ie if the relationship is only between
+   * a relationship between two entities that are not the primary queried
+   * entity.
    */
   @Input() public set showExtraneousMatchKeyTokenChips(value: boolean | string) {
     this._showExtraneousMatchKeyTokenChips = parseBool(value);
@@ -190,11 +190,11 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   /**
-   * whether or not to show only match key token chips that apply 
-   * to relationships between entities that are NOT directly related to 
-   * the primary entities. ie if the relationship is only between 
-   * a relatiohship between two entities that are not the primary queried 
-   * entity. 
+   * whether or not to show only match key token chips that apply
+   * to relationships between entities that are NOT directly related to
+   * the primary entities. ie if the relationship is only between
+   * a relationship between two entities that are not the primary queried
+   * entity.
    */
   public get showExtraneousMatchKeyTokenChips(): boolean {
     return this._showExtraneousMatchKeyTokenChips;
@@ -202,11 +202,11 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /** @internal */
   private _matchKeyTokenSelectionScope: SzMatchKeyTokenFilterScope       = SzMatchKeyTokenFilterScope.EXTRANEOUS;
-  /** sets the depth of what entities are shown when they match the 
+  /** sets the depth of what entities are shown when they match the
    * match key token filters. possible values are "CORE" and "EXTRANEOUS".
-   * when "CORE" is selected only entities that are directly related to queried 
-   * entity/entities are filtered by match key tokens. 
-   * when "EXTRANEOUS" is selected ALL entities no matter how they are related 
+   * when "CORE" is selected only entities that are directly related to queried
+   * entity/entities are filtered by match key tokens.
+   * when "EXTRANEOUS" is selected ALL entities no matter how they are related
    * are filtered by match key tokens.
    */
   @Input() public set matchKeyTokenSelectionScope(value: SzMatchKeyTokenFilterScope | string){
@@ -221,9 +221,9 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     //console.log(`@senzing/sdk-components-ng/sz-graph-component.matchKeyTokenSelectionScope(${value} | ${(this._matchKeyTokenSelectionScope as unknown as string)})`, this._matchKeyTokenSelectionScope);
   }
   /**
-   * get the value of match key token filterings scope. possible values are 
+   * get the value of match key token filterings scope. possible values are
    * "CORE" and "EXTRANEOUS".
-   * core means the filtering is only being applied to entities that are directly 
+   * core means the filtering is only being applied to entities that are directly
    * related to the primary entity/entities being displayed.
    */
   public get matchKeyTokenSelectionScope() {
@@ -399,7 +399,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     this._showMatchKeysInFilter = data;
     // QUICK HACK to temporarily disable "filter by match key"
     // filtering option
-    // what were basically doing here is setting the match keys filter to all 
+    // what were basically doing here is setting the match keys filter to all
     // match keys that we detecting from the input data set
     //
     // @TODO remove after fixing match key filtering

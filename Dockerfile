@@ -47,7 +47,7 @@ RUN npm config set update-notifier false \
   && npm config set loglevel warn \
   && npm ci --production
 
-# update npm vulnerabilites
+# update npm vulnerabilities
 RUN npm -g uninstall npm
 RUN rm -fr /usr/local/lib/node_modules/npm
 

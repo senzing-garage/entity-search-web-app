@@ -83,8 +83,8 @@ class AuthModule {
     this.useRandomSecret = (options && options.auth && options.auth.admin && options.auth.admin.secret) ? false : true;
     //console.log("Use random secret? ", this.useRandomSecret, ((options && options.auth.admin.secret) ? (options && options.auth.admin.secret) : null));
     this.TOKEN_SECRET = this.useRandomSecret ? this.getRandomSecret() : ((options && options.auth && options.auth.admin && options.auth.admin.secret) ? options.auth.admin.secret : undefined);
-    this.ADMINTOKEN = (options && options.auth && options.auth.admin && options.auth.admin.token) ? options.auth.admin.token : this.getRanomTokenSeed();
-    //console.log("set admin token to: ", this.ADMINTOKEN, this.getRanomTokenSeed(), this.seed);
+    this.ADMINTOKEN = (options && options.auth && options.auth.admin && options.auth.admin.token) ? options.auth.admin.token : this.getRandomTokenSeed();
+    //console.log("set admin token to: ", this.ADMINTOKEN, this.getRandomTokenSeed(), this.seed);
     this.CRYPTED_TOKEN = this.generateSignedToken();
   }
 
@@ -121,7 +121,7 @@ class AuthModule {
     //console.log("Random Secret: ", secret);
     return secret;
   }
-  getRanomTokenSeed() {
+  getRandomTokenSeed() {
     return "b02c708e-6fec-40c8-83b1-11bd8ed36293";
   }
   generateSignedToken() {

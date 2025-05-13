@@ -164,7 +164,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
-  public onActiveRouteChange(url: UrlSegment[]) {    
+  public onActiveRouteChange(url: UrlSegment[]) {
     if(url && url[0]) {
       // if first part of url is "" we're on the landing page
       this._isLandingPage = url[0].path === '';
@@ -232,7 +232,7 @@ export class AppComponent implements OnInit, OnDestroy {
       let searchParams  = this.searchComponent.getSearchParams();
       let searchGUID    = uuidv4();
       if(searchParams) {
-        // store last sucessful search by guid in localStorage
+        // store last successful search by guid in localStorage
         this.entitySearchService.storeLastSearch(searchGUID, searchParams);
       }
       // show results
@@ -241,8 +241,8 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
   /**
-   * When the Search-by-id form performs a query but throws 
-   * an exception(99% of the time its because the entity doesnt exist)
+   * When the Search-by-id form performs a query but throws
+   * an exception(99% of the time its because the entity doesn't exist)
    * This handler is called.
    */
   onSearchByIdException(evt){

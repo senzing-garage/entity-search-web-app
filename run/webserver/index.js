@@ -157,15 +157,15 @@ let webCompPath = path.resolve(path.join(__dirname, '../../', '/node_modules/@se
 app.use('/node_modules/@senzing/sdk-components-web', express.static(webCompPath));
 app.use('/', express.static(staticPath));
 // serve static files from virtual directory if specified
-if(runtimeOptions.config && 
-  runtimeOptions.config.web && 
+if(runtimeOptions.config &&
+  runtimeOptions.config.web &&
   runtimeOptions.config.web.path) {
     app.use(runtimeOptions.config.web.path, express.static(staticPath));
     STARTUP_MSG = STARTUP_MSG + '\n'+`-- VIRTUAL DIRECTORY : ${runtimeOptions.config.web.path} --`;
 } else {
   //console.log('no virtual directory', runtimeOptions.config.web);
 }
-// we need a wildcarded version due to 
+// we need a wildcarded version due to
 // queries from virtual directory hosted apps
 // and any number of SPA routes on top of that
 app.get('*/config/api', (req, res, next) => {
@@ -175,7 +175,7 @@ app.get('*/config/api', (req, res, next) => {
       _retObj.basePath  = runtimeOptions.config.web.apiPath;
     }
     // if "apiPath" set to default "/api" AND virtual dir specified
-    // serve "apiPath" under virtual dir instread of root level
+    // serve "apiPath" under virtual dir instead of root level
     if(runtimeOptions.config.web.path && runtimeOptions.config.web.path !== '/' && runtimeOptions.config.web.apiPath === '/api') {
       _retObj.basePath  = runtimeOptions.config.web.path + _retObj.basePath;
       _retObj.basePath  = _retObj.basePath.replace("//","/");
@@ -199,8 +199,8 @@ const authRes = (req, res, next) => {
 
 // ----------------- start config endpoints -----------------
   let _confBasePath = '';
-  if(runtimeOptions.config && 
-    runtimeOptions.config.web && 
+  if(runtimeOptions.config &&
+    runtimeOptions.config.web &&
     runtimeOptions.config.web.path && runtimeOptions.config.web.path !== '/') {
       _confBasePath = runtimeOptions.config.web.path;
   }
@@ -248,7 +248,7 @@ const authRes = (req, res, next) => {
   });
 
   // ----------------- wildcards -----------------
-  // we need a wildcarded version due to 
+  // we need a wildcarded version due to
   // queries from virtual directory hosted apps
   // and any number of SPA routes on top of that
   app.get('*/conf/auth', (req, res, next) => {
@@ -291,8 +291,8 @@ const authRes = (req, res, next) => {
 
 if(authOptions && authOptions !== undefined) {
   let _authBasePath = '';
-  if(runtimeOptions.config && 
-    runtimeOptions.config.web && 
+  if(runtimeOptions.config &&
+    runtimeOptions.config.web &&
     runtimeOptions.config.web.path && runtimeOptions.config.web.path !== '/') {
       _authBasePath = runtimeOptions.config.web.path;
   }
@@ -412,9 +412,9 @@ if(authOptions && authOptions !== undefined) {
 let VIEW_VARIABLES = {
   "VIEW_PAGE_TITLE":"Entity Search",
   "VIEW_BASEHREF": (
-    runtimeOptions.config && 
-    runtimeOptions.config.web && 
-    runtimeOptions.config.web.path && 
+    runtimeOptions.config &&
+    runtimeOptions.config.web &&
+    runtimeOptions.config.web.path &&
     runtimeOptions.config.web.path.substring((runtimeOptions.config.web.path.length - 1)) !== '/'
   ) ? (runtimeOptions.config.web.path + '/') : runtimeOptions.config.web.path,
   "VIEW_CSP_DIRECTIVES":""
@@ -431,10 +431,10 @@ if(consoleOptions && consoleOptions.enabled) {
   let consoleServerPromise = new Promise((resolve) => {
     let setupConsoleReverseProxy = function(streamOptions) {
       if(consoleOptions && consoleOptions.proxy) {
-        // if user wants to proxy localhost to 
-        var console_proxy   = httpProxy.createServer({ 
+        // if user wants to proxy localhost to
+        var console_proxy   = httpProxy.createServer({
           target: consoleOptions.proxy.target,
-          ws: true 
+          ws: true
         });
         console_proxy.on('error', (err) => {
           console.log('[error] WS Console Reverse Proxy Server: ', err);
@@ -459,9 +459,9 @@ if(consoleOptions && consoleOptions.enabled) {
         setupConsoleReverseProxy(consoleOptions);
       });
     }
-  }, (reason) => { 
+  }, (reason) => {
     console.log('[error] WS Console Reverse Proxy Server: ', reason);
-    reject(); 
+    reject();
   });
 
   StartupPromises.push(consoleServerPromise);
@@ -548,12 +548,12 @@ if( serverOptions && serverOptions.ssl && serverOptions.ssl.enabled ){
         setupWebsocketProxy(streamOptions);
       });
     }
-  }, (reason) => { 
+  }, (reason) => {
     console.log('[error] WS Proxy Server: ', reason);
-    reject(); 
+    reject();
   })
   StartupPromises.push(streamServerPromise);
-  
+
   // http
   let webServerPromise = new Promise((resolve) => {
     if(runtimeOptions.initialized) {
@@ -570,9 +570,9 @@ if( serverOptions && serverOptions.ssl && serverOptions.ssl.enabled ){
         });
       });
     }
-  }, (reason) => { 
+  }, (reason) => {
     console.log('[error] Web Server', reason);
-    reject(); 
+    reject();
   });
   StartupPromises.push(webServerPromise);
   //STARTUP_MSG = '\n'+'Express Server started on port '+ serverOptions.port +'\n'+ STARTUP_MSG;

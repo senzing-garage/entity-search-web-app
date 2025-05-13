@@ -12,7 +12,7 @@ import { AdminStreamConnProperties, AdminStreamAnalysisConfig, AdminStreamLoadCo
 import {
     determineLineEndingStyle,
     getFileTypeFromName,
-    lineEndingStyle, 
+    lineEndingStyle,
     lineEndingStyleAsEnumKey,
     validImportFileTypes,
     getUtf8ByteLength
@@ -20,15 +20,15 @@ import {
 
 import { WebSocketService } from './websocket.service';
 import { SzStreamingFileRecordParser, SzStreamingFileChunkReader } from '../common/streaming-file-record-parser';
-import { 
-    BulkDataService, 
+import {
+    BulkDataService,
     AdminService as SdkAdminService,
-    SzBulkDataAnalysis, 
-    SzBulkDataAnalysisResponse, 
-    SzBulkLoadResponse, 
-    SzBulkLoadResult, 
-    SzDataSourceRecordAnalysis, 
-    SzDataSourceBulkLoadResult, 
+    SzBulkDataAnalysis,
+    SzBulkDataAnalysisResponse,
+    SzBulkLoadResponse,
+    SzBulkLoadResult,
+    SzDataSourceRecordAnalysis,
+    SzDataSourceBulkLoadResult,
     SzBulkDataStatus} from '@senzing/rest-api-client-ng';
 import { AboutInfoService } from './about.service';
 
@@ -128,8 +128,8 @@ export class AdminBulkDataService {
 
     /** current file to analyze or load */
     public currentFile: File;
-    /**  
-     * current result of last analysis operation 
+    /**
+     * current result of last analysis operation
      * @deprecated
      **/
     public currentAnalysis: SzBulkDataAnalysis;
@@ -160,7 +160,7 @@ export class AdminBulkDataService {
     //public onEntityTypesChange          = new BehaviorSubject<string[]>(undefined);
     /** when a datasrc destination changes this subject is broadcast */
     public onDataSourceMapChange        = new Subject<{ [key: string]: string }>();
-    /** when a enity type destination changes this subject is broadcast */
+    /** when a entity type destination changes this subject is broadcast */
     //public onEntityTypeMapChange        = new Subject<{ [key: string]: string }>();
     /** when the result of a load operation changes this behavior subject is broadcast */
     public onLoadResult                 = new BehaviorSubject<SzBulkLoadResult | AdminStreamLoadSummary>(undefined);
@@ -213,7 +213,7 @@ export class AdminBulkDataService {
 
     /** when the result of a load operation changes this behavior subject is broadcast */
     public onAnalysisResult = new BehaviorSubject<SzBulkDataAnalysis | AdminStreamAnalysisSummary>(undefined);
-    /** when an error occurs this subject is emitted 
+    /** when an error occurs this subject is emitted
      * @internal
     */
     private _onError = new Subject<Error>();
@@ -260,7 +260,7 @@ export class AdminBulkDataService {
     public get useStreamingForAnalysis(): boolean {
         return this._useStreamingForAnalysis;
     }
-    
+
     /** convenience setter for setting both "useStreamingForLoad" and "useStreamingForAnalysis" to the same value */
     public set useStreaming(value: boolean) {
         this._useStreamingForAnalysis = value;
@@ -270,7 +270,7 @@ export class AdminBulkDataService {
     public get useStreaming(): boolean {
         return (this._useStreamingForAnalysis && this._useStreamingForLoad);
     }
-    /** when the load behavrior changes from stream to http or vise-versa */
+    /** when the load behavior changes from stream to http or vise-versa */
     private _onUseStreamingSocketChange = new BehaviorSubject<boolean>(this.useStreamingForLoad);
     public onUseStreamingSocketChange = this._onUseStreamingSocketChange.asObservable();
     /** is the configuration for streaming valid */
@@ -387,8 +387,8 @@ export class AdminBulkDataService {
             this._onStreamStatusChange.next(statusEvent);
         });
         /*
-        this.webSocketService.onMessageRecieved.subscribe((data: any) => {
-            console.log('AdminBulkDataService.webSocketService.onMessageRecieved: ', data);
+        this.webSocketService.onMessageReceived.subscribe((data: any) => {
+            console.log('AdminBulkDataService.webSocketService.onMessageReceived: ', data);
         });*/
         /** check if "reconnection error" is present, if connection state changes to "true" clear out error */
         this.webSocketService.onConnectionStateChange.pipe(
@@ -405,7 +405,7 @@ export class AdminBulkDataService {
             takeUntil( this.unsubscribe$ )
         ).subscribe( (file: File) => {
             if(!file){ return; }
-            
+
             console.info('AdminBulkDataService().onCurrentFileChange: ', file, this.streamAnalysisConfig, this.streamConnectionProperties, this.useStreamingForLoad, this.canOpenStreamSocket);
 
             if(this.useStreamingForLoad && this.canOpenStreamSocket) {
@@ -534,7 +534,7 @@ export class AdminBulkDataService {
         return this.entityTypesService.addEntityTypes(entityTypes, "ACTOR");
     }*/
 
-    /** analze a file and prep for mapping */
+    /** analyze a file and prep for mapping */
     public analyze(file: File): Observable<SzBulkDataAnalysisResponse> {
         //console.log('SzBulkDataService.analyze: ', file);
         this.currentError = undefined;
@@ -553,7 +553,7 @@ export class AdminBulkDataService {
             this.onDataSourceMapChange.next( this.dataSourceMap );
             //this.onEntityTypeMapChange.next( this.entityTypeMap );
             this.onAnalysisChange.next( this.currentAnalysisResult );
-            console.log('analyze set analysis respose: ', this.dataSourceMap, this.currentAnalysisResult);
+            console.log('analyze set analysis response: ', this.dataSourceMap, this.currentAnalysisResult);
         })
         )
     }
@@ -753,10 +753,10 @@ export class AdminBulkDataService {
 
     // -------------------------------------- streaming handling --------------------------------------
 
-    /** if the websocket stream has been interupted or severed reconnect it */
+    /** if the websocket stream has been interrupted or severed reconnect it */
     public reconnectStream() {
         if(!this.webSocketService.connected) {
-            // do additional check to see if it's attempting to establish connection but has 
+            // do additional check to see if it's attempting to establish connection but has
             // not successfully done so yet
             this.webSocketService.reconnect();
         } else {
@@ -813,7 +813,7 @@ export class AdminBulkDataService {
         let sendStreamComplete          = false;
 
         // socket related
-        
+
         let streamSocketEndpoint        = "/bulk-data/analyze";
         let qsChar                      = '?';
         streamSocketEndpoint            += `${qsChar}eofSendTimeout=5&progressPeriod=60`;
@@ -841,7 +841,7 @@ export class AdminBulkDataService {
             //console.log('SzBulkDataService.streamAnalyze: websocket thinks its still connected: ', this.webSocketService.connected, this.streamConnectionProperties);
         }
 
-        // construct summary object that we can report 
+        // construct summary object that we can report
         // statistics to
         let summary: AdminStreamAnalysisSummary = {
             fileType: fileType,
@@ -908,7 +908,7 @@ export class AdminBulkDataService {
             }
         }
         // ------------- when socket gets a response message
-        let _onWSMessageRecievedListener = this.webSocketService.onMessageRecieved.pipe(
+        let _onWSMessageReceivedListener = this.webSocketService.onMessageReceived.pipe(
             filter( data => { return data !== undefined}),
             map( data => { return (data as AdminStreamAnalysisSummary) })
         ).subscribe((data: AdminStreamAnalysisSummary) => {
@@ -916,7 +916,7 @@ export class AdminBulkDataService {
             // and re-assert our internal "recordCount" which includes all records read so far
             //summary = Object.assign(summary, data, {recordCount: summary.recordCount, receivedRecordCount: data.recordCount});
             summary = Object.assign(summary, data);
-            //console.warn('AdminBulkDataService.streamAnalysis.webSocketService.onMessageRecieved: ', summary, data);
+            //console.warn('AdminBulkDataService.streamAnalysis.webSocketService.onMessageReceived: ', summary, data);
             if(data && data.topErrors && data.topErrors.length > 0) {
                 //this._onStreamAnalysisErrors.next( summary.topErrors );
             }
@@ -940,7 +940,7 @@ export class AdminBulkDataService {
                 delay(500)
             )
             .subscribe(sendChunks);
-        // 
+        //
         let _onStreamChunkReadListener = this.getChunksFromFile(file, (status) => {
             // on stream complete, do thing
             console.log('SzBulkDataService.streamAnalyze: file stream read complete.', status);
@@ -955,12 +955,12 @@ export class AdminBulkDataService {
                 //this.updateStatsFromRecords(summary, records);
                 // do count inc before we add to summary otherwise well double
                 //summary.recordCount         = summary.recordCount + records.length;
-                
+
                 // now concat
                 //readRecords                 = readRecords.concat(records);
                 readChunks                    = readChunks.concat(chunks);
                 //console.log(`SzBulkDataService.streamAnalyze: csv chunks`, chunks);
-                
+
                 //this._onStreamAnalysisProgress.next(summary);
                 this._onStreamAnalysisFileReadProgress.next(summary);
                 retSubject.next(summary); // local
@@ -1001,7 +1001,7 @@ export class AdminBulkDataService {
         ).subscribe((summary: AdminStreamAnalysisSummary) => {
             //console.log('onStreamAnalysisComplete: ', summary);
             if(readStreamComplete && summary) {
-                // set this to true to end batching loop Observeable
+                // set this to true to end batching loop Observable
                 //console.warn('stream load complete 2', summary);
                 summary.complete = true;
             } else {
@@ -1010,8 +1010,8 @@ export class AdminBulkDataService {
             if(_onStreamAnalysisErrorListener && _onStreamAnalysisErrorListener.unsubscribe){
                 _onStreamAnalysisErrorListener.unsubscribe();
             }
-            if(_onWSMessageRecievedListener && _onWSMessageRecievedListener.unsubscribe) {
-                _onWSMessageRecievedListener.unsubscribe();
+            if(_onWSMessageReceivedListener && _onWSMessageReceivedListener.unsubscribe) {
+                _onWSMessageReceivedListener.unsubscribe();
             }
             if(_onStreamAnalysisCompleteListener && _onStreamAnalysisCompleteListener.unsubscribe) {
                 _onStreamAnalysisCompleteListener.unsubscribe();
@@ -1025,7 +1025,7 @@ export class AdminBulkDataService {
         });
         return retObs;
     }
-    
+
     /** takes a JSON file and analyze it */
     public streamAnalyzeByRecords(file: File): Observable<AdminStreamAnalysisSummary> {
         //console.log('SzBulkDataService.streamAnalyze: ', file);
@@ -1056,7 +1056,7 @@ export class AdminBulkDataService {
             console.log('SzBulkDataService.streamAnalyze: websocket thinks its still connected: ', this.webSocketService.connected, this.streamConnectionProperties);
         }*/
 
-        // construct summary object that we can report 
+        // construct summary object that we can report
         // statistics to
         let summary: AdminStreamAnalysisSummary = {
             fileType: fileType,
@@ -1110,7 +1110,7 @@ export class AdminBulkDataService {
                 retSubject.next(summary); // local
             }
         );
-        
+
         // when ANYTHING changes, update the singleton "currentAnalysisResult" var so components can read status
         let _onAdminStreamAnalysisSummaryChangedListener = retObs.subscribe((summary: AdminStreamAnalysisSummary) => {
             this.currentAnalysisResult = summary;
@@ -1145,7 +1145,7 @@ export class AdminBulkDataService {
         ).subscribe((summary: AdminStreamAnalysisSummary) => {
             //console.log('onStreamAnalysisComplete: ', summary);
             if(readStreamComplete && summary) {
-                // set this to true to end batching loop Observeable
+                // set this to true to end batching loop Observable
                 //console.warn('stream load complete 2', summary);
                 summary.complete = true;
             } else {
@@ -1215,8 +1215,8 @@ export class AdminBulkDataService {
             qsChar = '&';
         }
         // firefox has this crazy behavior where even closed connections
-        // send connection errors(AFTER the connection is closed) so we 
-        // only publish errors if they occur BEFORE the completion of 
+        // send connection errors(AFTER the connection is closed) so we
+        // only publish errors if they occur BEFORE the completion of
         // request for firefox
         let _onStreamLoadErrorListener = this.webSocketService.onError.pipe(
             filter((error: Error) => {
@@ -1234,7 +1234,7 @@ export class AdminBulkDataService {
         this.webSocketService.reconnect(streamSocketEndpoint, "POST");
 
 
-        // construct summary object that we can report 
+        // construct summary object that we can report
         // statistics to
         let summary: AdminStreamLoadSummary = {
             fileType: fileType,
@@ -1266,14 +1266,14 @@ export class AdminBulkDataService {
             complete: false,
             isStreamResponse: true
         }
-        let _onWSMessageRecievedListener = this.webSocketService.onMessageRecieved.pipe(
+        let _onWSMessageReceivedListener = this.webSocketService.onMessageReceived.pipe(
             filter( data => { return data !== undefined && data !== false }),
             map( data => { return (data as AdminStreamLoadSummary) })
         ).subscribe((data: AdminStreamLoadSummary) => {
             // we change responses "recordCount" to "sentRecordCount" because that's what it really is
             // and re-assert our internal "recordCount" which includes all records read so far
             summary = Object.assign(summary, data);
-            //console.warn('AdminBulkDataService.streamLoadByChunks.webSocketService.onMessageRecieved: ', summary, data);
+            //console.warn('AdminBulkDataService.streamLoadByChunks.webSocketService.onMessageReceived: ', summary, data);
             if(data && data.topErrors && data.topErrors.length > 0) {
                 this._onStreamLoadErrors.next( summary.topErrors );
             }
@@ -1356,7 +1356,7 @@ export class AdminBulkDataService {
                 retSubject.next(summary); // local
             }
         );
-        
+
         // this is the main fn that actually sends the read records
         // to the websocket service
         let sendChunks = (chunks?: any) => {
@@ -1423,7 +1423,7 @@ export class AdminBulkDataService {
                 //filter( waitUntilEntityTypesCreated )
             ).subscribe( sendChunks );
         //}
-        
+
         // when ANYTHING changes, update the singleton "currentLoadResult" var so components can read status
         let _onAdminStreamLoadSummaryChangedListener = retObs.subscribe((summary: AdminStreamLoadSummary) => {
             this.currentLoadResult = summary;
@@ -1435,7 +1435,7 @@ export class AdminBulkDataService {
         //onAllStreamDataSent.pipe(
         //     take(1)
         //).subscribe((allSent) => {
-            this.webSocketService.onMessageRecieved.pipe(
+            this.webSocketService.onMessageReceived.pipe(
                 filter( data => { return data !== undefined}),
             ).subscribe((data: AdminStreamLoadSummary) => {
                 // we change responses "recordCount" to "sentRecordCount" because that's what it really is
@@ -1461,7 +1461,7 @@ export class AdminBulkDataService {
             delay(5000)
         ).subscribe((summary: AdminStreamLoadSummary) => {
             if(readStreamComplete && summary && summary.sentRecordCount === summary.recordCount) {
-                // set this to true to end batching loop Observeable
+                // set this to true to end batching loop Observable
                 summary.complete = true;
                 this._onStreamLoadComplete.next(summary);
             }
@@ -1482,8 +1482,8 @@ export class AdminBulkDataService {
                     _onStreamLoadErrorListener.unsubscribe();
                 }
                 this.webSocketService.disconnect();
-                if(_onWSMessageRecievedListener && _onWSMessageRecievedListener.unsubscribe) {
-                    _onWSMessageRecievedListener.unsubscribe();
+                if(_onWSMessageReceivedListener && _onWSMessageReceivedListener.unsubscribe) {
+                    _onWSMessageReceivedListener.unsubscribe();
                 }
                 if(_onStreamLoadCompleteListener && _onStreamLoadCompleteListener.unsubscribe) {
                     _onStreamLoadCompleteListener.unsubscribe();
@@ -1493,19 +1493,19 @@ export class AdminBulkDataService {
                 }
                 if(_onAdminStreamLoadSummaryChangedListener && _onAdminStreamLoadSummaryChangedListener.unsubscribe) {
                     _onAdminStreamLoadSummaryChangedListener.unsubscribe();
-                }                
+                }
             //}, 3000)
         });
 
         return retObs;
     }
-   /** perform streaming import of records over websocket interface 
+   /** perform streaming import of records over websocket interface
      * takes a file as argument, stream reads file, parses records,
-     * then batch chunks to websocket connection. 
-     * @returns Observeable<AdminStreamLoadSummary>
+     * then batch chunks to websocket connection.
+     * @returns Observable<AdminStreamLoadSummary>
     */
     //streamLoadByRecords(file?: File, dataSourceMap?: { [key: string]: string }, entityTypeMap?: { [key: string]: string }, analysis?: SzBulkDataAnalysis): Observable<AdminStreamLoadSummary> {
-    streamLoadByRecords(file?: File, dataSourceMap?: { [key: string]: string }, analysis?: SzBulkDataAnalysis): Observable<AdminStreamLoadSummary> {            
+    streamLoadByRecords(file?: File, dataSourceMap?: { [key: string]: string }, analysis?: SzBulkDataAnalysis): Observable<AdminStreamLoadSummary> {
         // parameter related
         dataSourceMap = dataSourceMap ? dataSourceMap : this.dataSourceMap;
         //entityTypeMap = entityTypeMap ? entityTypeMap : this.entityTypeMap;
@@ -1545,7 +1545,7 @@ export class AdminBulkDataService {
         }*/
         streamSocketEndpoint            += `${qsChar}eofSendTimeout=20&progressPeriod=60`;
 
-        // construct summary object that we can report 
+        // construct summary object that we can report
         // statistics to
         let summary: AdminStreamLoadSummary = {
             fileType: fileType,
@@ -1585,14 +1585,14 @@ export class AdminBulkDataService {
         //} else {
         //    console.log('SzBulkDataService.streamLoad: websocket thinks its still connected: ', this.webSocketService.connected, this.streamConnectionProperties);
         //}
-        let _onWSMessageRecievedListener = this.webSocketService.onMessageRecieved.pipe(
+        let _onWSMessageReceivedListener = this.webSocketService.onMessageReceived.pipe(
             filter( data => { return data !== undefined}),
             map( data => { return (data as AdminStreamLoadSummary) })
         ).subscribe((data: AdminStreamLoadSummary) => {
             // we change responses "recordCount" to "sentRecordCount" because that's what it really is
             // and re-assert our internal "recordCount" which includes all records read so far
             summary = Object.assign(summary, data, {recordCount: summary.recordCount, receivedRecordCount: data.recordCount});
-            //console.warn('AdminBulkDataService.streamLoad.webSocketService.onMessageRecieved: ', summary, data);
+            //console.warn('AdminBulkDataService.streamLoad.webSocketService.onMessageReceived: ', summary, data);
             if(data && data.topErrors && data.topErrors.length > 0) {
                 this._onStreamLoadErrors.next( summary.topErrors );
             }
@@ -1671,7 +1671,7 @@ export class AdminBulkDataService {
                 retSubject.next(summary); // local
             }
         );
-        
+
         // this is the main fn that actually sends the read records
         // to the websocket service
         let sendQueuedRecords = (records?: any) => {
@@ -1735,7 +1735,7 @@ export class AdminBulkDataService {
                 //filter( waitUntilEntityTypesCreated )
             ).subscribe( sendQueuedRecords );
         //}
-        
+
         // when ANYTHING changes, update the singleton "currentLoadResult" var so components can read status
         let _onAdminStreamLoadSummaryChangedListener = retObs.subscribe((summary: AdminStreamLoadSummary) => {
             this.currentLoadResult = summary;
@@ -1747,7 +1747,7 @@ export class AdminBulkDataService {
         //onAllStreamDataSent.pipe(
         //     take(1)
         //).subscribe((allSent) => {
-            this.webSocketService.onMessageRecieved.pipe(
+            this.webSocketService.onMessageReceived.pipe(
                 filter( data => { return data !== undefined}),
             ).subscribe((data: AdminStreamLoadSummary) => {
                 // we change responses "recordCount" to "sentRecordCount" because that's what it really is
@@ -1773,7 +1773,7 @@ export class AdminBulkDataService {
             delay(5000)
         ).subscribe((summary: AdminStreamLoadSummary) => {
             if(readStreamComplete && summary && summary.sentRecordCount === summary.recordCount) {
-                // set this to true to end batching loop Observeable
+                // set this to true to end batching loop Observable
                 summary.complete = true;
                 this._onStreamLoadComplete.next(summary);
             }
@@ -1791,8 +1791,8 @@ export class AdminBulkDataService {
             //setTimeout(() => {
                 console.log('closing connection: all data sent', summary);
                 this.webSocketService.disconnect();
-                if(_onWSMessageRecievedListener && _onWSMessageRecievedListener.unsubscribe) {
-                    _onWSMessageRecievedListener.unsubscribe();
+                if(_onWSMessageReceivedListener && _onWSMessageReceivedListener.unsubscribe) {
+                    _onWSMessageReceivedListener.unsubscribe();
                 }
                 if(_onStreamLoadCompleteListener && _onStreamLoadCompleteListener.unsubscribe) {
                     _onStreamLoadCompleteListener.unsubscribe();
@@ -1802,7 +1802,7 @@ export class AdminBulkDataService {
                 }
                 if(_onAdminStreamLoadSummaryChangedListener && _onAdminStreamLoadSummaryChangedListener.unsubscribe) {
                     _onAdminStreamLoadSummaryChangedListener.unsubscribe();
-                }                
+                }
             //}, 3000)
         });
 
@@ -1896,7 +1896,7 @@ export class AdminBulkDataService {
     /** helper method to determine if the "analysisByDataSource" collection in a stream summary
      * has a particular datasource.
      */
-    private analysisByDataSouceHasSource(dataset: Array<SzDataSourceRecordAnalysis>, dataSource: string | null): boolean {
+    private analysisByDataSourceHasSource(dataset: Array<SzDataSourceRecordAnalysis>, dataSource: string | null): boolean {
         let retValue = false;
         if(dataset && dataset.length) {
             retValue = dataset.some((analysisRow: SzDataSourceRecordAnalysis) => {
@@ -1934,7 +1934,7 @@ export class AdminBulkDataService {
             /**
              * This is what an "analysisByDataSource" node for records with no DS's defined looks like
              * @TODO add this functionality at index[0]
-             * 
+             *
               dataSource: null
               recordCount: 3597
               recordsWithEntityTypeCount: 0
@@ -1946,14 +1946,14 @@ export class AdminBulkDataService {
                 if(record && record.DATA_SOURCE) {
                     // first append to count
                     recordsWithDataSourceCount++;
-                    if(summary[summaryDsKey] && this.analysisByDataSouceHasSource(summary[summaryDsKey], record.DATA_SOURCE)) {
+                    if(summary[summaryDsKey] && this.analysisByDataSourceHasSource(summary[summaryDsKey], record.DATA_SOURCE)) {
 
                         // just append
                         let sourceIndex = summary[summaryDsKey].findIndex((analysisRow: SzDataSourceRecordAnalysis) => {
                             return (analysisRow.dataSource && analysisRow.dataSource === record.DATA_SOURCE) ? true : false;
                         })
                         // add record to count
-                        summary[summaryDsKey][ sourceIndex ].recordCount++; 
+                        summary[summaryDsKey][ sourceIndex ].recordCount++;
                         // if record has id, increment per-DS count
                         if(record && record.RECORD_ID) {
                             summary[summaryDsKey][ sourceIndex ].recordsWithRecordIdCount++;
@@ -1963,7 +1963,7 @@ export class AdminBulkDataService {
                             summary[summaryDsKey][ sourceIndex ].recordsWithEntityTypeCount++;
                         }
                     } else {
-                        // create                            
+                        // create
                         summary[summaryDsKey] = summary[summaryDsKey] ? summary[summaryDsKey] : [];
                         summary[summaryDsKey].push({
                             dataSource: record.DATA_SOURCE,
@@ -1982,7 +1982,7 @@ export class AdminBulkDataService {
                         // just append
                         //console.warn('NO DS for record. adding to "null" ', summary[summaryDsKey][sourceIndex]);
                         // add record to count
-                        summary[summaryDsKey][ sourceIndex ].recordCount++; 
+                        summary[summaryDsKey][ sourceIndex ].recordCount++;
                         // if record has id, increment per-DS count
                         if(record && record.RECORD_ID) {
                             summary[summaryDsKey][ sourceIndex ].recordsWithRecordIdCount++;
@@ -2017,7 +2017,7 @@ export class AdminBulkDataService {
                             return (analysisRow.entityType && analysisRow.entityType === record.ENTITY_TYPE) ? true : false;
                         })
                         // add record to count
-                        summary[summaryEtKey][ sourceIndex ].recordCount++; 
+                        summary[summaryEtKey][ sourceIndex ].recordCount++;
                         // if record has id, increment per-DS count
                         if(record && record.RECORD_ID) {
                             summary[summaryEtKey][ sourceIndex ].recordsWithRecordIdCount++;
@@ -2047,7 +2047,7 @@ export class AdminBulkDataService {
                         // just append
                         //console.warn('NO EntityType for record. adding to "null" ', summary[summaryEtKey][sourceIndex]);
                         // add record to count
-                        summary[summaryEtKey][ sourceIndex ].recordCount++; 
+                        summary[summaryEtKey][ sourceIndex ].recordCount++;
                         // if record has id, increment per-DS count
                         if(record && record.RECORD_ID) {
                             summary[summaryEtKey][ sourceIndex ].recordsWithRecordIdCount++;
@@ -2081,7 +2081,7 @@ export class AdminBulkDataService {
             summary.missingRecordIdCount    = summary.missingRecordIdCount + missingRecordIds;
             dataSources                     = this.getDataSourcesFromRecords(recordsArray);
             //entityTypes                     = this.getEntityTypesFromRecords(recordsArray);
-            
+
             if(dataSources && dataSources.length > 0) {
                 summary.dataSources      = summary.dataSources.concat(dataSources).filter((dataSource, index, self) => {
                     return self.indexOf(dataSource) === index;
@@ -2149,7 +2149,7 @@ export class AdminBulkDataService {
             //console.log('create new datasources: ', newDataSources);
             let simResp = false;
             const pTemp = this.createDataSources(newDataSources).toPromise();
-            
+
             /*const pTemp   = new Promise((resolve, reject) =>{
                 setTimeout(() => {
                     console.log('resolving ds creation promise for: ', newDataSources );
@@ -2174,7 +2174,7 @@ export class AdminBulkDataService {
         return this.sdkAdminService.getLoadQueueInfo();
     }
 
-    public testStreamLoadingConnection(pocConfig: POCStreamConfig) {        
+    public testStreamLoadingConnection(pocConfig: POCStreamConfig) {
 
         let connectionProperties: AdminStreamConnProperties = {
             "path": pocConfig.proxy.path ? pocConfig.proxy.path : '',

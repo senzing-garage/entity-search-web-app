@@ -154,7 +154,7 @@ export class PrefsManagerService implements OnDestroy {
   /** handler for when preferences have changed */
   public onPrefsChanged(srprefs: SzSdkPrefsModel) {
     if(srprefs && srprefs.admin && srprefs.admin.streamConnectionProperties) {
-      // we neeeeever want to save "connected" state of websocket in storage
+      // we NEVER want to save "connected" state of websocket in storage
       // if we re-init with that value, code will mistakenly assume websocket is already connected
       srprefs.admin.streamConnectionProperties.connected = false;
     }

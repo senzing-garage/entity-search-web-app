@@ -54,7 +54,7 @@ import { AdminStreamLoadQueueDialogComponent } from './common/stream-load-queue-
 import { AdminStreamConnDialogComponent } from './common/stream-conn-dialog/stream-conn-dialog.component';
 import { AdminStreamAbortDialogComponent } from './common/stream-abort-dialog/stream-abort-dialog.component';
 import { AdminStreamLoadErrorsDialogComponent } from './common/stream-load-errors-dialog/stream-load-errors-dialog.component';
-import { AdminStreamLoadCollapseableErrorComponent } from './common/stream-load-errors-dialog/stream-load-error-collapseable.component';
+import { AdminStreamLoadCollapsibleErrorComponent } from './common/stream-load-errors-dialog/stream-load-error-collapsible.component';
 
 // services
 import { SzXtermSocket } from './services/xterm.socket.service';
@@ -107,7 +107,7 @@ import { AdminBulkDataService } from './services/admin.bulk-data.service';
         AboutComponent,
         AdminStreamConnDialogComponent,
         AdminStreamAbortDialogComponent,
-        AdminStreamLoadCollapseableErrorComponent,
+        AdminStreamLoadCollapsibleErrorComponent,
         AdminStreamLoadErrorsDialogComponent,
         AdminStreamLoadQueueDialogComponent,
         AdminStreamLoadQueueInfoComponent

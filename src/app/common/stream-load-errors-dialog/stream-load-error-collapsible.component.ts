@@ -5,11 +5,11 @@ import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 @Component({
-    selector: 'collapseable-stream-load-error',
-    templateUrl: 'stream-load-error-collapseable.component.html',
-    styleUrls: ['stream-load-error-collapseable.component.scss']
+    selector: 'collapsible-stream-load-error',
+    templateUrl: 'stream-load-error-collapsible.component.html',
+    styleUrls: ['stream-load-error-collapsible.component.scss']
   })
-  export class AdminStreamLoadCollapseableErrorComponent implements OnDestroy {
+  export class AdminStreamLoadCollapsibleErrorComponent implements OnDestroy {
     /** subscription to notify subscribers to unbind */
     public unsubscribe$ = new Subject<void>();
     private _errorEncapsulation: AdminStreamSummaryError;
@@ -27,8 +27,8 @@ import { Subject } from 'rxjs';
         this._collectionIndex = value;
     }
     @Input() public set expanded(value: boolean | undefined) {
-        if(value && value !== undefined) { 
-            this._expanded = value; 
+        if(value && value !== undefined) {
+            this._expanded = value;
             this._lastExpandedStateFromInput = value;
         }
     }

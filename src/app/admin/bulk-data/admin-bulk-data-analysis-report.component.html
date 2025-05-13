@@ -8,7 +8,7 @@
     <th mat-header-cell *matHeaderCellDef>Record Data Source</th>
     <td mat-cell *matCellDef="let element">
       {{ element.dataSource && element.dataSource.trim().length > 0 ? element.dataSource : '[NONE]' }}
-      <span *ngIf="isNewDataDource( element.dataSource )" class="mat-badge-ds-new-tag"
+      <span *ngIf="isNewDataSource( element.dataSource )" class="mat-badge-ds-new-tag"
       matBadge="new" matBadgeOverlap="false" matBadgeDescription="New Data Source"
       matBadgePosition="after"
       matBadgeSize="medium"></span>
@@ -49,7 +49,7 @@
         matBadge="new" matBadgeOverlap="false" matBadgeDescription="New Data Source"
         matBadgePosition="after"
         matBadgeSize="medium"
-        [matBadgeHidden]="!isNewDataDource( targetDS.value )"></span>
+        [matBadgeHidden]="!isNewDataSource( targetDS.value )"></span>
       </div>
     </td>
   </ng-container>

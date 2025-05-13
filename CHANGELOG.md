@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.0] - 2024-10-17
 
-The `entity-search-webapp` now *REQUIRES* the use of the  [senzing-poc-server](https://github.com/senzing-garage/senzing-poc-server/) to provide it's senzing api access. This is a change from before where you could use either the [senzing-api-server](https://github.com/senzing-garage/senzing-api-server) *OR* the [senzing-poc-server](https://github.com/senzing-garage/senzing-poc-server/).
+The `entity-search-webapp` now _REQUIRES_ the use of the [senzing-poc-server](https://github.com/senzing-garage/senzing-poc-server/) to provide it's senzing api access. This is a change from before where you could use either the [senzing-api-server](https://github.com/senzing-garage/senzing-api-server) _OR_ the [senzing-poc-server](https://github.com/senzing-garage/senzing-poc-server/).
 
 ### Changed in 3.0.0
 
@@ -17,6 +17,7 @@ The `entity-search-webapp` now *REQUIRES* the use of the  [senzing-poc-server](h
 - Route Resolvers changed from Class to Fn
 
 ### Added in 3.0.0
+
 - New Landing page
   - Donut widget displaying how many records have been loader for each datasource.
   - License widget displays how much of your current license is being used and it's expiration date.
@@ -27,7 +28,7 @@ The `entity-search-webapp` now *REQUIRES* the use of the  [senzing-poc-server](h
 
 ### Changed in 2.9.4
 
-- Removed 'SSO' integration variables. SSO authententication/redirects should be handled at the network/formation level instead of by the individual container.
+- Removed 'SSO' integration variables. SSO authentication/redirects should be handled at the network/formation level instead of by the individual container.
 
 ## [2.9.3] - 2024-01-18
 
@@ -97,7 +98,7 @@ The `entity-search-webapp` now *REQUIRES* the use of the  [senzing-poc-server](h
 - D3 charting toolkit updated to @7.x.x
 - `@senzing/rest-api-client-ng` updated to @6.0.0
 - `@senzing/sdk-components-ng` updated to @6.0.0
-- Dependency Securtity updates (various)
+- Dependency Security updates (various)
 
 ## [2.7.4] - 2023-01-12
 
@@ -141,10 +142,10 @@ relevant tickets: #299 #321 #302 #324
 
 ## [2.7.0] - 2022-07-07
 
-This update adds the long-awaited *Expand/Collapse* graph node edge feature.
+This update adds the long-awaited _Expand/Collapse_ graph node edge feature.
 Now nodes in the graph will display a bubble with the number of relationships not currently visible.
 Relationships can be explored by simply expanding relationships down a path.
-The *Why Not* report can now be run from specific integration points.
+The _Why Not_ report can now be run from specific integration points.
 The why not report will run a side-by-side table of two entities information in order to help illustrate why two entities did not come together.
 
 ### Added in 2.7.0
@@ -153,11 +154,11 @@ The why not report will run a side-by-side table of two entities information in 
   - On clicking the bubble the hidden related entities will be drawn around the node.
   - On clicking the expand/collapse bubble again the related nodes that are not related to any other nodes on the canvas will be hidden.
   - On right clicking the node there is a new option to hide just that specific entity from view(to eliminate clutter)
-  - On right clicking the relationship line match key there will be a menu option for running a *Why NOT* report between the two connected entities
-- There is a new *Multi-Select* mode button in the upper right-corner of search results.
+  - On right clicking the relationship line match key there will be a menu option for running a _Why NOT_ report between the two connected entities
+- There is a new _Multi-Select_ mode button in the upper right-corner of search results.
   Once the button is clicked a user can click on two search results and click on "Compare" to bring up
   a "Why NOT" report for why those two entities did not come together.
-- Match keys are now displayed in the search result cards by default. *(they can be turned off through preferences)*
+- Match keys are now displayed in the search result cards by default. _(they can be turned off through preferences)_
 
 ## [2.6.0] - 2022-05-09
 
@@ -167,7 +168,7 @@ and [rest api specification](https://github.com/senzing-garage/senzing-rest-api-
 
 ### Added in 2.6.0
 
-- "Filter By Match Key" added back to the large graph display using a more user-friendly approach of a _"Tag Cloud" of match key tokens.
+- "Filter By Match Key" added back to the large graph display using a more user-friendly approach of a \_"Tag Cloud" of match key tokens.
 - Why Entity feature that adds a button to the entity detail page that opens a
   draggable/resizable window with a horizontal side-by-side view of why records in an entity came together
 - Why Entity feature that adds a button to the entity detail page's record rows that opens a
@@ -183,7 +184,7 @@ and [rest api specification](https://github.com/senzing-garage/senzing-rest-api-
 
 ### Removed in 2.6.0
 
-- Any and all functionality surrounding *Entity Type's* and *Entity Classes*.
+- Any and all functionality surrounding _Entity Type's_ and _Entity Classes_.
   Management of these features has been removed in the 3.0 version of the senzing sdk.
 
 relevant tickets: #265 #263 #261 #258
@@ -209,8 +210,8 @@ relevant tickets: #265 #263 #261 #258
 
 ### Removed in 2.5.0
 
-- "Filter By Match Key" removed from the large graph display due to *usability* issues on large datasets.
-  *(It will return once a better approach can be implemented)*
+- "Filter By Match Key" removed from the large graph display due to _usability_ issues on large datasets.
+  _(It will return once a better approach can be implemented)_
 
 relevant tickets: #242 #243 #246 #252 #256
 
@@ -242,9 +243,9 @@ relevant tickets: #230 #231 #235 #195
 
 - The ability to filter graph elements by "match keys" present on the links between graph entities. #215
 - The ability to import CSV files when using SQS stream loading. #217
-- *Zoom* and *Pan* controls added to embedded and standalone Network Graph components. #216
-- Ability to filter by *Match Keys* present on the links between graph entities in the dataset added to standalone Network Graph component. #215
-- List of *ALL* command line flags and environment variables for configuration of the docker container.
+- _Zoom_ and _Pan_ controls added to embedded and standalone Network Graph components. #216
+- Ability to filter by _Match Keys_ present on the links between graph entities in the dataset added to standalone Network Graph component. #215
+- List of _ALL_ command line flags and environment variables for configuration of the docker container.
   See [docs/Environment Variables](https://github.com/senzing-garage/entity-search-web-app/blob/master/docs/Environment%20Variables.md) #218
 
 ### Modified in 2.3.4
@@ -259,7 +260,7 @@ relevant tickets #226 #222 #220 #218 #216 #217 #215
 ## [2.3.3] - 2021-10-14
 
 - Added multi-stage build to `Dockerfile` so that only production dependencies and
-compiled code is present in immutable container.
+  compiled code is present in immutable container.
 - Removed Google Chrome from container (was used for container e2e testing)
 - Removed `travis.yml` from project.
 - Added test runner(s) back via Github Action workflows.
@@ -269,11 +270,11 @@ compiled code is present in immutable container.
 - removed the re-mapping UI interaction in admin/load when an import contains explicitly specified datasources on the record level.
   If the record contains an explicit datasource that is what the record will be loaded in to.
   If the datasource specified does not exist it will be created.
-  If the file contains records that have *NO* datasource specified the user will be prompted to enter one before load.
+  If the file contains records that have _NO_ datasource specified the user will be prompted to enter one before load.
 - removed the UI interaction in admin/load around custom entity types.
   Now if a imported file specifies a specific entity type that does not exist it is created.
   If no entity type is specified it is automatically assumed `GENERIC`.
-- Added a "Admin" menu option in the upper-left site menu *WHEN* the poc or api server has "-adminEnabled" set.
+- Added a "Admin" menu option in the upper-left site menu _WHEN_ the poc or api server has "-adminEnabled" set.
 - bugfixes related to stream loading (various, see relevant tickets)
 
 relevant tickets #189 #190 #192 #196 #198 #200 #202 #204
@@ -282,12 +283,12 @@ relevant tickets #189 #190 #192 #196 #198 #200 #202 #204
 
 The configuration options/setup surrounding the stream loading feature released in
 [2.3.0](https://github.com/senzing-garage/entity-search-web-app/releases/tag/2.3.0) has been simplified.
-Now stream loading is automatically enabled for the user ***IF*** the webapp is running against a
+Now stream loading is automatically enabled for the user **_IF_** the webapp is running against a
 **[POC Server](https://github.com/senzing-garage/senzing-poc-server)** that has SQS configured.
 If not configured properly or running against the
 [API server](https://github.com/senzing-garage/senzing-api-server)(with adminMode=true set)
 the loading feature will fallback to the **non**-stream method.
-As a result of this streamlining the UI ***toggle switch*** and **"connection configuration"** modal has been *removed* from the UI.
+As a result of this streamlining the UI **_toggle switch_** and **"connection configuration"** modal has been _removed_ from the UI.
 
 The following ENV vars introduced in `2.3.0` have been removed:
 
@@ -368,7 +369,7 @@ Bugfixes for:
 - [Large graph color highlights by datasource](https://github.com/senzing-garage/sdk-components-ng/issues/162)
 - [Detail Graph lifecycle issue on in-component navigation](https://github.com/senzing-garage/sdk-components-ng/issues/156)
 - [Graph tooltips showing null for address and phone numbers](https://github.com/senzing-garage/sdk-graph-components/issues/42)
-- [Enitity Id added to detail report](https://github.com/senzing-garage/sdk-components-ng/issues/159)
+- [Entity Id added to detail report](https://github.com/senzing-garage/sdk-components-ng/issues/159)
 - [Search by Attribute option pinned to menu options](https://github.com/senzing-garage/entity-search-web-app/issues/131)
 - [Best name logic fix](https://github.com/senzing-garage/sdk-components-ng/issues/156)
 
@@ -389,9 +390,9 @@ see the following links for associated tickets:
 ## [2.0.1] - 2020-09-21
 
 The scripts no longer write any configuration or runtime configuration information to the filesystem.
-Instead, the options are read from either ENV vars or Command Line arguements in to a data store class,
-which is then accessed by scripts and endpoints that need access to these arguements.
-This was done to support immutable containers.  See
+Instead, the options are read from either ENV vars or Command Line arguments in to a data store class,
+which is then accessed by scripts and endpoints that need access to these arguments.
+This was done to support immutable containers. See
 [Ensure that your containers are stateless and immutable](https://cloud.google.com/solutions/best-practices-for-operating-containers#ensure_that_your_containers_are_stateless_and_immutable).
 
 Added:
@@ -440,7 +441,7 @@ For information on specifics of endpoint changes see below:
 - Open search results directly in Graph view
 - Allow the user to collapse/expand the filters/detail drawer in the Graph view.
 - Added MSSQL support
-- Added Search by *record Id* or *entity Id* form interfaces
+- Added Search by _record Id_ or _entity Id_ form interfaces
 - Added Record JSON viewer
 - Added Admin functionality. (see [Readme](https://github.com/senzing-garage/entity-search-web-app#admin-area) for more details)
   - added ability to view datasources available to an instance
@@ -481,7 +482,7 @@ For information on specifics of endpoint changes see below:
 - graph color(s) by datasource membership.
 - SSL support for docker image.
 - basic auth support (alpha) for docker image.
-- premature loading indicator disapearing fix.
+- premature loading indicator disappearing fix.
 - relevant tickets:
   [#34](https://github.com/senzing-garage/entity-search-web-app/pull/34),
   [#67](https://github.com/senzing-garage/entity-search-web-app/pull/67),
@@ -508,7 +509,7 @@ For information on specifics of endpoint changes see below:
 - CSS for responsive breakpoint(s) and/or reflow on narrow width
 - Various UI/UX layout bugfixes
 - Graph should reload on entityIdChange
-- Graph should collapse on *0* results
+- Graph should collapse on _0_ results
 - Include "other data" in records area.
 - Text highlighting no longer triggers click-thru
 - Search identifiers drop-down should auto-update on api config change
@@ -543,7 +544,7 @@ For information on specifics of endpoint changes see below:
 - wonky graph styling issue
 - basic unit tests fixes
 - sdk-components-ng version bump. 1.0.4 -> **1.0.5**
-- adds licence badge to readme. [![License](https://img.shields.io/github/license/senzing/entity-search-web-app.svg)](https://github.com/senzing-garage/entity-search-web-app/blob/master/LICENSE)
+- adds license badge to readme. [![License](https://img.shields.io/github/license/senzing/entity-search-web-app.svg)](https://github.com/senzing-garage/entity-search-web-app/blob/master/LICENSE)
 - adds `npm run e2e`, `npm run e2e:headless`, `npm run test`, and `npm run test:headless` scripts
 - added .travis.yml for CI build/test integration
 - angular.json configuration changes to support path refactoring

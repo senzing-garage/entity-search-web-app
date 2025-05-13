@@ -32,7 +32,7 @@ export class AuthGuardService  {
         let redirectUrl = this.adminAuth.loginUrl;
         if(this.adminAuth && this.adminAuth.isOnVirtualPath && this.adminAuth.virtualPath) {
           // strip virtual path from redirect url
-          // otherwise the angular router will "double-dip" on 
+          // otherwise the angular router will "double-dip" on
           // the base-href and you will get two base-hrefs in the path
           redirectUrl = redirectUrl.replace(this.adminAuth.virtualPath, '');
         }
@@ -68,7 +68,7 @@ export class AuthGuardService  {
     // subject to emit once the auth config is available
     const onConfigLoaded = new Subject<AuthConfig>();
 
-    // the result Subject/Observeable returned to method
+    // the result Subject/Observable returned to method
     const _canActivateResult: Subject<boolean> = new Subject();
     const canActivateResult = _canActivateResult.asObservable();
 
@@ -87,7 +87,7 @@ export class AuthGuardService  {
     // authStream is the event chain for the actual
     // authorization sequence. triggered only on result from
     // the "onConfigLoaded" subject so that's kicked off last but
-    // before canActivateResult Observeable handle is returned.
+    // before canActivateResult Observable handle is returned.
     const authStream = onConfigLoaded.pipe(
       tap( (res: AuthConfig) => {
         responseMap.config = res;
@@ -115,7 +115,7 @@ export class AuthGuardService  {
                 let redirectUrl = authConf.admin.loginUrl;
                 if(authConf && authConf.virtualPath && authConf.virtualPath !== '' && authConf.virtualPath !== '/') {
                   // strip virtual path from redirect url
-                  // otherwise the angular router will "double-dip" on 
+                  // otherwise the angular router will "double-dip" on
                   // the base-href and you will get two base-hrefs in the path
                   redirectUrl = redirectUrl.replace(authConf.virtualPath, '');
                 }
@@ -214,7 +214,7 @@ export class AuthGuardService  {
       });
     }
 
-    // return the observeable for "_canActivateResult" before
+    // return the observable for "_canActivateResult" before
     // the requests from "authStream" are even created..
     // yeah. I know, little bit Marty McFly
     return canActivateResult;

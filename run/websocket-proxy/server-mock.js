@@ -22,7 +22,7 @@ wss.on('connection', (ws) => {
         ws.send(message);
     });
 
-    //send immediatly a feedback to the incoming connection    
+    //send immediately a feedback to the incoming connection
     ws.send('{"connected": true, "uuid": "'+ uuidv4() +'"}');
 });
 
