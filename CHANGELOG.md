@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.0] - 2025-05-17
+
+### Whats Changed
+
+- @angular was updated to [19.x.x](https://blog.angular.dev/angular-19-2-is-now-available-673ec70aea12)
+- @angular/material was updated to [19.x.x](https://v19.material.angular.dev/)
+- @senzing/rest-api-client-ng updated to [8.0.0](https://github.com/senzing-garage/rest-api-client-ng/releases/tag/8.0.0)
+- @senzing/sdk-components-ng updated to [9.0.0](https://github.com/senzing-garage/sdk-components-ng/releases/tag/9.0.0)
+- Removed @xterm optional console functionality and libraries.
+- Dependency updates
+
 ## [3.0.0] - 2024-10-17
 
 The `entity-search-webapp` now _REQUIRES_ the use of the [senzing-poc-server](https://github.com/senzing-garage/senzing-poc-server/) to provide it's senzing api access. This is a change from before where you could use either the [senzing-api-server](https://github.com/senzing-garage/senzing-api-server) _OR_ the [senzing-poc-server](https://github.com/senzing-garage/senzing-poc-server/).

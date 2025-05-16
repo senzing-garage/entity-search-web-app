@@ -6,16 +6,12 @@
   <div class="list-format">
     <div class="row key">Web App Version: </div>
     <div class="row value">{{ aboutService.appVersion }}</div>
-    <div class="row key">API Server Version: </div>
-    <div class="row value">{{ aboutService.apiServerVersion }}</div>
     <div class="row key">REST API Version: </div>
     <div class="row value">{{ aboutService.restApiVersion }}</div>
     <div *ngIf="aboutService.restApiClientVersion" class="row key">REST Client: </div>
     <div *ngIf="aboutService.restApiClientVersion" class="row value">{{ aboutService.restApiClientVersion }}</div>
     <div *ngIf="aboutService.sdkComponentsVersion" class="row key">SDK Components: </div>
     <div *ngIf="aboutService.sdkComponentsVersion" class="row value">{{ aboutService.sdkComponentsVersion }}</div>
-    <div *ngIf="aboutService.graphComponentsVersion" class="row key">Graph Components: </div>
-    <div *ngIf="aboutService.graphComponentsVersion" class="row value">{{ aboutService.graphComponentsVersion }}</div>
     <hr>
     <div class="row key">Admin Mode:</div>
     <div class="row value" *ngIf="!aboutService.isAdminEnabled">Disabled</div>

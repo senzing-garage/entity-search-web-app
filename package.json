@@ -1,6 +1,6 @@
 {
   "name": "@senzing/entity-search-web-app",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "license": "Apache-2.0",
   "scripts": {
     "ng": "ng",
@@ -27,8 +27,7 @@
     "e2e": "ng e2e",
     "e2e:ci": "ng e2e",
     "lint": "ng lint",
-    "prepush": "npm run test:headless",
-    "postshrinkwrap": "lockfix"
+    "prepush": "npm run test:headless"
   },
   "private": true,
   "dependencies": {
@@ -49,9 +48,6 @@
     "@senzing/sdk-components-ng": "^9.0.0-beta.0",
     "@types/d3": "^7.4.0",
     "@types/socket.io-client": "^3.0.0",
-    "@xterm/addon-fit": "^0.10.0",
-    "@xterm/addon-web-links": "^0.11.0",
-    "@xterm/xterm": "^5.5.0",
     "acorn": "^8.6.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
@@ -92,7 +88,7 @@
     "@types/node": "^18.11.9",
     "@typescript-eslint/eslint-plugin": "5.3.0",
     "@typescript-eslint/parser": "5.3.0",
-    "angular-in-memory-web-api": "^0.18.0",
+    "angular-in-memory-web-api": "^0.19.0",
     "concat": "^1.0.3",
     "concurrently": "^7.3.0",
     "eslint": "^8.2.0",
@@ -106,7 +102,6 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.0.0",
     "karma-junit-reporter": "^2.0.1",
-    "lockfix": "^2.0.1",
     "ng-packagr": "^19.2.2",
     "playwright-ng-schematics": "^2.0.0",
     "scss-bundle": "^3.1.2",
