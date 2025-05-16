@@ -4,9 +4,10 @@ import { SzAdminService, SzBulkDataService } from '@senzing/sdk-components-ng';
 import { SzWebAppConfigService } from '../../services/config.service';
 
 @Component({
-  selector: 'admin-home',
-  templateUrl: './admin.component.html',
-  styleUrls: ['./admin.component.scss']
+    selector: 'admin-home',
+    templateUrl: './admin.component.html',
+    styleUrls: ['./admin.component.scss'],
+    standalone: false
 })
 export class AdminComponent implements OnInit {
 

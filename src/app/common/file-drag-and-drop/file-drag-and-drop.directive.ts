@@ -1,7 +1,8 @@
 import { Directive, HostListener, HostBinding, EventEmitter, Output } from "@angular/core";
 
 @Directive({
-    selector: "[fileDnD]"
+    selector: "[fileDnD]",
+    standalone: false
 })
 export class AppFileDragAndDrop {
     @HostBinding('class.fileover') fileOver: boolean;

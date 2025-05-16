@@ -14,9 +14,10 @@ import { takeUntil } from 'rxjs/operators';
  * @export
  */
 @Component({
-  selector: 'admin-bulk-data-stream-load-report',
-  templateUrl: './admin-bulk-data-stream-load-report.component.html',
-  styleUrls: ['./admin-bulk-data-stream-load-report.component.scss']
+    selector: 'admin-bulk-data-stream-load-report',
+    templateUrl: './admin-bulk-data-stream-load-report.component.html',
+    styleUrls: ['./admin-bulk-data-stream-load-report.component.scss'],
+    standalone: false
 })
 export class AdminBulkDataStreamLoadReportComponent implements OnInit, OnDestroy {
   /** subscription to notify subscribers to unbind */

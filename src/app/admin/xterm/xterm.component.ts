@@ -8,10 +8,11 @@ import { UiService } from '../../services/ui.service';
 import { Title } from '@angular/platform-browser';
 
 @Component({
-  encapsulation: ViewEncapsulation.ShadowDom,
-  selector: 'sz-xterm',
-  templateUrl: './xterm.component.html',
-  styleUrls: ['./xterm.component.scss']
+    encapsulation: ViewEncapsulation.ShadowDom,
+    selector: 'sz-xterm',
+    templateUrl: './xterm.component.html',
+    styleUrls: ['./xterm.component.scss'],
+    standalone: false
 })
 export class XtermComponent implements AfterViewInit, OnDestroy {
   /** subscription to notify subscribers to unbind */

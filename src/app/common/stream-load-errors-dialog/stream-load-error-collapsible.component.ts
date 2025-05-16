@@ -7,8 +7,9 @@ import { Subject } from 'rxjs';
 @Component({
     selector: 'collapsible-stream-load-error',
     templateUrl: 'stream-load-error-collapsible.component.html',
-    styleUrls: ['stream-load-error-collapsible.component.scss']
-  })
+    styleUrls: ['stream-load-error-collapsible.component.scss'],
+    standalone: false
+})
   export class AdminStreamLoadCollapsibleErrorComponent implements OnDestroy {
     /** subscription to notify subscribers to unbind */
     public unsubscribe$ = new Subject<void>();

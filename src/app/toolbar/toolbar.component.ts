@@ -12,9 +12,10 @@ import { AboutInfoService } from '../services/about.service';
 import { SzWebAppConfigService } from '../services/config.service';
 
 @Component({
-  selector: 'app-toolbar',
-  templateUrl: './toolbar.component.html',
-  styleUrls: ['./toolbar.component.scss']
+    selector: 'app-toolbar',
+    templateUrl: './toolbar.component.html',
+    styleUrls: ['./toolbar.component.scss'],
+    standalone: false
 })
 export class ToolbarComponent implements OnInit, OnDestroy {
   // currently displayed entity detail id (if any)

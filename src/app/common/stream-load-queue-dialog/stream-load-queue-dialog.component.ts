@@ -8,8 +8,9 @@ import { Subject } from 'rxjs';
 @Component({
     selector: 'stream-load-queue-dialog',
     templateUrl: 'stream-load-queue-dialog.component.html',
-    styleUrls: ['stream-load-queue-dialog.component.scss']
-  })
+    styleUrls: ['stream-load-queue-dialog.component.scss'],
+    standalone: false
+})
   export class AdminStreamLoadQueueDialogComponent implements OnInit, OnDestroy, AfterViewInit {
     /** subscription to notify subscribers to unbind */
     public unsubscribe$ = new Subject<void>();

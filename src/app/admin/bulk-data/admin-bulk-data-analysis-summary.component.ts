@@ -14,9 +14,10 @@ import { AdminBulkDataService, AdminStreamAnalysisSummary, AdminStreamLoadSummar
  * @export
  */
 @Component({
-  selector: 'admin-bulk-data-analysis-summary',
-  templateUrl: './admin-bulk-data-analysis-summary.component.html',
-  styleUrls: ['./admin-bulk-data-analysis-summary.component.scss']
+    selector: 'admin-bulk-data-analysis-summary',
+    templateUrl: './admin-bulk-data-analysis-summary.component.html',
+    styleUrls: ['./admin-bulk-data-analysis-summary.component.scss'],
+    standalone: false
 })
 export class AdminBulkDataAnalysisSummaryComponent implements OnInit, OnDestroy {
   /** subscription to notify subscribers to unbind */

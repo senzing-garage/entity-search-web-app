@@ -14,9 +14,10 @@ import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 @Component({
-  selector: 'app-search-record',
-  templateUrl: './record.component.html',
-  styleUrls: ['./record.component.scss']
+    selector: 'app-search-record',
+    templateUrl: './record.component.html',
+    styleUrls: ['./record.component.scss'],
+    standalone: false
 })
 export class SearchRecordComponent implements OnInit, OnDestroy {
   public unsubscribe$ = new Subject<void>();

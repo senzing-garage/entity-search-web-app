@@ -19,9 +19,10 @@ import { AboutInfoService } from '../../services/about.service';
  * @export
  */
 @Component({
-  selector: 'admin-bulk-data-analysis',
-  templateUrl: './admin-bulk-data-analysis.component.html',
-  styleUrls: ['./admin-bulk-data-analysis.component.scss']
+    selector: 'admin-bulk-data-analysis',
+    templateUrl: './admin-bulk-data-analysis.component.html',
+    styleUrls: ['./admin-bulk-data-analysis.component.scss'],
+    standalone: false
 })
 export class AdminBulkDataAnalysisComponent implements OnInit, OnDestroy, AfterViewInit {
   /** subscription to notify subscribers to unbind */

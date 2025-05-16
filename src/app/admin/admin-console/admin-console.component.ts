@@ -5,9 +5,10 @@ import { UiService } from '../../services/ui.service';
 import { XtermComponent } from '../xterm/xterm.component';
 
 @Component({
-  selector: 'admin-console',
-  templateUrl: './admin-console.component.html',
-  styleUrls: ['./admin-console.component.scss']
+    selector: 'admin-console',
+    templateUrl: './admin-console.component.html',
+    styleUrls: ['./admin-console.component.scss'],
+    standalone: false
 })
 export class AdminConsoleComponent implements AfterViewInit, OnDestroy {
   /** subscription to notify subscribers to unbind */

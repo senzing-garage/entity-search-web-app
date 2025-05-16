@@ -9,8 +9,9 @@ import { Subject } from 'rxjs';
 @Component({
     selector: 'stream-load-errors-dialog',
     templateUrl: 'stream-load-errors-dialog.component.html',
-    styleUrls: ['stream-load-errors-dialog.component.scss']
-  })
+    styleUrls: ['stream-load-errors-dialog.component.scss'],
+    standalone: false
+})
   export class AdminStreamLoadErrorsDialogComponent implements OnDestroy, AfterViewInit {
     /** subscription to notify subscribers to unbind */
     public unsubscribe$ = new Subject<void>();

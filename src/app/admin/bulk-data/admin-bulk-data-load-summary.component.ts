@@ -14,9 +14,10 @@ import { takeUntil } from 'rxjs/operators';
  * @export
  */
 @Component({
-  selector: 'admin-bulk-data-load-summary',
-  templateUrl: './admin-bulk-data-load-summary.component.html',
-  styleUrls: ['./admin-bulk-data-load-summary.component.scss']
+    selector: 'admin-bulk-data-load-summary',
+    templateUrl: './admin-bulk-data-load-summary.component.html',
+    styleUrls: ['./admin-bulk-data-load-summary.component.scss'],
+    standalone: false
 })
 export class AdminBulkDataLoadSummaryComponent implements OnInit, OnDestroy {
   /** subscription to notify subscribers to unbind */

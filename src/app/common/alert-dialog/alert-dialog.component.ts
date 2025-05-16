@@ -8,8 +8,9 @@ import { Subject } from 'rxjs';
 @Component({
     selector: 'alert-dialog',
     templateUrl: 'alert-dialog.component.html',
-    styleUrls: ['alert-dialog.component.scss']
-  })
+    styleUrls: ['alert-dialog.component.scss'],
+    standalone: false
+})
   export class AlertDialogComponent implements OnInit, OnDestroy, AfterViewInit {
     /** subscription to notify subscribers to unbind */
     public unsubscribe$ = new Subject<void>();

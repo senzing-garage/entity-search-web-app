@@ -10,8 +10,9 @@ import { BehaviorSubject, Subject, timer } from 'rxjs';
 @Component({
     selector: 'stream-load-queue-info',
     templateUrl: 'stream-load-queue-info.component.html',
-    styleUrls: ['stream-load-queue-info.component.scss']
-  })
+    styleUrls: ['stream-load-queue-info.component.scss'],
+    standalone: false
+})
   export class AdminStreamLoadQueueInfoComponent implements OnInit, OnDestroy, AfterViewInit {
     /** subscription to notify subscribers to unbind */
     public unsubscribe$ = new Subject<void>();

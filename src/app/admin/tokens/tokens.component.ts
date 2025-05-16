@@ -5,9 +5,10 @@ import { Configuration as SzConfiguration } from '@senzing/sdk-components-ng';
 import { AdminAuthService } from 'src/app/services/admin.service';
 import { Router } from '@angular/router';
 @Component({
-  selector: 'admin-api-tokens',
-  templateUrl: './tokens.component.html',
-  styleUrls: ['./tokens.component.scss']
+    selector: 'admin-api-tokens',
+    templateUrl: './tokens.component.html',
+    styleUrls: ['./tokens.component.scss'],
+    standalone: false
 })
 export class AdminOAuthTokensComponent implements OnInit {
 

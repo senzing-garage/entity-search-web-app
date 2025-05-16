@@ -3,9 +3,10 @@ import { Title } from '@angular/platform-browser';
 import { SzConfigurationService, SzAdminService } from '@senzing/sdk-components-ng';
 import { Configuration as SzConfiguration } from '@senzing/sdk-components-ng';
 @Component({
-  selector: 'admin-error-no-admin',
-  templateUrl: './no-admin.component.html',
-  styleUrls: ['./no-admin.component.scss']
+    selector: 'admin-error-no-admin',
+    templateUrl: './no-admin.component.html',
+    styleUrls: ['./no-admin.component.scss'],
+    standalone: false
 })
 export class AdminErrorNoAdminModeComponent implements OnInit {
 

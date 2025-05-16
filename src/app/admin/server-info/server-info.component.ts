@@ -5,9 +5,10 @@ import { AdminAuthService } from 'src/app/services/admin.service';
 import { AboutInfoService } from 'src/app/services/about.service';
 
 @Component({
-  selector: 'admin-server-info',
-  templateUrl: './server-info.component.html',
-  styleUrls: ['./server-info.component.scss']
+    selector: 'admin-server-info',
+    templateUrl: './server-info.component.html',
+    styleUrls: ['./server-info.component.scss'],
+    standalone: false
 })
 export class AdminServerInfoComponent implements OnInit {
 

@@ -10,8 +10,9 @@ import { Subject } from 'rxjs';
 @Component({
     selector: 'stream-abort-dialog',
     templateUrl: 'stream-abort-dialog.component.html',
-    styleUrls: ['stream-abort-dialog.component.scss']
-  })
+    styleUrls: ['stream-abort-dialog.component.scss'],
+    standalone: false
+})
   export class AdminStreamAbortDialogComponent implements OnInit, OnDestroy, AfterViewInit {
     /** subscription to notify subscribers to unbind */
     public unsubscribe$ = new Subject<void>();
