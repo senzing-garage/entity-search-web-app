@@ -108,7 +108,7 @@
     "karma-junit-reporter": "^2.0.1",
     "lockfix": "^2.0.1",
     "ng-packagr": "^18.2.1",
-    "playwright-ng-schematics": "^1.2.1",
+    "playwright-ng-schematics": "^2.0.0",
     "scss-bundle": "^3.1.2",
     "ts-node": "~10.9.1",
     "typescript": "~5.4.5"
