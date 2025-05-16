@@ -1,9 +1,10 @@
 import { Component, OnInit, Input, AfterViewInit, OnDestroy } from '@angular/core';
 
 @Component({
-  selector: 'app-error-page',
-  templateUrl: './error.component.html',
-  styleUrls: ['./error.component.scss']
+    selector: 'app-error-page',
+    templateUrl: './error.component.html',
+    styleUrls: ['./error.component.scss'],
+    standalone: false
 })
 export class ErrorPageComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input()

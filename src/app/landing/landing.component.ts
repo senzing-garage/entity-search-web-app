@@ -19,9 +19,10 @@ const statTypesToPathParams = {
  * @class LandingComponent
  */
 @Component({
-  selector: 'app-landing',
-  templateUrl: './landing.component.html',
-  styleUrls: ['./landing.component.scss']
+    selector: 'app-landing',
+    templateUrl: './landing.component.html',
+    styleUrls: ['./landing.component.scss'],
+    standalone: false
 })
 export class LandingComponent implements AfterViewInit {
 

@@ -8,9 +8,10 @@ import { map, first } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'admin-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+    selector: 'admin-login',
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.scss'],
+    standalone: false
 })
 export class AdminLoginComponent implements OnInit {
   public adminToken: string;

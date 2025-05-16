@@ -13,9 +13,10 @@ import {
 } from '@senzing/rest-api-client-ng';
 
 @Component({
-  selector: 'app-detail',
-  templateUrl: './detail.component.html',
-  styleUrls: ['./detail.component.scss']
+    selector: 'app-detail',
+    templateUrl: './detail.component.html',
+    styleUrls: ['./detail.component.scss'],
+    standalone: false
 })
 export class DetailComponent implements OnInit {
   @ViewChild('entityDetailComponent') entityDetailComponent: SzEntityDetailComponent;

@@ -56,9 +56,6 @@ import { AdminStreamAbortDialogComponent } from './common/stream-abort-dialog/st
 import { AdminStreamLoadErrorsDialogComponent } from './common/stream-load-errors-dialog/stream-load-errors-dialog.component';
 import { AdminStreamLoadCollapsibleErrorComponent } from './common/stream-load-errors-dialog/stream-load-error-collapsible.component';
 
-// services
-import { SzXtermSocket } from './services/xterm.socket.service';
-
 // errors
 import { PageNotFoundComponent } from './errors/page-not-found/page-not-found.component';
 import { GatewayTimeoutErrorComponent } from './errors/timeout/timeout.component';
@@ -136,8 +133,7 @@ import { AdminBulkDataService } from './services/admin.bulk-data.service';
         PrefsManagerService,
         AboutInfoService,
         AdminBulkDataService,
-        Title,
-        SzXtermSocket
+        Title
     ],
     bootstrap: [AppComponent]
 })

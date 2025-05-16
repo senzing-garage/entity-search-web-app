@@ -5,9 +5,10 @@ import { AdminAuthService } from 'src/app/services/admin.service';
 import { AboutInfoService } from 'src/app/services/about.service';
 
 @Component({
-  selector: 'admin-license-info',
-  templateUrl: './license-info.component.html',
-  styleUrls: ['./license-info.component.scss']
+    selector: 'admin-license-info',
+    templateUrl: './license-info.component.html',
+    styleUrls: ['./license-info.component.scss'],
+    standalone: false
 })
 export class AdminLicenseInfoComponent implements OnInit {
   public licenseInfo: SzLicenseInfo = {};

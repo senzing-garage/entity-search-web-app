@@ -14,9 +14,10 @@ import { AdminBulkDataLoadComponent } from '../bulk-data/admin-bulk-data-load.co
 import { AdminStreamAnalysisConfig, AdminStreamConnProperties, AdminStreamLoadConfig } from '../../common/models/AdminStreamConnection';
 
 @Component({
-  selector: 'admin-data-loader',
-  templateUrl: './load.component.html',
-  styleUrls: ['./load.component.scss']
+    selector: 'admin-data-loader',
+    templateUrl: './load.component.html',
+    styleUrls: ['./load.component.scss'],
+    standalone: false
 })
 export class AdminDataLoaderComponent implements OnInit, OnDestroy {
   /** subscription to notify subscribers to unbind */

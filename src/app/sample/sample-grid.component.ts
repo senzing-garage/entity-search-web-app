@@ -13,9 +13,10 @@ import { Title } from '@angular/platform-browser';
  * @class SampleGridComponent
  */
 @Component({
-  selector: 'app-sample-grid',
-  templateUrl: './sample-grid.component.html',
-  styleUrls: ['./sample-grid.component.scss']
+    selector: 'app-sample-grid',
+    templateUrl: './sample-grid.component.html',
+    styleUrls: ['./sample-grid.component.scss'],
+    standalone: false
 })
 export class SampleGridComponent implements OnInit, AfterViewInit {
     /** subscription to notify subscribers to unbind */

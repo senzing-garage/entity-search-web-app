@@ -27,9 +27,10 @@ import { SzMatchKeyTokenComposite } from '@senzing/sdk-components-ng/lib/models/
 import { parseBool } from '../common/parsing-utils';
 
 @Component({
-  selector: 'app-graph',
-  templateUrl: './graph.component.html',
-  styleUrls: ['./graph.component.scss']
+    selector: 'app-graph',
+    templateUrl: './graph.component.html',
+    styleUrls: ['./graph.component.scss'],
+    standalone: false
 })
 export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
   /** subscription to notify subscribers to unbind */

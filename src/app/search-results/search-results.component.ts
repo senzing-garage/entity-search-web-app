@@ -10,9 +10,10 @@ import { SpinnerService } from '../services/spinner.service';
 import { EntitySearchService } from '../services/entity-search.service';
 
 @Component({
-  selector: 'app-search-results',
-  templateUrl: './search-results.component.html',
-  styleUrls: ['./search-results.component.scss']
+    selector: 'app-search-results',
+    templateUrl: './search-results.component.html',
+    styleUrls: ['./search-results.component.scss'],
+    standalone: false
 })
 export class SearchResultsComponent implements OnInit {
   /** the current search results */

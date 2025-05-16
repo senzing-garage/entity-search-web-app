@@ -13,9 +13,10 @@ export interface DialogData {
 }
 
 @Component({
-  selector: 'admin-datasources',
-  templateUrl: './datasources.component.html',
-  styleUrls: ['./datasources.component.scss']
+    selector: 'admin-datasources',
+    templateUrl: './datasources.component.html',
+    styleUrls: ['./datasources.component.scss'],
+    standalone: false
 })
 export class AdminDataSourcesComponent implements OnInit {
   displayedColumns: string[] = ['dataSourceId', 'dataSourceCode'];
@@ -90,9 +91,10 @@ export class AdminDataSourcesComponent implements OnInit {
 }
 
 @Component({
-  selector: 'admin-add-datasource-dialog',
-  templateUrl: 'add-datasource.component.html',
-  styleUrls: ['./add-datasource.component.scss']
+    selector: 'admin-add-datasource-dialog',
+    templateUrl: 'add-datasource.component.html',
+    styleUrls: ['./add-datasource.component.scss'],
+    standalone: false
 })
 export class NewDataSourceDialogComponent {
 

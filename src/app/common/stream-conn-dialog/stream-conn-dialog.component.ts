@@ -12,8 +12,9 @@ import { getHostnameFromUrl, getPortFromUrl } from '../../common/url-utilities';
 @Component({
     selector: 'stream-conn-dialog',
     templateUrl: 'stream-conn-dialog.component.html',
-    styleUrls: ['stream-conn-dialog.component.scss']
-  })
+    styleUrls: ['stream-conn-dialog.component.scss'],
+    standalone: false
+})
   export class AdminStreamConnDialogComponent implements OnInit, OnDestroy, AfterViewInit {
     /** subscription to notify subscribers to unbind */
     public unsubscribe$ = new Subject<void>();

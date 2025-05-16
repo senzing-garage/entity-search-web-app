@@ -24,10 +24,11 @@ import { MatDialog } from '@angular/material/dialog';
 import { AlertDialogComponent } from './common/alert-dialog/alert-dialog.component';
 
  @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
-  animations: [ slideInAnimation ]
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss'],
+    animations: [slideInAnimation],
+    standalone: false
 })
 export class AppComponent implements OnInit, OnDestroy {
   /** the current search results */

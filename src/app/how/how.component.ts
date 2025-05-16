@@ -8,9 +8,10 @@ import { Subscription, fromEvent } from 'rxjs';
 import { UiService } from '../services/ui.service';
 
 @Component({
-  selector: 'app-how',
-  templateUrl: './how.component.html',
-  styleUrls: ['./how.component.scss']
+    selector: 'app-how',
+    templateUrl: './how.component.html',
+    styleUrls: ['./how.component.scss'],
+    standalone: false
 })
 export class HowComponent {
     private _entityId: string;
