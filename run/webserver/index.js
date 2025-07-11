@@ -152,7 +152,7 @@ if(proxyConfig) {
 
 // static files
 let virtualDirs = [];
-let staticPath  = path.resolve(path.join(__dirname, '../../', 'dist/entity-search-web-app'));
+let staticPath  = path.resolve(path.join(__dirname, '../../', 'dist/entity-search-web-app/browser'));
 let webCompPath = path.resolve(path.join(__dirname, '../../', '/node_modules/@senzing/sdk-components-web/'));
 app.use('/node_modules/@senzing/sdk-components-web', express.static(webCompPath));
 app.use('/', express.static(staticPath));
@@ -481,7 +481,7 @@ if(cspOptions && cspOptions.directives) {
   VIEW_VARIABLES.VIEW_CSP_DIRECTIVES = cspContentStr;
 }
 /** dynamically render SPA page with variables */
-app.set('views', path.resolve(path.join(__dirname, '..'+path.sep, '..'+path.sep, 'dist/entity-search-web-app')));
+app.set('views', path.resolve(path.join(__dirname, '..'+path.sep, '..'+path.sep, 'dist', path.sep, 'entity-search-web-app', path.sep,'browser')));
 app.set('view engine', 'pug');
 app.get('*', (req, res) => {
   res.render('index', VIEW_VARIABLES);
