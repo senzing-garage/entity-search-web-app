@@ -5,12 +5,13 @@ on:
     branches:
       - main
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   testEntitySearchWebApp:
     name: npm ci and run
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -20,7 +21,7 @@ jobs:
       - name: checkout repository
         uses: actions/checkout@v5
         with:
-          fetch-depth: "0"
+          persist-credentials: false
 
       - name: use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v5
