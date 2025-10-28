@@ -1,5 +1,5 @@
 # base image
-FROM senzing/senzing-api-server:3.5.20@sha256:4d92a0940ca6443a8c3b904a2a8b87d96d291c0745535c042c2e8ea3a113ae09
+FROM senzing/senzing-api-server:3.5.21@sha256:17cffe8dc7845e29131a3c082ba2bf12845f73731f83a61268a9357b617c3055
 
 # set working directory
 WORKDIR /app/senzing/e2e
