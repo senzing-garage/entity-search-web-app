@@ -1,9 +1,9 @@
-ARG BUILD_IMAGE=node:22-bookworm-slim@sha256:6b9fe786ca9759e665e03af03e82447bae2866c6010204a2901a2fa2195235c1
+ARG BUILD_IMAGE=node:22-bookworm-slim@sha256:773413f36941ce1e4baf74b4a6110c03dcc4f968daffc389d4caef3f01412d2a
 ARG PROD_IMAGE=node:22-alpine3.20@sha256:2289fb1fba0f4633b08ec47b94a89c7e20b829fc5679f9b7b298eaa2f1ed8b7e
 ARG TEST_IMAGE=node:20-bookworm-slim@sha256:ec35a66c9a0a275b027debde05247c081f8b2f0c43d7399d3a6ad5660cee2f6a
 
 FROM ${BUILD_IMAGE}
-ENV REFRESHED_AT=2025-07-11
+ENV REFRESHED_AT=2025-12-18
 
 LABEL Name="senzing/entity-search-web-app" \
   Maintainer="support@senzing.com" \
