@@ -3,7 +3,7 @@ ARG PROD_IMAGE=node:22-alpine3.20@sha256:2289fb1fba0f4633b08ec47b94a89c7e20b829f
 ARG TEST_IMAGE=node:20-bookworm-slim@sha256:ec35a66c9a0a275b027debde05247c081f8b2f0c43d7399d3a6ad5660cee2f6a
 
 FROM ${BUILD_IMAGE}
-ENV REFRESHED_AT=2025-12-18
+ENV REFRESHED_AT=2026-01-05
 
 LABEL Name="senzing/entity-search-web-app" \
   Maintainer="support@senzing.com" \
