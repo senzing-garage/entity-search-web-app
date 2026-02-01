@@ -64,7 +64,7 @@
     "rxjs": "~7.8.2",
     "sanitize-filename": "^1.6.3",
     "sass": "^1.77.6",
-    "serve-static": "^1.14.2",
+    "serve-static": "^2.2.1",
     "socket.io-client": "^4.5.1",
     "tslib": "^2.5.0",
     "uuid": "^13.0.0",
