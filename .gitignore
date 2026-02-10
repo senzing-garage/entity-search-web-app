@@ -62,8 +62,12 @@ Thumbs.db
 
 proxy.conf.json
 
+# Visual Studio code
+.vscode/*
+!.vscode/cspell.json
+!.vscode/settings.json
+*.code-workspace
 .history
-.vscode
 
 # Playwright
 /test-results/
