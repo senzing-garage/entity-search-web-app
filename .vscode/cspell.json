@@ -49,6 +49,7 @@
     "hrefs",
     "hyrr",
     "ICLA",
+    "ignorefile",
     "incb",
     "incompletes",
     "ingestor",
@@ -134,5 +135,8 @@
     "Zoid",
     "ZOOMROOM"
   ],
-  "ignorePaths": [".git/**", ".gitignore"]
+  "ignorePaths": [
+    ".git/**",
+    ".gitignore"
+  ]
 }
